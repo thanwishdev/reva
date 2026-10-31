@@ -46,7 +46,8 @@ test('a hostile wildcard rule against a long path is decided in linear time (k =
   // and a whole file of them (at the size cap) stays fast too
   const many = 'User-agent: *\n' + Array.from({ length: 200 }, (_, i) => `Disallow: /${'*a'.repeat(400)}${i}\n`).join('');
   const t1 = performance.now(); robotsVerdict(many, [long]); const ms2 = performance.now() - t1;
-  assert.ok(ms2 < 1000, `200 hostile rules took ${ms2.toFixed(1)} ms`);
+  // ~200 ms on an M-series Mac, ~1.2 s on a 2-core CI runner; a backtracking matcher would not finish at all
+  assert.ok(ms2 < 5000, `200 hostile rules took ${ms2.toFixed(1)} ms`);
 });
 
 test('size caps: content past 500 KiB and rules longer than 2048 characters are ignored; the body read stops at the cap', async () => {
