@@ -1,0 +1,53 @@
+{
+ "schema": "reva.labtrace/0",
+ "route": "m01",
+ "variant": "reversal",
+ "note": "Jumps with reversals mid-way, short holds.",
+ "actions": [
+  {
+   "hold": 500
+  },
+  {
+   "scrollTo": 500
+  },
+  {
+   "hold": 300
+  },
+  {
+   "scrollTo": 250
+  },
+  {
+   "hold": 300
+  },
+  {
+   "scrollTo": 700
+  },
+  {
+   "hold": 300
+  },
+  {
+   "scrollTo": 150
+  },
+  {
+   "hold": 300
+  },
+  {
+   "scrollTo": 900
+  },
+  {
+   "hold": 300
+  },
+  {
+   "scrollTo": 40
+  },
+  {
+   "hold": 300
+  },
+  {
+   "scrollTo": 620
+  },
+  {
+   "hold": 300
+  }
+ ]
+}

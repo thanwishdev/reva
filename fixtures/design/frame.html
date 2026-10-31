@@ -1,0 +1,9 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Framed card</title>
+<style>
+  body { margin: 0; font: 15px/1.4 system-ui, sans-serif; color: #1d232b; background: #f1f4f2; }
+  .fc { margin: 12px; padding: 12px; border-radius: 10px; background: #fff; }
+  .fc::before { content: "\25CF  "; color: #0a7f5c; }
+  @media (min-width: 500px) { .fc { display: flex; gap: 12px; justify-content: space-between; } }
+</style></head>
+<body><div class="fc"><span>Inside the iframe</span><span class="fc-tail">its own media query at 500px</span></div></body></html>

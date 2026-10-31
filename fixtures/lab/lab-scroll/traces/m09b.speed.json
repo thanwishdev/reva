@@ -1,0 +1,20 @@
+{
+ "schema": "reva.labtrace/0",
+ "route": "m09b",
+ "variant": "speed",
+ "note": "Six wheel events on consecutive frames, then idle.",
+ "actions": [
+  {
+   "hold": 500
+  },
+  {
+   "wheel": {
+    "dy": 60,
+    "n": 6
+   }
+  },
+  {
+   "hold": 1800
+  }
+ ]
+}

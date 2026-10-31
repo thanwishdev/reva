@@ -1,0 +1,94 @@
+<!doctype html>
+<!-- REVA's own demo page (reva demo; MCP look {fixture: "demo"}). Written for REVA, no third-party content, no network:
+     a load animation, a JS spring, cards with a hover transition, a click toggle and a reading-progress bar tied to the
+     scroll, so every kind of motion REVA names shows up on a page you can open and read. -->
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>REVA demo page</title>
+<style>
+  :root { --ink: #16181d; --muted: #5b6170; --paper: #f6f4ef; --card: #ffffff; --accent: #e8572a; --line: #e3dfd6; }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: auto; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font: 17px/1.6 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; }
+  .progress { position: fixed; top: 0; left: 0; height: 4px; width: 0; background: var(--accent); z-index: 10; }
+  header { padding: 18vh 8vw 10vh; max-width: 1100px; }
+  .eyebrow { font-size: 14px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  h1 { font: 600 clamp(40px, 6vw, 76px)/1.05 ui-serif, Georgia, serif; margin: 18px 0 22px; letter-spacing: -.02em;
+       animation: rise 900ms cubic-bezier(0.22, 1, 0.36, 1) 150ms both; }
+  .lede { max-width: 34em; color: var(--muted); font-size: 20px; animation: fade 700ms ease-out 450ms both; }
+  @keyframes rise { from { opacity: 0; transform: translateY(32px); } to { opacity: 1; transform: none; } }
+  @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+  .dot { width: 18px; height: 18px; border-radius: 50%; background: var(--accent); margin-top: 36px; }
+  section { padding: 6vh 8vw; max-width: 1200px; }
+  h2 { font: 600 30px/1.2 ui-serif, Georgia, serif; margin: 0 0 24px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 28px; min-height: 180px;
+          transition: transform 320ms cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 320ms ease-out; }
+  .card:hover { transform: translateY(-6px); box-shadow: 0 18px 40px rgba(22, 24, 29, .12); }
+  .card h3 { margin: 0 0 8px; font-size: 19px; }
+  .card p { margin: 0; color: var(--muted); font-size: 15px; }
+  .toggle { display: inline-flex; align-items: center; gap: 14px; border: 0; background: none; font: inherit; cursor: pointer; padding: 0; }
+  .track { width: 64px; height: 36px; border-radius: 18px; background: var(--line); position: relative; transition: background-color 240ms ease; }
+  .knob { position: absolute; top: 4px; left: 4px; width: 28px; height: 28px; border-radius: 50%; background: #fff;
+          box-shadow: 0 2px 6px rgba(0, 0, 0, .18); transition: transform 280ms cubic-bezier(0.65, 0, 0.35, 1); }
+  .toggle.on .track { background: var(--accent); }
+  .toggle.on .knob { transform: translateX(28px); }
+  .long p { max-width: 38em; color: var(--muted); }
+  footer { padding: 12vh 8vw 20vh; color: var(--muted); font-size: 14px; }
+</style>
+</head>
+<body>
+<div class="progress" aria-hidden="true"></div>
+<header>
+  <div class="eyebrow">REVA demo</div>
+  <h1>Motion you can measure</h1>
+  <p class="lede">This page is REVA's own. Its heading rises on load, the dot settles on a spring, the cards lift on hover,
+    the switch slides on click and the bar at the top follows the scroll.</p>
+  <div class="dot" id="dot"></div>
+</header>
+<section>
+  <h2>Three cards</h2>
+  <div class="grid">
+    <div class="card" id="card-1"><h3>Tween</h3><p>A fixed duration and an easing curve.</p></div>
+    <div class="card" id="card-2"><h3>Spring</h3><p>Stiffness and damping, no fixed duration.</p></div>
+    <div class="card" id="card-3"><h3>Scroll link</h3><p>A value tied to where the page is scrolled.</p></div>
+  </div>
+</section>
+<section>
+  <h2>A switch</h2>
+  <button class="toggle" id="toggle" type="button" aria-pressed="false"><span class="track"><span class="knob"></span></span><span>Click me</span></button>
+</section>
+<section class="long">
+  <h2>Keep scrolling</h2>
+  <p>REVA records an element frame by frame while something happens to the page, then explains the motion as a named law
+    with its values: a tween with its duration and easing, a spring with its stiffness and damping, a scroll link with the
+    range it follows. Every number says how it was found: read from the page, fitted from the frames, or unknown.</p>
+  <p>The reading-progress bar above is a scroll link: its width is the share of the page you have scrolled.</p>
+  <p style="height: 120vh"></p>
+</section>
+<footer>REVA demo page. Made for REVA; free to copy.</footer>
+<script>
+  // reading progress: width = scrolled share of the page
+  const bar = document.querySelector('.progress');
+  const onScroll = () => {
+    const max = document.documentElement.scrollHeight - innerHeight;
+    bar.style.width = (max > 0 ? (scrollY / max) * 100 : 0) + '%';
+  };
+  addEventListener('scroll', onScroll, { passive: true }); onScroll();
+  // a critically damped-ish spring: the dot settles from 120 px to its place (stiffness 170, damping 14, mass 1)
+  const dot = document.getElementById('dot');
+  let x = 120, v = 0, last = null;
+  const step = (t) => {
+    if (last == null) last = t;
+    let dt = Math.min(0.064, (t - last) / 1000); last = t;
+    while (dt > 0) { const h = Math.min(dt, 1 / 240); const a = -170 * x - 14 * v; v += a * h; x += v * h; dt -= h; }
+    dot.style.transform = `translateX(${x.toFixed(3)}px)`;
+    if (Math.abs(x) > 0.01 || Math.abs(v) > 0.01) requestAnimationFrame(step); else dot.style.transform = 'none';
+  };
+  setTimeout(() => requestAnimationFrame(step), 300);
+  // the switch
+  const toggle = document.getElementById('toggle');
+  toggle.addEventListener('click', () => { const on = toggle.classList.toggle('on'); toggle.setAttribute('aria-pressed', String(on)); });
+</script>
+</body></html>

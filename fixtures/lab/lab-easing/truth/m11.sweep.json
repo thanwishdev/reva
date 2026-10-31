@@ -1,0 +1,221 @@
+{
+ "schema": "reva.labtruth/0",
+ "route": "m11",
+ "params": {
+  "r0": 10,
+  "r1": 70,
+  "ease": [
+   0.45,
+   0.05,
+   0.3,
+   1
+  ],
+  "amp": 300
+ },
+ "regime": "R3",
+ "variant": "sweep",
+ "items": [
+  {
+   "target": "#b0|ren:opacity",
+   "class": "declared",
+   "sub": "css",
+   "observableClass": "scroll-map",
+   "family": "scroll-timeline",
+   "provenance": "declared",
+   "params": {
+    "declared": {
+     "timeline": "view",
+     "axis": "block",
+     "range_start": "contain 10%",
+     "range_end": "contain 70%",
+     "fill": "both",
+     "easing": [
+      0.45,
+      0.05,
+      0.3,
+      1
+     ],
+     "subject_height": 200,
+     "range_start_px": 860,
+     "range_end_px": 1220,
+     "contain_start_px": 800,
+     "contain_length_px": 600
+    },
+    "map": {
+     "shape": {
+      "bezier": [
+       0.45,
+       0.05,
+       0.3,
+       1
+      ]
+     },
+     "s0": 860,
+     "s1": 1220,
+     "s0_vh": 1.075,
+     "s1_vh": 1.525,
+     "subject_top": 1400,
+     "subject_height": 200,
+     "a": 0.15,
+     "b": 1
+    }
+   }
+  },
+  {
+   "target": "#b0|ren:tx",
+   "class": "declared",
+   "sub": "css",
+   "observableClass": "scroll-map",
+   "family": "scroll-timeline",
+   "provenance": "declared",
+   "params": {
+    "declared": {
+     "timeline": "view",
+     "axis": "block",
+     "range_start": "contain 10%",
+     "range_end": "contain 70%",
+     "fill": "both",
+     "easing": [
+      0.45,
+      0.05,
+      0.3,
+      1
+     ],
+     "subject_height": 200,
+     "range_start_px": 860,
+     "range_end_px": 1220,
+     "contain_start_px": 800,
+     "contain_length_px": 600
+    },
+    "map": {
+     "shape": {
+      "bezier": [
+       0.45,
+       0.05,
+       0.3,
+       1
+      ]
+     },
+     "s0": 860,
+     "s1": 1220,
+     "s0_vh": 1.075,
+     "s1_vh": 1.525,
+     "subject_top": 1400,
+     "subject_height": 200,
+     "a": 0,
+     "b": 300
+    }
+   }
+  },
+  {
+   "target": "#b1|ren:opacity",
+   "class": "declared",
+   "sub": "waapi",
+   "observableClass": "scroll-map",
+   "family": "scroll-timeline",
+   "provenance": "declared",
+   "params": {
+    "declared": {
+     "timeline": "view",
+     "axis": "block",
+     "range_start": "contain 10%",
+     "range_end": "contain 70%",
+     "fill": "both",
+     "easing": [
+      0.45,
+      0.05,
+      0.3,
+      1
+     ],
+     "subject_height": 200,
+     "range_start_px": 860,
+     "range_end_px": 1220,
+     "contain_start_px": 800,
+     "contain_length_px": 600
+    },
+    "map": {
+     "shape": {
+      "bezier": [
+       0.45,
+       0.05,
+       0.3,
+       1
+      ]
+     },
+     "s0": 860,
+     "s1": 1220,
+     "s0_vh": 1.075,
+     "s1_vh": 1.525,
+     "subject_top": 1400,
+     "subject_height": 200,
+     "a": 0.15,
+     "b": 1
+    }
+   }
+  },
+  {
+   "target": "#b1|ren:tx",
+   "class": "declared",
+   "sub": "waapi",
+   "observableClass": "scroll-map",
+   "family": "scroll-timeline",
+   "provenance": "declared",
+   "params": {
+    "declared": {
+     "timeline": "view",
+     "axis": "block",
+     "range_start": "contain 10%",
+     "range_end": "contain 70%",
+     "fill": "both",
+     "easing": [
+      0.45,
+      0.05,
+      0.3,
+      1
+     ],
+     "subject_height": 200,
+     "range_start_px": 860,
+     "range_end_px": 1220,
+     "contain_start_px": 800,
+     "contain_length_px": 600
+    },
+    "map": {
+     "shape": {
+      "bezier": [
+       0.45,
+       0.05,
+       0.3,
+       1
+      ]
+     },
+     "s0": 860,
+     "s1": 1220,
+     "s0_vh": 1.075,
+     "s1_vh": 1.525,
+     "subject_top": 1400,
+     "subject_height": 200,
+     "a": 0,
+     "b": 300
+    }
+   }
+  }
+ ],
+ "attribution": {
+  "#b0|ren:opacity": "scroll-linked",
+  "#b0|ren:tx": "scroll-linked",
+  "#b1|ren:opacity": "scroll-linked",
+  "#b1|ren:tx": "scroll-linked"
+ },
+ "metrics": {
+  "m11.declared_range": {
+   "start": "contain 10%",
+   "end": "contain 70%"
+  },
+  "m11.measured_range": {
+   "s0": 860,
+   "s1": 1220
+  },
+  "m11.css_waapi_parity": 0,
+  "class": "declared"
+ }
+}

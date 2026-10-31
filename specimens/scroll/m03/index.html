@@ -1,0 +1,623 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>lab-m03</title>
+<style>
+:root{color-scheme:dark light}html,body{margin:0;padding:0;background:#15171c}body{min-height:100vh}
+#doc{position:absolute;left:0;top:0;width:1px;height:3400px;pointer-events:none}
+.u{box-sizing:border-box;border-radius:10px;transform-origin:50% 50%}
+#b0{position:fixed;left:40px;top:40px;width:180px;height:100px;background:hsl(200 58% 58%)}
+</style></head>
+<body>
+<div id="doc"></div>
+<div class="u" id="b0"></div>
+<script id="wr-spec" type="application/json">{"schema":"reva.specimen.scroll/0","id":"lab-m03","family":"scroll","contract":"window.seek(t) / window.specimen (see README.md)","viewport":{"width":1280,"height":800},"frameMs":8.333333333333334,"docHeight":3400,"subjects":[{"id":"b0","source":"#c","x":40,"y":40,"w":180,"h":100,"hue":200}],"mechanisms":[{"id":"m0","kind":"scroll-driven","subject":"b0","map":{"shape":"smoothstep","bezier":null,"s0":2100,"s1":2420,"flip":false},"smoothing":{"law":"asym","alphaUp":1,"alphaDown":0.25,"snap":0.001},"init":"target","channels":[{"name":"drv:--v0","kind":"var","prop":"--v0","of":"x","k0":0,"k1":1,"write":"full","role":"driver","source":"#c|drv:--a","compare":true},{"name":"ren:tx","kind":"ren","prop":"tx","of":"x","k0":0,"k1":240,"role":"visual","source":null,"compare":false}],"sources":["#c|drv:--a"],"tier":"truth"},{"id":"m1","kind":"scroll-driven","subject":"b0","map":{"shape":"smoothstep","bezier":null,"s0":640,"s1":960,"flip":true},"smoothing":{"law":"ema","alpha":0.18,"snap":0.001},"init":"target","channels":[{"name":"drv:--v1","kind":"var","prop":"--v1","of":"x","k0":0,"k1":1,"write":"full","role":"driver","source":"#c|drv:--b","compare":true}],"sources":["#c|drv:--b"],"tier":"truth"}],"pins":[],"input":{"frames":[{"k":1,"T":8.333333,"sy":0},{"k":2,"T":16.666667,"sy":0},{"k":3,"T":25,"sy":0},{"k":4,"T":33.333333,"sy":0},{"k":5,"T":41.666667,"sy":0},{"k":6,"T":50,"sy":0},{"k":7,"T":58.333333,"sy":0},{"k":8,"T":66.666667,"sy":0},{"k":9,"T":75,"sy":0},{"k":10,"T":83.333333,"sy":0},{"k":11,"T":91.666667,"sy":0},{"k":12,"T":100,"sy":0},{"k":13,"T":108.333333,"sy":0},{"k":14,"T":116.666667,"sy":0},{"k":15,"T":125,"sy":0},{"k":16,"T":133.333333,"sy":0},{"k":17,"T":141.666667,"sy":0},{"k":18,"T":150,"sy":0},{"k":19,"T":158.333333,"sy":0},{"k":20,"T":166.666667,"sy":0},{"k":21,"T":175,"sy":0},{"k":22,"T":183.333333,"sy":0},{"k":23,"T":191.666667,"sy":0},{"k":24,"T":200,"sy":0},{"k":25,"T":208.333333,"sy":0},{"k":26,"T":216.666667,"sy":0},{"k":27,"T":225,"sy":0},{"k":28,"T":233.333333,"sy":0},{"k":29,"T":241.666667,"sy":0},{"k":30,"T":250,"sy":0},{"k":31,"T":258.333333,"sy":0},{"k":32,"T":266.666667,"sy":0},{"k":33,"T":275,"sy":0},{"k":34,"T":283.333333,"sy":0},{"k":35,"T":291.666667,"sy":0},{"k":36,"T":300,"sy":0},{"k":37,"T":308.333333,"sy":0},{"k":38,"T":316.666667,"sy":0},{"k":39,"T":325,"sy":0},{"k":40,"T":333.333333,"sy":0},{"k":41,"T":341.666667,"sy":0},{"k":42,"T":350,"sy":0},{"k":43,"T":358.333333,"sy":0},{"k":44,"T":366.666667,"sy":0},{"k":45,"T":375,"sy":0},{"k":46,"T":383.333333,"sy":0},{"k":47,"T":391.666667,"sy":0},{"k":48,"T":400,"sy":0},{"k":49,"T":408.333333,"sy":0},{"k":50,"T":416.666667,"sy":0},{"k":51,"T":425,"sy":0},{"k":52,"T":433.333333,"sy":0},{"k":53,"T":441.666667,"sy":0},{"k":54,"T":450,"sy":0},{"k":55,"T":458.333333,"sy":0},{"k":56,"T":466.666667,"sy":0},{"k":57,"T":475,"sy":0},{"k":58,"T":483.333333,"sy":0},{"k":59,"T":491.666667,"sy":0},{"k":60,"T":500,"sy":0},{"k":61,"T":508.333333,"sy":0},{"k":62,"T":516.666667,"sy":0},{"k":63,"T":525,"sy":0},{"k":64,"T":533.333333,"sy":0},{"k":65,"T":541.666667,"sy":600},{"k":66,"T":550,"sy":600},{"k":67,"T":558.333333,"sy":600},{"k":68,"T":566.666667,"sy":600},{"k":69,"T":575,"sy":600},{"k":70,"T":583.333333,"sy":600},{"k":71,"T":591.666667,"sy":600},{"k":72,"T":600,"sy":600},{"k":73,"T":608.333333,"sy":600},{"k":74,"T":616.666667,"sy":600},{"k":75,"T":625,"sy":600},{"k":76,"T":633.333333,"sy":600},{"k":77,"T":641.666667,"sy":600},{"k":78,"T":650,"sy":610},{"k":79,"T":658.333333,"sy":620},{"k":80,"T":666.666667,"sy":630},{"k":81,"T":675,"sy":640},{"k":82,"T":683.333333,"sy":650},{"k":83,"T":691.666667,"sy":660},{"k":84,"T":700,"sy":670},{"k":85,"T":708.333333,"sy":680},{"k":86,"T":716.666667,"sy":690},{"k":87,"T":725,"sy":700},{"k":88,"T":733.333333,"sy":710},{"k":89,"T":741.666667,"sy":720},{"k":90,"T":750,"sy":730},{"k":91,"T":758.333333,"sy":740},{"k":92,"T":766.666667,"sy":750},{"k":93,"T":775,"sy":760},{"k":94,"T":783.333333,"sy":770},{"k":95,"T":791.666667,"sy":780},{"k":96,"T":800,"sy":790},{"k":97,"T":808.333333,"sy":800},{"k":98,"T":816.666667,"sy":810},{"k":99,"T":825,"sy":820},{"k":100,"T":833.333333,"sy":830},{"k":101,"T":841.666667,"sy":840},{"k":102,"T":850,"sy":850},{"k":103,"T":858.333333,"sy":860},{"k":104,"T":866.666667,"sy":870},{"k":105,"T":875,"sy":880},{"k":106,"T":883.333333,"sy":890},{"k":107,"T":891.666667,"sy":900},{"k":108,"T":900,"sy":910},{"k":109,"T":908.333333,"sy":920},{"k":110,"T":916.666667,"sy":930},{"k":111,"T":925,"sy":940},{"k":112,"T":933.333333,"sy":950},{"k":113,"T":941.666667,"sy":960},{"k":114,"T":950,"sy":970},{"k":115,"T":958.333333,"sy":980},{"k":116,"T":966.666667,"sy":990},{"k":117,"T":975,"sy":1000},{"k":118,"T":983.333333,"sy":990},{"k":119,"T":991.666667,"sy":980},{"k":120,"T":1000,"sy":970},{"k":121,"T":1008.333333,"sy":960},{"k":122,"T":1016.666667,"sy":950},{"k":123,"T":1025,"sy":940},{"k":124,"T":1033.333333,"sy":930},{"k":125,"T":1041.666667,"sy":920},{"k":126,"T":1050,"sy":910},{"k":127,"T":1058.333333,"sy":900},{"k":128,"T":1066.666667,"sy":890},{"k":129,"T":1075,"sy":880},{"k":130,"T":1083.333333,"sy":870},{"k":131,"T":1091.666667,"sy":860},{"k":132,"T":1100,"sy":850},{"k":133,"T":1108.333333,"sy":840},{"k":134,"T":1116.666667,"sy":830},{"k":135,"T":1125,"sy":820},{"k":136,"T":1133.333333,"sy":810},{"k":137,"T":1141.666667,"sy":800},{"k":138,"T":1150,"sy":790},{"k":139,"T":1158.333333,"sy":780},{"k":140,"T":1166.666667,"sy":770},{"k":141,"T":1175,"sy":760},{"k":142,"T":1183.333333,"sy":750},{"k":143,"T":1191.666667,"sy":740},{"k":144,"T":1200,"sy":730},{"k":145,"T":1208.333333,"sy":720},{"k":146,"T":1216.666667,"sy":710},{"k":147,"T":1225,"sy":700},{"k":148,"T":1233.333333,"sy":690},{"k":149,"T":1241.666667,"sy":680},{"k":150,"T":1250,"sy":670},{"k":151,"T":1258.333333,"sy":660},{"k":152,"T":1266.666667,"sy":650},{"k":153,"T":1275,"sy":640},{"k":154,"T":1283.333333,"sy":630},{"k":155,"T":1291.666667,"sy":620},{"k":156,"T":1300,"sy":610},{"k":157,"T":1308.333333,"sy":600},{"k":158,"T":1316.666667,"sy":600},{"k":159,"T":1325,"sy":600},{"k":160,"T":1333.333333,"sy":600},{"k":161,"T":1341.666667,"sy":600},{"k":162,"T":1350,"sy":600},{"k":163,"T":1358.333333,"sy":600},{"k":164,"T":1366.666667,"sy":600},{"k":165,"T":1375,"sy":600},{"k":166,"T":1383.333333,"sy":600},{"k":167,"T":1391.666667,"sy":600},{"k":168,"T":1400,"sy":600},{"k":169,"T":1408.333333,"sy":600},{"k":170,"T":1416.666667,"sy":600},{"k":171,"T":1425,"sy":600},{"k":172,"T":1433.333333,"sy":600},{"k":173,"T":1441.666667,"sy":600},{"k":174,"T":1450,"sy":600},{"k":175,"T":1458.333333,"sy":600},{"k":176,"T":1466.666667,"sy":600},{"k":177,"T":1475,"sy":600},{"k":178,"T":1483.333333,"sy":600},{"k":179,"T":1491.666667,"sy":600},{"k":180,"T":1500,"sy":600},{"k":181,"T":1508.333333,"sy":600},{"k":182,"T":1516.666667,"sy":600},{"k":183,"T":1525,"sy":600},{"k":184,"T":1533.333333,"sy":600},{"k":185,"T":1541.666667,"sy":600},{"k":186,"T":1550,"sy":600},{"k":187,"T":1558.333333,"sy":600},{"k":188,"T":1566.666667,"sy":600},{"k":189,"T":1575,"sy":600},{"k":190,"T":1583.333333,"sy":600},{"k":191,"T":1591.666667,"sy":600},{"k":192,"T":1600,"sy":600},{"k":193,"T":1608.333333,"sy":600},{"k":194,"T":1616.666667,"sy":600},{"k":195,"T":1625,"sy":600},{"k":196,"T":1633.333333,"sy":600},{"k":197,"T":1641.666667,"sy":600},{"k":198,"T":1650,"sy":600},{"k":199,"T":1658.333333,"sy":600},{"k":200,"T":1666.666667,"sy":600},{"k":201,"T":1675,"sy":600},{"k":202,"T":1683.333333,"sy":600},{"k":203,"T":1691.666667,"sy":600},{"k":204,"T":1700,"sy":600},{"k":205,"T":1708.333333,"sy":600},{"k":206,"T":1716.666667,"sy":600},{"k":207,"T":1725,"sy":600},{"k":208,"T":1733.333333,"sy":600},{"k":209,"T":1741.666667,"sy":600},{"k":210,"T":1750,"sy":600},{"k":211,"T":1758.333333,"sy":600},{"k":212,"T":1766.666667,"sy":600},{"k":213,"T":1775,"sy":600},{"k":214,"T":1783.333333,"sy":600},{"k":215,"T":1791.666667,"sy":600},{"k":216,"T":1800,"sy":600},{"k":217,"T":1808.333333,"sy":600},{"k":218,"T":1816.666667,"sy":600},{"k":219,"T":1825,"sy":600},{"k":220,"T":1833.333333,"sy":600},{"k":221,"T":1841.666667,"sy":600},{"k":222,"T":1850,"sy":600},{"k":223,"T":1858.333333,"sy":600},{"k":224,"T":1866.666667,"sy":600},{"k":225,"T":1875,"sy":600},{"k":226,"T":1883.333333,"sy":600},{"k":227,"T":1891.666667,"sy":600},{"k":228,"T":1900,"sy":600},{"k":229,"T":1908.333333,"sy":600},{"k":230,"T":1916.666667,"sy":2050},{"k":231,"T":1925,"sy":2050},{"k":232,"T":1933.333333,"sy":2050},{"k":233,"T":1941.666667,"sy":2050},{"k":234,"T":1950,"sy":2050},{"k":235,"T":1958.333333,"sy":2050},{"k":236,"T":1966.666667,"sy":2050},{"k":237,"T":1975,"sy":2050},{"k":238,"T":1983.333333,"sy":2050},{"k":239,"T":1991.666667,"sy":2050},{"k":240,"T":2000,"sy":2050},{"k":241,"T":2008.333333,"sy":2050},{"k":242,"T":2016.666667,"sy":2050},{"k":243,"T":2025,"sy":2060},{"k":244,"T":2033.333333,"sy":2070},{"k":245,"T":2041.666667,"sy":2080},{"k":246,"T":2050,"sy":2090},{"k":247,"T":2058.333333,"sy":2100},{"k":248,"T":2066.666667,"sy":2110},{"k":249,"T":2075,"sy":2120},{"k":250,"T":2083.333333,"sy":2130},{"k":251,"T":2091.666667,"sy":2140},{"k":252,"T":2100,"sy":2150},{"k":253,"T":2108.333333,"sy":2160},{"k":254,"T":2116.666667,"sy":2170},{"k":255,"T":2125,"sy":2180},{"k":256,"T":2133.333333,"sy":2190},{"k":257,"T":2141.666667,"sy":2200},{"k":258,"T":2150,"sy":2210},{"k":259,"T":2158.333333,"sy":2220},{"k":260,"T":2166.666667,"sy":2230},{"k":261,"T":2175,"sy":2240},{"k":262,"T":2183.333333,"sy":2250},{"k":263,"T":2191.666667,"sy":2260},{"k":264,"T":2200,"sy":2270},{"k":265,"T":2208.333333,"sy":2280},{"k":266,"T":2216.666667,"sy":2290},{"k":267,"T":2225,"sy":2300},{"k":268,"T":2233.333333,"sy":2310},{"k":269,"T":2241.666667,"sy":2320},{"k":270,"T":2250,"sy":2330},{"k":271,"T":2258.333333,"sy":2340},{"k":272,"T":2266.666667,"sy":2350},{"k":273,"T":2275,"sy":2360},{"k":274,"T":2283.333333,"sy":2370},{"k":275,"T":2291.666667,"sy":2380},{"k":276,"T":2300,"sy":2390},{"k":277,"T":2308.333333,"sy":2400},{"k":278,"T":2316.666667,"sy":2410},{"k":279,"T":2325,"sy":2420},{"k":280,"T":2333.333333,"sy":2430},{"k":281,"T":2341.666667,"sy":2440},{"k":282,"T":2350,"sy":2450},{"k":283,"T":2358.333333,"sy":2460},{"k":284,"T":2366.666667,"sy":2470},{"k":285,"T":2375,"sy":2460},{"k":286,"T":2383.333333,"sy":2450},{"k":287,"T":2391.666667,"sy":2440},{"k":288,"T":2400,"sy":2430},{"k":289,"T":2408.333333,"sy":2420},{"k":290,"T":2416.666667,"sy":2410},{"k":291,"T":2425,"sy":2400},{"k":292,"T":2433.333333,"sy":2390},{"k":293,"T":2441.666667,"sy":2380},{"k":294,"T":2450,"sy":2370},{"k":295,"T":2458.333333,"sy":2360},{"k":296,"T":2466.666667,"sy":2350},{"k":297,"T":2475,"sy":2340},{"k":298,"T":2483.333333,"sy":2330},{"k":299,"T":2491.666667,"sy":2320},{"k":300,"T":2500,"sy":2310},{"k":301,"T":2508.333333,"sy":2300},{"k":302,"T":2516.666667,"sy":2290},{"k":303,"T":2525,"sy":2280},{"k":304,"T":2533.333333,"sy":2270},{"k":305,"T":2541.666667,"sy":2260},{"k":306,"T":2550,"sy":2250},{"k":307,"T":2558.333333,"sy":2240},{"k":308,"T":2566.666667,"sy":2230},{"k":309,"T":2575,"sy":2220},{"k":310,"T":2583.333333,"sy":2210},{"k":311,"T":2591.666667,"sy":2200},{"k":312,"T":2600,"sy":2190},{"k":313,"T":2608.333333,"sy":2180},{"k":314,"T":2616.666667,"sy":2170},{"k":315,"T":2625,"sy":2160},{"k":316,"T":2633.333333,"sy":2150},{"k":317,"T":2641.666667,"sy":2140},{"k":318,"T":2650,"sy":2130},{"k":319,"T":2658.333333,"sy":2120},{"k":320,"T":2666.666667,"sy":2110},{"k":321,"T":2675,"sy":2100},{"k":322,"T":2683.333333,"sy":2090},{"k":323,"T":2691.666667,"sy":2080},{"k":324,"T":2700,"sy":2070},{"k":325,"T":2708.333333,"sy":2060},{"k":326,"T":2716.666667,"sy":2050},{"k":327,"T":2725,"sy":2050},{"k":328,"T":2733.333333,"sy":2050},{"k":329,"T":2741.666667,"sy":2050},{"k":330,"T":2750,"sy":2050},{"k":331,"T":2758.333333,"sy":2050},{"k":332,"T":2766.666667,"sy":2050},{"k":333,"T":2775,"sy":2050},{"k":334,"T":2783.333333,"sy":2050},{"k":335,"T":2791.666667,"sy":2050},{"k":336,"T":2800,"sy":2050},{"k":337,"T":2808.333333,"sy":2050},{"k":338,"T":2816.666667,"sy":2050},{"k":339,"T":2825,"sy":2050},{"k":340,"T":2833.333333,"sy":2050},{"k":341,"T":2841.666667,"sy":2050},{"k":342,"T":2850,"sy":2050},{"k":343,"T":2858.333333,"sy":2050},{"k":344,"T":2866.666667,"sy":2050},{"k":345,"T":2875,"sy":2050},{"k":346,"T":2883.333333,"sy":2050},{"k":347,"T":2891.666667,"sy":2050},{"k":348,"T":2900,"sy":2050},{"k":349,"T":2908.333333,"sy":2050},{"k":350,"T":2916.666667,"sy":2050},{"k":351,"T":2925,"sy":2050},{"k":352,"T":2933.333333,"sy":2050},{"k":353,"T":2941.666667,"sy":2050},{"k":354,"T":2950,"sy":2050},{"k":355,"T":2958.333333,"sy":2050},{"k":356,"T":2966.666667,"sy":2050},{"k":357,"T":2975,"sy":2050},{"k":358,"T":2983.333333,"sy":2050},{"k":359,"T":2991.666667,"sy":2050},{"k":360,"T":3000,"sy":2050},{"k":361,"T":3008.333333,"sy":2050},{"k":362,"T":3016.666667,"sy":2050},{"k":363,"T":3025,"sy":2050},{"k":364,"T":3033.333333,"sy":2050},{"k":365,"T":3041.666667,"sy":2050},{"k":366,"T":3050,"sy":2050},{"k":367,"T":3058.333333,"sy":2050},{"k":368,"T":3066.666667,"sy":2050},{"k":369,"T":3075,"sy":2050},{"k":370,"T":3083.333333,"sy":2050},{"k":371,"T":3091.666667,"sy":2050},{"k":372,"T":3100,"sy":2050},{"k":373,"T":3108.333333,"sy":2050},{"k":374,"T":3116.666667,"sy":2050},{"k":375,"T":3125,"sy":2050},{"k":376,"T":3133.333333,"sy":2050},{"k":377,"T":3141.666667,"sy":2050},{"k":378,"T":3150,"sy":2050},{"k":379,"T":3158.333333,"sy":2050},{"k":380,"T":3166.666667,"sy":2050},{"k":381,"T":3175,"sy":2050},{"k":382,"T":3183.333333,"sy":2050},{"k":383,"T":3191.666667,"sy":2050},{"k":384,"T":3200,"sy":2050},{"k":385,"T":3208.333333,"sy":2050},{"k":386,"T":3216.666667,"sy":2050},{"k":387,"T":3225,"sy":2050},{"k":388,"T":3233.333333,"sy":2050},{"k":389,"T":3241.666667,"sy":2050},{"k":390,"T":3250,"sy":2050},{"k":391,"T":3258.333333,"sy":2050},{"k":392,"T":3266.666667,"sy":2050},{"k":393,"T":3275,"sy":2050},{"k":394,"T":3283.333333,"sy":2050},{"k":395,"T":3291.666667,"sy":2050},{"k":396,"T":3300,"sy":2050},{"k":397,"T":3308.333333,"sy":2050},{"k":398,"T":3316.666667,"sy":2050},{"k":399,"T":3325,"sy":2050},{"k":400,"T":3333.333333,"sy":2050},{"k":401,"T":3341.666667,"sy":2050},{"k":402,"T":3350,"sy":2050},{"k":403,"T":3358.333333,"sy":2050},{"k":404,"T":3366.666667,"sy":2050},{"k":405,"T":3375,"sy":2050},{"k":406,"T":3383.333333,"sy":2050},{"k":407,"T":3391.666667,"sy":2050},{"k":408,"T":3400,"sy":2050},{"k":409,"T":3408.333333,"sy":2050},{"k":410,"T":3416.666667,"sy":2050},{"k":411,"T":3425,"sy":2050},{"k":412,"T":3433.333333,"sy":2050},{"k":413,"T":3441.666667,"sy":2050},{"k":414,"T":3450,"sy":2050},{"k":415,"T":3458.333333,"sy":2050},{"k":416,"T":3466.666667,"sy":2050},{"k":417,"T":3475,"sy":2050},{"k":418,"T":3483.333333,"sy":2050},{"k":419,"T":3491.666667,"sy":2050},{"k":420,"T":3500,"sy":2050},{"k":421,"T":3508.333333,"sy":2050},{"k":422,"T":3516.666667,"sy":2050},{"k":423,"T":3525,"sy":2050},{"k":424,"T":3533.333333,"sy":2050},{"k":425,"T":3541.666667,"sy":2050},{"k":426,"T":3550,"sy":2050},{"k":427,"T":3558.333333,"sy":2050},{"k":428,"T":3566.666667,"sy":2050},{"k":429,"T":3575,"sy":2050},{"k":430,"T":3583.333333,"sy":2050},{"k":431,"T":3591.666667,"sy":2050},{"k":432,"T":3600,"sy":2050},{"k":433,"T":3608.333333,"sy":2050},{"k":434,"T":3616.666667,"sy":2050},{"k":435,"T":3625,"sy":2050},{"k":436,"T":3633.333333,"sy":2050},{"k":437,"T":3641.666667,"sy":2050},{"k":438,"T":3650,"sy":2050},{"k":439,"T":3658.333333,"sy":2050},{"k":440,"T":3666.666667,"sy":2050},{"k":441,"T":3675,"sy":2050},{"k":442,"T":3683.333333,"sy":2050},{"k":443,"T":3691.666667,"sy":2050},{"k":444,"T":3700,"sy":2050},{"k":445,"T":3708.333333,"sy":2050},{"k":446,"T":3716.666667,"sy":2050}],"wheel":[],"pointer":[],"triggers":[],"scrollTo":[{"k":64,"T":533.333333,"want":600,"got":600},{"k":76,"T":633.333333,"want":600,"got":600},{"k":77,"T":641.666667,"want":610,"got":610},{"k":78,"T":650,"want":620,"got":620},{"k":79,"T":658.333333,"want":630,"got":630},{"k":80,"T":666.666667,"want":640,"got":640},{"k":81,"T":675,"want":650,"got":650},{"k":82,"T":683.333333,"want":660,"got":660},{"k":83,"T":691.666667,"want":670,"got":670},{"k":84,"T":700,"want":680,"got":680},{"k":85,"T":708.333333,"want":690,"got":690},{"k":86,"T":716.666667,"want":700,"got":700},{"k":87,"T":725,"want":710,"got":710},{"k":88,"T":733.333333,"want":720,"got":720},{"k":89,"T":741.666667,"want":730,"got":730},{"k":90,"T":750,"want":740,"got":740},{"k":91,"T":758.333333,"want":750,"got":750},{"k":92,"T":766.666667,"want":760,"got":760},{"k":93,"T":775,"want":770,"got":770},{"k":94,"T":783.333333,"want":780,"got":780},{"k":95,"T":791.666667,"want":790,"got":790},{"k":96,"T":800,"want":800,"got":800},{"k":97,"T":808.333333,"want":810,"got":810},{"k":98,"T":816.666667,"want":820,"got":820},{"k":99,"T":825,"want":830,"got":830},{"k":100,"T":833.333333,"want":840,"got":840},{"k":101,"T":841.666667,"want":850,"got":850},{"k":102,"T":850,"want":860,"got":860},{"k":103,"T":858.333333,"want":870,"got":870},{"k":104,"T":866.666667,"want":880,"got":880},{"k":105,"T":875,"want":890,"got":890},{"k":106,"T":883.333333,"want":900,"got":900},{"k":107,"T":891.666667,"want":910,"got":910},{"k":108,"T":900,"want":920,"got":920},{"k":109,"T":908.333333,"want":930,"got":930},{"k":110,"T":916.666667,"want":940,"got":940},{"k":111,"T":925,"want":950,"got":950},{"k":112,"T":933.333333,"want":960,"got":960},{"k":113,"T":941.666667,"want":970,"got":970},{"k":114,"T":950,"want":980,"got":980},{"k":115,"T":958.333333,"want":990,"got":990},{"k":116,"T":966.666667,"want":1000,"got":1000},{"k":117,"T":975,"want":990,"got":990},{"k":118,"T":983.333333,"want":980,"got":980},{"k":119,"T":991.666667,"want":970,"got":970},{"k":120,"T":1000,"want":960,"got":960},{"k":121,"T":1008.333333,"want":950,"got":950},{"k":122,"T":1016.666667,"want":940,"got":940},{"k":123,"T":1025,"want":930,"got":930},{"k":124,"T":1033.333333,"want":920,"got":920},{"k":125,"T":1041.666667,"want":910,"got":910},{"k":126,"T":1050,"want":900,"got":900},{"k":127,"T":1058.333333,"want":890,"got":890},{"k":128,"T":1066.666667,"want":880,"got":880},{"k":129,"T":1075,"want":870,"got":870},{"k":130,"T":1083.333333,"want":860,"got":860},{"k":131,"T":1091.666667,"want":850,"got":850},{"k":132,"T":1100,"want":840,"got":840},{"k":133,"T":1108.333333,"want":830,"got":830},{"k":134,"T":1116.666667,"want":820,"got":820},{"k":135,"T":1125,"want":810,"got":810},{"k":136,"T":1133.333333,"want":800,"got":800},{"k":137,"T":1141.666667,"want":790,"got":790},{"k":138,"T":1150,"want":780,"got":780},{"k":139,"T":1158.333333,"want":770,"got":770},{"k":140,"T":1166.666667,"want":760,"got":760},{"k":141,"T":1175,"want":750,"got":750},{"k":142,"T":1183.333333,"want":740,"got":740},{"k":143,"T":1191.666667,"want":730,"got":730},{"k":144,"T":1200,"want":720,"got":720},{"k":145,"T":1208.333333,"want":710,"got":710},{"k":146,"T":1216.666667,"want":700,"got":700},{"k":147,"T":1225,"want":690,"got":690},{"k":148,"T":1233.333333,"want":680,"got":680},{"k":149,"T":1241.666667,"want":670,"got":670},{"k":150,"T":1250,"want":660,"got":660},{"k":151,"T":1258.333333,"want":650,"got":650},{"k":152,"T":1266.666667,"want":640,"got":640},{"k":153,"T":1275,"want":630,"got":630},{"k":154,"T":1283.333333,"want":620,"got":620},{"k":155,"T":1291.666667,"want":610,"got":610},{"k":156,"T":1300,"want":600,"got":600},{"k":229,"T":1908.333333,"want":2050,"got":2050},{"k":241,"T":2008.333333,"want":2050,"got":2050},{"k":242,"T":2016.666667,"want":2060,"got":2060},{"k":243,"T":2025,"want":2070,"got":2070},{"k":244,"T":2033.333333,"want":2080,"got":2080},{"k":245,"T":2041.666667,"want":2090,"got":2090},{"k":246,"T":2050,"want":2100,"got":2100},{"k":247,"T":2058.333333,"want":2110,"got":2110},{"k":248,"T":2066.666667,"want":2120,"got":2120},{"k":249,"T":2075,"want":2130,"got":2130},{"k":250,"T":2083.333333,"want":2140,"got":2140},{"k":251,"T":2091.666667,"want":2150,"got":2150},{"k":252,"T":2100,"want":2160,"got":2160},{"k":253,"T":2108.333333,"want":2170,"got":2170},{"k":254,"T":2116.666667,"want":2180,"got":2180},{"k":255,"T":2125,"want":2190,"got":2190},{"k":256,"T":2133.333333,"want":2200,"got":2200},{"k":257,"T":2141.666667,"want":2210,"got":2210},{"k":258,"T":2150,"want":2220,"got":2220},{"k":259,"T":2158.333333,"want":2230,"got":2230},{"k":260,"T":2166.666667,"want":2240,"got":2240},{"k":261,"T":2175,"want":2250,"got":2250},{"k":262,"T":2183.333333,"want":2260,"got":2260},{"k":263,"T":2191.666667,"want":2270,"got":2270},{"k":264,"T":2200,"want":2280,"got":2280},{"k":265,"T":2208.333333,"want":2290,"got":2290},{"k":266,"T":2216.666667,"want":2300,"got":2300},{"k":267,"T":2225,"want":2310,"got":2310},{"k":268,"T":2233.333333,"want":2320,"got":2320},{"k":269,"T":2241.666667,"want":2330,"got":2330},{"k":270,"T":2250,"want":2340,"got":2340},{"k":271,"T":2258.333333,"want":2350,"got":2350},{"k":272,"T":2266.666667,"want":2360,"got":2360},{"k":273,"T":2275,"want":2370,"got":2370},{"k":274,"T":2283.333333,"want":2380,"got":2380},{"k":275,"T":2291.666667,"want":2390,"got":2390},{"k":276,"T":2300,"want":2400,"got":2400},{"k":277,"T":2308.333333,"want":2410,"got":2410},{"k":278,"T":2316.666667,"want":2420,"got":2420},{"k":279,"T":2325,"want":2430,"got":2430},{"k":280,"T":2333.333333,"want":2440,"got":2440},{"k":281,"T":2341.666667,"want":2450,"got":2450},{"k":282,"T":2350,"want":2460,"got":2460},{"k":283,"T":2358.333333,"want":2470,"got":2470},{"k":284,"T":2366.666667,"want":2460,"got":2460},{"k":285,"T":2375,"want":2450,"got":2450},{"k":286,"T":2383.333333,"want":2440,"got":2440},{"k":287,"T":2391.666667,"want":2430,"got":2430},{"k":288,"T":2400,"want":2420,"got":2420},{"k":289,"T":2408.333333,"want":2410,"got":2410},{"k":290,"T":2416.666667,"want":2400,"got":2400},{"k":291,"T":2425,"want":2390,"got":2390},{"k":292,"T":2433.333333,"want":2380,"got":2380},{"k":293,"T":2441.666667,"want":2370,"got":2370},{"k":294,"T":2450,"want":2360,"got":2360},{"k":295,"T":2458.333333,"want":2350,"got":2350},{"k":296,"T":2466.666667,"want":2340,"got":2340},{"k":297,"T":2475,"want":2330,"got":2330},{"k":298,"T":2483.333333,"want":2320,"got":2320},{"k":299,"T":2491.666667,"want":2310,"got":2310},{"k":300,"T":2500,"want":2300,"got":2300},{"k":301,"T":2508.333333,"want":2290,"got":2290},{"k":302,"T":2516.666667,"want":2280,"got":2280},{"k":303,"T":2525,"want":2270,"got":2270},{"k":304,"T":2533.333333,"want":2260,"got":2260},{"k":305,"T":2541.666667,"want":2250,"got":2250},{"k":306,"T":2550,"want":2240,"got":2240},{"k":307,"T":2558.333333,"want":2230,"got":2230},{"k":308,"T":2566.666667,"want":2220,"got":2220},{"k":309,"T":2575,"want":2210,"got":2210},{"k":310,"T":2583.333333,"want":2200,"got":2200},{"k":311,"T":2591.666667,"want":2190,"got":2190},{"k":312,"T":2600,"want":2180,"got":2180},{"k":313,"T":2608.333333,"want":2170,"got":2170},{"k":314,"T":2616.666667,"want":2160,"got":2160},{"k":315,"T":2625,"want":2150,"got":2150},{"k":316,"T":2633.333333,"want":2140,"got":2140},{"k":317,"T":2641.666667,"want":2130,"got":2130},{"k":318,"T":2650,"want":2120,"got":2120},{"k":319,"T":2658.333333,"want":2110,"got":2110},{"k":320,"T":2666.666667,"want":2100,"got":2100},{"k":321,"T":2675,"want":2090,"got":2090},{"k":322,"T":2683.333333,"want":2080,"got":2080},{"k":323,"T":2691.666667,"want":2070,"got":2070},{"k":324,"T":2700,"want":2060,"got":2060},{"k":325,"T":2708.333333,"want":2050,"got":2050}]},"channelMap":[{"source":"#c|drv:--a","specimen":"b0|drv:--v0","compare":true},{"source":"#c|drv:--b","specimen":"b0|drv:--v1","compare":true}],"declared":[],"skipped":[{"target":"#c|drv:--p","class":"unknown","reason":"derived combination of other channels (stored as its parts)","kind":null}],"unknowns":[],"assumptions":[],"placeholders":[],"boot":{"until":"window.specimen && window.specimen.ready === true"},"scene":{"selectors":["#b0"]},"source":{"kind":"labtruth","file":"lab-scroll/truth/m03.json","variant":"speed","digest":"f3144098a3df448d","note":"Fixture Lab truth record (own fixture, public-safe)"}}</script>
+<script>
+// Scroll-linked specimens (M3, part "specimens-scroll"): the pure core.
+//
+// Browser-safe and import-free on purpose. The same text is (a) imported by Node (the simulator, the tests) and (b) inlined
+// into every generated specimen page after its top-level `export ` keywords are removed (emit.js). So the page and the
+// simulator run literally the same recurrences; what the browser adds (layout, sticky pins, CSS, wheel/pointer events,
+// WAAPI, View Transitions) is what the browser tests check against these functions.
+//
+// Frame semantics (identical to the recorder's `hx` lane and to the Fixture Lab's refsim):
+//   * frame k runs at virtual time T_k; its rAF callback reads the scroll offset of row k;
+//   * an input that lands between frame k-1 and frame k (event time T_e < T_k) is handled before frame k;
+//     an input dispatched at T_e == T_k (after frame k) is therefore handled before frame k+1.
+// Nothing here knows a site: every number arrives through the specimen spec.
+
+const SPECIMEN_SCHEMA = 'reva.specimen.scroll/0';
+
+// ------------------------------------------------------------------------------------------------ scalar maths
+const clamp = (lo, x, hi) => Math.min(hi, Math.max(lo, x));
+const clamp01 = (x) => (x < 0 ? 0 : x > 1 ? 1 : x);
+const lerp = (a, b, t) => a + (b - a) * t;
+const round6 = (x) => Math.round(x * 1e6) / 1e6;
+
+/** CSS cubic-bezier(x1, y1, x2, y2) as a function of progress (Newton with a bisection fallback, double precision). */
+function cubicBezier(x1, y1, x2, y2) {
+  if (x1 === y1 && x2 === y2) return (x) => x;
+  const cx = 3 * x1, bx = 3 * (x2 - x1) - cx, ax = 1 - cx - bx;
+  const cy = 3 * y1, by = 3 * (y2 - y1) - cy, ay = 1 - cy - by;
+  const X = (t) => ((ax * t + bx) * t + cx) * t;
+  const Y = (t) => ((ay * t + by) * t + cy) * t;
+  const dX = (t) => (3 * ax * t + 2 * bx) * t + cx;
+  return (x) => {
+    if (x <= 0) return 0;
+    if (x >= 1) return 1;
+    let t = x;
+    for (let i = 0; i < 12; i++) {
+      const e = X(t) - x;
+      if (Math.abs(e) < 1e-14) return Y(t);
+      const d = dX(t);
+      if (Math.abs(d) < 1e-9) break;
+      t -= e / d;
+    }
+    let lo = 0, hi = 1; t = x;
+    for (let i = 0; i < 80; i++) {
+      const e = X(t) - x;
+      if (Math.abs(e) < 1e-14) break;
+      if (e > 0) hi = t; else lo = t;
+      t = (lo + hi) / 2;
+    }
+    return Y(t);
+  };
+}
+
+const C1 = 1.70158, C3 = C1 + 1, C2 = C1 * 1.525;
+const NAMED = {
+  linear: (u) => u,
+  smoothstep: (u) => u * u * (3 - 2 * u),
+  smootherstep: (u) => u * u * u * (u * (u * 6 - 15) + 10),
+  easeinquad: (u) => u * u, easeoutquad: (u) => 1 - (1 - u) * (1 - u), easeinoutquad: (u) => (u < 0.5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2),
+  easeincubic: (u) => u * u * u, easeoutcubic: (u) => 1 - Math.pow(1 - u, 3), easeinoutcubic: (u) => (u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2),
+  easeinquart: (u) => u ** 4, easeoutquart: (u) => 1 - Math.pow(1 - u, 4), easeinoutquart: (u) => (u < 0.5 ? 8 * u ** 4 : 1 - Math.pow(-2 * u + 2, 4) / 2),
+  easeinquint: (u) => u ** 5, easeoutquint: (u) => 1 - Math.pow(1 - u, 5), easeinoutquint: (u) => (u < 0.5 ? 16 * u ** 5 : 1 - Math.pow(-2 * u + 2, 5) / 2),
+  easeinsine: (u) => 1 - Math.cos((u * Math.PI) / 2), easeoutsine: (u) => Math.sin((u * Math.PI) / 2), easeinoutsine: (u) => -(Math.cos(Math.PI * u) - 1) / 2,
+  easeinexpo: (u) => (u === 0 ? 0 : Math.pow(2, 10 * u - 10)), easeoutexpo: (u) => (u === 1 ? 1 : 1 - Math.pow(2, -10 * u)),
+  easeinoutexpo: (u) => (u === 0 ? 0 : u === 1 ? 1 : u < 0.5 ? Math.pow(2, 20 * u - 10) / 2 : (2 - Math.pow(2, -20 * u + 10)) / 2),
+  easeincirc: (u) => 1 - Math.sqrt(1 - u * u), easeoutcirc: (u) => Math.sqrt(1 - Math.pow(u - 1, 2)),
+  easeinoutcirc: (u) => (u < 0.5 ? (1 - Math.sqrt(1 - Math.pow(2 * u, 2))) / 2 : (Math.sqrt(1 - Math.pow(-2 * u + 2, 2)) + 1) / 2),
+  easeinback: (u) => C3 * u * u * u - C1 * u * u, easeoutback: (u) => 1 + C3 * Math.pow(u - 1, 3) + C1 * Math.pow(u - 1, 2),
+  easeinoutback: (u) => (u < 0.5 ? (Math.pow(2 * u, 2) * ((C2 + 1) * 2 * u - C2)) / 2 : (Math.pow(2 * u - 2, 2) * ((C2 + 1) * (u * 2 - 2) + C2) + 2) / 2),
+};
+// CSS keywords and GSAP-style spellings
+const ALIASES = {
+  ease: [0.25, 0.1, 0.25, 1], easein: [0.42, 0, 1, 1], easeout: [0, 0, 0.58, 1], easeinout: [0.42, 0, 0.58, 1],
+  'ease-in': [0.42, 0, 1, 1], 'ease-out': [0, 0, 0.58, 1], 'ease-in-out': [0.42, 0, 0.58, 1],
+};
+const GSAP = { 'expo.out': 'easeoutexpo', 'expo.in': 'easeinexpo', 'expo.inout': 'easeinoutexpo', 'power1.out': 'easeoutquad', 'power2.out': 'easeoutcubic', 'power3.out': 'easeoutquart', 'power4.out': 'easeoutquint',
+  'power1.in': 'easeinquad', 'power2.in': 'easeincubic', 'power3.in': 'easeinquart', 'power4.in': 'easeinquint', 'power1.inout': 'easeinoutquad', 'power2.inout': 'easeinoutcubic', 'power3.inout': 'easeinoutquart', 'power4.inout': 'easeinoutquint', 'sine.out': 'easeoutsine', 'sine.in': 'easeinsine', 'sine.inout': 'easeinoutsine', none: 'linear' };
+
+/** Canonical lower-case key of an ease name ("named:easeOutCubic" -> "easeoutcubic"), or null when unknown. */
+function easeKey(name) {
+  if (typeof name !== 'string') return null;
+  let s = name.trim().toLowerCase().replace(/^named:/, '');
+  if (GSAP[s]) s = GSAP[s];
+  if (NAMED[s]) return s;
+  if (NAMED['ease' + s]) return 'ease' + s;
+  return null;
+}
+const EASE_NAMES = Object.keys(NAMED);
+
+/** An ease spec is a name, a CSS keyword, or [x1, y1, x2, y2]. Returns f(progress) -> value; throws on an unknown name. */
+function easeFn(spec) {
+  if (Array.isArray(spec)) return cubicBezier(spec[0], spec[1], spec[2], spec[3]);
+  const k = easeKey(spec);
+  if (k) return NAMED[k];
+  const a = typeof spec === 'string' ? ALIASES[spec.trim().toLowerCase()] : null;
+  if (a) return cubicBezier(a[0], a[1], a[2], a[3]);
+  throw new Error('unknown ease: ' + JSON.stringify(spec));
+}
+/** CSS timing-function text for an ease spec (bezier arrays and the CSS keywords; named Penner eases have no CSS form). */
+function cssEase(spec) {
+  if (Array.isArray(spec)) return `cubic-bezier(${spec.join(', ')})`;
+  const s = String(spec).trim().toLowerCase();
+  if (s === 'linear' || ALIASES[s]) return s === 'easein' ? 'ease-in' : s === 'easeout' ? 'ease-out' : s === 'easeinout' ? 'ease-in-out' : s;
+  return null;
+}
+
+/** Scroll-map shape: { shape, bezier? } -> S(u) with u in [0, 1] already clamped. */
+function shapeFn(map) {
+  if (Array.isArray(map.bezier)) return cubicBezier(map.bezier[0], map.bezier[1], map.bezier[2], map.bezier[3]);
+  return easeFn(map.shape);
+}
+
+/** Text written to the DOM: 'full' = shortest round-trip double, 'q3'/'q2' = toFixed(3/2), 'int' = rounded integer. */
+function fmt(x, mode = 'full') {
+  if (mode === 'q3') return x.toFixed(3);
+  if (mode === 'q2') return x.toFixed(2);
+  if (mode === 'int') return String(Math.round(x));
+  return String(x);
+}
+/** The number a reader gets back from the written text. */
+const written = (x, mode = 'full') => parseFloat(fmt(x, mode));
+
+// ------------------------------------------------------------------------------------------------ smoothing recurrences
+/** Per-frame exponential smoothing with a snap. */
+function emaStep(cur, target, alpha, snap) {
+  const d = target - cur;
+  return Math.abs(d) < snap || alpha >= 1 ? target : cur + alpha * d;
+}
+/** dt-aware damping: the same curve as emaStep with alpha = 1 - exp(-lambda dt). */
+function dampStep(cur, target, lambda, dtMs, snap) {
+  const d = target - cur;
+  return Math.abs(d) < snap ? target : cur + d * (1 - Math.exp(-lambda * dtMs * 0.001));
+}
+/** Asymmetric smoothing: alphaUp on a rising target, alphaDown on a falling one (alphaUp = 1 is a snap on rise). */
+function asymStep(cur, target, alphaUp, alphaDown, snap) {
+  return emaStep(cur, target, target > cur ? alphaUp : alphaDown, snap);
+}
+
+// ------------------------------------------------------------------------------------------------ mechanisms
+// Every mechanism: reset(f0) / event(ev, ctx) / frame(f) / values(out). `out` receives the internal quantities by
+// name; the engine turns them into channel values with the affine maps of the spec (channelValues below).
+// f = { k, T, dt, sy, vh, vw }; dt is the time since the previous frame in ms (0 on the first).
+
+class ScrollDriven {
+  constructor(spec) {
+    this.s = spec; this.S = shapeFn(spec.map); this.sm = spec.smoothing || { law: 'none' };
+    this.ease = this.sm.law === 'restarted' ? easeFn(this.sm.ease || 'expo.out') : null;
+    this.lag = Math.max(0, spec.map.lagFrames | 0);   // driver lag in frames (record: map.driverLagFrames); 0 = same frame
+  }
+  target(sy) {
+    const m = this.s.map; const u = clamp01((sy - m.s0) / (m.s1 - m.s0)); const p = this.S(u);
+    return m.flip ? 1 - p : p;
+  }
+  reset(f0) {
+    this.hist = [f0.sy];
+    const t = this.target(f0.sy);
+    this.cur = typeof this.s.init === 'number' ? this.s.init : t; this.tw = null; this.lastTarget = t; this.x = this.cur;
+  }
+  event() { return null; }
+  frame(f) {
+    // the driver reads the scroll offset `lag` frames late: the offset of frame k - lag (the first offset until then)
+    this.hist.push(f.sy); if (this.hist.length > this.lag + 1) this.hist.shift();
+    const t = this.target(this.hist[0]), sm = this.sm;
+    const snap = sm.snap ?? 0;
+    switch (sm.law) {
+      case 'ema': this.cur = emaStep(this.cur, t, sm.alpha, snap); break;
+      case 'dtdamp': this.cur = dampStep(this.cur, t, sm.lambda, f.dt, snap); break;
+      case 'asym': this.cur = asymStep(this.cur, t, sm.alphaUp, sm.alphaDown, snap); break;
+      case 'restarted': {
+        if (!this.tw || Math.abs(t - this.tw.to) > 1e-12) this.tw = { from: this.cur, to: t, t0: f.T };
+        const p = clamp01((f.T - this.tw.t0) / sm.L);
+        this.cur = lerp(this.tw.from, this.tw.to, this.ease(p));
+        break;
+      }
+      default: this.cur = t;
+    }
+    this.lastTarget = t; this.x = this.cur;
+  }
+  values(out) { out.x = this.x; out.target = this.lastTarget; }
+}
+
+class Hysteresis {
+  constructor(spec) { this.s = spec; }
+  reset(f0) { this.i = this.s.init ?? 0; this.step(f0.sy); }
+  step(sy) {
+    const { up, down, levels } = this.s;
+    while (this.i < levels - 1 && sy >= up[this.i]) this.i++;
+    while (this.i > 0 && sy <= down[this.i - 1]) this.i--;
+  }
+  event() { return null; }
+  frame(f) { this.step(f.sy); }
+  values(out) { out.i = this.i; }
+}
+
+// Wheel-driven smooth scroller (smooth-scroll-library-class 'damp' with an exact lerp -> lambda, or a legacy per-frame lerp).
+class WheelSmooth {
+  constructor(spec) { this.s = spec; }
+  reset(f0) { this.cur = f0.sy; this.target = f0.sy; this.running = false; }
+  event(ev) {
+    if (ev.type !== 'wheel') return null;
+    const t = clamp(0, this.target + ev.dy * (this.s.mult ?? 1), this.s.limit);
+    if (t === this.target) return { prevent: true, changed: false };
+    this.target = t; this.running = true;
+    return { prevent: true, changed: true };
+  }
+  frame(f) {
+    if (this.running) {
+      const s = this.s;
+      this.cur = s.law === 'dtdamp' ? this.cur + (this.target - this.cur) * (1 - Math.exp(-s.lambda * f.dt * 0.001)) : lerp(this.cur, this.target, s.lerp);
+      if (Math.round(this.cur) === Math.round(this.target)) { this.cur = this.target; this.running = false; }
+    }
+  }
+  values(out) { out.y = this.cur; out.scrollTo = Math.round(this.cur); }
+}
+
+// Wheel-latched tween: while a section is latched in view a wheel tick starts a 0 <-> 1 tween (retarget from the current
+// value), the wheel event is swallowed and the scroll offset is held. Armed state is computed from geometry (an
+// IntersectionObserver callback is not deterministic under the virtual clock).
+class WheelLatch {
+  constructor(spec) { this.s = spec; this.E = easeFn(spec.ease || 'easeOutCubic'); }
+  reset() { this.p = 0; this.tw = null; this.pinY = null; }
+  armed(sy, vh) { const top = this.s.section.top - sy, bottom = top + this.s.section.height, m = (this.s.armMarginVh ?? 2) * vh; return top <= vh + m && bottom >= -m; }
+  latched(sy, vh) {
+    const top = this.s.section.top - sy, bottom = top + this.s.section.height;
+    const vis = Math.min(bottom, vh) - Math.max(top, 0);
+    return vis >= (this.s.visMinVh ?? 0.45) * vh && bottom <= vh + (this.s.bottomSlack ?? 8);
+  }
+  value(T) { if (!this.tw) return this.p; const u = clamp01((T - this.tw.t0) / this.s.dur); return u >= 1 ? this.tw.to : lerp(this.tw.from, this.tw.to, this.E(u)); }
+  event(ev, ctx) {
+    if (ev.type !== 'wheel') return null;
+    if (!this.armed(ctx.sy, ctx.vh) || Math.abs(ev.dy) < 1) return { prevent: false, action: 'ignored' };
+    if (!this.latched(ctx.sy, ctx.vh)) return { prevent: false, action: 'not-latched' };
+    const target = ev.dy > 0 ? 1 : 0, cur = this.value(ctx.T);
+    if (!this.tw && cur === target) return { prevent: false, action: 'at-rest' };
+    if (this.tw && this.tw.to === target) return { prevent: true, action: 'swallowed' };
+    const action = this.tw ? 'retarget' : 'start';
+    this.tw = { from: cur, to: target, t0: ctx.T };
+    if (this.pinY == null) this.pinY = ctx.sy;
+    return { prevent: true, action };
+  }
+  frame(f) {
+    if (this.tw) {
+      const u = clamp01((f.T - this.tw.t0) / this.s.dur);
+      this.p = u >= 1 ? this.tw.to : lerp(this.tw.from, this.tw.to, this.E(u));
+      if (u >= 1) this.tw = null;
+    }
+    this.pinTo = this.tw ? this.pinY : null;
+    if (!this.tw) this.pinY = null;
+  }
+  values(out) { out.m = this.p; if (this.pinTo != null) out.scrollTo = this.pinTo; }
+}
+
+// Pointer drag + release inertia: x follows the pointer while dragging, then v *= friction per frame (law 'frame') or
+// friction^(60 dt) (law 'dt'); release velocity = pointer displacement over the last `velWindowMs` ms, in px per
+// nominal 60 Hz frame.
+class Inertia {
+  constructor(spec) { this.s = spec; }
+  reset() { this.x = this.s.x0 ?? 0; this.v = 0; this.mode = 'idle'; this.ptr = 0; this.grab = 0; this.samples = []; this.release = null; }
+  event(ev) {
+    const w = this.s.velWindowMs ?? 100, hz = this.s.nominalHz ?? 60;
+    if (ev.type === 'pointerdown') { this.mode = 'drag'; this.ptr = ev.x; this.grab = this.x - ev.x; this.samples = [{ t: ev.T, x: ev.x }]; this.v = 0; }
+    else if (ev.type === 'pointermove') { if (this.mode !== 'drag') return null; this.ptr = ev.x; this.samples.push({ t: ev.T, x: ev.x }); if (this.samples.length > 400) this.samples.shift(); }
+    else if (ev.type === 'pointerup') {
+      if (this.mode !== 'drag') return null;
+      const ws = this.samples.filter((s) => s.t >= ev.T - w); let vms = 0;
+      if (ws.length >= 2) { const a = ws[0], b = ws[ws.length - 1]; if (b.t > a.t) vms = (b.x - a.x) / (b.t - a.t); }
+      this.v = vms * (1000 / hz);
+      this.release = { T: ev.T, x: this.x, vms, vFrame: this.v };
+      this.mode = Math.abs(this.v) < this.s.stopEps ? 'done' : 'coast';
+      if (this.mode === 'done') this.v = 0;
+    }
+    return null;
+  }
+  frame(f) {
+    if (this.mode === 'drag') this.x = this.ptr + this.grab;
+    else if (this.mode === 'coast') {
+      const sc = this.s.law === 'dt' ? (60 * f.dt) / 1000 : 1;
+      this.v *= this.s.law === 'dt' ? Math.pow(this.s.friction, sc) : this.s.friction;
+      if (Math.abs(this.v) < this.s.stopEps) { this.v = 0; this.mode = 'done'; } else this.x += this.v * sc;
+    }
+  }
+  values(out) { out.x = this.x; }
+}
+
+// FLIP: First-Last-Invert-Play on a two-state layout. The inverse is translate(dx, dy) scale(sx, sy) about the box's top-left corner;
+// k = 1 at the inverted state, 0 at rest. A trigger while it runs restarts from the current visual rect.
+const rectOf = (L, t) => ({ x: L.x + t.tx, y: L.y + t.ty, w: L.w * t.sx, h: L.h * t.sy });   // transform-origin 0 0
+const flipDelta = (first, last) => ({ dx: first.x - last.x, dy: first.y - last.y, sx: first.w / last.w, sy: first.h / last.h });
+const flipInverse = (d, k) => ({ tx: d.dx * k, ty: d.dy * k, sx: 1 + (d.sx - 1) * k, sy: 1 + (d.sy - 1) * k });
+class Flip {
+  constructor(spec) { this.s = spec; this.E = easeFn(spec.ease); }
+  reset() { this.state = 0; this.seg = null; this.vis = { tx: 0, ty: 0, sx: 1, sy: 1 }; this.pendingStart = null; this.log = []; }
+  layout() { return this.state ? this.s.B : this.s.A; }
+  event(ev, ctx) {
+    if (ev.type !== 'trigger') return null;
+    const first = rectOf(this.layout(), this.vis);
+    this.state ^= 1;
+    const d = flipDelta(first, this.layout());
+    this.seg = { d, t0: null, from: 1 };
+    this.vis = flipInverse(d, 1);
+    this.log.push({ T: ctx.T, d });
+    return { action: 'trigger' };
+  }
+  frame(f) {
+    if (!this.seg) return;
+    if (this.seg.t0 == null) this.seg.t0 = f.T;    // the play starts on the first frame after the trigger (WAAPI / rAF alike)
+    const p = (f.T - this.seg.t0) / this.s.D;
+    if (p >= 1) { this.vis = { tx: 0, ty: 0, sx: 1, sy: 1 }; this.seg = null; return; }
+    this.vis = flipInverse(this.seg.d, 1 - this.E(p < 0 ? 0 : p));
+  }
+  values(out) { out.tx = this.vis.tx; out.ty = this.vis.ty; out.sx = this.vis.sx; out.sy = this.vis.sy; out.state = this.state; }
+}
+
+// View Transition: named groups morph from the old to the new layout box, each with its own duration and timing function.
+// Numeric expectation of the ::view-transition-group box at time since the animation start (the page uses the real API).
+function vtGroupAt(g, ms) {
+  const p = clamp01((ms - (g.delay ?? 0)) / g.d), e = easeFn(g.ease)(p);
+  return { x: lerp(g.A.x, g.B.x, e), y: lerp(g.A.y, g.B.y, e), w: lerp(g.A.w, g.B.w, e), h: lerp(g.A.h, g.B.h, e), p, e };
+}
+class ViewTransition {
+  constructor(spec) { this.s = spec; }
+  reset() { this.fired = null; this.t0 = null; }
+  event(ev, ctx) { if (ev.type === 'trigger' && this.fired == null) { this.fired = ctx.T; return { action: 'trigger' }; } return null; }
+  frame(f) { if (this.fired != null && this.t0 == null && f.T > this.fired) this.t0 = f.T; }
+  values(out) {
+    out.started = this.t0 != null ? 1 : 0;
+    out.groups = {};
+  }
+}
+
+const KINDS = {
+  'scroll-driven': ScrollDriven, hysteresis: Hysteresis, 'wheel-smooth': WheelSmooth, 'wheel-latch': WheelLatch,
+  inertia: Inertia, flip: Flip, 'view-transition': ViewTransition,
+};
+const MECHANISM_KINDS = Object.keys(KINDS);
+
+// ------------------------------------------------------------------------------------------------ channels
+/**
+ * Channel values of one mechanism from its internal quantities. Channel = { name, kind: 'var'|'ren', prop, of, k0, k1,
+ * via?, write? }: value = k0 + k1 * q, q = the internal quantity `of` (var channels) or the WRITTEN value of the var
+ * channel `via` (ren channels that the stylesheet of the source maps from a written custom property).
+ */
+function channelValues(mech, q) {
+  const res = {}; const writtenBy = [];
+  mech.channels.forEach((c, i) => {
+    if (c.via != null) return;
+    const v = c.k0 + c.k1 * q[c.of];
+    const w = c.kind === 'var' ? written(v, c.write || 'full') : v;
+    res[c.name] = w; writtenBy[i] = w;
+  });
+  mech.channels.forEach((c) => { if (c.via != null) res[c.name] = c.k0 + c.k1 * writtenBy[c.via]; });
+  return res;
+}
+
+// ------------------------------------------------------------------------------------------------ engine
+/**
+ * The deterministic engine: one instance per page, owns the mechanisms. `setup` reads the spec; `begin(f0)` resets every
+ * mechanism to its initial state from the first frame's inputs; `deliver(ev, ctx)` hands an input to the mechanisms;
+ * `frame(f)` advances; `snapshot()` returns { 'subject|channel': value } plus requests (scroll positions to set).
+ */
+class Engine {
+  constructor(spec) {
+    this.spec = spec;
+    this.vh = spec.viewport.height; this.vw = spec.viewport.width;
+    this.mechs = spec.mechanisms.map((m) => ({ spec: m, impl: new KINDS[m.kind](m) }));
+  }
+  begin(f0) {
+    this.prevT = null; this.k = 0; this.lastSy = f0.sy;
+    for (const m of this.mechs) m.impl.reset({ ...f0, vh: this.vh, vw: this.vw });
+  }
+  deliver(ev0, ctx) {
+    const ev = ev0.T == null ? { ...ev0, T: ctx.T } : ev0;
+    const res = [];
+    for (const m of this.mechs) { const r = m.impl.event(ev, { ...ctx, vh: this.vh, vw: this.vw }); if (r) res.push({ id: m.spec.id, ...r }); }
+    return res;
+  }
+  frame(f) {
+    const dt = this.prevT == null ? 0 : f.T - this.prevT; this.prevT = f.T; this.k = f.k; this.lastSy = f.sy;
+    const ff = { ...f, dt, vh: this.vh, vw: this.vw };
+    for (const m of this.mechs) m.impl.frame(ff);
+  }
+  snapshot() {
+    const channels = {}; const aux = {}; let scrollTo = null;
+    for (const m of this.mechs) {
+      const q = {}; m.impl.values(q);
+      const cv = channelValues(m.spec, q);
+      for (const [name, v] of Object.entries(cv)) channels[`${m.spec.subject}|${name}`] = v;
+      aux[m.spec.id] = q;
+      if (q.scrollTo != null) scrollTo = q.scrollTo;
+    }
+    return { channels, aux, scrollTo };
+  }
+}
+
+/** Frame k (1-based) of an input description: { frames?: [{k, T, sy}], scroll?: [{T, sy}], sy0? } and a nominal period. */
+function frameAt(input, frameMs, k) {
+  if (input && input.frames && input.frames.length) {
+    const f = input.frames[k - (input.frames[0].k ?? 1)];
+    if (f && f.k === k) return { k, T: f.T, sy: f.sy };
+    return null;
+  }
+  const T = round6(k * frameMs); let sy = input && input.sy0 != null ? input.sy0 : 0;
+  const ev = input && input.scroll;
+  if (ev) for (let i = 0; i < ev.length && ev[i].T < T; i++) sy = ev[i].sy;
+  return { k, T, sy };
+}
+
+/** Events (wheel / pointer / trigger) of an input description, sorted by time (stable). */
+function inputEvents(input) {
+  const out = [];
+  if (!input) return out;
+  for (const w of input.wheel || []) out.push({ type: 'wheel', T: w.T, dy: w.dy });
+  for (const p of input.pointer || []) out.push({ type: 'pointer' + p.type, T: p.T, x: p.x });
+  for (const t of input.triggers || []) out.push({ type: 'trigger', T: t.T });
+  return out.map((e, i) => ({ e, i })).sort((a, b) => a.e.T - b.e.T || a.i - b.i).map((x) => x.e);
+}
+
+/**
+ * Deterministic replay of frames 1..K of a spec under an input description. Returns the per-frame snapshots when
+ * `collect` is true. The page's seek(t) and the Node simulator are both this function.
+ */
+class Replayer {
+  constructor(spec, input) {
+    this.spec = spec; this.input = input || {}; this.eng = new Engine(spec);
+    this.frameMs = spec.frameMs; this.events = inputEvents(this.input);
+    this.rewind();
+  }
+  rewind() { this.k = 0; this.ei = 0; this.started = false; this.last = null; this.eventLog = []; }
+  /** Advance to frame K (>= current); K = 0 is the initial state. Returns the snapshot after frame K (or every frame's when `collect`). */
+  to(K, collect) {
+    const out = [];
+    if (!this.started) { const f1 = frameAt(this.input, this.frameMs, 1); if (f1) { this.eng.begin(f1); this.started = true; } }
+    while (this.started && this.k < K) {
+      const k = this.k + 1; const f = frameAt(this.input, this.frameMs, k);
+      if (!f) break;
+      while (this.ei < this.events.length && this.events[this.ei].T < f.T) {
+        const ev = this.events[this.ei++];
+        const res = this.eng.deliver(ev, { T: ev.T, sy: this.eng.lastSy });
+        if (res.length) this.eventLog.push({ ...ev, k: this.k, res });
+      }
+      this.eng.frame(f); this.k = k;
+      if (collect) out.push({ k, T: f.T, sy: f.sy, ...this.eng.snapshot() });
+    }
+    this.last = this.started ? { k: this.k, ...this.eng.snapshot() } : null;
+    return collect ? out : this.last;
+  }
+}
+
+/** Number of whole frames whose time is <= t under the input's frame list or the nominal period. */
+function framesUpTo(input, frameMs, t) {
+  if (input && input.frames && input.frames.length) {
+    let n = 0; for (const f of input.frames) { if (f.T <= t + 1e-9) n++; else break; } return n;
+  }
+  return Math.max(0, Math.floor(t / frameMs + 1e-9));
+}
+
+
+(function () {
+  var SPEC = JSON.parse(document.getElementById('wr-spec').textContent);
+  var eng = new Engine(SPEC);
+  var els = {}; SPEC.subjects.forEach(function (s) { els[s.id] = document.getElementById(s.id); });
+  var NATIVE = {}; SPEC.mechanisms.forEach(function (m) { if (m.kind === 'flip' || m.kind === 'view-transition') NATIVE[m.subject] = true;
+    if (m.kind === 'view-transition') m.groups.forEach(function (g) { NATIVE[g.subject] = true; }); });
+  var mode = 'live', k = 0, rep = null, repKey = '', anim = null, rafTw = 0, vtActive = null;
+  var sy0 = function () { return window.scrollY || window.pageYOffset || 0; };
+
+  function apply(snap, includeNative) {
+    var per = {};
+    Object.keys(snap.channels).forEach(function (key) {
+      var i = key.indexOf('|'), sid = key.slice(0, i), name = key.slice(i + 1), el = els[sid], v = snap.channels[key];
+      if (!el || (NATIVE[sid] && !includeNative)) return;
+      if (name.indexOf('drv:') === 0) el.style.setProperty(name.slice(4), String(v));
+      else (per[sid] = per[sid] || {})[name.slice(4)] = v;
+    });
+    Object.keys(per).forEach(function (sid) {
+      var p = per[sid], el = els[sid], t = [];
+      if (p.tx != null || p.ty != null) t.push('translate(' + (p.tx || 0) + 'px, ' + (p.ty || 0) + 'px)');
+      if (p.sx != null || p.sy != null) t.push('scale(' + (p.sx == null ? 1 : p.sx) + ', ' + (p.sy == null ? 1 : p.sy) + ')');
+      if (t.length) el.style.transform = t.join(' ');
+      if (p.opacity != null) el.style.opacity = String(p.opacity);
+    });
+  }
+
+  // ---- live mode: the real scroll offset drives the frame, real events drive the inputs
+  eng.begin({ k: 0, T: 0, sy: sy0() });
+  apply(eng.snapshot(), false);
+  function tick(ts) {
+    requestAnimationFrame(tick);
+    if (mode !== 'live') return;
+    k++;
+    eng.frame({ k: k, T: ts, sy: sy0() });
+    var s = eng.snapshot(); apply(s, false);
+    if (s.scrollTo != null && Math.round(sy0()) !== s.scrollTo) window.scrollTo(0, s.scrollTo);
+  }
+  requestAnimationFrame(tick);
+  window.addEventListener('wheel', function (e) {
+    if (mode !== 'live') return;
+    var r = eng.deliver({ type: 'wheel', dy: e.deltaY }, { T: performance.now(), sy: sy0() });
+    for (var i = 0; i < r.length; i++) if (r[i].prevent) { e.preventDefault(); break; }
+  }, { passive: false });
+  ['down', 'move', 'up'].forEach(function (n) {
+    window.addEventListener('pointer' + n, function (e) { if (mode === 'live') eng.deliver({ type: 'pointer' + n, x: e.clientX }, { T: performance.now(), sy: sy0() }); });
+  });
+
+  // ---- triggered mechanisms in live mode use the real browser machinery (WAAPI / View Transitions)
+  function flipLive(m) {
+    var el = els[m.subject], L = SPEC.subjects.filter(function (s) { return s.id === m.subject; })[0];
+    var first = el.getBoundingClientRect();
+    if (anim) { anim.cancel(); anim = null; } if (rafTw) { cancelAnimationFrame(rafTw); rafTw = 0; } el.style.transform = '';
+    el.classList.toggle('s');
+    var last = el.getBoundingClientRect();
+    var d = { dx: first.left - last.left, dy: first.top - last.top, sx: first.width / last.width, sy: first.height / last.height };
+    var inv = function (kk) { return 'translate(' + d.dx * kk + 'px, ' + d.dy * kk + 'px) scale(' + (1 + (d.sx - 1) * kk) + ', ' + (1 + (d.sy - 1) * kk) + ')'; };
+    var css = cssEase(m.ease);
+    if (m.impl === 'waapi' && css) anim = el.animate([{ transform: inv(1) }, { transform: 'none' }], { duration: m.D, easing: css, fill: 'both' });
+    else {
+      var E = easeFn(m.ease), t0 = null; el.style.transform = inv(1);
+      var loop = function (now) { rafTw = 0; if (t0 == null) t0 = now; var p = (now - t0) / m.D; if (p >= 1) { el.style.transform = ''; return; } el.style.transform = inv(1 - E(p < 0 ? 0 : p)); rafTw = requestAnimationFrame(loop); };
+      rafTw = requestAnimationFrame(loop);
+    }
+  }
+  function vtToggle(m, on) { m.groups.forEach(function (g) { els[g.subject].classList[on ? 'add' : 'remove']('s'); }); }
+  function vtLive(m) {
+    if (!document.startViewTransition) { vtToggle(m, !els[m.groups[0].subject].classList.contains('s')); return null; }
+    var on = !els[m.groups[0].subject].classList.contains('s');
+    vtActive = document.startViewTransition(function () { vtToggle(m, on); });
+    return vtActive;
+  }
+  function go() {
+    eng.deliver({ type: 'trigger' }, { T: performance.now(), sy: sy0() });
+    var out = null;
+    SPEC.mechanisms.forEach(function (m) { if (m.kind === 'flip') flipLive(m); else if (m.kind === 'view-transition') out = vtLive(m); });
+    return out;
+  }
+
+  // ---- seek mode: deterministic replay of the spec's input on the frame grid (the same Replayer the simulator uses)
+  async function seek(t, opt) {
+    opt = opt || {};
+    var input = opt.input || SPEC.input || {};
+    mode = 'seek';
+    if (anim) { anim.cancel(); anim = null; } if (rafTw) { cancelAnimationFrame(rafTw); rafTw = 0; }
+    if (vtActive) { try { vtActive.skipTransition(); } catch (e) {} vtActive = null; }
+    var key = JSON.stringify(input);
+    var K = framesUpTo(input, SPEC.frameMs, t);
+    if (!rep || key !== repKey || K < rep.k) { rep = new Replayer(SPEC, input); repKey = key; }
+    var snap = rep.to(K);
+    SPEC.mechanisms.forEach(function (m) {
+      if (m.kind === 'flip') { var q = snap.aux[m.id]; els[m.subject].classList[q.state ? 'add' : 'remove']('s'); }
+      if (m.kind === 'view-transition') vtToggle(m, false);
+    });
+    apply(snap, true);
+    var y = snap.scrollTo != null ? snap.scrollTo : (K > 0 ? frameAt(input, SPEC.frameMs, K).sy : sy0());
+    if (opt.scroll !== false && Math.round(sy0()) !== Math.round(y)) window.scrollTo(0, y);
+    var vt = null;
+    for (var i = 0; i < SPEC.mechanisms.length; i++) {
+      var m = SPEC.mechanisms[i];
+      if (m.kind !== 'view-transition') continue;
+      var trig = (input.triggers && input.triggers.length ? input.triggers[0].T : (m.triggers && m.triggers.length ? m.triggers[0] : null));
+      if (trig == null) continue;
+      var start = trig + (m.latencyFrames == null ? 2 : m.latencyFrames) * SPEC.frameMs;
+      if (t < trig) continue;
+      var tr = document.startViewTransition ? document.startViewTransition(function () { vtToggle(m, true); }) : null;
+      if (!tr) { vtToggle(m, true); continue; }
+      vtActive = tr; await tr.ready;
+      var anims = document.getAnimations().filter(function (a) { return a.effect && a.effect.pseudoElement && /view-transition/.test(a.effect.pseudoElement); });
+      anims.forEach(function (a) { a.pause(); a.currentTime = Math.max(0, t - start); });
+      vt = { start: start, animations: anims.length };
+    }
+    return { t: t, k: K, T: K > 0 ? frameAt(input, SPEC.frameMs, K).T : 0, channels: snap.channels, aux: snap.aux, scrollTo: snap.scrollTo, vt: vt };
+  }
+  function live() {
+    mode = 'live'; eng = new Engine(SPEC); eng.begin({ k: 0, T: 0, sy: sy0() }); k = 0;
+    Object.keys(els).forEach(function (id) { els[id].style.transform = ''; els[id].style.opacity = ''; });
+    apply(eng.snapshot(), false);
+  }
+  function readDom() {
+    var o = {};
+    SPEC.mechanisms.forEach(function (m) {
+      m.channels.forEach(function (c) {
+        var el = els[m.subject], cs = getComputedStyle(el), key = m.subject + '|' + c.name;
+        if (c.kind === 'var') o[key] = parseFloat(el.style.getPropertyValue(c.prop));
+        else if (c.prop === 'opacity') o[key] = +cs.opacity;
+        else {
+          var mt = /matrix\(([^)]+)\)/.exec(cs.transform), v = mt ? mt[1].split(',').map(parseFloat) : [1, 0, 0, 1, 0, 0];
+          o[key] = c.prop === 'tx' ? v[4] : c.prop === 'ty' ? v[5] : c.prop === 'sx' ? Math.hypot(v[0], v[1]) : Math.hypot(v[2], v[3]);
+        }
+      });
+    });
+    return o;
+  }
+  window.specimen = {
+    schema: SPEC.schema, id: SPEC.id, spec: SPEC, ready: true, frameMs: SPEC.frameMs,
+    get mode() { return mode; }, get frame() { return k; },
+    seek: seek, live: live, go: go, read: function () { return eng.snapshot(); }, readDom: readDom,
+  };
+  window.seek = seek;
+  // script(input): schedule the pointer events and triggers of an input description at their absolute page times
+  var EPS = 0.001;   // an event at T lands just after the frame whose time is T (hx: after frame k, before frame k+1)
+  function script(input, base) {
+    input = input || SPEC.input || {}; base = base == null ? 0 : base;
+    (input.pointer || []).forEach(function (p) {
+      setTimeout(function () { window.dispatchEvent(new PointerEvent('pointer' + p.type, { clientX: p.x, clientY: 100, bubbles: true })); }, Math.max(0, base + p.T + EPS - performance.now()));
+    });
+    (input.triggers || []).forEach(function (t) { setTimeout(go, Math.max(0, base + t.T + EPS - performance.now())); });
+  }
+  window.specimen.script = script;
+  if (/(^|[#&])auto(&|$)/.test(location.hash)) script(SPEC.input, 0);
+})();
+
+</script>
+</body></html>

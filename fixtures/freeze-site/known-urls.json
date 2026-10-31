@@ -1,0 +1,13 @@
+{
+  "_doc": "Ground truth for the code-derived URL check: every URL app.js/style.css can build. 'status' is what the fixture server answers. 'templateUnknown' lists templates a static pass must NOT guess.",
+  "urls": [
+    { "path": "/img/alpha-320.svg", "status": 200 }, { "path": "/img/alpha-960.svg", "status": 200 },
+    { "path": "/img/beta-320.svg", "status": 200 },  { "path": "/img/beta-960.svg", "status": 200 },
+    { "path": "/img/gamma-320.svg", "status": 200 }, { "path": "/img/gamma-960.svg", "status": 200 },
+    { "path": "/img/omega-320.svg", "status": 200 }, { "path": "/img/omega-960.svg", "status": 404 },
+    { "path": "/img/hero-day.svg", "status": 200 },  { "path": "/img/hero-night.svg", "status": 200 },
+    { "path": "/img/hero-wide.svg", "status": 200 },
+    { "path": "/chunks/tab-a.js", "status": 200 },   { "path": "/chunks/tab-b.js", "status": 200 }, { "path": "/chunks/tab-c.js", "status": 200 }
+  ],
+  "templateUnknown": ["/api/user/${state.userId}/avatar.png", "${TEL}/pixel.gif?v=1"]
+}

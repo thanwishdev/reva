@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>look fixture</title>
+<!-- Own fixture for `reva look` tests (no site content). Known motions, by construction:
+  #hero    CSS transition on load: transform 600 ms cubic-bezier(0.22, 1, 0.36, 1), translateY(40px) -> 0, class set at 300 ms
+  .word x8 rAF tween on load: easeOutCubic 500 ms on translateY 20 -> 0 and opacity 0 -> 1, constant stagger 60 ms, from 200 ms
+  #btn     CSS transition on hover: transform 150 ms ease, scale 1 -> 1.1
+  #box     click: analytic spring on translateX 0 -> 200 px, omega 12 rad/s, zeta 0.4 (rAF timestamps)
+  #track   scroll-linked: translateX = -(scrollY - 400) for scrollY in [400, 1200], clamped (scrubbed)
+-->
+<style>
+  html, body { margin: 0; font: 16px/1.4 system-ui, sans-serif; }
+  body { height: 3200px; }
+  #hero { position: absolute; left: 80px; top: 60px; width: 600px; height: 120px; background: #335; transform: translateY(40px); transition: transform 600ms cubic-bezier(0.22, 1, 0.36, 1); }
+  #hero.in { transform: translateY(0); }
+  .words { position: absolute; left: 80px; top: 220px; display: flex; gap: 12px; }
+  .word { display: inline-block; width: 70px; height: 28px; background: #a63; opacity: 0; transform: translateY(20px); }
+  #btn { position: absolute; left: 80px; top: 300px; width: 160px; height: 48px; background: #263; transition: transform 150ms ease; }
+  #btn:hover { transform: scale(1.1); }
+  #box { position: absolute; left: 320px; top: 300px; width: 80px; height: 80px; background: #622; cursor: pointer; }
+  #track { position: fixed; left: 0; top: 500px; width: 2400px; height: 80px; background: linear-gradient(90deg, #446, #a96); }
+</style>
+</head>
+<body>
+<div id="hero"></div>
+<div class="words"><span class="word"></span><span class="word"></span><span class="word"></span><span class="word"></span><span class="word"></span><span class="word"></span><span class="word"></span><span class="word"></span></div>
+<div id="btn"></div>
+<div id="box"></div>
+<div id="track"></div>
+<script>
+  const easeOutCubic = (p) => 1 - Math.pow(1 - p, 3);
+  const t0 = performance.now();
+  setTimeout(() => document.getElementById('hero').classList.add('in'), 300);
+  const words = [...document.querySelectorAll('.word')];
+  function words_tick(now) {
+    let busy = false;
+    words.forEach((w, i) => {
+      const start = t0 + 200 + i * 60; const p = Math.min(1, Math.max(0, (now - start) / 500));
+      if (p < 1) busy = true;
+      const e = easeOutCubic(p);
+      w.style.transform = `translateY(${20 * (1 - e)}px)`; w.style.opacity = String(e);
+    });
+    if (busy) requestAnimationFrame(words_tick);
+  }
+  requestAnimationFrame(words_tick);
+  // analytic underdamped spring, x(0) = 0, v(0) = 0, target 200
+  const box = document.getElementById('box');
+  box.addEventListener('click', () => {
+    const W = 12, Z = 0.4, WD = W * Math.sqrt(1 - Z * Z); let s = null;
+    const tick = (now) => {
+      if (s == null) s = now; const t = (now - s) / 1000;
+      const x = 200 * (1 - Math.exp(-Z * W * t) * (Math.cos(WD * t) + (Z * W / WD) * Math.sin(WD * t)));
+      box.style.transform = `translateX(${x}px)`;
+      if (t < 3) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  });
+  const track = document.getElementById('track');
+  addEventListener('scroll', () => { const y = Math.min(1200, Math.max(400, scrollY)); track.style.transform = `translateX(${-(y - 400)}px)`; }, { passive: true });
+</script>
+</body>
+</html>

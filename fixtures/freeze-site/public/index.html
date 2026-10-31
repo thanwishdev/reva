@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Freeze fixture</title>
+<link rel="stylesheet" href="/style.css">
+<!-- T2: third-party telemetry. The freeze blocks it; recorded as status -1 it would keep `load` from ever firing in a naive replay. -->
+<script async src="{{TELEMETRY}}/collect.js"></script>
+</head>
+<body>
+<header id="top">
+  <h1>Freeze fixture</h1>
+  <p id="clock" aria-label="clock">0</p>
+  <p id="consent">consent: pending</p>
+  <p id="flag">flag: none</p>
+</header>
+<main>
+  <section class="spacer"><p>Scroll down. The gallery below is built by JavaScript when it comes into view.</p></section>
+  <section id="gallery" aria-label="gallery"></section>
+  <section id="tabs-wrap">
+    <nav id="tabs"><button data-tab="a">A</button><button data-tab="b">B</button><button data-tab="c">C</button></nav>
+    <p id="tab-body">no tab loaded</p>
+  </section>
+  <section class="spacer"><p>End of page.</p></section>
+</main>
+<script src="/app.js" defer></script>
+</body>
+</html>

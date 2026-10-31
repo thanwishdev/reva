@@ -1,0 +1,68 @@
+{
+ "schema": "reva.labtrace/0",
+ "route": "m03",
+ "variant": "reversal",
+ "note": "Down and up with reversals inside both ranges.",
+ "actions": [
+  {
+   "hold": 500
+  },
+  {
+   "scrollTo": 700
+  },
+  {
+   "hold": 300
+  },
+  {
+   "scrollTo": 900
+  },
+  {
+   "hold": 300
+  },
+  {
+   "scrollTo": 750
+  },
+  {
+   "hold": 300
+  },
+  {
+   "scrollTo": 1000
+  },
+  {
+   "hold": 300
+  },
+  {
+   "scrollTo": 2200
+  },
+  {
+   "hold": 300
+  },
+  {
+   "scrollTo": 2050
+  },
+  {
+   "hold": 300
+  },
+  {
+   "scrollTo": 2350
+  },
+  {
+   "hold": 300
+  },
+  {
+   "scrollTo": 2150
+  },
+  {
+   "hold": 300
+  },
+  {
+   "scrollTo": 1000
+  },
+  {
+   "hold": 300
+  },
+  {
+   "hold": 300
+  }
+ ]
+}

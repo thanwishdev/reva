@@ -1,0 +1,74 @@
+{
+ "schema": "reva.labtrace/0",
+ "route": "m04",
+ "variant": "reversal",
+ "note": "Jumps through the tab range with reversals around the hysteresis edges.",
+ "actions": [
+  {
+   "hold": 500
+  },
+  {
+   "scrollTo": 1500
+  },
+  {
+   "hold": 200
+  },
+  {
+   "scrollTo": 1700
+  },
+  {
+   "hold": 200
+  },
+  {
+   "scrollTo": 1850
+  },
+  {
+   "hold": 200
+  },
+  {
+   "scrollTo": 1700
+  },
+  {
+   "hold": 200
+  },
+  {
+   "scrollTo": 1500
+  },
+  {
+   "hold": 200
+  },
+  {
+   "scrollTo": 1900
+  },
+  {
+   "hold": 200
+  },
+  {
+   "scrollTo": 2150
+  },
+  {
+   "hold": 200
+  },
+  {
+   "scrollTo": 1950
+  },
+  {
+   "hold": 200
+  },
+  {
+   "scrollTo": 2300
+  },
+  {
+   "hold": 200
+  },
+  {
+   "scrollTo": 2200
+  },
+  {
+   "hold": 200
+  },
+  {
+   "hold": 600
+  }
+ ]
+}

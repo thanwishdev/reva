@@ -1,0 +1,96 @@
+{
+ "schema": "reva.specimen-source/0",
+ "source": {
+  "kind": "labtruth",
+  "file": "lab-scroll/truth/m09.json",
+  "variant": "speed",
+  "digest": "fda4c23acd51f673",
+  "note": "Fixture Lab truth record (own fixture, public-safe)"
+ },
+ "items": [
+  {
+   "scored": true,
+   "classScored": true,
+   "target": "#c|drv:--y",
+   "role": "driver",
+   "class": "first-order smoothing",
+   "family": "damp",
+   "law": "dt-aware",
+   "attribution": "wheel",
+   "params": {
+    "lerp": {
+     "value": 0.1,
+     "unit": "library option"
+    },
+    "lambda": {
+     "value": 6,
+     "unit": "1/s",
+     "note": "lerp * 60"
+    },
+    "done_rule": "round(value) == round(target)"
+   },
+   "derived": {
+    "tau_ms": {
+     "value": 166.66666666666666,
+     "unit": "ms",
+     "note": "1 / (60 lerp), independent of the frame period"
+    },
+    "alpha_per_frame_at_T": {
+     "value": 0.048770575499285984,
+     "unit": "per frame",
+     "at_dt_ms": 8.333333333333334
+    },
+    "alpha_on_stall_frame": null,
+    "settle_tails": [
+     {
+      "k0": 68,
+      "k1": 203,
+      "frames": 135
+     },
+     {
+      "k0": 69,
+      "k1": 203,
+      "frames": 134
+     },
+     {
+      "k0": 70,
+      "k1": 203,
+      "frames": 133
+     },
+     {
+      "k0": 71,
+      "k1": 203,
+      "frames": 132
+     },
+     {
+      "k0": 72,
+      "k1": 203,
+      "frames": 131
+     },
+     {
+      "k0": 73,
+      "k1": 203,
+      "frames": 130
+     }
+    ]
+   }
+  },
+  {
+   "scored": false,
+   "classScored": true,
+   "target": "#c|ren:tx",
+   "role": "rendered-mirror",
+   "mirrorOf": "#c|drv:--y",
+   "class": "first-order smoothing",
+   "family": "damp",
+   "attribution": "wheel",
+   "law": "dt-aware",
+   "params": {
+    "lerp": {
+     "value": 0.1,
+     "unit": "library option"
+    }
+   }
+  }
+ ]
+}

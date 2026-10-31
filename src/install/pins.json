@@ -1,0 +1,19 @@
+{
+  "_comment": "Pinned headless shell (Chrome for Testing). sha256 is the hash of the downloaded zip; `node scripts/pin-browser.js --write` fills it. An entry without sha256 is never installed.",
+  "version": "147.0.7727.57",
+  "urlBase": "https://storage.googleapis.com/chrome-for-testing-public",
+  "platforms": {
+    "darwin-arm64": {
+      "dir": "mac_arm",
+      "zip": "mac-arm64",
+      "sha256": "afbd0bbe8d5fc0d433d9b1b79e3c6120a7696e601d55bf0d53d81725f1e80bb5",
+      "bytes": 96295339
+    },
+    "linux-x64": {
+      "dir": "linux",
+      "zip": "linux64",
+      "sha256": "39dd9c0f6f84605b351c7dd448ec97440c35609cbaef17e0cb0561945a233a26",
+      "bytes": 117730216
+    }
+  }
+}

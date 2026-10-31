@@ -1,0 +1,56 @@
+{
+ "schema": "reva.labtrace/0",
+ "route": "m09",
+ "variant": "reversal",
+ "note": "Two deltas down, a larger one up before the first has settled, then a wheel up that overshoots the top (target clamps to 0) and one more at the top.",
+ "actions": [
+  {
+   "hold": 500
+  },
+  {
+   "wheel": {
+    "dy": 160,
+    "n": 1
+   }
+  },
+  {
+   "hold": 300
+  },
+  {
+   "wheel": {
+    "dy": 160,
+    "n": 1
+   }
+  },
+  {
+   "hold": 200
+  },
+  {
+   "wheel": {
+    "dy": -200,
+    "n": 1
+   }
+  },
+  {
+   "hold": 1800
+  },
+  {
+   "wheel": {
+    "dy": -400,
+    "n": 1
+   }
+  },
+  {
+   "hold": 1500
+  },
+  {
+   "wheel": {
+    "dy": -100,
+    "n": 1
+   }
+  },
+  {
+   "hold": 300
+  }
+ ]
+}

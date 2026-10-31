@@ -1,0 +1,35 @@
+{
+ "id": "p400",
+ "route": "m07",
+ "note": "retarget every 400 ms: levels 1, 0, 1, 0, 1, 0 at 500 .. 2500 ms; each retarget lands mid-motion",
+ "page": {
+  "sched": "p400"
+ },
+ "viewport": {
+  "width": 1280,
+  "height": 800
+ },
+ "seed": 1,
+ "scene": {
+  "selectors": [
+   ".b0"
+  ]
+ },
+ "boot": {
+  "until": "document.readyState === 'complete'"
+ },
+ "actions": [
+  {
+   "eval": "window.dispatchEvent(new Event('go'))"
+  },
+  {
+   "mark": "go"
+  },
+  {
+   "hold": 6200
+  },
+  {
+   "mark": "end"
+  }
+ ]
+}

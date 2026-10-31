@@ -1,0 +1,53 @@
+{
+ "schema": "reva.labtrace/0",
+ "route": "m05",
+ "variant": "retarget",
+ "note": "Wheel down, the opposite wheel 200 ms later (retarget from the current value), down again, then a wheel at rest that the page lets through.",
+ "actions": [
+  {
+   "hold": 500
+  },
+  {
+   "scrollTo": 3100
+  },
+  {
+   "hold": 500
+  },
+  {
+   "wheel": {
+    "dy": 120,
+    "n": 1
+   }
+  },
+  {
+   "hold": 200
+  },
+  {
+   "wheel": {
+    "dy": -120,
+    "n": 1
+   }
+  },
+  {
+   "hold": 800
+  },
+  {
+   "wheel": {
+    "dy": 120,
+    "n": 1
+   }
+  },
+  {
+   "hold": 800
+  },
+  {
+   "wheel": {
+    "dy": 120,
+    "n": 1
+   }
+  },
+  {
+   "hold": 300
+  }
+ ]
+}

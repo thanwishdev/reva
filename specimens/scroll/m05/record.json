@@ -1,0 +1,80 @@
+{
+ "schema": "reva.specimen-source/0",
+ "source": {
+  "kind": "labtruth",
+  "file": "lab-scroll/truth/m05.json",
+  "variant": "plain",
+  "digest": "d805ba7cd0a1c648",
+  "note": "Fixture Lab truth record (own fixture, public-safe)"
+ },
+ "items": [
+  {
+   "scored": true,
+   "classScored": true,
+   "target": "#c|drv:--m",
+   "role": "driver",
+   "class": "tween",
+   "family": "named-ease",
+   "ease": "easeOutCubic",
+   "attribution": "wheel",
+   "params": {
+    "duration": {
+     "value": 540,
+     "unit": "ms"
+    },
+    "ease": "easeOutCubic",
+    "retarget": "from-current",
+    "target_rule": "sign(deltaY): 1 on wheel down, 0 on wheel up",
+    "latch": {
+     "visible_height_min_vh": 0.45,
+     "bottom_max_vh_plus_px": 8,
+     "arming_root_margin": "200% 0px",
+     "section_px": {
+      "top": 3000,
+      "height": 720
+     }
+    },
+    "blocks_scroll": true,
+    "pin": "scrollTo(instant) to the latch position while a tween runs"
+   },
+   "derived": {
+    "t10": 18.635732312959952,
+    "t50": 111.40171596858612,
+    "t90": 289.35420298490993,
+    "t99": 423.66052673827824,
+    "unit": "ms from the start of a 0 to 1 tween",
+    "overshoot": 0
+   }
+  },
+  {
+   "scored": false,
+   "classScored": true,
+   "target": "#c|drv:--f",
+   "role": "rendered-mirror",
+   "mirrorOf": "#c|drv:--m",
+   "class": "tween",
+   "family": "derived-affine",
+   "attribution": "wheel",
+   "params": {
+    "note": "f = 1 - min(1, m / 0.5)"
+   }
+  },
+  {
+   "scored": false,
+   "classScored": true,
+   "target": "#c|ren:tx",
+   "role": "rendered-mirror",
+   "mirrorOf": "#c|drv:--m",
+   "class": "tween",
+   "family": "named-ease",
+   "attribution": "wheel",
+   "params": {
+    "ease": "easeOutCubic",
+    "duration": {
+     "value": 540,
+     "unit": "ms"
+    }
+   }
+  }
+ ]
+}

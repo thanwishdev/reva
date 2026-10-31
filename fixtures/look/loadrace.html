@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>look fixture: load race</title>
+<!-- Own fixture for `reva look` load stability (no site content). Known by construction:
+  The page races its library (loadrace-lib.js, a module) against a 600 ms page timer, the way real sites guard a CDN
+  import. The test server answers late on request: ?d1=<ms> delays the library, ?d2=<ms> the data that starts the late
+  animation, ?d3=<ms> a further request made right after it (it keeps the network busy while the late animation would play).
+  library first (any delay, as the page sees it):
+    #intro  WAAPI translateY 40px -> 0, 900 ms, cubic-bezier(0.2, 0.7, 0.2, 1), started when the library arrives
+    #late   WAAPI opacity 0 -> 1, 600 ms linear, started in the task that receives the data (between virtual frames)
+  timer first (the library "never came"): #fallback opacity 0 -> 1 at once (a step) and nothing else.
+  So the same set (#intro, #late) must be found whatever the delays or the machine load; #fallback never.
+-->
+<style>
+  html, body { margin: 0; background: #111; }
+  div { position: absolute; width: 200px; height: 80px; }
+  #intro { left: 80px; top: 120px; background: #4a7; }
+  #late { left: 360px; top: 120px; background: #47a; opacity: 0; }
+  #fallback { left: 640px; top: 120px; background: #a74; opacity: 0; }
+</style>
+</head>
+<body>
+<div id="intro"></div>
+<div id="late"></div>
+<div id="fallback"></div>
+<script type="module">
+  const q = new URLSearchParams(location.search);
+  const d = (k) => Number(q.get(k)) || 0;
+  const timer = (ms) => new Promise((res) => setTimeout(() => res(null), ms));
+  const lib = await Promise.race([import(`./loadrace-lib.js?delay=${d('d1')}`), timer(600)]);
+  if (!lib) document.getElementById('fallback').style.opacity = '1';
+  else {
+    lib.intro(document.getElementById('intro'));
+    fetch(`loadrace.json?delay=${d('d2')}`).then((r) => r.json()).then(() => {
+      lib.late(document.getElementById('late'));
+      fetch(`loadrace.json?delay=${d('d3')}`);
+    });
+  }
+</script>
+</body>
+</html>

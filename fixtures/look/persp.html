@@ -1,0 +1,30 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>look fixture: perspective zoom</title>
+<!-- Own fixture (no site content). Known by construction:
+  #p     JS tween of the perspective distance (a 3D zoom): perspective(1000px -> 400px) translateZ(200px), easeOutCubic 800 ms.
+         The decomposed parts (tx..skx) do not change; the matrix (m34, m44) and the box on screen do.
+  #j     JS tween translate3d x 0 -> 300 px, easeOutCubic 800 ms.
+  #cssp  the same perspective change as a CSS transition (600 ms).
+-->
+<style>
+body{margin:0;height:200vh;font:16px sans-serif}
+.box{position:absolute;width:200px;height:200px;background:#c33}
+#p{left:100px;top:100px;transform:perspective(1000px) translateZ(200px)}
+#j{left:400px;top:100px}
+#cssp{left:700px;top:100px;transform:perspective(1000px) translateZ(200px);transition:transform 600ms cubic-bezier(0.2,0.8,0.2,1)}
+#cssp.go{transform:perspective(400px) translateZ(200px)}
+</style></head><body>
+<div class="box" id="p"></div><div class="box" id="j"></div><div class="box" id="cssp"></div>
+<script>
+// #p: JS tween of the perspective distance (a 3D zoom), easeOutCubic 800 ms; translateZ fixed
+// #j: JS tween translate3d x 0 -> 300 px, easeOutCubic 800 ms
+const ease = (t) => 1 - Math.pow(1 - t, 3);
+setTimeout(() => {
+  const t0 = performance.now();
+  document.getElementById('cssp').classList.add('go');
+  const f = (now) => { const t = Math.min(1, (now - t0) / 800), e = ease(t);
+    document.getElementById('p').style.transform = `perspective(${1000 - 600 * e}px) translateZ(200px)`;
+    document.getElementById('j').style.transform = `translate3d(${300 * e}px, 0px, 0px)`;
+    if (t < 1) requestAnimationFrame(f); };
+  requestAnimationFrame(f);
+}, 600);
+</script></body></html>

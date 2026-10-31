@@ -1,0 +1,171 @@
+{
+ "schema": "reva.specimen.time/0",
+ "id": "m18-single",
+ "origin": "lab",
+ "source": {
+  "kind": "labtruth",
+  "schema": "reva.labtruth/0",
+  "route": "m18",
+  "variant": "single",
+  "regime": "R3",
+  "params": {
+   "impl": "waapi",
+   "D": 600,
+   "bz": [
+    0.2,
+    0.9,
+    0.1,
+    1
+   ]
+  }
+ },
+ "timeline": {
+  "frameMs": 8.333333,
+  "refreshHz": 120,
+  "leadMs": 500,
+  "sourceShiftMs": 58.333333,
+  "durationMs": 1601,
+  "hasLoop": false
+ },
+ "viewport": {
+  "width": 1280,
+  "height": 800
+ },
+ "elements": [
+  {
+   "id": "e0",
+   "key": "#b0",
+   "x": 40,
+   "y": 60,
+   "w": 56,
+   "h": 56,
+   "tf": {
+    "tx": true,
+    "ty": true,
+    "rz": false,
+    "sx": true,
+    "sy": true
+   }
+  }
+ ],
+ "tracks": [
+  {
+   "id": "t0",
+   "el": 0,
+   "channel": "tx",
+   "impl": "waapi",
+   "label": "tween",
+   "provenance": {
+    "tier": "truth",
+    "route": "m18"
+   },
+   "motion": {
+    "kind": "tween",
+    "from": -440,
+    "to": 0,
+    "startMs": 500.00000033333333,
+    "durationMs": 600,
+    "ease": {
+     "kind": "bezier",
+     "p": [
+      0.2,
+      0.9,
+      0.1,
+      1
+     ]
+    },
+    "birthMs": 500.00000033333333,
+    "base": 0
+   }
+  },
+  {
+   "id": "t1",
+   "el": 0,
+   "channel": "ty",
+   "impl": "waapi",
+   "label": "tween",
+   "provenance": {
+    "tier": "truth",
+    "route": "m18"
+   },
+   "motion": {
+    "kind": "tween",
+    "from": -180,
+    "to": 0,
+    "startMs": 500.00000033333333,
+    "durationMs": 600,
+    "ease": {
+     "kind": "bezier",
+     "p": [
+      0.2,
+      0.9,
+      0.1,
+      1
+     ]
+    },
+    "birthMs": 500.00000033333333,
+    "base": 0
+   }
+  },
+  {
+   "id": "t2",
+   "el": 0,
+   "channel": "sx",
+   "impl": "waapi",
+   "label": "tween",
+   "provenance": {
+    "tier": "truth",
+    "route": "m18"
+   },
+   "motion": {
+    "kind": "tween",
+    "from": 0.5,
+    "to": 1,
+    "startMs": 500.00000033333333,
+    "durationMs": 600,
+    "ease": {
+     "kind": "bezier",
+     "p": [
+      0.2,
+      0.9,
+      0.1,
+      1
+     ]
+    },
+    "birthMs": 500.00000033333333,
+    "base": 1
+   }
+  },
+  {
+   "id": "t3",
+   "el": 0,
+   "channel": "sy",
+   "impl": "waapi",
+   "label": "tween",
+   "provenance": {
+    "tier": "truth",
+    "route": "m18"
+   },
+   "motion": {
+    "kind": "tween",
+    "from": 0.5555555555555556,
+    "to": 1,
+    "startMs": 500.00000033333333,
+    "durationMs": 600,
+    "ease": {
+     "kind": "bezier",
+     "p": [
+      0.2,
+      0.9,
+      0.1,
+      1
+     ]
+    },
+    "birthMs": 500.00000033333333,
+    "base": 1
+   }
+  }
+ ],
+ "notes": [],
+ "digest": "f1517cde4e4f9183"
+}

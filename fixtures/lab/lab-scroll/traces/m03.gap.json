@@ -1,0 +1,47 @@
+{
+ "schema": "reva.labtrace/0",
+ "route": "m03",
+ "variant": "gap",
+ "note": "Step responses with idle gaps through both ranges and back.",
+ "actions": [
+  {
+   "hold": 500
+  },
+  {
+   "scrollTo": 800
+  },
+  {
+   "hold": 700
+  },
+  {
+   "scrollTo": 1100
+  },
+  {
+   "hold": 700
+  },
+  {
+   "scrollTo": 2250
+  },
+  {
+   "hold": 700
+  },
+  {
+   "scrollTo": 2500
+  },
+  {
+   "hold": 700
+  },
+  {
+   "scrollTo": 2000
+  },
+  {
+   "hold": 700
+  },
+  {
+   "scrollTo": 700
+  },
+  {
+   "hold": 700
+  }
+ ]
+}

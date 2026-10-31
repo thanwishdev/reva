@@ -1,0 +1,50 @@
+{
+ "schema": "reva.labtrace/0",
+ "route": "m05",
+ "variant": "plain",
+ "note": "Scroll to the latch zone, one wheel down, wait for the tween, one wheel up, wait; then a wheel outside the latch zone (armed, not latched) that the page lets through.",
+ "actions": [
+  {
+   "hold": 500
+  },
+  {
+   "scrollTo": 3100
+  },
+  {
+   "hold": 500
+  },
+  {
+   "wheel": {
+    "dy": 120,
+    "n": 1
+   }
+  },
+  {
+   "hold": 900
+  },
+  {
+   "wheel": {
+    "dy": -120,
+    "n": 1
+   }
+  },
+  {
+   "hold": 900
+  },
+  {
+   "scrollTo": 1000
+  },
+  {
+   "hold": 300
+  },
+  {
+   "wheel": {
+    "dy": 120,
+    "n": 1
+   }
+  },
+  {
+   "hold": 300
+  }
+ ]
+}

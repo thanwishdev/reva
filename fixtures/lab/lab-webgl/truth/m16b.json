@@ -1,0 +1,473 @@
+{
+ "note": "Generated for review by tools/gen-truth.mjs. Planned-trace values (start signal at k = 0); the scorer calls truth(route, params, regime, {variant, ctx}) with the actual take.",
+ "route": "m16b",
+ "default": {
+  "steps": {
+   "R2": {
+    "schema": "reva.labtruth/0",
+    "route": "m16b",
+    "params": {
+     "seed": 11,
+     "base": 200,
+     "amp": 6
+    },
+    "regime": "R2",
+    "variant": "steps",
+    "metrics": [
+     "negative",
+     "false_spring",
+     "false_ema"
+    ],
+    "stagger": null,
+    "negative": {
+     "accept": [
+      "unknown",
+      "unexplained"
+     ],
+     "forbid": [
+      "spring",
+      "first-order smoothing",
+      "tween",
+      "ramp",
+      "step",
+      "static",
+      "scroll map"
+     ]
+    },
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "class": "unknown",
+      "params": {
+       "generator": "mulberry32",
+       "seed": 11,
+       "base": 200,
+       "amp": 6
+      },
+      "derived": {},
+      "note": "one pseudo-random value per page frame; no model other than noise is correct"
+     }
+    ],
+    "attribution": {}
+   },
+   "R3": {
+    "schema": "reva.labtruth/0",
+    "route": "m16b",
+    "params": {
+     "seed": 11,
+     "base": 200,
+     "amp": 6
+    },
+    "regime": "R3",
+    "variant": "steps",
+    "metrics": [
+     "negative",
+     "false_spring",
+     "false_ema"
+    ],
+    "stagger": null,
+    "negative": {
+     "accept": [
+      "unknown",
+      "unexplained"
+     ],
+     "forbid": [
+      "spring",
+      "first-order smoothing",
+      "tween",
+      "ramp",
+      "step",
+      "static",
+      "scroll map"
+     ]
+    },
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "class": "unknown",
+      "params": {
+       "generator": "mulberry32",
+       "seed": 11,
+       "base": 200,
+       "amp": 6
+      },
+      "derived": {},
+      "note": "one pseudo-random value per page frame; no model other than noise is correct"
+     }
+    ],
+    "attribution": {}
+   },
+   "R4": {
+    "schema": "reva.labtruth/0",
+    "route": "m16b",
+    "params": {
+     "seed": 11,
+     "base": 200,
+     "amp": 6
+    },
+    "regime": "R4",
+    "variant": "steps",
+    "metrics": [
+     "negative",
+     "false_spring",
+     "false_ema"
+    ],
+    "stagger": null,
+    "negative": {
+     "accept": [
+      "unknown",
+      "unexplained"
+     ],
+     "forbid": [
+      "spring",
+      "first-order smoothing",
+      "tween",
+      "ramp",
+      "step",
+      "static",
+      "scroll map"
+     ]
+    },
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "class": "unknown",
+      "params": {
+       "generator": "mulberry32",
+       "seed": 11,
+       "base": 200,
+       "amp": 6
+      },
+      "derived": {},
+      "note": "one pseudo-random value per page frame; no model other than noise is correct"
+     }
+    ],
+    "attribution": {}
+   },
+   "R5": {
+    "schema": "reva.labtruth/0",
+    "route": "m16b",
+    "params": {
+     "seed": 11,
+     "base": 200,
+     "amp": 6
+    },
+    "regime": "R5",
+    "variant": "steps",
+    "metrics": [
+     "negative",
+     "false_spring",
+     "false_ema"
+    ],
+    "stagger": null,
+    "negative": {
+     "accept": [
+      "unknown",
+      "unexplained"
+     ],
+     "forbid": [
+      "spring",
+      "first-order smoothing",
+      "tween",
+      "ramp",
+      "step",
+      "static",
+      "scroll map"
+     ]
+    },
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "class": "unknown",
+      "params": {
+       "generator": "mulberry32",
+       "seed": 11,
+       "base": 200,
+       "amp": 6
+      },
+      "derived": {},
+      "note": "one pseudo-random value per page frame; no model other than noise is correct"
+     }
+    ],
+    "attribution": {}
+   }
+  }
+ },
+ "grid": [
+  {
+   "index": 0,
+   "params": {
+    "seed": 11,
+    "base": 200,
+    "amp": 6
+   },
+   "R3": {
+    "schema": "reva.labtruth/0",
+    "route": "m16b",
+    "params": {
+     "seed": 11,
+     "base": 200,
+     "amp": 6
+    },
+    "regime": "R3",
+    "variant": "steps",
+    "metrics": [
+     "negative",
+     "false_spring",
+     "false_ema"
+    ],
+    "stagger": null,
+    "negative": {
+     "accept": [
+      "unknown",
+      "unexplained"
+     ],
+     "forbid": [
+      "spring",
+      "first-order smoothing",
+      "tween",
+      "ramp",
+      "step",
+      "static",
+      "scroll map"
+     ]
+    },
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "class": "unknown",
+      "params": {
+       "generator": "mulberry32",
+       "seed": 11,
+       "base": 200,
+       "amp": 6
+      },
+      "derived": {},
+      "note": "one pseudo-random value per page frame; no model other than noise is correct"
+     }
+    ],
+    "attribution": {}
+   }
+  },
+  {
+   "index": 1,
+   "params": {
+    "seed": 23,
+    "base": 240,
+    "amp": 9
+   },
+   "R3": {
+    "schema": "reva.labtruth/0",
+    "route": "m16b",
+    "params": {
+     "seed": 23,
+     "base": 240,
+     "amp": 9
+    },
+    "regime": "R3",
+    "variant": "steps",
+    "metrics": [
+     "negative",
+     "false_spring",
+     "false_ema"
+    ],
+    "stagger": null,
+    "negative": {
+     "accept": [
+      "unknown",
+      "unexplained"
+     ],
+     "forbid": [
+      "spring",
+      "first-order smoothing",
+      "tween",
+      "ramp",
+      "step",
+      "static",
+      "scroll map"
+     ]
+    },
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "class": "unknown",
+      "params": {
+       "generator": "mulberry32",
+       "seed": 23,
+       "base": 240,
+       "amp": 9
+      },
+      "derived": {},
+      "note": "one pseudo-random value per page frame; no model other than noise is correct"
+     }
+    ],
+    "attribution": {}
+   }
+  },
+  {
+   "index": 2,
+   "params": {
+    "seed": 37,
+    "base": 300,
+    "amp": 4
+   },
+   "R3": {
+    "schema": "reva.labtruth/0",
+    "route": "m16b",
+    "params": {
+     "seed": 37,
+     "base": 300,
+     "amp": 4
+    },
+    "regime": "R3",
+    "variant": "steps",
+    "metrics": [
+     "negative",
+     "false_spring",
+     "false_ema"
+    ],
+    "stagger": null,
+    "negative": {
+     "accept": [
+      "unknown",
+      "unexplained"
+     ],
+     "forbid": [
+      "spring",
+      "first-order smoothing",
+      "tween",
+      "ramp",
+      "step",
+      "static",
+      "scroll map"
+     ]
+    },
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "class": "unknown",
+      "params": {
+       "generator": "mulberry32",
+       "seed": 37,
+       "base": 300,
+       "amp": 4
+      },
+      "derived": {},
+      "note": "one pseudo-random value per page frame; no model other than noise is correct"
+     }
+    ],
+    "attribution": {}
+   }
+  },
+  {
+   "index": 3,
+   "params": {
+    "seed": 52,
+    "base": 160,
+    "amp": 12
+   },
+   "R3": {
+    "schema": "reva.labtruth/0",
+    "route": "m16b",
+    "params": {
+     "seed": 52,
+     "base": 160,
+     "amp": 12
+    },
+    "regime": "R3",
+    "variant": "steps",
+    "metrics": [
+     "negative",
+     "false_spring",
+     "false_ema"
+    ],
+    "stagger": null,
+    "negative": {
+     "accept": [
+      "unknown",
+      "unexplained"
+     ],
+     "forbid": [
+      "spring",
+      "first-order smoothing",
+      "tween",
+      "ramp",
+      "step",
+      "static",
+      "scroll map"
+     ]
+    },
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "class": "unknown",
+      "params": {
+       "generator": "mulberry32",
+       "seed": 52,
+       "base": 160,
+       "amp": 12
+      },
+      "derived": {},
+      "note": "one pseudo-random value per page frame; no model other than noise is correct"
+     }
+    ],
+    "attribution": {}
+   }
+  },
+  {
+   "index": 4,
+   "params": {
+    "seed": 68,
+    "base": 260,
+    "amp": 16
+   },
+   "R3": {
+    "schema": "reva.labtruth/0",
+    "route": "m16b",
+    "params": {
+     "seed": 68,
+     "base": 260,
+     "amp": 16
+    },
+    "regime": "R3",
+    "variant": "steps",
+    "metrics": [
+     "negative",
+     "false_spring",
+     "false_ema"
+    ],
+    "stagger": null,
+    "negative": {
+     "accept": [
+      "unknown",
+      "unexplained"
+     ],
+     "forbid": [
+      "spring",
+      "first-order smoothing",
+      "tween",
+      "ramp",
+      "step",
+      "static",
+      "scroll map"
+     ]
+    },
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "class": "unknown",
+      "params": {
+       "generator": "mulberry32",
+       "seed": 68,
+       "base": 260,
+       "amp": 16
+      },
+      "derived": {},
+      "note": "one pseudo-random value per page frame; no model other than noise is correct"
+     }
+    ],
+    "attribution": {}
+   }
+  }
+ ]
+}

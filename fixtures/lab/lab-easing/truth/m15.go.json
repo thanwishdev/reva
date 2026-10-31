@@ -1,0 +1,48 @@
+{
+ "schema": "reva.labtruth/0",
+ "route": "m15",
+ "params": {
+  "dur": 1997,
+  "from": 0,
+  "to": 420,
+  "delay": 1000.3,
+  "spline": null
+ },
+ "regime": "R3",
+ "variant": "go",
+ "items": [
+  {
+   "target": "#b0|ren:bx",
+   "class": "declared",
+   "sub": "smil",
+   "observableClass": "periodic",
+   "family": "smil-animate-sawtooth",
+   "provenance": "declared",
+   "params": {
+    "begin_ms": 1433.633333,
+    "begin_offset_after_trigger_ms": 1000.3,
+    "duration_ms": 1997,
+    "repeat": "indefinite",
+    "calcMode": "linear",
+    "key_splines": null,
+    "from": -18,
+    "to": 402,
+    "attribute": "cx",
+    "visible_to_getAnimations": false
+   },
+   "derived": {
+    "period_ms": 1997
+   }
+  }
+ ],
+ "attribution": {
+  "#b0|ren:bx": "time-driven"
+ },
+ "metrics": {
+  "m15.smil_duration_begin": {
+   "duration_ms": 1997,
+   "begin_ms": 1433.633333
+  },
+  "class": "declared"
+ }
+}

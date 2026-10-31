@@ -1,0 +1,4 @@
+html, body { margin: 0; padding: 0; }
+body { background: repeating-linear-gradient(180deg, #11161c 0, #11161c 99px, #1b222b 99px, #1b222b 100px); overflow-x: hidden; }
+html { scrollbar-width: none; }
+html::-webkit-scrollbar { display: none; }

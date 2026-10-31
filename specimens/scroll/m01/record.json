@@ -1,0 +1,124 @@
+{
+ "schema": "reva.specimen-source/0",
+ "source": {
+  "kind": "labtruth",
+  "file": "lab-scroll/truth/m01.json",
+  "variant": "speed",
+  "digest": "e51be2c25d32f47b",
+  "note": "Fixture Lab truth record (own fixture, public-safe)"
+ },
+ "items": [
+  {
+   "scored": true,
+   "classScored": true,
+   "target": "#c|drv:--p",
+   "role": "driver",
+   "class": "scroll-map",
+   "family": "linear",
+   "smoothing": "none",
+   "attribution": "scroll-linked",
+   "params": {
+    "map": {
+     "shape": "linear",
+     "a": 1,
+     "b": -1,
+     "px": {
+      "s0": 120,
+      "s1": 800
+     },
+     "vh": {
+      "s0": 0.15,
+      "s1": 1
+     }
+    },
+    "slope": {
+     "value": -0.0014705882352941176,
+     "unit": "per px"
+    },
+    "alpha": {
+     "value": 1,
+     "unit": "per frame",
+     "note": "unsmoothed: the value is final on the first frame"
+    }
+   },
+   "derived": {
+    "range_px": 680
+   }
+  },
+  {
+   "scored": false,
+   "classScored": true,
+   "target": "#c|ren:tx",
+   "role": "rendered-mirror",
+   "mirrorOf": "#c|drv:--p",
+   "class": "scroll-map",
+   "family": "linear",
+   "attribution": "scroll-linked",
+   "params": {
+    "map": {
+     "shape": "linear",
+     "a": 420,
+     "b": -420,
+     "px": {
+      "s0": 120,
+      "s1": 800
+     },
+     "vh": {
+      "s0": 0.15,
+      "s1": 1
+     }
+    }
+   }
+  },
+  {
+   "scored": false,
+   "classScored": true,
+   "target": "#c|ren:ty",
+   "role": "rendered-mirror",
+   "mirrorOf": "#c|drv:--p",
+   "class": "scroll-map",
+   "family": "linear",
+   "attribution": "scroll-linked",
+   "params": {
+    "map": {
+     "shape": "linear",
+     "a": -150,
+     "b": 150,
+     "px": {
+      "s0": 120,
+      "s1": 800
+     },
+     "vh": {
+      "s0": 0.15,
+      "s1": 1
+     }
+    }
+   }
+  },
+  {
+   "scored": false,
+   "classScored": true,
+   "target": "#c|ren:opacity",
+   "role": "rendered-mirror",
+   "mirrorOf": "#c|drv:--p",
+   "class": "scroll-map",
+   "family": "linear",
+   "attribution": "scroll-linked",
+   "params": {
+    "map": {
+     "shape": "linear",
+     "a": 1,
+     "b": -0.8,
+     "px": {
+      "s0": 120,
+      "s1": 800
+     },
+     "vh": {
+      "s0": 0.15,
+      "s1": 1
+     }
+    }
+   }
+  }
+ ]
+}

@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>look trigger fixture</title>
+<!-- Known by construction (test/look/look-trigger.test.js):
+  1. #box lives in a closed <dialog>. Only "button.open" (not linked to it by any aria attribute) opens it; the box then
+     flies in on an analytic spring, omega 9 rad/s, zeta 0.7 (translateY 80px -> 0). The filter buttons change nothing.
+  2. A lane snapper on the first 3 x 900 px: a wheel gesture that carries 300 px goes on to the next lane (an instant
+     glide) and the rest of that gesture is held back (preventDefault) until the wheel has been quiet for 320 ms.
+     Below the lanes the page scrolls freely to the bottom, where #late moves with the scroll: translateX = (scrollY - 4200) / 4. -->
+<style>
+  html, body { margin: 0; background: #111; color: #eee; font: 16px/1.4 system-ui, sans-serif; }
+  .bar { position: sticky; top: 0; display: flex; gap: 8px; padding: 12px; background: #222; z-index: 2; }
+  button { font: inherit; padding: 8px 14px; }
+  .lane { height: 900px; border-bottom: 1px solid #333; }
+  .free { height: 2400px; }
+  .tail { height: 900px; position: relative; }
+  #late { position: absolute; left: 40px; top: 200px; width: 120px; height: 120px; background: #c84; }
+  dialog { border: 0; padding: 40px; background: #333; color: #eee; }
+  #box { width: 200px; height: 140px; background: #48c; opacity: 0; }
+</style>
+</head>
+<body>
+<div class="bar">
+  <button class="filter" type="button" data-f="a">Filter A</button>
+  <button class="filter" type="button" data-f="b">Filter B</button>
+  <button class="open" type="button">Open the viewer</button>
+</div>
+<section class="lane">lane 1</section>
+<section class="lane">lane 2</section>
+<section class="lane">lane 3</section>
+<section class="free">free</section>
+<section class="tail"><div id="late"></div></section>
+<dialog id="dlg"><div id="box"></div><button type="button" class="close">Close</button></dialog>
+<script>
+(() => {
+  const W = 9, Z = 0.7, WD = W * Math.sqrt(1 - Z * Z);
+  const x = (t) => 1 - Math.exp(-Z * W * t) * (Math.cos(WD * t) + (Z * W / WD) * Math.sin(WD * t));
+  const dlg = document.getElementById('dlg'), box = document.getElementById('box');
+  document.querySelector('.open').addEventListener('click', () => {
+    dlg.showModal(); const t0 = performance.now();
+    const f = (now) => { const t = (now - t0) / 1000, p = x(t); box.style.transform = `translateY(${(80 * (1 - p)).toFixed(3)}px)`; box.style.opacity = String(Math.min(1, p).toFixed(4)); if (t < 2) requestAnimationFrame(f); };
+    requestAnimationFrame(f);
+  });
+  document.querySelector('.close').addEventListener('click', () => dlg.close());
+  for (const b of document.querySelectorAll('.filter')) b.addEventListener('click', () => { b.dataset.on = b.dataset.on ? '' : '1'; });
+
+  // lane snapper
+  const LANE = 900, LANES = 3, COMMIT = 300, GAP = 320;
+  let held = false, quiet = 0, acc = 0, lastWheel = -1e9;
+  addEventListener('wheel', (e) => {
+    const now = performance.now();
+    if (now - lastWheel > GAP) acc = 0;
+    lastWheel = now;
+    if (held) { e.preventDefault(); clearTimeout(quiet); quiet = setTimeout(() => { held = false; acc = 0; }, GAP); return; }
+    const lane = Math.round(scrollY / LANE);
+    if (scrollY >= (LANES - 1) * LANE + 1 || e.deltaY <= 0) return;   // past the last lane: free
+    acc += e.deltaY; e.preventDefault();
+    if (acc >= COMMIT) { held = true; acc = 0; scrollTo({ top: (lane + 1) * LANE, behavior: 'instant' }); clearTimeout(quiet); quiet = setTimeout(() => { held = false; }, GAP); }
+  }, { passive: false });
+  const late = document.getElementById('late');
+  const onScroll = () => { late.style.transform = `translateX(${Math.max(0, (scrollY - 4200) / 4).toFixed(2)}px)`; };
+  addEventListener('scroll', onScroll, { passive: true }); onScroll();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>lab</title>
+<link rel="stylesheet" href="base.css"><link rel="stylesheet" href="vis.css">
+<style>
+body { height: 4400px; }
+#m { position: absolute; left: 0; width: 100%; background: #1d2b23; }
+#c { transform: translateX(calc(var(--m) * -300px)) scale(calc(1 + var(--m) * 0.3)); opacity: var(--f); }
+</style></head>
+<body><div id="m"></div><div id="c"></div>
+<script type="module" src="m05.js"></script>
+</body></html>

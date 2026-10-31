@@ -1,0 +1,127 @@
+{
+ "schema": "reva.labtruth/0",
+ "route": "m19",
+ "params": {
+  "from": 0,
+  "to": 360,
+  "D": 700,
+  "ease": "easeOutCubic",
+  "delay": 403.7,
+  "to2": 90,
+  "D2": 500,
+  "write": "full"
+ },
+ "regime": "R3",
+ "variant": "click",
+ "items": [
+  {
+   "target": "#b0|drv:--v",
+   "class": "tween",
+   "family": "named:easeOutCubic",
+   "provenance": "declared-by-code",
+   "segment": 1,
+   "params": {
+    "t0_ms": 433.333333,
+    "duration_ms": 700,
+    "from": 0,
+    "to": 360,
+    "ease": "easeOutCubic",
+    "first_frame_T": 433.333333,
+    "subframe_onset_ms": 0,
+    "interrupted": false,
+    "retarget": null,
+    "end_of_segment_ms": 1133.333333
+   },
+   "derived": {
+    "t10": 24.2,
+    "t50": 144.45,
+    "t90": 375.1,
+    "t99": 549.2,
+    "peakVelocity": 1.5427469414004413,
+    "tPeak": 0.025,
+    "overshoot": 0,
+    "crossings": 0,
+    "amplitude": 360,
+    "relative_to": "t0"
+   }
+  },
+  {
+   "target": "#b0|ren:--v",
+   "class": "tween",
+   "family": "named:easeOutCubic",
+   "provenance": "declared-by-code",
+   "segment": 1,
+   "params": {
+    "t0_ms": 433.333333,
+    "duration_ms": 700,
+    "from": 0,
+    "to": 360,
+    "ease": "easeOutCubic",
+    "first_frame_T": 433.333333,
+    "subframe_onset_ms": 0,
+    "interrupted": false,
+    "retarget": null,
+    "end_of_segment_ms": 1133.333333
+   },
+   "derived": {
+    "t10": 24.2,
+    "t50": 144.45,
+    "t90": 375.1,
+    "t99": 549.2,
+    "peakVelocity": 1.5427469414004413,
+    "tPeak": 0.025,
+    "overshoot": 0,
+    "crossings": 0,
+    "amplitude": 360,
+    "relative_to": "t0"
+   }
+  },
+  {
+   "target": "#b0|ren:tx",
+   "class": "tween",
+   "family": "named:easeOutCubic",
+   "provenance": "declared-by-code",
+   "segment": 1,
+   "params": {
+    "t0_ms": 433.333333,
+    "duration_ms": 700,
+    "from": 0,
+    "to": 360,
+    "ease": "easeOutCubic",
+    "first_frame_T": 433.333333,
+    "subframe_onset_ms": 0,
+    "interrupted": false,
+    "retarget": null,
+    "end_of_segment_ms": 1133.333333
+   },
+   "derived": {
+    "t10": 24.2,
+    "t50": 144.45,
+    "t90": 375.1,
+    "t99": 549.2,
+    "peakVelocity": 1.5427469414004413,
+    "tPeak": 0.025,
+    "overshoot": 0,
+    "crossings": 0,
+    "amplitude": 360,
+    "relative_to": "t0"
+   }
+  }
+ ],
+ "attribution": {
+  "#b0|drv:--v": "time-driven",
+  "#b0|ren:--v": "time-driven",
+  "#b0|ren:tx": "time-driven"
+ },
+ "metrics": {
+  "m19.onset": [
+   433.333333
+  ],
+  "m19.duration": [
+   700
+  ],
+  "m19.easing": "easeOutCubic",
+  "m19.retarget": null,
+  "class": "tween"
+ }
+}

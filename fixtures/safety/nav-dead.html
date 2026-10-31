@@ -1,0 +1,8 @@
+<!doctype html>
+<!-- A script sends the main frame to a port nothing listens on (test/look/deadline.test.js): the look must stop, not wait. -->
+<html><head><meta charset="utf-8"><title>nav dead</title></head>
+<body style="margin:0;font:16px/1.5 system-ui">
+<div style="width:200px;height:200px;background:#f90;animation:a 600ms ease-out both">box</div>
+<style>@keyframes a{from{transform:translateY(40px)}to{transform:none}}</style>
+<script>setTimeout(function () { location.href = 'http://127.0.0.1:1/'; }, 300);</script>
+</body></html>

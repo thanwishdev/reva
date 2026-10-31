@@ -1,0 +1,41 @@
+<!doctype html>
+<!-- Background / font / scheme fixture for REVA's design pass (test/design/design-bg.test.js). Known by construction:
+     html and body are transparent (the page background is the white default canvas); a light-grey band paints a known
+     share of the page; many tiny violet boxes, zero-size red boxes and an 8 % white overlay outnumber the white by element
+     count but paint little or nothing; SVG fills outnumber everything; a declared webfont whose file does not exist
+     (it fails, the text is drawn with the fallback); a dark-scheme rule that turns the page near-black if the read ever
+     follows a dark OS appearance. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>bg fixture</title>
+<style>
+@font-face { font-family: "MissingFace"; src: url("/no-such-font.woff2") format("woff2"); font-display: swap; }
+html, body { margin: 0; }
+body { font-family: "MissingFace", Georgia, serif; color: #222222; }
+@media (prefers-color-scheme: dark) { html { background-color: #0a0a0a; } body { color: #eeeeee; } }
+.band { background-color: #f5f5f7; height: 400px; }
+.tiny { display: inline-block; width: 4px; height: 4px; background-color: #7f7dfc; }
+.zero { width: 0; height: 0; background-color: #ff0000; }
+.veil { display: inline-block; width: 6px; height: 6px; background-color: rgba(255, 255, 255, 0.08); }
+p { margin: 0; padding: 16px; font-size: 16px; }
+svg { display: block; }
+</style>
+</head>
+<body>
+<p>Plain text on the page.</p>
+<div class="band"><p>Text on the band.</p></div>
+<div id="tiny"></div>
+<div id="zero"></div>
+<div id="veil"></div>
+<div id="dots"></div>
+<div style="height: 1200px"></div>
+<script>
+  const fill = (id, cls, n) => { const h = document.getElementById(id); for (let i = 0; i < n; i++) { const e = document.createElement('div'); e.className = cls; h.appendChild(e); } };
+  fill('tiny', 'tiny', 40); fill('zero', 'zero', 50); fill('veil', 'veil', 36);
+  const ns = 'http://www.w3.org/2000/svg'; const svg = document.createElementNS(ns, 'svg'); svg.setAttribute('width', '200'); svg.setAttribute('height', '20');
+  for (let i = 0; i < 60; i++) { const c = document.createElementNS(ns, 'circle'); c.setAttribute('cx', String(3 + i * 3)); c.setAttribute('cy', '10'); c.setAttribute('r', '1'); c.setAttribute('fill', '#ffffff'); svg.appendChild(c); }
+  document.getElementById('dots').appendChild(svg);
+</script>
+</body>
+</html>

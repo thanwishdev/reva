@@ -1,0 +1,9 @@
+<!doctype html><meta charset="utf-8"><title>gl tween</title>
+<!-- Known truth: uniform uProgress tweens 0 -> 1 on load, starting 300 ms after the first frame, 1400 ms,
+     cubic-bezier(0.4, 0, 0.2, 1). Raw WebGL, no library. -->
+<body style="margin:0;background:#111"><script src="gl-kit.js"></script><script>
+const ease = cubicBezier(0.4, 0, 0.2, 1);
+glKit({ vs: FLAT_VS,
+  fs: 'precision mediump float; uniform float uProgress; uniform vec3 uTint; void main() { gl_FragColor = vec4(uTint * uProgress, 1.0); }',
+  frame: ({ gl, U }, t) => { const p = ease(Math.min(1, Math.max(0, (t - 300) / 1400))); gl.uniform1f(U('uProgress'), p); gl.uniform3f(U('uTint'), 0.2, 0.6, 1.0); } });
+</script></body>

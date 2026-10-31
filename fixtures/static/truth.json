@@ -1,0 +1,83 @@
+{
+  "note": "Planted values of fixtures/static (own fixture, public-safe). 'computed' entries must be recovered from computed styles with provenance measured; 'declared' entries must come with the winning declaration's source; 'unknown' entries must be listed in the unknowns ledger with a reason.",
+  "computed": [
+    { "id": "h1.fontSize", "variant": "desktop-1440", "family": "typography", "sel": "#t-h1", "prop": "font-size", "expect": "40px", "field": "fontSize" },
+    { "id": "h1.fontWeight", "variant": "desktop-1440", "family": "typography", "sel": "#t-h1", "prop": "font-weight", "expect": "700", "field": "fontWeight" },
+    { "id": "h1.lineHeight", "variant": "desktop-1440", "family": "typography", "sel": "#t-h1", "prop": "line-height", "expect": "46px", "field": "lineHeight" },
+    { "id": "h1.letterSpacing", "variant": "desktop-1440", "family": "typography", "sel": "#t-h1", "prop": "letter-spacing", "expect": "-0.8px", "field": "letterSpacing" },
+    { "id": "h1.textTransform", "variant": "desktop-1440", "family": "typography", "sel": "#t-h1", "prop": "text-transform", "expect": "uppercase", "field": "textTransform" },
+    { "id": "h1.fontSize.mobile", "variant": "mobile-390", "family": "typography", "sel": "#t-h1", "prop": "font-size", "expect": "28px", "field": "fontSize" },
+    { "id": "body.fontSize", "variant": "desktop-1440", "family": "typography", "sel": "#t-body", "prop": "font-size", "expect": "17px", "field": "fontSize" },
+    { "id": "body.lineHeight", "variant": "desktop-1440", "family": "typography", "sel": "#t-body", "prop": "line-height", "expect": "27.2px", "field": "lineHeight" },
+    { "id": "body.letterSpacing", "variant": "desktop-1440", "family": "typography", "sel": "#t-body", "prop": "letter-spacing", "expect": "0.17px", "field": "letterSpacing" },
+    { "id": "lede.fontSize", "variant": "desktop-1440", "family": "typography", "sel": "#t-lede", "prop": "font-size", "expect": "19px", "field": "fontSize" },
+    { "id": "normal.lineHeight", "variant": "desktop-1440", "family": "typography", "sel": "#t-normal", "prop": "line-height", "expect": "normal", "field": "lineHeight" },
+    { "id": "normal.letterSpacing", "variant": "desktop-1440", "family": "typography", "sel": "#t-normal", "prop": "letter-spacing", "expect": "normal", "field": "letterSpacing" },
+    { "id": "hidden.fontSize", "variant": "desktop-1440", "family": "typography", "sel": "#t-hidden", "prop": "font-size", "expect": "33px", "field": "fontSize", "rendered": false },
+    { "id": "shadowdom.color", "variant": "desktop-1440", "family": "color", "sel": "#t-shadowhost >>> #t-shadow", "prop": "color", "expect": "rgb(122, 58, 155)" },
+    { "id": "ext.color", "variant": "desktop-1440", "family": "color", "sel": "#t-ext", "prop": "color", "expect": "rgb(142, 68, 173)" },
+    { "id": "ext.fontSize", "variant": "desktop-1440", "family": "typography", "sel": "#t-ext", "prop": "font-size", "expect": "13px", "field": "fontSize" },
+    { "id": "h1.color", "variant": "desktop-1440", "family": "color", "sel": "#t-h1", "prop": "color", "expect": "rgb(26, 43, 60)" },
+    { "id": "page.background", "variant": "desktop-1440", "family": "color", "sel": "html > body", "prop": "background-color", "expect": "rgb(244, 239, 230)" },
+    { "id": "page.background.dark", "variant": "desktop-1440-dark", "family": "color", "sel": "html > body", "prop": "background-color", "expect": "rgb(20, 23, 28)" },
+    { "id": "card.border", "variant": "desktop-1440", "family": "color", "sel": "#t-card", "prop": "border-top-color", "expect": "rgb(192, 57, 43)" },
+    { "id": "btn.background", "variant": "desktop-1440", "family": "color", "sel": "#t-btn", "prop": "background-color", "expect": "rgb(10, 127, 92)" },
+    { "id": "pseudo.color", "variant": "desktop-1440", "family": "color", "sel": "#t-card::before", "prop": "color", "expect": "rgb(211, 84, 0)" },
+    { "id": "oklch.color", "variant": "desktop-1440", "family": "color", "sel": "#t-oklch", "prop": "color", "expect": "oklch(0.62 0.19 142)", "hex": "#2ca122" },
+    { "id": "card.padding-top", "variant": "desktop-1440", "family": "spacing", "sel": "#t-card", "prop": "padding-top", "expect": "24px" },
+    { "id": "card.padding-left", "variant": "desktop-1440", "family": "spacing", "sel": "#t-card", "prop": "padding-left", "expect": "32px" },
+    { "id": "card.margin-bottom", "variant": "desktop-1440", "family": "spacing", "sel": "#t-card", "prop": "margin-bottom", "expect": "40px" },
+    { "id": "flex.gap", "variant": "desktop-1440", "family": "spacing", "sel": "#t-flex", "prop": "column-gap", "expect": "18px" },
+    { "id": "card.padding-top.mobile", "variant": "mobile-390", "family": "spacing", "sel": "#t-card", "prop": "padding-top", "expect": "12px" },
+    { "id": "card.shadow", "variant": "desktop-1440", "family": "shadow", "sel": "#t-card", "prop": "box-shadow", "expect": "rgba(0, 0, 0, 0.2) 0px 2px 4px 0px, rgb(255, 255, 255) 0px 1px 0px 0px inset" },
+    { "id": "text.shadow", "variant": "desktop-1440", "family": "shadow", "sel": "#t-textshadow", "prop": "text-shadow", "expect": "rgba(0, 0, 0, 0.5) 1px 2px 3px" },
+    { "id": "card.radius", "variant": "desktop-1440", "family": "radius", "sel": "#t-card", "prop": "border-top-left-radius", "expect": "12px" },
+    { "id": "pill.radius", "variant": "desktop-1440", "family": "radius", "sel": "#t-pill", "prop": "border-top-left-radius", "expect": "50%" },
+    { "id": "asym.radius.br", "variant": "desktop-1440", "family": "radius", "sel": "#t-asym", "prop": "border-bottom-right-radius", "expect": "24px" },
+    { "id": "ext.radius", "variant": "desktop-1440", "family": "radius", "sel": "#t-ext", "prop": "border-top-left-radius", "expect": "6px" }
+  ],
+  "layout": [
+    { "id": "card.box.1440", "variant": "desktop-1440", "sel": "#t-card", "w": 400, "h": 180 },
+    { "id": "card.box.920", "variant": "tablet-920", "sel": "#t-card", "w": 320, "h": 180 },
+    { "id": "pill.box", "variant": "desktop-1440", "sel": "#t-pill", "w": 64, "h": 64 },
+    { "id": "flex.row", "variant": "desktop-1440", "sel": "#t-flex", "flexDirection": "row" },
+    { "id": "flex.column.390", "variant": "mobile-390", "sel": "#t-flex", "flexDirection": "column" }
+  ],
+  "declared": [
+    { "id": "lede.fontSize.decl", "variant": "desktop-1440", "sel": "#t-lede", "prop": "font-size", "text": "19px", "file": "style.css", "important": true },
+    { "id": "h1.fontSize.decl", "variant": "desktop-1440", "sel": "#t-h1", "prop": "font-size", "text": "2.5rem", "file": "style.css" },
+    { "id": "h1.lineHeight.decl", "variant": "desktop-1440", "sel": "#t-h1", "prop": "line-height", "text": "1.15", "file": "style.css" },
+    { "id": "body.letterSpacing.decl", "variant": "desktop-1440", "sel": "#t-body", "prop": "letter-spacing", "text": ".01em", "file": "style.css" },
+    { "id": "card.padding-top.decl", "variant": "desktop-1440", "sel": "#t-card", "prop": "padding-top", "text": "var(--space-3)", "file": "style.css" },
+    { "id": "card.padding-left.decl", "variant": "desktop-1440", "sel": "#t-card", "prop": "padding-left", "text": "32px", "file": "style.css" },
+    { "id": "card.radius.decl", "variant": "desktop-1440", "sel": "#t-card", "prop": "border-top-left-radius", "text": "var(--radius-card)", "file": "style.css" },
+    { "id": "ext.color.decl", "variant": "desktop-1440", "sel": "#t-ext", "prop": "color", "text": "#8e44ad", "file": "ext.css" },
+    { "id": "h1.color.decl", "variant": "desktop-1440", "sel": "#t-h1", "prop": "color", "text": "var(--ink)", "file": "style.css", "via": "inherited" }
+  ],
+  "customProperties": [
+    { "name": "--accent", "value": "#0a7f5c" }, { "name": "--space-3", "value": "24px" }, { "name": "--radius-card", "value": "12px" }, { "name": "--ink", "value": "#1a2b3c" }, { "name": "--paper", "value": "#f4efe6" }
+  ],
+  "states": [
+    { "id": "btn.hover.background", "sel": "#t-btn", "state": "hover", "prop": "background-color", "expect": "rgb(7, 90, 65)" },
+    { "id": "btn.hover.shadow", "sel": "#t-btn", "state": "hover", "prop": "box-shadow", "expect": "rgba(10, 127, 92, 0.45) 0px 4px 12px 0px" },
+    { "id": "btn.focus.outline", "sel": "#t-btn", "state": "focus", "prop": "outline-color", "expect": "rgb(241, 196, 15)" }
+  ],
+  "usedLineHeight": [ { "id": "normal.lhUsed", "variant": "desktop-1440", "sel": "#t-normal" } ],
+  "breakpoints": [
+    { "id": "bp.480", "lastOld": 480, "firstNew": 481, "explainedBy": "(width <= 480px)", "kind": "css" },
+    { "id": "bp.600", "lastOld": 600, "firstNew": 601, "explainedBy": "(max-width: 600px)", "kind": "css" },
+    { "id": "bp.860", "lastOld": 860, "firstNew": 861, "explainedBy": "(max-width: 860px)", "kind": "css" },
+    { "id": "bp.1000", "lastOld": 999, "firstNew": 1000, "explainedBy": "(min-width: 1000px)", "kind": "css", "crossOriginSheet": true },
+    { "id": "bp.1201", "lastOld": 1200, "firstNew": 1201, "explainedBy": "(min-width: 1201px)", "kind": "js-matchMedia" },
+    { "id": "bp.1501", "lastOld": 1500, "firstNew": 1501, "explainedBy": null, "unknown": "unk_breakpoint_unexplained" }
+  ],
+  "unknown": [
+    { "id": "canvas.pixels", "unknown": "unk_canvas_pixels", "scope": "#t-canvas", "plantedValue": "#ff00aa" },
+    { "id": "print.rules", "unknown": "unk_print_media", "scope": "print" },
+    { "id": "xorigin.cssom", "unknown": "unk_xorigin_cssom" },
+    { "id": "bp.js-innerWidth", "unknown": "unk_breakpoint_unexplained", "scope": "1500|1501" }
+  ],
+  "fonts": { "customUsed": "WR Plant Sans", "declaredNotUsed": "WR Unused Sans", "fileBytes": 948, "fallbackUsed": "Helvetica" },
+  "svg": { "inlineViewBox": "0 0 24 24", "externalImg": "mark.svg", "externalBackground": "dots.svg" },
+  "a11y": { "desktopHas": ["banner", "navigation \"Main\"", "heading \"Planted Heading\" [level=1]", "button \"Go\"", "img \"Mark\"", "link \"Beta\""], "mobileLacks": ["link \"Beta\""] }
+}

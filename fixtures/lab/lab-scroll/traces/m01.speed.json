@@ -1,0 +1,28 @@
+{
+ "schema": "reva.labtrace/0",
+ "route": "m01",
+ "variant": "speed",
+ "note": "Fast dense sweep (7 px per frame) up and back; the map is read from every position, nothing is smoothed.",
+ "actions": [
+  {
+   "hold": 500
+  },
+  {
+   "scrollTo": 0
+  },
+  {
+   "hold": 100
+  },
+  {
+   "denseSweep": {
+    "from": 0,
+    "to": 1000,
+    "px": 7,
+    "framesPerPos": 1
+   }
+  },
+  {
+   "hold": 300
+  }
+ ]
+}

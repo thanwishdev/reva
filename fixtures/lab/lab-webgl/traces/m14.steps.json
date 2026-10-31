@@ -1,0 +1,32 @@
+{
+ "route": "m14",
+ "variant": "steps",
+ "viewport": {
+  "width": 1280,
+  "height": 800
+ },
+ "boot": {},
+ "actions": [
+  {
+   "eval": "window.dispatchEvent(new Event('go'))"
+  },
+  {
+   "mark": "go"
+  },
+  {
+   "hold": 400
+  },
+  {
+   "scrollTo": 800
+  },
+  {
+   "hold": 2600
+  },
+  {
+   "scrollTo": 200
+  },
+  {
+   "hold": 2600
+  }
+ ]
+}

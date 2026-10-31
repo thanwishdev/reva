@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>scrub fixture</title>
+<!--
+  Scroll-scrubbed motion on a page that owns its scroll (plain JS, no library; known by construction, viewport 1440 x 900):
+  - smooth scroller (Lenis-like): every wheel is prevented and added to a target; each frame the position closes
+    1 - exp(-6 dt) of the gap (Lenis lerp 0.1 = lambda 6 /s, tau 166.7 ms) and the page scrolls to it;
+  - #ht   scrub:true (GSAP-like, ease none): translateY = -180 p, opacity = 1 - 0.8 p, p = clamp(scrollY / 900);
+  - #pin  pinned (sticky) from scrollY 1500 to 3900; inside it #rail translateX = -2000 q, q = clamp((scrollY - 1500) / 2400);
+  - #scr  scrub 0.5 (GSAP-like): r = clamp((scrollY - 4800) / 1200); shown progress follows r by an expo.out tween of
+          500 ms restarted on every change (what ScrollTrigger's scrub does); translateX = 600 * shown.
+  Every scroll-linked value is computed in the same frame from the rounded window.scrollY, after the scroller moved it.
+-->
+<style>
+  html, body { margin: 0; background: #111; color: #eee; font: 16px/1.4 system-ui, sans-serif; }
+  section { position: relative; }
+  #hero { height: 900px; display: grid; place-items: center; }
+  #ht { width: 900px; height: 240px; background: #c84; will-change: transform; }
+  .gap { height: 600px; }
+  #pinwrap { height: 3300px; }
+  #pin { position: sticky; top: 0; height: 900px; overflow: hidden; }
+  #rail { position: absolute; top: 300px; left: 0; width: 3440px; height: 300px; display: flex; gap: 40px; will-change: transform; }
+  #rail i { flex: 0 0 600px; background: #48c; }
+  #scrs { height: 1800px; }
+  #scr { position: absolute; top: 300px; left: 100px; width: 500px; height: 400px; background: #8c4; will-change: transform; }
+  .tail { height: 2000px; }
+</style>
+</head>
+<body>
+<section id="hero"><div id="ht"></div></section>
+<div class="gap"></div>
+<section id="pinwrap"><div id="pin"><div id="rail"><i></i><i></i><i></i><i></i><i></i></div></div></section>
+<div class="gap"></div>
+<section id="scrs"><div id="scr"></div></section>
+<div class="tail"></div>
+<script>
+  const clamp = (v) => Math.min(1, Math.max(0, v));
+  const expoOut = (p) => (p >= 1 ? 1 : 1 - 2 ** (-10 * p));
+  const ht = document.getElementById('ht'), rail = document.getElementById('rail'), scr = document.getElementById('scr');
+  const max = () => document.documentElement.scrollHeight - innerHeight;
+  let target = scrollY, current = scrollY, last = null;
+  addEventListener('wheel', (e) => { e.preventDefault(); target = Math.min(max(), Math.max(0, target + e.deltaY)); }, { passive: false });
+  // scrub 0.5: a tween from the shown value to the newest progress, restarted whenever the progress changes
+  let shown = 0, from = 0, to = 0, t0 = 0;
+  function update(now) {
+    const y = scrollY;
+    const p = clamp(y / 900);
+    ht.style.transform = `translateY(${-180 * p}px)`; ht.style.opacity = String(1 - 0.8 * p);
+    rail.style.transform = `translateX(${-2000 * clamp((y - 1500) / 2400)}px)`;
+    const r = clamp((y - 4800) / 1200);
+    if (r !== to) { from = shown; to = r; t0 = now; }
+    shown = from + (to - from) * expoOut((now - t0) / 500);
+    scr.style.transform = `translateX(${600 * shown}px)`;
+  }
+  function frame(now) {
+    const dt = last == null ? 0 : (now - last) / 1000; last = now;
+    current += (target - current) * (1 - Math.exp(-6 * dt));
+    if (Math.abs(target - current) < 0.5) current = target;
+    if (Math.round(current) !== Math.round(scrollY)) scrollTo(0, current);
+    update(now);
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+</script>
+</body>
+</html>

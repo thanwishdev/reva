@@ -1,0 +1,696 @@
+[
+ {
+  "id": "m13",
+  "page": "routes/m13.html",
+  "engine": "chs",
+  "regimes": [
+   "R2",
+   "R3",
+   "R4",
+   "R5"
+  ],
+  "driver": "pointer",
+  "docHeight": null,
+  "launchArgs": [],
+  "params": {
+   "default": {
+    "law": "frame",
+    "alpha": 0.1
+   },
+   "grid": [
+    {
+     "law": "frame",
+     "alpha": 0.1
+    },
+    {
+     "law": "frame",
+     "alpha": 0.06
+    },
+    {
+     "law": "frame",
+     "alpha": 0.18
+    },
+    {
+     "law": "dt",
+     "lambda": 6
+    },
+    {
+     "law": "dt",
+     "lambda": 12
+    }
+   ]
+  },
+  "traces": {
+   "steps": "traces/m13.steps.json",
+   "reversal": "traces/m13.reversal.json",
+   "gaps": "traces/m13.gaps.json"
+  },
+  "watch": {
+   "selectors": [
+    ".b0"
+   ]
+  },
+  "truthClass": "first-order smoothing",
+  "metrics": [
+   "class",
+   "law",
+   "alpha_per_frame",
+   "tau_at_T",
+   "attribution"
+  ]
+ },
+ {
+  "id": "m14",
+  "page": "routes/m14.html",
+  "engine": "chs",
+  "regimes": [
+   "R2",
+   "R3",
+   "R4",
+   "R5"
+  ],
+  "driver": "scroll",
+  "docHeight": 3000,
+  "launchArgs": [
+   "--enable-unsafe-swiftshader",
+   "--use-angle=swiftshader"
+  ],
+  "params": {
+   "default": {
+    "mode": "spring",
+    "zeta": 0.45,
+    "lag": 0.8
+   },
+   "grid": [
+    {
+     "mode": "spring",
+     "zeta": 0.45,
+     "lag": 0.8
+    },
+    {
+     "mode": "spring",
+     "zeta": 0.7,
+     "lag": 0.8
+    },
+    {
+     "mode": "spring",
+     "zeta": 0.45,
+     "lag": 0.55
+    },
+    {
+     "mode": "spring",
+     "zeta": 0.7,
+     "lag": 1.1
+    },
+    {
+     "mode": "orbit",
+     "orbitRate": 0.0005
+    }
+   ]
+  },
+  "traces": {
+   "steps": "traces/m14.steps.json",
+   "reversal": "traces/m14.reversal.json",
+   "gaps": "traces/m14.gaps.json"
+  },
+  "watch": {
+   "selectors": [
+    ".cv"
+   ],
+   "glUniforms": [
+    "u_a"
+   ],
+   "pixelKeys": [
+    {
+     "key": "m",
+     "rgb": [
+      255,
+      0,
+      255
+     ],
+     "tol": 110
+    },
+    {
+     "key": "n",
+     "rgb": [
+      255,
+      191,
+      0
+     ],
+     "tol": 110
+    }
+   ]
+  },
+  "truthClass": "spring",
+  "metrics": [
+   "class",
+   "pixel_nrmse",
+   "dom_not_applicable",
+   "attribution"
+  ]
+ },
+ {
+  "id": "m14b",
+  "page": "routes/m14b.html",
+  "engine": "chs",
+  "regimes": [
+   "R2",
+   "R3",
+   "R4",
+   "R5"
+  ],
+  "driver": "scroll",
+  "docHeight": 3000,
+  "launchArgs": [
+   "--enable-unsafe-swiftshader",
+   "--use-angle=swiftshader"
+  ],
+  "params": {
+   "default": {
+    "mode": "spring",
+    "zeta": 0.45,
+    "lag": 0.8
+   },
+   "grid": [
+    {
+     "mode": "spring",
+     "zeta": 0.45,
+     "lag": 0.8
+    },
+    {
+     "mode": "spring",
+     "zeta": 0.7,
+     "lag": 0.8
+    },
+    {
+     "mode": "spring",
+     "zeta": 0.45,
+     "lag": 0.55
+    },
+    {
+     "mode": "spring",
+     "zeta": 0.7,
+     "lag": 1.1
+    },
+    {
+     "mode": "spring",
+     "zeta": 0.58,
+     "lag": 0.65
+    }
+   ]
+  },
+  "traces": {
+   "steps": "traces/m14b.steps.json"
+  },
+  "watch": {
+   "selectors": [
+    ".cv"
+   ],
+   "pixelKeys": [
+    {
+     "key": "m",
+     "rgb": [
+      255,
+      0,
+      255
+     ],
+     "tol": 110
+    },
+    {
+     "key": "n",
+     "rgb": [
+      255,
+      191,
+      0
+     ],
+     "tol": 110
+    }
+   ]
+  },
+  "truthClass": "not_applicable",
+  "metrics": [
+   "pixel_nrmse",
+   "dom_not_applicable"
+  ]
+ },
+ {
+  "id": "m16a",
+  "page": "routes/m16a.html",
+  "engine": "chs",
+  "regimes": [
+   "R2",
+   "R3",
+   "R4",
+   "R5"
+  ],
+  "driver": "scroll",
+  "docHeight": 2400,
+  "launchArgs": [],
+  "params": {
+   "default": {
+    "x": 120,
+    "y": 60,
+    "opacity": 1
+   },
+   "grid": [
+    {
+     "x": 120,
+     "y": 60,
+     "opacity": 1
+    },
+    {
+     "x": 300,
+     "y": 40,
+     "opacity": 0.6
+    },
+    {
+     "x": 50,
+     "y": 200,
+     "opacity": 1
+    },
+    {
+     "x": 640,
+     "y": 90,
+     "opacity": 0.8
+    },
+    {
+     "x": 15,
+     "y": 10,
+     "opacity": 0.35
+    }
+   ]
+  },
+  "traces": {
+   "steps": "traces/m16a.steps.json"
+  },
+  "watch": {
+   "selectors": [
+    ".b0",
+    ".b1"
+   ]
+  },
+  "truthClass": "static",
+  "negative": {
+   "accept": [
+    "static"
+   ],
+   "forbid": [
+    "spring",
+    "first-order smoothing",
+    "tween",
+    "ramp",
+    "step",
+    "scroll map"
+   ]
+  },
+  "metrics": [
+   "negative",
+   "false_spring",
+   "false_ema"
+  ]
+ },
+ {
+  "id": "m16b",
+  "page": "routes/m16b.html",
+  "engine": "chs",
+  "regimes": [
+   "R2",
+   "R3",
+   "R4",
+   "R5"
+  ],
+  "driver": "time",
+  "docHeight": 2400,
+  "launchArgs": [],
+  "params": {
+   "default": {
+    "seed": 11,
+    "base": 200,
+    "amp": 6
+   },
+   "grid": [
+    {
+     "seed": 11,
+     "base": 200,
+     "amp": 6
+    },
+    {
+     "seed": 23,
+     "base": 240,
+     "amp": 9
+    },
+    {
+     "seed": 37,
+     "base": 300,
+     "amp": 4
+    },
+    {
+     "seed": 52,
+     "base": 160,
+     "amp": 12
+    },
+    {
+     "seed": 68,
+     "base": 260,
+     "amp": 16
+    }
+   ]
+  },
+  "traces": {
+   "steps": "traces/m16b.steps.json"
+  },
+  "watch": {
+   "selectors": [
+    ".b0"
+   ]
+  },
+  "truthClass": "unknown",
+  "negative": {
+   "accept": [
+    "unknown",
+    "unexplained"
+   ],
+   "forbid": [
+    "spring",
+    "first-order smoothing",
+    "tween",
+    "ramp",
+    "step",
+    "static",
+    "scroll map"
+   ]
+  },
+  "metrics": [
+   "negative",
+   "false_spring",
+   "false_ema"
+  ]
+ },
+ {
+  "id": "m16c",
+  "page": "routes/m16c.html",
+  "engine": "chs",
+  "regimes": [
+   "R2",
+   "R3",
+   "R4",
+   "R5"
+  ],
+  "driver": "scroll",
+  "docHeight": 2400,
+  "launchArgs": [],
+  "params": {
+   "default": {
+    "speed": 300
+   },
+   "grid": [
+    {
+     "speed": 300
+    },
+    {
+     "speed": 150
+    },
+    {
+     "speed": 240
+    },
+    {
+     "speed": 450
+    },
+    {
+     "speed": 600
+    }
+   ]
+  },
+  "traces": {
+   "steps": "traces/m16c.steps.json"
+  },
+  "watch": {
+   "selectors": [
+    ".b0"
+   ]
+  },
+  "truthClass": "ramp",
+  "negative": {
+   "accept": [
+    "ramp",
+    "unknown"
+   ],
+   "forbid": [
+    "spring",
+    "first-order smoothing",
+    "tween"
+   ]
+  },
+  "metrics": [
+   "negative",
+   "false_spring",
+   "false_ema"
+  ]
+ },
+ {
+  "id": "m16d",
+  "page": "routes/m16d.html",
+  "engine": "chs",
+  "regimes": [
+   "R2",
+   "R3",
+   "R4",
+   "R5"
+  ],
+  "driver": "scroll",
+  "docHeight": 2400,
+  "launchArgs": [],
+  "params": {
+   "default": {
+    "amp": 140
+   },
+   "grid": [
+    {
+     "amp": 140
+    },
+    {
+     "amp": 60
+    },
+    {
+     "amp": 90
+    },
+    {
+     "amp": 200,
+     "threshold": 150
+    },
+    {
+     "amp": 260,
+     "threshold": 250
+    }
+   ]
+  },
+  "traces": {
+   "steps": "traces/m16d.steps.json"
+  },
+  "watch": {
+   "selectors": [
+    ".b0"
+   ]
+  },
+  "truthClass": "step",
+  "negative": {
+   "accept": [
+    "step",
+    "unknown"
+   ],
+   "forbid": [
+    "spring",
+    "first-order smoothing",
+    "tween",
+    "ramp"
+   ]
+  },
+  "metrics": [
+   "negative",
+   "false_spring",
+   "false_ema"
+  ]
+ },
+ {
+  "id": "m20",
+  "page": "routes/m20.html",
+  "engine": "chs",
+  "regimes": [
+   "R2",
+   "R3",
+   "R4",
+   "R5"
+  ],
+  "driver": "scroll+time",
+  "docHeight": 3000,
+  "launchArgs": [],
+  "params": {
+   "default": {},
+   "grid": [
+    {}
+   ]
+  },
+  "traces": {
+   "steps": "traces/m20.steps.json",
+   "holds": "traces/m20.holds.json",
+   "idle": "traces/m20.idle.json"
+  },
+  "watch": {
+   "selectors": [
+    ".e0",
+    ".e1",
+    ".e2",
+    ".e3"
+   ]
+  },
+  "truthClass": "mixed",
+  "metrics": [
+   "class",
+   "attribution"
+  ]
+ },
+ {
+  "id": "m21",
+  "page": "routes/m21.html",
+  "engine": "chs",
+  "regimes": [
+   "R2",
+   "R3",
+   "R4",
+   "R5"
+  ],
+  "driver": "scroll",
+  "docHeight": 2400,
+  "launchArgs": [],
+  "params": {
+   "default": {
+    "durMs": 750
+   },
+   "grid": [
+    {
+     "durMs": 750
+    },
+    {
+     "durMs": 300
+    },
+    {
+     "durMs": 450
+    },
+    {
+     "durMs": 1050
+    },
+    {
+     "durMs": 1400
+    }
+   ]
+  },
+  "traces": {
+   "steps": "traces/m21.steps.json",
+   "reversal": "traces/m21.reversal.json"
+  },
+  "watch": {
+   "selectors": [
+    ".b0"
+   ]
+  },
+  "truthClass": "restarted tween",
+  "metrics": [
+   "class",
+   "law",
+   "step_response_duration"
+  ]
+ },
+ {
+  "id": "m22",
+  "page": "routes/m22.html",
+  "engine": "chs",
+  "regimes": [
+   "R2",
+   "R3",
+   "R4",
+   "R5"
+  ],
+  "driver": "scroll",
+  "docHeight": 2400,
+  "launchArgs": [],
+  "params": {
+   "default": {
+    "alpha": 0.16,
+    "durMs": 420,
+    "ease": [
+     0.31,
+     0.12,
+     0.18,
+     0.97
+    ]
+   },
+   "grid": [
+    {
+     "alpha": 0.16,
+     "durMs": 420,
+     "ease": [
+      0.31,
+      0.12,
+      0.18,
+      0.97
+     ]
+    },
+    {
+     "alpha": 0.07,
+     "durMs": 520,
+     "ease": [
+      0.31,
+      0.12,
+      0.18,
+      0.97
+     ]
+    },
+    {
+     "alpha": 0.11,
+     "durMs": 300,
+     "ease": [
+      0.17,
+      0.8,
+      0.33,
+      0.98
+     ]
+    },
+    {
+     "alpha": 0.24,
+     "durMs": 560,
+     "ease": [
+      0.4,
+      0.05,
+      0.2,
+      0.95
+     ]
+    },
+    {
+     "alpha": 0.33,
+     "durMs": 380,
+     "ease": [
+      0.31,
+      0.12,
+      0.18,
+      0.97
+     ]
+    }
+   ]
+  },
+  "traces": {
+   "steps": "traces/m22.steps.json",
+   "reversal": "traces/m22.reversal.json"
+  },
+  "watch": {
+   "selectors": [
+    ".b0"
+   ]
+  },
+  "truthClass": "composite",
+  "metrics": [
+   "class",
+   "driver_alpha",
+   "transition_timing"
+  ]
+ }
+]

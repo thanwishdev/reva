@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>look fixture: a library that comes from a CDN</title>
+<!-- Own fixture (no site content). #cdnbox is moved ONLY by cdn-lib.js, which the page loads from a "CDN" host
+  (cdn.example.test, same port; the test maps that name to loopback). With the network closed (a local look's default) the script
+  is blocked and nothing moves; with that host allowed it plays a 600 ms slide. fonts.example.test is never allowed in the tests. -->
+<style>
+  html, body { margin: 0; }
+  #cdnbox { position: absolute; left: 100px; top: 300px; width: 120px; height: 120px; background: #36c; }
+</style>
+<link rel="stylesheet" href="http://fonts.example.test/fonts.css">
+</head>
+<body>
+<div id="cdnbox"></div>
+<script>
+  const s = document.createElement('script'); s.src = 'http://cdn.example.test:' + location.port + '/cdn-lib.js'; document.head.appendChild(s);
+</script>
+</body>
+</html>

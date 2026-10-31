@@ -1,0 +1,13 @@
+<!doctype html>
+<meta charset="utf-8">
+<!-- Hostile element names, markup kind: id and class carry </script>, </style> and <!--. In a JS comment of a generated
+     snippet pasted into an HTML page, `</script>` would close the inline <script> and run the page's own script.
+     Generated code must carry no markup from the page. -->
+<title>termesc-markup</title>
+<div id="b" style="width:300px;height:200px;background:#c33;transition:transform 600ms cubic-bezier(.2,.8,.2,1)">x</div>
+<script>
+const el = document.getElementById('b');
+el.className = 'box <\/style><img src=x onerror=alert(1)> <\!--';   // <\/ and <\! so this script itself is not cut
+el.id = '<\/script><script>alert(document.domain)<\/script>';
+requestAnimationFrame(() => requestAnimationFrame(() => { el.style.transform = 'translateX(400px)'; }));
+</script>

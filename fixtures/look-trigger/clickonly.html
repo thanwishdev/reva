@@ -1,0 +1,14 @@
+<!doctype html>
+<!-- Known by construction (test/look/look-trigger.test.js): .card is shown, but its hover does nothing until
+  button.live is clicked (it adds .is-live: background swaps at once). .card.is-live:hover scales it to 1.1 with a
+  CSS transition of 400 ms linear. Hovering button.live changes nothing. A hover look on .card must click button.live
+  first (after), never hover it as the trigger (on). -->
+<html><head><meta charset="utf-8"><title>click to arm</title>
+<style>body{margin:0;background:#111;color:#eee;font:16px system-ui}
+section{margin:80px;display:flex;gap:40px;align-items:center}
+.card{width:240px;height:160px;background:#333;transition:transform 400ms linear}
+.card.is-live{background:#4a8}.card.is-live:hover{transform:scale(1.1)}
+.live{padding:14px 20px}</style></head>
+<body><section><div class="card"></div><button class="live" type="button">Arm</button></section>
+<script>document.querySelector('.live').onclick = () => document.querySelector('.card').classList.add('is-live');</script>
+</body></html>

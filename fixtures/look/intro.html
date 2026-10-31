@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>look fixture: intro tween that runs while the tool hovers</title>
+<!-- Own fixture for `reva look --do hover` (no site content). Known by construction:
+  #intro  a page-load intro: 1000 ms after DOMContentLoaded an rAF tween (easeOutCubic, 600 ms) moves translateY 30 -> 0 px
+          and opacity 0 -> 1. It has NO pointer listener and no :hover rule, so a hover on it changes nothing: the tween is
+          the page's own load motion that happens to run while the tool hovers, and must not be reported as the hover.
+  #real   a real hover reaction: CSS transition (150 ms) on scale, for the "hover result is still reported" check.
+-->
+<style>
+  html, body { margin: 0; }
+  body { height: 800px; }
+  #intro { position: absolute; left: 80px; top: 120px; width: 240px; height: 80px; background: #345; opacity: 0; transform: translateY(30px); }
+  #real { position: absolute; left: 400px; top: 120px; width: 240px; height: 80px; background: #543; transition: transform 150ms ease; }
+  #real:hover { transform: scale(1.1); }
+</style>
+</head>
+<body>
+<div id="intro"></div>
+<div id="real"></div>
+<script>
+  const el = document.getElementById('intro');
+  addEventListener('DOMContentLoaded', () => setTimeout(() => {
+    const t0 = performance.now();
+    const step = (now) => {
+      const p = Math.min(1, (now - t0) / 600), e = 1 - Math.pow(1 - p, 3);
+      el.style.opacity = String(e); el.style.transform = 'translateY(' + (30 * (1 - e)) + 'px)';
+      if (p < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }, 1000));
+</script>
+</body>
+</html>

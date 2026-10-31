@@ -1,0 +1,563 @@
+{
+ "note": "Generated for review by tools/gen-truth.mjs. Planned-trace values (start signal at k = 0); the scorer calls truth(route, params, regime, {variant, ctx}) with the actual take.",
+ "route": "m16a",
+ "default": {
+  "steps": {
+   "R2": {
+    "schema": "reva.labtruth/0",
+    "route": "m16a",
+    "params": {
+     "x": 120,
+     "y": 60,
+     "opacity": 1
+    },
+    "regime": "R2",
+    "variant": "steps",
+    "metrics": [
+     "negative",
+     "false_spring",
+     "false_ema"
+    ],
+    "stagger": null,
+    "negative": {
+     "accept": [
+      "static"
+     ],
+     "forbid": [
+      "spring",
+      "first-order smoothing",
+      "tween",
+      "ramp",
+      "step",
+      "scroll map"
+     ]
+    },
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "class": "static",
+      "params": {},
+      "derived": {}
+     },
+     {
+      "target": ".b0|ren:ty",
+      "class": "static",
+      "params": {},
+      "derived": {}
+     },
+     {
+      "target": ".b0|ren:opacity",
+      "class": "static",
+      "params": {},
+      "derived": {}
+     },
+     {
+      "target": ".b1|ren:tx",
+      "class": "static",
+      "params": {},
+      "derived": {}
+     }
+    ],
+    "attribution": {}
+   },
+   "R3": {
+    "schema": "reva.labtruth/0",
+    "route": "m16a",
+    "params": {
+     "x": 120,
+     "y": 60,
+     "opacity": 1
+    },
+    "regime": "R3",
+    "variant": "steps",
+    "metrics": [
+     "negative",
+     "false_spring",
+     "false_ema"
+    ],
+    "stagger": null,
+    "negative": {
+     "accept": [
+      "static"
+     ],
+     "forbid": [
+      "spring",
+      "first-order smoothing",
+      "tween",
+      "ramp",
+      "step",
+      "scroll map"
+     ]
+    },
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "class": "static",
+      "params": {},
+      "derived": {}
+     },
+     {
+      "target": ".b0|ren:ty",
+      "class": "static",
+      "params": {},
+      "derived": {}
+     },
+     {
+      "target": ".b0|ren:opacity",
+      "class": "static",
+      "params": {},
+      "derived": {}
+     },
+     {
+      "target": ".b1|ren:tx",
+      "class": "static",
+      "params": {},
+      "derived": {}
+     }
+    ],
+    "attribution": {}
+   },
+   "R4": {
+    "schema": "reva.labtruth/0",
+    "route": "m16a",
+    "params": {
+     "x": 120,
+     "y": 60,
+     "opacity": 1
+    },
+    "regime": "R4",
+    "variant": "steps",
+    "metrics": [
+     "negative",
+     "false_spring",
+     "false_ema"
+    ],
+    "stagger": null,
+    "negative": {
+     "accept": [
+      "static"
+     ],
+     "forbid": [
+      "spring",
+      "first-order smoothing",
+      "tween",
+      "ramp",
+      "step",
+      "scroll map"
+     ]
+    },
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "class": "static",
+      "params": {},
+      "derived": {}
+     },
+     {
+      "target": ".b0|ren:ty",
+      "class": "static",
+      "params": {},
+      "derived": {}
+     },
+     {
+      "target": ".b0|ren:opacity",
+      "class": "static",
+      "params": {},
+      "derived": {}
+     },
+     {
+      "target": ".b1|ren:tx",
+      "class": "static",
+      "params": {},
+      "derived": {}
+     }
+    ],
+    "attribution": {}
+   },
+   "R5": {
+    "schema": "reva.labtruth/0",
+    "route": "m16a",
+    "params": {
+     "x": 120,
+     "y": 60,
+     "opacity": 1
+    },
+    "regime": "R5",
+    "variant": "steps",
+    "metrics": [
+     "negative",
+     "false_spring",
+     "false_ema"
+    ],
+    "stagger": null,
+    "negative": {
+     "accept": [
+      "static"
+     ],
+     "forbid": [
+      "spring",
+      "first-order smoothing",
+      "tween",
+      "ramp",
+      "step",
+      "scroll map"
+     ]
+    },
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "class": "static",
+      "params": {},
+      "derived": {}
+     },
+     {
+      "target": ".b0|ren:ty",
+      "class": "static",
+      "params": {},
+      "derived": {}
+     },
+     {
+      "target": ".b0|ren:opacity",
+      "class": "static",
+      "params": {},
+      "derived": {}
+     },
+     {
+      "target": ".b1|ren:tx",
+      "class": "static",
+      "params": {},
+      "derived": {}
+     }
+    ],
+    "attribution": {}
+   }
+  }
+ },
+ "grid": [
+  {
+   "index": 0,
+   "params": {
+    "x": 120,
+    "y": 60,
+    "opacity": 1
+   },
+   "R3": {
+    "schema": "reva.labtruth/0",
+    "route": "m16a",
+    "params": {
+     "x": 120,
+     "y": 60,
+     "opacity": 1
+    },
+    "regime": "R3",
+    "variant": "steps",
+    "metrics": [
+     "negative",
+     "false_spring",
+     "false_ema"
+    ],
+    "stagger": null,
+    "negative": {
+     "accept": [
+      "static"
+     ],
+     "forbid": [
+      "spring",
+      "first-order smoothing",
+      "tween",
+      "ramp",
+      "step",
+      "scroll map"
+     ]
+    },
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "class": "static",
+      "params": {},
+      "derived": {}
+     },
+     {
+      "target": ".b0|ren:ty",
+      "class": "static",
+      "params": {},
+      "derived": {}
+     },
+     {
+      "target": ".b0|ren:opacity",
+      "class": "static",
+      "params": {},
+      "derived": {}
+     },
+     {
+      "target": ".b1|ren:tx",
+      "class": "static",
+      "params": {},
+      "derived": {}
+     }
+    ],
+    "attribution": {}
+   }
+  },
+  {
+   "index": 1,
+   "params": {
+    "x": 300,
+    "y": 40,
+    "opacity": 0.6
+   },
+   "R3": {
+    "schema": "reva.labtruth/0",
+    "route": "m16a",
+    "params": {
+     "x": 300,
+     "y": 40,
+     "opacity": 0.6
+    },
+    "regime": "R3",
+    "variant": "steps",
+    "metrics": [
+     "negative",
+     "false_spring",
+     "false_ema"
+    ],
+    "stagger": null,
+    "negative": {
+     "accept": [
+      "static"
+     ],
+     "forbid": [
+      "spring",
+      "first-order smoothing",
+      "tween",
+      "ramp",
+      "step",
+      "scroll map"
+     ]
+    },
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "class": "static",
+      "params": {},
+      "derived": {}
+     },
+     {
+      "target": ".b0|ren:ty",
+      "class": "static",
+      "params": {},
+      "derived": {}
+     },
+     {
+      "target": ".b0|ren:opacity",
+      "class": "static",
+      "params": {},
+      "derived": {}
+     },
+     {
+      "target": ".b1|ren:tx",
+      "class": "static",
+      "params": {},
+      "derived": {}
+     }
+    ],
+    "attribution": {}
+   }
+  },
+  {
+   "index": 2,
+   "params": {
+    "x": 50,
+    "y": 200,
+    "opacity": 1
+   },
+   "R3": {
+    "schema": "reva.labtruth/0",
+    "route": "m16a",
+    "params": {
+     "x": 50,
+     "y": 200,
+     "opacity": 1
+    },
+    "regime": "R3",
+    "variant": "steps",
+    "metrics": [
+     "negative",
+     "false_spring",
+     "false_ema"
+    ],
+    "stagger": null,
+    "negative": {
+     "accept": [
+      "static"
+     ],
+     "forbid": [
+      "spring",
+      "first-order smoothing",
+      "tween",
+      "ramp",
+      "step",
+      "scroll map"
+     ]
+    },
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "class": "static",
+      "params": {},
+      "derived": {}
+     },
+     {
+      "target": ".b0|ren:ty",
+      "class": "static",
+      "params": {},
+      "derived": {}
+     },
+     {
+      "target": ".b0|ren:opacity",
+      "class": "static",
+      "params": {},
+      "derived": {}
+     },
+     {
+      "target": ".b1|ren:tx",
+      "class": "static",
+      "params": {},
+      "derived": {}
+     }
+    ],
+    "attribution": {}
+   }
+  },
+  {
+   "index": 3,
+   "params": {
+    "x": 640,
+    "y": 90,
+    "opacity": 0.8
+   },
+   "R3": {
+    "schema": "reva.labtruth/0",
+    "route": "m16a",
+    "params": {
+     "x": 640,
+     "y": 90,
+     "opacity": 0.8
+    },
+    "regime": "R3",
+    "variant": "steps",
+    "metrics": [
+     "negative",
+     "false_spring",
+     "false_ema"
+    ],
+    "stagger": null,
+    "negative": {
+     "accept": [
+      "static"
+     ],
+     "forbid": [
+      "spring",
+      "first-order smoothing",
+      "tween",
+      "ramp",
+      "step",
+      "scroll map"
+     ]
+    },
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "class": "static",
+      "params": {},
+      "derived": {}
+     },
+     {
+      "target": ".b0|ren:ty",
+      "class": "static",
+      "params": {},
+      "derived": {}
+     },
+     {
+      "target": ".b0|ren:opacity",
+      "class": "static",
+      "params": {},
+      "derived": {}
+     },
+     {
+      "target": ".b1|ren:tx",
+      "class": "static",
+      "params": {},
+      "derived": {}
+     }
+    ],
+    "attribution": {}
+   }
+  },
+  {
+   "index": 4,
+   "params": {
+    "x": 15,
+    "y": 10,
+    "opacity": 0.35
+   },
+   "R3": {
+    "schema": "reva.labtruth/0",
+    "route": "m16a",
+    "params": {
+     "x": 15,
+     "y": 10,
+     "opacity": 0.35
+    },
+    "regime": "R3",
+    "variant": "steps",
+    "metrics": [
+     "negative",
+     "false_spring",
+     "false_ema"
+    ],
+    "stagger": null,
+    "negative": {
+     "accept": [
+      "static"
+     ],
+     "forbid": [
+      "spring",
+      "first-order smoothing",
+      "tween",
+      "ramp",
+      "step",
+      "scroll map"
+     ]
+    },
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "class": "static",
+      "params": {},
+      "derived": {}
+     },
+     {
+      "target": ".b0|ren:ty",
+      "class": "static",
+      "params": {},
+      "derived": {}
+     },
+     {
+      "target": ".b0|ren:opacity",
+      "class": "static",
+      "params": {},
+      "derived": {}
+     },
+     {
+      "target": ".b1|ren:tx",
+      "class": "static",
+      "params": {},
+      "derived": {}
+     }
+    ],
+    "attribution": {}
+   }
+  }
+ ]
+}

@@ -1,0 +1,3 @@
+body { margin: 0; font: 16px/1.4 system-ui, sans-serif; min-height: 300vh; }
+.box { width: 80px; height: 80px; background: #345; animation: slide 1s ease-in-out infinite alternate; }
+@keyframes slide { from { transform: translateX(0); } to { transform: translateX(120px); } }

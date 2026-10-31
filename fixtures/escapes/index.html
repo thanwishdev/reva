@@ -1,0 +1,14 @@
+<!doctype html><html><head><meta charset="utf-8"><title>REVA escape fixtures</title></head><body>
+<div id="out"></div>
+<script>
+// Own fixture. ?case=iframe-same | iframe-cross&other=<origin> | worker | offscreen | ric | none
+const q = new URLSearchParams(location.search); const c = q.get('case');
+window.CASE_DONE = false;
+if (c === 'iframe-same') { const f = document.createElement('iframe'); f.src = 'child.html'; document.body.appendChild(f); f.onload = () => { window.CASE_DONE = true; }; }
+if (c === 'iframe-cross') { const f = document.createElement('iframe'); f.src = q.get('other') + '/child.html'; document.body.appendChild(f); f.onload = () => { window.CASE_DONE = true; }; }
+if (c === 'worker') { const w = new Worker('worker.js'); w.onmessage = (e) => { document.getElementById('out').textContent = e.data; window.CASE_DONE = true; }; }
+if (c === 'offscreen') { const cv = document.createElement('canvas'); document.body.appendChild(cv); const off = cv.transferControlToOffscreen(); const ctx = off.getContext('2d'); ctx.fillRect(0, 0, 10, 10); window.CASE_DONE = true; }
+if (c === 'offscreen-ctor') { const off = new OffscreenCanvas(10, 10); off.getContext('2d').fillRect(0, 0, 5, 5); window.CASE_DONE = true; }
+if (c === 'ric') { requestIdleCallback(() => { window.CASE_DONE = true; }); }
+if (c === 'none' || !c) window.CASE_DONE = true;
+</script></body></html>

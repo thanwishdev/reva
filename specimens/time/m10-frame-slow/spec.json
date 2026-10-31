@@ -1,0 +1,79 @@
+{
+ "schema": "reva.specimen.time/0",
+ "id": "m10-frame-slow",
+ "origin": "lab",
+ "source": {
+  "kind": "labtruth",
+  "schema": "reva.labtruth/0",
+  "route": "m10",
+  "variant": "slow",
+  "regime": "R3",
+  "params": {
+   "law": "frame",
+   "friction": 0.9,
+   "write": "full",
+   "path": "slow"
+  }
+ },
+ "timeline": {
+  "frameMs": 8.333333,
+  "refreshHz": 120,
+  "leadMs": 500,
+  "sourceShiftMs": -400,
+  "durationMs": 1350,
+  "hasLoop": false
+ },
+ "viewport": {
+  "width": 1280,
+  "height": 800
+ },
+ "elements": [
+  {
+   "id": "e0",
+   "key": ".b0",
+   "x": 40,
+   "y": 60,
+   "w": 56,
+   "h": 56,
+   "tf": {
+    "tx": true,
+    "ty": false,
+    "rz": false,
+    "sx": false,
+    "sy": false
+   }
+  }
+ ],
+ "tracks": [
+  {
+   "id": "t0",
+   "el": 0,
+   "channel": "var",
+   "name": "--x",
+   "mapTo": "tx",
+   "impl": "js",
+   "label": "friction",
+   "provenance": {
+    "tier": "truth",
+    "route": "m10"
+   },
+   "assumptions": [
+    {
+     "field": "drag leg",
+     "reason": "the pointer-driven drag before the release is omitted; the coast starts at the release state"
+    }
+   ],
+   "motion": {
+    "kind": "friction",
+    "startMs": 500.0000000000001,
+    "x0": 220,
+    "v0": 4.166667,
+    "friction": 0.9,
+    "law": "frame",
+    "stopV": 0.05
+   }
+  }
+ ],
+ "notes": [],
+ "digest": "9798238714923a18"
+}

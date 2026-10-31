@@ -1,0 +1,19 @@
+<!doctype html>
+<meta charset="utf-8">
+<!-- A page-chosen custom property NAME holding terminal escapes (OSC 0 title, BEL, CSI colour) and U+202E, animated with
+     the box. The recorder keeps the name as a channel (drv:--...); `reva export <fit.json>` must print none of them. -->
+<title>termesc-cpname</title>
+<div id="b" style="width:200px;height:200px;background:#c33">x</div>
+<script>
+const el = document.getElementById('b');
+const N = '--\u001b]0;PWNED\u0007\u001b[31mred‮';
+let t0 = null;
+const step = (now) => {
+  if (t0 == null) t0 = now;
+  const p = Math.min(1, (now - t0) / 700), e = 1 - (1 - p) ** 3;
+  el.style.setProperty(N, String(Math.round(e * 30000) / 100));
+  el.style.transform = `translateX(${e * 300}px)`;
+  if (p < 1) requestAnimationFrame(step);
+};
+requestAnimationFrame(() => requestAnimationFrame(step));
+</script>

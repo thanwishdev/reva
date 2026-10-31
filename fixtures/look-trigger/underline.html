@@ -1,0 +1,13 @@
+<!doctype html>
+<!-- Known by construction (test/look/look-trigger.test.js): a.u grows an underline on hover by background-size only
+  (0px -> 100%, CSS transition 420 ms), which no sampled channel carries. button.cta beside it changes a.u's colour on
+  click. The hover did start a declared transition on a.u: that is a reaction, so no control is searched for. -->
+<html><head><meta charset="utf-8"><title>underline</title>
+<style>body{margin:0;background:#111;color:#eee;font:16px system-ui}
+nav{margin:120px 80px;display:flex;gap:24px;align-items:center}
+.u{padding:14px 6px;color:#eee;text-decoration:none;background:linear-gradient(#c84,#c84) 0 100%/0px 2px no-repeat;transition:background-size 420ms ease}
+.u:hover{background-size:100% 2px}.u.red{color:#f44}
+.cta{padding:14px 20px}</style></head>
+<body><nav><a class="u" href="#a">About</a><button class="cta" type="button">Go</button></nav>
+<script>document.querySelector('.cta').onclick = () => document.querySelector('.u').classList.add('red');</script>
+</body></html>

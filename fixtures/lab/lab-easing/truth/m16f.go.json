@@ -1,0 +1,152 @@
+{
+ "schema": "reva.labtruth/0",
+ "route": "m16f",
+ "params": {
+  "from": 0,
+  "to": 400,
+  "D": 880,
+  "bz": [
+   0.34,
+   1.517,
+   0.64,
+   1
+  ],
+  "write": "full"
+ },
+ "regime": "R3",
+ "variant": "go",
+ "items": [
+  {
+   "target": "#b0|drv:--v",
+   "class": "tween",
+   "family": "cubic-bezier",
+   "provenance": "declared-by-code",
+   "segment": 1,
+   "params": {
+    "t0_ms": 433.333333,
+    "duration_ms": 880,
+    "from": 0,
+    "to": 400,
+    "ease": [
+     0.34,
+     1.517,
+     0.64,
+     1
+    ],
+    "first_frame_T": 433.333333,
+    "subframe_onset_ms": 0,
+    "interrupted": false,
+    "retarget": null,
+    "end_of_segment_ms": 1313.333333
+   },
+   "derived": {
+    "t10": 20.3,
+    "t50": 116.8,
+    "t90": 270.5,
+    "t99": 332.2,
+    "peakVelocity": 2.0279366847956863,
+    "tPeak": 0.025,
+    "overshoot": 0.08493969586371591,
+    "crossings": 1,
+    "amplitude": 400,
+    "relative_to": "t0"
+   },
+   "negativeFor": "spring",
+   "abstainOk": true,
+   "overshoot_fraction": 0.08493969615764918
+  },
+  {
+   "target": "#b0|ren:--v",
+   "class": "tween",
+   "family": "cubic-bezier",
+   "provenance": "declared-by-code",
+   "segment": 1,
+   "params": {
+    "t0_ms": 433.333333,
+    "duration_ms": 880,
+    "from": 0,
+    "to": 400,
+    "ease": [
+     0.34,
+     1.517,
+     0.64,
+     1
+    ],
+    "first_frame_T": 433.333333,
+    "subframe_onset_ms": 0,
+    "interrupted": false,
+    "retarget": null,
+    "end_of_segment_ms": 1313.333333
+   },
+   "derived": {
+    "t10": 20.3,
+    "t50": 116.8,
+    "t90": 270.5,
+    "t99": 332.2,
+    "peakVelocity": 2.0279366847956863,
+    "tPeak": 0.025,
+    "overshoot": 0.08493969586371591,
+    "crossings": 1,
+    "amplitude": 400,
+    "relative_to": "t0"
+   },
+   "negativeFor": "spring",
+   "abstainOk": true,
+   "overshoot_fraction": 0.08493969615764918
+  },
+  {
+   "target": "#b0|ren:tx",
+   "class": "tween",
+   "family": "cubic-bezier",
+   "provenance": "declared-by-code",
+   "segment": 1,
+   "params": {
+    "t0_ms": 433.333333,
+    "duration_ms": 880,
+    "from": 0,
+    "to": 400,
+    "ease": [
+     0.34,
+     1.517,
+     0.64,
+     1
+    ],
+    "first_frame_T": 433.333333,
+    "subframe_onset_ms": 0,
+    "interrupted": false,
+    "retarget": null,
+    "end_of_segment_ms": 1313.333333
+   },
+   "derived": {
+    "t10": 20.3,
+    "t50": 116.8,
+    "t90": 270.5,
+    "t99": 332.2,
+    "peakVelocity": 2.0279366847956863,
+    "tPeak": 0.025,
+    "overshoot": 0.08493969586371591,
+    "crossings": 1,
+    "amplitude": 400,
+    "relative_to": "t0"
+   },
+   "negativeFor": "spring",
+   "abstainOk": true,
+   "overshoot_fraction": 0.08493969615764918
+  }
+ ],
+ "attribution": {
+  "#b0|drv:--v": "time-driven",
+  "#b0|ren:--v": "time-driven",
+  "#b0|ren:tx": "time-driven"
+ },
+ "metrics": {
+  "m16.negative": {
+   "correct": [
+    "tween",
+    "unknown"
+   ],
+   "falseSpring": false
+  },
+  "class": "tween"
+ }
+}

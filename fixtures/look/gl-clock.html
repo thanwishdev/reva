@@ -1,0 +1,17 @@
+<!doctype html><meta charset="utf-8"><title>gl clock</title>
+<!-- Known truth: uniform uTime = seconds since the first frame (a clock, 1.0 per second); uColor is constant (dropped);
+     the fragment shader is fbm over value noise with one texture read (technique summary: fbm noise, 1 texture).
+     The canvas element itself fades in (CSS animation, 600 ms): a DOM motion whose content is WebGL. -->
+<style>@keyframes in { from { opacity: 0 } to { opacity: 1 } } #gl { animation: in 600ms ease-out both }</style>
+<body style="margin:0;background:#111"><script src="gl-kit.js"></script><script>
+glKit({ vs: FLAT_VS,
+  fs: `precision mediump float;
+uniform float uTime; uniform vec3 uColor; uniform sampler2D uMap;
+float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+float noise(vec2 p) { vec2 i = floor(p), f = fract(p); vec2 u = f * f * (3.0 - 2.0 * f);
+  return mix(mix(hash(i), hash(i + vec2(1.0, 0.0)), u.x), mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), u.x), u.y); }
+float fbm(vec2 p) { float v = 0.0, a = 0.5; for (int i = 0; i < 5; i++) { v += a * noise(p); p *= 2.0; a *= 0.5; } return v; }
+void main() { vec2 uv = gl_FragCoord.xy / 300.0; float n = fbm(uv * 3.0 + uTime * 0.2);
+  gl_FragColor = vec4(uColor * n + texture2D(uMap, uv).rgb * 0.1, 1.0); }`,
+  frame: ({ gl, U }, t) => { gl.uniform1f(U('uTime'), t / 1000); gl.uniform3f(U('uColor'), 0.9, 0.5, 0.2); } });
+</script></body>

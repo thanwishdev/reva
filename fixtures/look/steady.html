@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>look fixture: same ranking every run</title>
+<!-- Own fixture for `reva look` determinism (no site content). Known by construction:
+  .loader  a preloader: steady.js (fetched after "load", answered 500 ms late: ?delay=500) plays its exit, a rAF tween
+           easeOutCubic 1200 ms, translateY 0 -> -200 px and opacity 1 -> 0, then wires the hover.
+  #card    on pointerenter: rAF tween easeOutCubic 400 ms, scale 1 -> 1.1.
+  .dot     three dots, on the same pointerenter: rAF tween easeOutCubic 300 ms, translateY 0 -> -30 px, 80 ms apart.
+  The wall time the late script takes must not move the action relative to the preloader: two runs, same ranking.
+-->
+<style>
+  html, body { margin: 0; }
+  body { height: 1200px; }
+  .loader { position: absolute; left: 0; top: 0; width: 1440px; height: 200px; background: #222; }
+  #card { position: absolute; left: 520px; top: 350px; width: 400px; height: 200px; background: #36c; }
+  .dot { position: absolute; top: 650px; width: 40px; height: 40px; background: #c63; border-radius: 20px; }
+</style>
+</head>
+<body>
+<div class="loader"></div>
+<div id="card"></div>
+<div class="dot" style="left:600px"></div><div class="dot" style="left:700px"></div><div class="dot" style="left:800px"></div>
+<script>
+  addEventListener('load', () => setTimeout(() => { const s = document.createElement('script'); s.src = 'steady.js?delay=500'; document.head.appendChild(s); }, 50));
+</script>
+</body>
+</html>

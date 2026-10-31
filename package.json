@@ -1,0 +1,61 @@
+{
+  "name": "reva-cli",
+  "version": "0.1.0",
+  "description": "Measure how any website moves and how it's designed — real springs, easing, scroll links, type and spacing, as numbers you can learn from.",
+  "type": "module",
+  "license": "MIT OR Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thanwishdev/reva.git"
+  },
+  "homepage": "https://github.com/thanwishdev/reva#readme",
+  "bugs": {
+    "url": "https://github.com/thanwishdev/reva/issues"
+  },
+  "keywords": [
+    "motion",
+    "animation",
+    "easing",
+    "spring",
+    "scroll",
+    "design-tokens",
+    "typography",
+    "reverse-engineering",
+    "mcp",
+    "cli"
+  ],
+  "engines": {
+    "node": ">=24"
+  },
+  "bin": {
+    "reva": "bin/reva.js"
+  },
+  "files": [
+    "bin/",
+    "src/",
+    "!src/**/test/",
+    "!src/**/__tests__/",
+    "README.md",
+    "LICENSE-MIT",
+    "LICENSE-APACHE",
+    "THIRD_PARTY_NOTICES.md"
+  ],
+  "scripts": {
+    "test": "LAB_PARITY=${LAB_PARITY:-quick} node --test --test-concurrency=4 \"test/**/*.test.js\" \"fixtures/lab/*/test/*.test.js\" \"src/specimens/**/test/*.test.js\" \"src/static/__tests__/*.test.js\" \"src/freeze/test/*.test.js\"",
+    "test:serial": "LAB_PARITY=${LAB_PARITY:-quick} node --test --test-concurrency=1 \"test/**/*.test.js\" \"fixtures/lab/*/test/*.test.js\" \"src/specimens/**/test/*.test.js\" \"src/static/__tests__/*.test.js\" \"src/freeze/test/*.test.js\"",
+    "test:unit": "node --test --test-concurrency=1 \"test/**/*.test.js\"",
+    "mcp": "node bin/reva.js mcp",
+    "doctor": "node bin/reva.js doctor",
+    "check:pins": "node scripts/check-pins.js",
+    "prepublishOnly": "node scripts/check-pins.js && node scripts/check-public.js",
+    "check:public": "node scripts/check-public.js"
+  },
+  "dependencies": {
+    "pixelmatch": "8.0.0",
+    "playwright-core": "1.60.0",
+    "pngjs": "7.0.0"
+  },
+  "devDependencies": {
+    "style-dictionary": "5.5.5"
+  }
+}

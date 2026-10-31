@@ -1,0 +1,27 @@
+<!doctype html><meta charset="utf-8"><title>gl three</title>
+<!-- Known truth on real three.js output (three@0.186.1 from jsDelivr: needs --allow-cdn). PerspectiveCamera fov 50,
+     aspect 400/300, near 0.1, far 100; the camera moves z 10 -> 5 from 200 ms, 1000 ms, cubic-bezier(0.33, 1, 0.68, 1).
+     A ShaderMaterial uniform uMix tweens 0 -> 1 from 500 ms, 800 ms, cubic-bezier(0.4, 0, 0.2, 1).
+     REVA reads it through the generic WebGL path only (no three.js hook). -->
+<script type="importmap">{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.186.1/build/three.module.js" } }</script>
+<body style="margin:0;background:#111"><script src="gl-kit.js"></script>
+<script type="module">
+import * as THREE from 'three';
+const camEase = cubicBezier(0.33, 1, 0.68, 1), mixEase = cubicBezier(0.4, 0, 0.2, 1);
+const renderer = new THREE.WebGLRenderer({ antialias: false });
+renderer.setPixelRatio(1); renderer.setSize(400, 300); renderer.domElement.id = 'gl'; document.body.appendChild(renderer.domElement);
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(50, 400 / 300, 0.1, 100); camera.position.set(0, 0, 10);
+const mat = new THREE.ShaderMaterial({ uniforms: { uMix: { value: 0 } },
+  vertexShader: 'void main() { gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+  fragmentShader: 'uniform float uMix; void main() { gl_FragColor = vec4(mix(vec3(0.2, 0.3, 0.9), vec3(1.0, 0.6, 0.2), uMix), 1.0); }' });
+scene.add(new THREE.Mesh(new THREE.BoxGeometry(2, 2, 2), mat));
+let t0 = null;
+renderer.setAnimationLoop((now) => {
+  if (t0 == null) t0 = now; const t = now - t0;
+  camera.position.z = 10 - 5 * camEase(Math.min(1, Math.max(0, (t - 200) / 1000)));
+  mat.uniforms.uMix.value = mixEase(Math.min(1, Math.max(0, (t - 500) / 800)));
+  renderer.render(scene, camera);
+});
+window.__glOk = true;
+</script></body>

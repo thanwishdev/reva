@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>REVA static fixture</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="/style.css">
+<link rel="stylesheet" href="{{EXT_ORIGIN}}/ext.css">
+<style>
+  /* Cascade trap: this later rule loses to style.css's !important for .lede, so 19px (not 20px) is the declared winner. */
+  .lede { font-size: 20px; }
+</style></head>
+<body>
+<header class="site-head"><nav aria-label="Main"><a class="nav-link" href="#t-h1">Alpha</a><a class="nav-link" href="#t-card">Beta</a><a class="nav-link" href="#t-flex">Gamma</a></nav></header>
+<main>
+  <h1 id="t-h1">Planted Heading</h1>
+  <p class="lede" id="t-lede">Lede text with a cascade trap.</p>
+  <p class="body" id="t-body">Body text planted at 1.0625rem.</p>
+  <p id="t-normal">Normal spacing and normal line height.</p>
+  <p id="t-textshadow">Shadowed text</p>
+  <p id="t-oklch">An oklch colour.</p>
+  <p id="t-fluid">Fluid type.</p>
+  <p class="ext-note" id="t-ext">Cross-origin sheet styles.</p>
+  <section class="card" id="t-card" aria-label="Card"><button class="btn" id="t-btn" type="button">Go</button></section>
+  <div class="flex" id="t-flex"><span>One</span><span>Two</span><span>Three</span></div>
+  <div id="t-pill"></div>
+  <div id="t-asym"></div>
+  <div id="t-hidden">Hidden planted text</div>
+  <div id="t-shadowhost"></div>
+  <div id="t-bg" role="img" aria-label="Dots"></div>
+  <svg id="t-svg" viewBox="0 0 24 24" width="24" height="24" role="img" aria-label="Square"><path d="M4 4h16v16H4z" fill="#0a7f5c"/></svg>
+  <img src="/mark.svg" alt="Mark" width="32" height="32">
+  <canvas id="t-canvas" width="120" height="40" aria-label="Canvas planted colour"></canvas>
+  <div id="t-supports">Supports</div>
+  <p id="t-jsgate">Viewport is</p>
+</main>
+<script src="/stub-libs.js"></script>
+<script>
+  // Shadow DOM (open): a planted colour inside it is still exposed through the traversal.
+  const host = document.getElementById('t-shadowhost');
+  const root = host.attachShadow({ mode: 'open' });
+  root.innerHTML = '<style>p{color:#7a3a9b;font-size:15px;margin:0 0 16px}</style><p id="t-shadow">Shadow text</p>';
+  // Canvas pixels are not readable as styles: #ff00aa is planted here and must stay "unknown" in the static layer.
+  const c = document.getElementById('t-canvas').getContext('2d'); c.fillStyle = '#ff00aa'; c.fillRect(0, 0, 120, 40);
+  // JS gate 1: goes through matchMedia (seen by the hook, so it can be tagged declared).
+  const mq = matchMedia('(min-width: 1201px)');
+  const apply = () => document.body.classList.toggle('wide', mq.matches);
+  mq.addEventListener('change', apply); apply();
+  // JS gate 2: reads innerWidth in a resize handler (invisible to every hook: must come out as unknown).
+  const gate2 = () => document.body.classList.toggle('huge', innerWidth > 1500);
+  addEventListener('resize', gate2); gate2();
+</script>
+</body></html>

@@ -1,0 +1,14 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>look fixture: page grows while scrolling</title>
+<!-- Own fixture (no site content). Known by construction: the page starts 2000 px tall; once scrolled past 300 px a
+  "lazy" block of 3000 px is appended (content loaded as it scrolls), so the page height differs before and after.
+  A box follows the scroll (scroll-linked translateY) so the take has motion.
+-->
+<style>body{margin:0;height:2000px}#b{position:fixed;top:100px;left:100px;width:80px;height:80px;background:#3a6}#lazy{height:3000px}</style></head>
+<body><div id="b"></div>
+<script>
+let added = false;
+addEventListener('scroll', () => {
+  document.getElementById('b').style.transform = `translateY(${Math.round(scrollY / 10)}px)`;
+  if (!added && scrollY > 300) { added = true; const d = document.createElement('div'); d.id = 'lazy'; document.body.appendChild(d); document.body.style.height = 'auto'; }
+});
+</script></body></html>

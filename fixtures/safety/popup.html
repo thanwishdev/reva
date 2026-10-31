@@ -1,0 +1,8 @@
+<!doctype html>
+<!-- A page that opens a popup to a robots-disallowed URL once it is up (test/safety/nav-guard.test.js). -->
+<html><head><meta charset="utf-8"><title>popup</title></head>
+<body style="margin:0;font:16px/1.5 system-ui">
+<div style="width:200px;height:200px;background:#09f;animation:a 600ms ease-out both">box</div>
+<style>@keyframes a{from{transform:translateY(40px)}to{transform:none}}</style>
+<script>setTimeout(function () { window.open('/private/popup.html'); }, 200);</script>
+</body></html>

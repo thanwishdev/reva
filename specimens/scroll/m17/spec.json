@@ -1,0 +1,260 @@
+{
+ "schema": "reva.specimen.scroll/0",
+ "id": "lab-m17",
+ "family": "scroll",
+ "contract": "window.seek(t) / window.specimen (see README.md)",
+ "viewport": {
+  "width": 1280,
+  "height": 800
+ },
+ "frameMs": 8.333333333333334,
+ "docHeight": 800,
+ "subjects": [
+  {
+   "id": "b0",
+   "source": "vt:g0",
+   "x": 40,
+   "y": 40,
+   "w": 180,
+   "h": 100,
+   "hue": 220,
+   "vt": {
+    "name": "g0",
+    "d": 600,
+    "delay": 0,
+    "ease": [
+     0.2,
+     0.9,
+     0.1,
+     1
+    ],
+    "A": {
+     "x": 100,
+     "y": 120,
+     "w": 120,
+     "h": 80
+    },
+    "B": {
+     "x": 520,
+     "y": 300,
+     "w": 260,
+     "h": 140
+    }
+   },
+   "fixedBox": {
+    "x": 100,
+    "y": 120,
+    "w": 120,
+    "h": 80
+   }
+  },
+  {
+   "id": "b1",
+   "source": "vt:g1",
+   "x": 340,
+   "y": 40,
+   "w": 180,
+   "h": 100,
+   "hue": 287,
+   "vt": {
+    "name": "g1",
+    "d": 400,
+    "delay": 0,
+    "ease": "linear",
+    "A": {
+     "x": 100,
+     "y": 420,
+     "w": 60,
+     "h": 60
+    },
+    "B": {
+     "x": 340,
+     "y": 520,
+     "w": 60,
+     "h": 60
+    }
+   },
+   "fixedBox": {
+    "x": 100,
+    "y": 420,
+    "w": 60,
+    "h": 60
+   }
+  }
+ ],
+ "mechanisms": [
+  {
+   "id": "m0",
+   "kind": "view-transition",
+   "subject": "b0",
+   "groups": [
+    {
+     "name": "g0",
+     "d": 600,
+     "delay": 0,
+     "ease": [
+      0.2,
+      0.9,
+      0.1,
+      1
+     ],
+     "A": {
+      "x": 100,
+      "y": 120,
+      "w": 120,
+      "h": 80
+     },
+     "B": {
+      "x": 520,
+      "y": 300,
+      "w": 260,
+      "h": 140
+     },
+     "subject": "b0"
+    },
+    {
+     "name": "g1",
+     "d": 400,
+     "delay": 0,
+     "ease": "linear",
+     "A": {
+      "x": 100,
+      "y": 420,
+      "w": 60,
+      "h": 60
+     },
+     "B": {
+      "x": 340,
+      "y": 520,
+      "w": 60,
+      "h": 60
+     },
+     "subject": "b1"
+    }
+   ],
+   "latencyFrames": 2,
+   "triggers": [
+    433.333333
+   ],
+   "channels": [],
+   "sources": [
+    "html::view-transition-group(g0)",
+    "html::view-transition-group(g1)"
+   ],
+   "tier": "declared"
+  }
+ ],
+ "pins": [],
+ "input": {
+  "pointer": [],
+  "triggers": [
+   {
+    "T": 433.333333
+   }
+  ]
+ },
+ "channelMap": [],
+ "declared": [
+  {
+   "source": "html::view-transition-group(g0)",
+   "specimen": "html::view-transition-group(g0)",
+   "kind": "view-transition-group",
+   "name": "g0",
+   "duration_ms": 600,
+   "delay_ms": 0,
+   "easing": [
+    0.2,
+    0.9,
+    0.1,
+    1
+   ],
+   "start_ms": 450,
+   "compare": true
+  },
+  {
+   "source": "html::view-transition-group(g1)",
+   "specimen": "html::view-transition-group(g1)",
+   "kind": "view-transition-group",
+   "name": "g1",
+   "duration_ms": 400,
+   "delay_ms": 0,
+   "easing": "linear",
+   "start_ms": 450,
+   "compare": true
+  }
+ ],
+ "skipped": [
+  {
+   "target": "#b0|ren:bx",
+   "class": "step",
+   "reason": "live-element layout step of a view transition (follows the layout toggle)",
+   "kind": "view-transition"
+  },
+  {
+   "target": "#b0|ren:by",
+   "class": "step",
+   "reason": "live-element layout step of a view transition (follows the layout toggle)",
+   "kind": "view-transition"
+  },
+  {
+   "target": "#b0|ren:bw",
+   "class": "step",
+   "reason": "live-element layout step of a view transition (follows the layout toggle)",
+   "kind": "view-transition"
+  },
+  {
+   "target": "#b0|ren:bh",
+   "class": "step",
+   "reason": "live-element layout step of a view transition (follows the layout toggle)",
+   "kind": "view-transition"
+  },
+  {
+   "target": "#b1|ren:bx",
+   "class": "step",
+   "reason": "live-element layout step of a view transition (follows the layout toggle)",
+   "kind": "view-transition"
+  },
+  {
+   "target": "#b1|ren:by",
+   "class": "step",
+   "reason": "live-element layout step of a view transition (follows the layout toggle)",
+   "kind": "view-transition"
+  },
+  {
+   "target": "#b1|ren:bw",
+   "class": "step",
+   "reason": "live-element layout step of a view transition (follows the layout toggle)",
+   "kind": "view-transition"
+  },
+  {
+   "target": "#b1|ren:bh",
+   "class": "step",
+   "reason": "live-element layout step of a view transition (follows the layout toggle)",
+   "kind": "view-transition"
+  }
+ ],
+ "unknowns": [],
+ "assumptions": [
+  {
+   "id": "vt_trigger",
+   "note": "the view-transition callback toggles the layout state of every group at once; the trigger time is an input of the scenario"
+  }
+ ],
+ "placeholders": [],
+ "boot": {
+  "until": "window.specimen && window.specimen.ready === true"
+ },
+ "scene": {
+  "selectors": [
+   "#b0",
+   "#b1"
+  ]
+ },
+ "source": {
+  "kind": "labtruth",
+  "file": "lab-easing/truth/m17.go.json",
+  "variant": "go",
+  "digest": "27464af0c7a4498f",
+  "note": "Fixture Lab truth record (own fixture, public-safe)"
+ }
+}

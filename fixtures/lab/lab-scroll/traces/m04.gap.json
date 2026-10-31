@@ -1,0 +1,53 @@
+{
+ "schema": "reva.labtrace/0",
+ "route": "m04",
+ "variant": "gap",
+ "note": "Step responses with idle gaps through the scrub range, the tab range, past the pin and back to the top.",
+ "actions": [
+  {
+   "hold": 500
+  },
+  {
+   "scrollTo": 650
+  },
+  {
+   "hold": 600
+  },
+  {
+   "scrollTo": 1000
+  },
+  {
+   "hold": 600
+  },
+  {
+   "scrollTo": 1400
+  },
+  {
+   "hold": 600
+  },
+  {
+   "scrollTo": 1800
+  },
+  {
+   "hold": 600
+  },
+  {
+   "scrollTo": 2200
+  },
+  {
+   "hold": 600
+  },
+  {
+   "scrollTo": 2500
+  },
+  {
+   "hold": 600
+  },
+  {
+   "scrollTo": 300
+  },
+  {
+   "hold": 600
+  }
+ ]
+}

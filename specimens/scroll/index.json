@@ -1,0 +1,166 @@
+{
+ "schema": "reva.specimen-index/0",
+ "family": "scroll",
+ "specimens": [
+  {
+   "id": "lab-m01",
+   "route": "m01",
+   "kinds": [
+    "scroll-driven"
+   ],
+   "channels": 4,
+   "skipped": 0,
+   "unknowns": 0,
+   "assumptions": 0,
+   "source": "lab-scroll/truth/m01.json",
+   "scenarios": [
+    "gap",
+    "reversal",
+    "speed"
+   ]
+  },
+  {
+   "id": "lab-m02",
+   "route": "m02",
+   "kinds": [
+    "scroll-driven"
+   ],
+   "channels": 1,
+   "skipped": 3,
+   "unknowns": 0,
+   "assumptions": 0,
+   "source": "lab-scroll/truth/m02.json",
+   "scenarios": [
+    "gap",
+    "reversal",
+    "speed"
+   ]
+  },
+  {
+   "id": "lab-m03",
+   "route": "m03",
+   "kinds": [
+    "scroll-driven",
+    "scroll-driven"
+   ],
+   "channels": 2,
+   "skipped": 1,
+   "unknowns": 0,
+   "assumptions": 0,
+   "source": "lab-scroll/truth/m03.json",
+   "scenarios": [
+    "gap",
+    "reversal",
+    "speed"
+   ]
+  },
+  {
+   "id": "lab-m04",
+   "route": "m04",
+   "kinds": [
+    "hysteresis",
+    "scroll-driven"
+   ],
+   "channels": 5,
+   "skipped": 1,
+   "unknowns": 0,
+   "assumptions": 0,
+   "source": "lab-scroll/truth/m04.json",
+   "scenarios": [
+    "gap",
+    "reversal",
+    "speed"
+   ]
+  },
+  {
+   "id": "lab-m05",
+   "route": "m05",
+   "kinds": [
+    "wheel-latch"
+   ],
+   "channels": 1,
+   "skipped": 2,
+   "unknowns": 0,
+   "assumptions": 1,
+   "source": "lab-scroll/truth/m05.json",
+   "scenarios": [
+    "burst",
+    "plain",
+    "retarget"
+   ]
+  },
+  {
+   "id": "lab-m09",
+   "route": "m09",
+   "kinds": [
+    "wheel-smooth"
+   ],
+   "channels": 1,
+   "skipped": 1,
+   "unknowns": 0,
+   "assumptions": 2,
+   "source": "lab-scroll/truth/m09.json",
+   "scenarios": [
+    "gap",
+    "reversal",
+    "speed"
+   ]
+  },
+  {
+   "id": "lab-m09b",
+   "route": "m09b",
+   "kinds": [
+    "wheel-smooth"
+   ],
+   "channels": 1,
+   "skipped": 1,
+   "unknowns": 0,
+   "assumptions": 2,
+   "source": "lab-scroll/truth/m09b.json",
+   "scenarios": [
+    "gap",
+    "reversal",
+    "speed"
+   ]
+  },
+  {
+   "id": "lab-m10",
+   "route": "m10",
+   "kinds": [
+    "inertia"
+   ],
+   "channels": 1,
+   "skipped": 1,
+   "unknowns": 0,
+   "assumptions": 3,
+   "source": "lab-springs/truth/m10.json",
+   "scenarios": []
+  },
+  {
+   "id": "lab-m17",
+   "route": "m17",
+   "kinds": [
+    "view-transition"
+   ],
+   "channels": 0,
+   "skipped": 8,
+   "unknowns": 0,
+   "assumptions": 1,
+   "source": "lab-easing/truth/m17.go.json",
+   "scenarios": []
+  },
+  {
+   "id": "lab-m18",
+   "route": "m18",
+   "kinds": [
+    "flip"
+   ],
+   "channels": 4,
+   "skipped": 0,
+   "unknowns": 0,
+   "assumptions": 1,
+   "source": "lab-easing/truth/m18.interrupted.json",
+   "scenarios": []
+  }
+ ]
+}

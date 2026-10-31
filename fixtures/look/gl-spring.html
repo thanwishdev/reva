@@ -1,0 +1,12 @@
+<!doctype html><meta charset="utf-8"><title>gl spring</title>
+<!-- Known truth: a click on the canvas sends uniform uPress 0 -> 1 through a spring from rest, omega 12 rad/s,
+     zeta 0.4 (closed form, so the curve does not depend on the frame rate). Raw WebGL, no library. -->
+<body style="margin:0;background:#111"><script src="gl-kit.js"></script><script>
+const W = 12, Z = 0.4, WD = W * Math.sqrt(1 - Z * Z);
+const spring = (t) => (t <= 0 ? 0 : 1 - Math.exp(-Z * W * t) * (Math.cos(WD * t) + (Z * W / WD) * Math.sin(WD * t)));
+let clickedAt = null;
+const k = glKit({ vs: FLAT_VS,
+  fs: 'precision mediump float; uniform float uPress; void main() { gl_FragColor = vec4(vec3(0.3 + 0.5 * uPress), 1.0); }',
+  frame: ({ gl, U }, t, now) => { gl.uniform1f(U('uPress'), clickedAt == null ? 0 : spring((now - clickedAt) / 1000)); } });
+k.canvas.addEventListener('pointerdown', () => { if (clickedAt == null) clickedAt = performance.now(); });
+</script></body>

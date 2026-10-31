@@ -1,0 +1,549 @@
+{
+ "schema": "reva.specimen.time/0",
+ "id": "m12-go",
+ "origin": "lab",
+ "source": {
+  "kind": "labtruth",
+  "schema": "reva.labtruth/0",
+  "route": "m12",
+  "variant": "go",
+  "regime": "R3",
+  "params": {
+   "step": 90,
+   "order": "dom",
+   "du": 500,
+   "bz": [
+    0.2,
+    0.9,
+    0.1,
+    1
+   ],
+   "N": 4800,
+   "cD": 950,
+   "char": 24,
+   "text": "Measure the motion, not the pixels."
+  }
+ },
+ "timeline": {
+  "frameMs": 8.333333,
+  "refreshHz": 120,
+  "leadMs": 500,
+  "sourceShiftMs": 75,
+  "durationMs": 1967,
+  "hasLoop": false
+ },
+ "viewport": {
+  "width": 1280,
+  "height": 800
+ },
+ "elements": [
+  {
+   "id": "e0",
+   "key": "#b0",
+   "x": 40,
+   "y": 60,
+   "w": 56,
+   "h": 56,
+   "tf": {
+    "tx": false,
+    "ty": true,
+    "rz": false,
+    "sx": false,
+    "sy": false
+   }
+  },
+  {
+   "id": "e1",
+   "key": "#b1",
+   "x": 136,
+   "y": 60,
+   "w": 56,
+   "h": 56,
+   "tf": {
+    "tx": false,
+    "ty": true,
+    "rz": false,
+    "sx": false,
+    "sy": false
+   }
+  },
+  {
+   "id": "e2",
+   "key": "#b2",
+   "x": 232,
+   "y": 60,
+   "w": 56,
+   "h": 56,
+   "tf": {
+    "tx": false,
+    "ty": true,
+    "rz": false,
+    "sx": false,
+    "sy": false
+   }
+  },
+  {
+   "id": "e3",
+   "key": "#b3",
+   "x": 328,
+   "y": 60,
+   "w": 56,
+   "h": 56,
+   "tf": {
+    "tx": false,
+    "ty": true,
+    "rz": false,
+    "sx": false,
+    "sy": false
+   }
+  },
+  {
+   "id": "e4",
+   "key": "#b4",
+   "x": 424,
+   "y": 60,
+   "w": 56,
+   "h": 56,
+   "tf": {
+    "tx": false,
+    "ty": true,
+    "rz": false,
+    "sx": false,
+    "sy": false
+   }
+  },
+  {
+   "id": "e5",
+   "key": "#b5",
+   "x": 520,
+   "y": 60,
+   "w": 56,
+   "h": 56,
+   "tf": {
+    "tx": false,
+    "ty": true,
+    "rz": false,
+    "sx": false,
+    "sy": false
+   }
+  },
+  {
+   "id": "e6",
+   "key": "#n",
+   "x": 40,
+   "y": 156,
+   "w": 56,
+   "h": 56,
+   "tf": {
+    "tx": true,
+    "ty": false,
+    "rz": false,
+    "sx": false,
+    "sy": false
+   }
+  },
+  {
+   "id": "e7",
+   "key": "#t",
+   "x": 136,
+   "y": 156,
+   "w": 56,
+   "h": 56,
+   "tf": {
+    "tx": true,
+    "ty": false,
+    "rz": false,
+    "sx": false,
+    "sy": false
+   }
+  }
+ ],
+ "tracks": [
+  {
+   "id": "t0",
+   "el": 0,
+   "channel": "opacity",
+   "impl": "css",
+   "label": "tween",
+   "provenance": {
+    "tier": "truth",
+    "route": "m12"
+   },
+   "motion": {
+    "kind": "tween",
+    "from": 0,
+    "to": 1,
+    "startMs": 516.666667,
+    "durationMs": 500,
+    "ease": {
+     "kind": "bezier",
+     "p": [
+      0.2,
+      0.9,
+      0.1,
+      1
+     ]
+    }
+   }
+  },
+  {
+   "id": "t1",
+   "el": 0,
+   "channel": "ty",
+   "impl": "css",
+   "label": "tween",
+   "provenance": {
+    "tier": "truth",
+    "route": "m12"
+   },
+   "motion": {
+    "kind": "tween",
+    "from": 28,
+    "to": 0,
+    "startMs": 516.666667,
+    "durationMs": 500,
+    "ease": {
+     "kind": "bezier",
+     "p": [
+      0.2,
+      0.9,
+      0.1,
+      1
+     ]
+    }
+   }
+  },
+  {
+   "id": "t2",
+   "el": 1,
+   "channel": "opacity",
+   "impl": "css",
+   "label": "tween",
+   "provenance": {
+    "tier": "truth",
+    "route": "m12"
+   },
+   "motion": {
+    "kind": "tween",
+    "from": 0,
+    "to": 1,
+    "startMs": 606.666667,
+    "durationMs": 500,
+    "ease": {
+     "kind": "bezier",
+     "p": [
+      0.2,
+      0.9,
+      0.1,
+      1
+     ]
+    }
+   }
+  },
+  {
+   "id": "t3",
+   "el": 1,
+   "channel": "ty",
+   "impl": "css",
+   "label": "tween",
+   "provenance": {
+    "tier": "truth",
+    "route": "m12"
+   },
+   "motion": {
+    "kind": "tween",
+    "from": 28,
+    "to": 0,
+    "startMs": 606.666667,
+    "durationMs": 500,
+    "ease": {
+     "kind": "bezier",
+     "p": [
+      0.2,
+      0.9,
+      0.1,
+      1
+     ]
+    }
+   }
+  },
+  {
+   "id": "t4",
+   "el": 2,
+   "channel": "opacity",
+   "impl": "css",
+   "label": "tween",
+   "provenance": {
+    "tier": "truth",
+    "route": "m12"
+   },
+   "motion": {
+    "kind": "tween",
+    "from": 0,
+    "to": 1,
+    "startMs": 696.666667,
+    "durationMs": 500,
+    "ease": {
+     "kind": "bezier",
+     "p": [
+      0.2,
+      0.9,
+      0.1,
+      1
+     ]
+    }
+   }
+  },
+  {
+   "id": "t5",
+   "el": 2,
+   "channel": "ty",
+   "impl": "css",
+   "label": "tween",
+   "provenance": {
+    "tier": "truth",
+    "route": "m12"
+   },
+   "motion": {
+    "kind": "tween",
+    "from": 28,
+    "to": 0,
+    "startMs": 696.666667,
+    "durationMs": 500,
+    "ease": {
+     "kind": "bezier",
+     "p": [
+      0.2,
+      0.9,
+      0.1,
+      1
+     ]
+    }
+   }
+  },
+  {
+   "id": "t6",
+   "el": 3,
+   "channel": "opacity",
+   "impl": "css",
+   "label": "tween",
+   "provenance": {
+    "tier": "truth",
+    "route": "m12"
+   },
+   "motion": {
+    "kind": "tween",
+    "from": 0,
+    "to": 1,
+    "startMs": 786.666667,
+    "durationMs": 500,
+    "ease": {
+     "kind": "bezier",
+     "p": [
+      0.2,
+      0.9,
+      0.1,
+      1
+     ]
+    }
+   }
+  },
+  {
+   "id": "t7",
+   "el": 3,
+   "channel": "ty",
+   "impl": "css",
+   "label": "tween",
+   "provenance": {
+    "tier": "truth",
+    "route": "m12"
+   },
+   "motion": {
+    "kind": "tween",
+    "from": 28,
+    "to": 0,
+    "startMs": 786.666667,
+    "durationMs": 500,
+    "ease": {
+     "kind": "bezier",
+     "p": [
+      0.2,
+      0.9,
+      0.1,
+      1
+     ]
+    }
+   }
+  },
+  {
+   "id": "t8",
+   "el": 4,
+   "channel": "opacity",
+   "impl": "css",
+   "label": "tween",
+   "provenance": {
+    "tier": "truth",
+    "route": "m12"
+   },
+   "motion": {
+    "kind": "tween",
+    "from": 0,
+    "to": 1,
+    "startMs": 876.666667,
+    "durationMs": 500,
+    "ease": {
+     "kind": "bezier",
+     "p": [
+      0.2,
+      0.9,
+      0.1,
+      1
+     ]
+    }
+   }
+  },
+  {
+   "id": "t9",
+   "el": 4,
+   "channel": "ty",
+   "impl": "css",
+   "label": "tween",
+   "provenance": {
+    "tier": "truth",
+    "route": "m12"
+   },
+   "motion": {
+    "kind": "tween",
+    "from": 28,
+    "to": 0,
+    "startMs": 876.666667,
+    "durationMs": 500,
+    "ease": {
+     "kind": "bezier",
+     "p": [
+      0.2,
+      0.9,
+      0.1,
+      1
+     ]
+    }
+   }
+  },
+  {
+   "id": "t10",
+   "el": 5,
+   "channel": "opacity",
+   "impl": "css",
+   "label": "tween",
+   "provenance": {
+    "tier": "truth",
+    "route": "m12"
+   },
+   "motion": {
+    "kind": "tween",
+    "from": 0,
+    "to": 1,
+    "startMs": 966.666667,
+    "durationMs": 500,
+    "ease": {
+     "kind": "bezier",
+     "p": [
+      0.2,
+      0.9,
+      0.1,
+      1
+     ]
+    }
+   }
+  },
+  {
+   "id": "t11",
+   "el": 5,
+   "channel": "ty",
+   "impl": "css",
+   "label": "tween",
+   "provenance": {
+    "tier": "truth",
+    "route": "m12"
+   },
+   "motion": {
+    "kind": "tween",
+    "from": 28,
+    "to": 0,
+    "startMs": 966.666667,
+    "durationMs": 500,
+    "ease": {
+     "kind": "bezier",
+     "p": [
+      0.2,
+      0.9,
+      0.1,
+      1
+     ]
+    }
+   }
+  },
+  {
+   "id": "t12",
+   "el": 6,
+   "channel": "var",
+   "name": "--c",
+   "mapTo": "tx",
+   "impl": "js",
+   "label": "tween",
+   "provenance": {
+    "tier": "truth",
+    "route": "m12"
+   },
+   "assumptions": [
+    {
+     "field": "channel",
+     "reason": "custom property --c: how the page maps it to a visual property is not in the record; mapped to translateX(px) so the box moves"
+    }
+   ],
+   "motion": {
+    "kind": "tween",
+    "from": 0,
+    "to": 4800,
+    "startMs": 508.333333,
+    "durationMs": 950,
+    "ease": {
+     "kind": "named",
+     "name": "easeOutCubic"
+    }
+   }
+  },
+  {
+   "id": "t13",
+   "el": 7,
+   "channel": "var",
+   "name": "--n",
+   "mapTo": "tx",
+   "impl": "js",
+   "label": "tween",
+   "provenance": {
+    "tier": "truth",
+    "route": "m12"
+   },
+   "assumptions": [
+    {
+     "field": "channel",
+     "reason": "custom property --n: how the page maps it to a visual property is not in the record; mapped to translateX(px) so the box moves"
+    }
+   ],
+   "motion": {
+    "kind": "tween",
+    "from": 0,
+    "to": 35,
+    "startMs": 508.333333,
+    "durationMs": 840,
+    "ease": {
+     "kind": "linear"
+    },
+    "quantum": 1
+   }
+  }
+ ],
+ "notes": [],
+ "digest": "e09af065015a4fba"
+}

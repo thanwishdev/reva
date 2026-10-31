@@ -1,0 +1,380 @@
+{
+  "about": "Known answers for the design fixture (own page). Edges are viewport widths where a declared @media rule flips; the container query flips inside the 600-960 band and the iframe query at iframe width 500.",
+  "edges": [
+    600,
+    960
+  ],
+  "captured": [
+    {
+      "cls": "D",
+      "w": 1280,
+      "h": 800
+    },
+    {
+      "cls": "T",
+      "w": 800,
+      "h": 900
+    },
+    {
+      "cls": "M",
+      "w": 390,
+      "h": 800
+    }
+  ],
+  "classes": {
+    "D": {
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "deviceScaleFactor": 1
+    },
+    "T": {
+      "viewport": {
+        "width": 800,
+        "height": 900
+      },
+      "deviceScaleFactor": 1
+    },
+    "M": {
+      "viewport": {
+        "width": 390,
+        "height": 800
+      },
+      "deviceScaleFactor": 1
+    }
+  },
+  "range": {
+    "from": 320,
+    "to": 1600
+  },
+  "states": {
+    "about": "Stage D2 known answers: CSS states the plan must find (pseudo-classes + target element), JS states by kind, rules that newly apply in a state (rule usage), state rules that cannot be exercised with the reason, a state mutant that must fail. listener:click = a state found only from the element's event listener (D2b).",
+    "held": {
+      "T": "T-601x900"
+    },
+    "css": [
+      {
+        "pc": ":hover",
+        "target": "html/body[1]/header[1]/nav[1]/a[1]"
+      },
+      {
+        "pc": ":hover",
+        "target": "html/body[1]/main[1]/section[1]/button[1]"
+      },
+      {
+        "pc": ":focus-visible",
+        "target": "html/body[1]/main[1]/section[1]/button[1]"
+      },
+      {
+        "pc": ":focus",
+        "target": "html/body[1]/main[1]/section[1]/a[1]"
+      },
+      {
+        "pc": ":hover",
+        "target": "html/body[1]/main[1]/section[3]/article[1]"
+      }
+    ],
+    "js": [
+      "aria-expanded",
+      "tab",
+      "details",
+      "haspopup",
+      "listener:click"
+    ],
+    "newRules": {
+      ".btn:hover": ":hover html/body[1]/main[1]/section[1]/button[1]",
+      ".card:hover h2": ":hover html/body[1]/main[1]/section[3]/article[1]",
+      ".menu-btn[aria-expanded=\"true\"]": "aria-expanded Menu",
+      ".more[open] summary": "details Open details",
+      ".modal::backdrop": "haspopup Open dialog",
+      ".swatch[data-state=\"on\"]": "listener:click Swatch"
+    },
+    "unreachable": {
+      ".ghost:hover": "dead CSS"
+    },
+    "mutant": {
+      "cls": "D",
+      "ruleSel": ".btn:hover",
+      "prop": "background",
+      "value": "rgb(8, 106, 78)"
+    }
+  },
+  "views": {
+    "about": "Stage D3/D4 known answers (test/design/views-fixture.test.js). index.html: components, sections, breakpoint flips; assets.html: element -> asset map and the var() graph exported as DTCG tokens.",
+    "components": {
+      "div .cell": [
+        6,
+        1
+      ],
+      "article .card": [
+        2,
+        2
+      ],
+      "button .tab": [
+        2,
+        2
+      ],
+      "a .nav-link": [
+        3,
+        1
+      ],
+      "li .ticks li::marker": [
+        3,
+        1
+      ],
+      "button .menu-btn": [
+        2,
+        1
+      ],
+      "div .panel": [
+        2,
+        1
+      ]
+    },
+    "partOf": {
+      "h2 .card:hover h2": "article .card"
+    },
+    "sections": {
+      "top": [
+        [
+          "header",
+          "banner",
+          "sticky"
+        ],
+        [
+          "main",
+          "main",
+          null
+        ]
+      ],
+      "mainFirst": [
+        [
+          "section",
+          "Own design page"
+        ],
+        [
+          "section",
+          "Grid"
+        ],
+        [
+          "section",
+          "Cards"
+        ]
+      ],
+      "hidden": "html/body[1]/main[1]/dialog[1]"
+    },
+    "edges": {
+      "600": {
+        "on": [
+          [
+            ".grid",
+            "@media (min-width: 600px)",
+            "html/body[1]/main[1]/section[2]",
+            "grid-template-columns"
+          ]
+        ],
+        "off": []
+      },
+      "960": {
+        "on": [
+          [
+            ".grid",
+            "@media (min-width: 960px)",
+            "html/body[1]/main[1]/section[2]",
+            "grid-template-columns"
+          ],
+          [
+            ".hero",
+            "@media (min-width: 960px)",
+            "html/body[1]/main[1]/section[1]",
+            "padding-left"
+          ]
+        ],
+        "off": []
+      }
+    },
+    "declared": [
+      599,
+      959
+    ],
+    "ruleStates": {
+      "M": {
+        ".card.has-media": false,
+        ".fc": false
+      },
+      "T": {
+        ".card.has-media": true,
+        ".fc": true
+      }
+    },
+    "assets": {
+      "D": {
+        "html/body[1]/img[1]": [
+          [
+            "srcset",
+            "/a/one.svg",
+            true
+          ],
+          [
+            "srcset",
+            "/a/one-2x.svg",
+            false
+          ]
+        ],
+        "html/body[1]/picture[1]/img[1]": [
+          [
+            "picture-source",
+            "/a/wide.svg",
+            true
+          ],
+          [
+            "img",
+            "/a/narrow.svg",
+            false
+          ]
+        ]
+      },
+      "M": {
+        "html/body[1]/picture[1]/img[1]": [
+          [
+            "picture-source",
+            "/a/wide.svg",
+            false
+          ],
+          [
+            "img",
+            "/a/narrow.svg",
+            true
+          ]
+        ]
+      },
+      "all": {
+        "html/body[1]/p[1]": [
+          [
+            "font",
+            "/wr-plant.ttf",
+            true
+          ]
+        ],
+        "html/body[1]/div[1]": [
+          [
+            "css",
+            "/a/bg.svg",
+            true
+          ]
+        ],
+        "html/body[1]/div[2]": [
+          [
+            "css",
+            "/a/mask.svg",
+            true
+          ]
+        ],
+        "html/body[1]/ul[1]/li[1]": [
+          [
+            "css",
+            "/a/tick.svg",
+            true
+          ]
+        ],
+        "html/body[1]/p[2]": [
+          [
+            "css",
+            "/a/icon.svg",
+            true
+          ]
+        ],
+        "html/body[1]/svg[1]/use[1]": [
+          [
+            "svg-use",
+            "/a/sprite.svg#dot",
+            true
+          ]
+        ],
+        "html/body[1]/svg[2]": [
+          [
+            "svg-inline",
+            null,
+            null
+          ]
+        ],
+        "html/body[1]/video[1]": [
+          [
+            "poster",
+            "/a/poster.svg",
+            true
+          ],
+          [
+            "video",
+            "/a/clip.webm",
+            false
+          ]
+        ]
+      }
+    },
+    "tokens": {
+      "base": {
+        "brand": [
+          "color",
+          "#0a7f5c"
+        ],
+        "brand-ink": [
+          null,
+          "{brand}"
+        ],
+        "space": [
+          "dimension",
+          {
+            "value": 8,
+            "unit": "px"
+          }
+        ],
+        "space-2": [
+          null,
+          "calc({space} * 2)"
+        ],
+        "ease": [
+          "cubicBezier",
+          [
+            0.2,
+            0,
+            0,
+            1
+          ]
+        ],
+        "shade": [
+          "color",
+          0.15
+        ],
+        "fade": [
+          "number",
+          0.8
+        ],
+        "size-lg": [
+          "dimension",
+          {
+            "value": 1.25,
+            "unit": "rem"
+          }
+        ],
+        "edge": [
+          null,
+          "var(--missing, 2px)"
+        ]
+      },
+      "contexts": {
+        ".dark|": {
+          "brand": "#11161c"
+        },
+        ":root|@media (min-width: 800px)": {
+          "space": "12px"
+        }
+      },
+      "spaceResolvedWith": {
+        "D": true,
+        "M": false
+      }
+    }
+  }
+}

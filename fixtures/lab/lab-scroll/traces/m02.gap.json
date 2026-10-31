@@ -1,0 +1,41 @@
+{
+ "schema": "reva.labtrace/0",
+ "route": "m02",
+ "variant": "gap",
+ "note": "Jump-and-trace: step responses with idle gaps of 800 ms, one past the end of the range, one back below the start; the last gap is 3000 ms so the full-scale step settles even for the slowest alpha at 30 Hz.",
+ "actions": [
+  {
+   "hold": 500
+  },
+  {
+   "scrollTo": 880
+  },
+  {
+   "hold": 800
+  },
+  {
+   "scrollTo": 1040
+  },
+  {
+   "hold": 800
+  },
+  {
+   "scrollTo": 1200
+  },
+  {
+   "hold": 800
+  },
+  {
+   "scrollTo": 1340
+  },
+  {
+   "hold": 800
+  },
+  {
+   "scrollTo": 780
+  },
+  {
+   "hold": 3000
+  }
+ ]
+}

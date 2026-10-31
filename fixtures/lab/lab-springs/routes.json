@@ -1,0 +1,1026 @@
+[
+ {
+  "id": "m07",
+  "page": "m07.html",
+  "driver": "time",
+  "engine": "chs",
+  "codeVariantKey": "integrator",
+  "codeVariants": [
+   {
+    "id": "i1h16",
+    "default": {
+     "integrator": "i1h16",
+     "k": 200,
+     "c": 12,
+     "m": 1,
+     "A": 200,
+     "write": "full"
+    },
+    "grid": [
+     {
+      "integrator": "i1h16",
+      "k": 200,
+      "c": 12,
+      "m": 1,
+      "A": 200,
+      "write": "full"
+     },
+     {
+      "integrator": "i1h16",
+      "k": 240,
+      "c": 16,
+      "m": 0.35,
+      "A": 200,
+      "write": "full"
+     },
+     {
+      "integrator": "i1h16",
+      "k": 100,
+      "c": 30,
+      "m": 1,
+      "A": 200,
+      "write": "full"
+     }
+    ],
+    "draw": {
+     "kind": "omega-zeta-m",
+     "omega0": [
+      10,
+      26.2
+     ],
+     "zeta": [
+      0.42,
+      1.5
+     ],
+     "m": [
+      0.35,
+      1
+     ],
+     "rule": "k = m*omega0^2, c = 2*zeta*m*omega0; redraw while the vector is not valid (see cell.mjs isValid)"
+    }
+   },
+   {
+    "id": "i1h2",
+    "default": {
+     "integrator": "i1h2",
+     "k": 200,
+     "c": 12,
+     "m": 1,
+     "A": 200,
+     "write": "full"
+    },
+    "grid": [
+     {
+      "integrator": "i1h2",
+      "k": 200,
+      "c": 12,
+      "m": 1,
+      "A": 200,
+      "write": "full"
+     },
+     {
+      "integrator": "i1h2",
+      "k": 240,
+      "c": 16,
+      "m": 0.35,
+      "A": 200,
+      "write": "full"
+     },
+     {
+      "integrator": "i1h2",
+      "k": 100,
+      "c": 30,
+      "m": 1,
+      "A": 200,
+      "write": "full"
+     }
+    ],
+    "draw": {
+     "kind": "omega-zeta-m",
+     "omega0": [
+      10,
+      26.2
+     ],
+     "zeta": [
+      0.42,
+      1.5
+     ],
+     "m": [
+      0.35,
+      1
+     ],
+     "rule": "k = m*omega0^2, c = 2*zeta*m*omega0; redraw while the vector is not valid (see cell.mjs isValid)"
+    }
+   },
+   {
+    "id": "i1h1",
+    "default": {
+     "integrator": "i1h1",
+     "k": 200,
+     "c": 12,
+     "m": 1,
+     "A": 200,
+     "write": "full"
+    },
+    "grid": [
+     {
+      "integrator": "i1h1",
+      "k": 200,
+      "c": 12,
+      "m": 1,
+      "A": 200,
+      "write": "full"
+     },
+     {
+      "integrator": "i1h1",
+      "k": 240,
+      "c": 16,
+      "m": 0.35,
+      "A": 200,
+      "write": "full"
+     },
+     {
+      "integrator": "i1h1",
+      "k": 100,
+      "c": 30,
+      "m": 1,
+      "A": 200,
+      "write": "full"
+     }
+    ],
+    "draw": {
+     "kind": "omega-zeta-m",
+     "omega0": [
+      10,
+      26.2
+     ],
+     "zeta": [
+      0.42,
+      1.5
+     ],
+     "m": [
+      0.35,
+      1
+     ],
+     "rule": "k = m*omega0^2, c = 2*zeta*m*omega0; redraw while the vector is not valid (see cell.mjs isValid)"
+    }
+   },
+   {
+    "id": "i4",
+    "default": {
+     "integrator": "i4",
+     "kf": 0.052,
+     "cf": 0.183,
+     "A": 200,
+     "write": "full"
+    },
+    "grid": [
+     {
+      "integrator": "i4",
+      "kf": 0.052,
+      "cf": 0.183,
+      "A": 200,
+      "write": "full"
+     },
+     {
+      "integrator": "i4",
+      "kf": 0.04,
+      "cf": 0.318,
+      "A": 200,
+      "write": "full"
+     },
+     {
+      "integrator": "i4",
+      "kf": 0.02,
+      "cf": 0.381,
+      "A": 200,
+      "write": "full"
+     }
+    ],
+    "draw": {
+     "kind": "native-pole",
+     "omega_per_frame": [
+      0.16,
+      0.24
+     ],
+     "zeta": [
+      0.42,
+      1.5
+     ],
+     "rule": "poles z = exp(-zeta*w +- i*w*sqrt(1-zeta^2)) per 60 Hz frame; kf, cf from the characteristic polynomial; 3 decimals"
+    }
+   },
+   {
+    "id": "i5",
+    "default": {
+     "integrator": "i5",
+     "k": 200,
+     "c": 12,
+     "m": 1,
+     "A": 200,
+     "write": "full"
+    },
+    "grid": [
+     {
+      "integrator": "i5",
+      "k": 200,
+      "c": 12,
+      "m": 1,
+      "A": 200,
+      "write": "full"
+     },
+     {
+      "integrator": "i5",
+      "k": 240,
+      "c": 16,
+      "m": 0.35,
+      "A": 200,
+      "write": "full"
+     },
+     {
+      "integrator": "i5",
+      "k": 100,
+      "c": 30,
+      "m": 1,
+      "A": 200,
+      "write": "full"
+     }
+    ],
+    "draw": {
+     "kind": "omega-zeta-m",
+     "omega0": [
+      10,
+      26.2
+     ],
+     "zeta": [
+      0.42,
+      1.5
+     ],
+     "m": [
+      0.35,
+      1
+     ],
+     "rule": "k = m*omega0^2, c = 2*zeta*m*omega0; redraw while the vector is not valid (see cell.mjs isValid)"
+    }
+   },
+   {
+    "id": "i6",
+    "default": {
+     "integrator": "i6",
+     "k": 200,
+     "c": 12,
+     "m": 1,
+     "A": 200,
+     "write": "full"
+    },
+    "grid": [
+     {
+      "integrator": "i6",
+      "k": 200,
+      "c": 12,
+      "m": 1,
+      "A": 200,
+      "write": "full"
+     },
+     {
+      "integrator": "i6",
+      "k": 240,
+      "c": 16,
+      "m": 0.35,
+      "A": 200,
+      "write": "full"
+     },
+     {
+      "integrator": "i6",
+      "k": 100,
+      "c": 30,
+      "m": 1,
+      "A": 200,
+      "write": "full"
+     }
+    ],
+    "draw": {
+     "kind": "omega-zeta-m",
+     "omega0": [
+      10,
+      26.2
+     ],
+     "zeta": [
+      0.42,
+      1.5
+     ],
+     "m": [
+      0.35,
+      1
+     ],
+     "rule": "k = m*omega0^2, c = 2*zeta*m*omega0; redraw while the vector is not valid (see cell.mjs isValid)"
+    }
+   },
+   {
+    "id": "i7",
+    "default": {
+     "integrator": "i7",
+     "k": 200,
+     "c": 12,
+     "m": 1,
+     "A": 200,
+     "write": "full"
+    },
+    "grid": [
+     {
+      "integrator": "i7",
+      "k": 200,
+      "c": 12,
+      "m": 1,
+      "A": 200,
+      "write": "full"
+     },
+     {
+      "integrator": "i7",
+      "k": 240,
+      "c": 16,
+      "m": 0.35,
+      "A": 200,
+      "write": "full"
+     },
+     {
+      "integrator": "i7",
+      "k": 100,
+      "c": 30,
+      "m": 1,
+      "A": 200,
+      "write": "full"
+     }
+    ],
+    "draw": {
+     "kind": "omega-zeta-m",
+     "omega0": [
+      10,
+      26.2
+     ],
+     "zeta": [
+      0.42,
+      1.5
+     ],
+     "m": [
+      0.35,
+      1
+     ],
+     "rule": "k = m*omega0^2, c = 2*zeta*m*omega0; redraw while the vector is not valid (see cell.mjs isValid)"
+    }
+   }
+  ],
+  "traces": {
+   "p1000": "traces/m07.p1000.json",
+   "p400": "traces/m07.p400.json"
+  },
+  "regimes": [
+   "R2",
+   "R3",
+   "R4",
+   "R5",
+   "R6"
+  ],
+  "watch": {
+   "selectors": [
+    ".b0"
+   ],
+   "computedVars": [],
+   "glUniforms": [],
+   "pixelKeys": []
+  },
+  "truthClass": "spring",
+  "metrics": [
+   "M07/integrator-identified",
+   "M07/wrong-confident",
+   "M07/replay-nrmse",
+   "M07/kc-rel-error",
+   "M07/analytic-flag",
+   "class"
+  ],
+  "params": {
+   "default": {
+    "integrator": "i1h16",
+    "k": 200,
+    "c": 12,
+    "m": 1,
+    "A": 200,
+    "write": "full"
+   },
+   "grid": [
+    {
+     "integrator": "i1h16",
+     "k": 200,
+     "c": 12,
+     "m": 1,
+     "A": 200,
+     "write": "full"
+    },
+    {
+     "integrator": "i1h16",
+     "k": 240,
+     "c": 16,
+     "m": 0.35,
+     "A": 200,
+     "write": "full"
+    },
+    {
+     "integrator": "i1h16",
+     "k": 100,
+     "c": 30,
+     "m": 1,
+     "A": 200,
+     "write": "full"
+    },
+    {
+     "integrator": "i1h2",
+     "k": 200,
+     "c": 12,
+     "m": 1,
+     "A": 200,
+     "write": "full"
+    },
+    {
+     "integrator": "i1h2",
+     "k": 240,
+     "c": 16,
+     "m": 0.35,
+     "A": 200,
+     "write": "full"
+    },
+    {
+     "integrator": "i1h2",
+     "k": 100,
+     "c": 30,
+     "m": 1,
+     "A": 200,
+     "write": "full"
+    },
+    {
+     "integrator": "i1h1",
+     "k": 200,
+     "c": 12,
+     "m": 1,
+     "A": 200,
+     "write": "full"
+    },
+    {
+     "integrator": "i1h1",
+     "k": 240,
+     "c": 16,
+     "m": 0.35,
+     "A": 200,
+     "write": "full"
+    },
+    {
+     "integrator": "i1h1",
+     "k": 100,
+     "c": 30,
+     "m": 1,
+     "A": 200,
+     "write": "full"
+    },
+    {
+     "integrator": "i4",
+     "kf": 0.052,
+     "cf": 0.183,
+     "A": 200,
+     "write": "full"
+    },
+    {
+     "integrator": "i4",
+     "kf": 0.04,
+     "cf": 0.318,
+     "A": 200,
+     "write": "full"
+    },
+    {
+     "integrator": "i4",
+     "kf": 0.02,
+     "cf": 0.381,
+     "A": 200,
+     "write": "full"
+    },
+    {
+     "integrator": "i5",
+     "k": 200,
+     "c": 12,
+     "m": 1,
+     "A": 200,
+     "write": "full"
+    },
+    {
+     "integrator": "i5",
+     "k": 240,
+     "c": 16,
+     "m": 0.35,
+     "A": 200,
+     "write": "full"
+    },
+    {
+     "integrator": "i5",
+     "k": 100,
+     "c": 30,
+     "m": 1,
+     "A": 200,
+     "write": "full"
+    },
+    {
+     "integrator": "i6",
+     "k": 200,
+     "c": 12,
+     "m": 1,
+     "A": 200,
+     "write": "full"
+    },
+    {
+     "integrator": "i6",
+     "k": 240,
+     "c": 16,
+     "m": 0.35,
+     "A": 200,
+     "write": "full"
+    },
+    {
+     "integrator": "i6",
+     "k": 100,
+     "c": 30,
+     "m": 1,
+     "A": 200,
+     "write": "full"
+    },
+    {
+     "integrator": "i7",
+     "k": 200,
+     "c": 12,
+     "m": 1,
+     "A": 200,
+     "write": "full"
+    },
+    {
+     "integrator": "i7",
+     "k": 240,
+     "c": 16,
+     "m": 0.35,
+     "A": 200,
+     "write": "full"
+    },
+    {
+     "integrator": "i7",
+     "k": 100,
+     "c": 30,
+     "m": 1,
+     "A": 200,
+     "write": "full"
+    }
+   ]
+  },
+  "cells": {
+   "paramVectors": 21,
+   "traces": 2,
+   "total": 42
+  }
+ },
+ {
+  "id": "m07x",
+  "page": "m07x.html",
+  "driver": "time",
+  "engine": "chs",
+  "codeVariantKey": "integrator",
+  "outOfFitterSet": true,
+  "codeVariants": [
+   {
+    "id": "verlet",
+    "default": {
+     "integrator": "verlet",
+     "k": 200,
+     "c": 12,
+     "m": 1,
+     "A": 200,
+     "write": "full"
+    },
+    "grid": [
+     {
+      "integrator": "verlet",
+      "k": 200,
+      "c": 12,
+      "m": 1,
+      "A": 200,
+      "write": "full"
+     },
+     {
+      "integrator": "verlet",
+      "k": 240,
+      "c": 16,
+      "m": 0.35,
+      "A": 200,
+      "write": "full"
+     }
+    ],
+    "draw": {
+     "kind": "omega-zeta-m",
+     "omega0": [
+      10,
+      26.2
+     ],
+     "zeta": [
+      0.42,
+      0.873
+     ],
+     "m": [
+      0.35,
+      1
+     ],
+     "rule": "k = m*omega0^2, c = 2*zeta*m*omega0; redraw while the vector is not valid (see cell.mjs isValid)"
+    }
+   },
+   {
+    "id": "i1h5",
+    "default": {
+     "integrator": "i1h5",
+     "k": 200,
+     "c": 12,
+     "m": 1,
+     "A": 200,
+     "write": "full"
+    },
+    "grid": [
+     {
+      "integrator": "i1h5",
+      "k": 200,
+      "c": 12,
+      "m": 1,
+      "A": 200,
+      "write": "full"
+     },
+     {
+      "integrator": "i1h5",
+      "k": 240,
+      "c": 16,
+      "m": 0.35,
+      "A": 200,
+      "write": "full"
+     }
+    ],
+    "draw": {
+     "kind": "omega-zeta-m",
+     "omega0": [
+      10,
+      26.2
+     ],
+     "zeta": [
+      0.42,
+      0.873
+     ],
+     "m": [
+      0.35,
+      1
+     ],
+     "rule": "k = m*omega0^2, c = 2*zeta*m*omega0; redraw while the vector is not valid (see cell.mjs isValid)"
+    }
+   }
+  ],
+  "traces": {
+   "p1000": "traces/m07x.p1000.json"
+  },
+  "regimes": [
+   "R2",
+   "R3",
+   "R4",
+   "R5",
+   "R6"
+  ],
+  "watch": {
+   "selectors": [
+    ".b0"
+   ],
+   "computedVars": [],
+   "glUniforms": [],
+   "pixelKeys": []
+  },
+  "truthClass": "spring",
+  "metrics": [
+   "M07/wrong-confident",
+   "confident-wrong"
+  ],
+  "params": {
+   "default": {
+    "integrator": "verlet",
+    "k": 200,
+    "c": 12,
+    "m": 1,
+    "A": 200,
+    "write": "full"
+   },
+   "grid": [
+    {
+     "integrator": "verlet",
+     "k": 200,
+     "c": 12,
+     "m": 1,
+     "A": 200,
+     "write": "full"
+    },
+    {
+     "integrator": "verlet",
+     "k": 240,
+     "c": 16,
+     "m": 0.35,
+     "A": 200,
+     "write": "full"
+    },
+    {
+     "integrator": "i1h5",
+     "k": 200,
+     "c": 12,
+     "m": 1,
+     "A": 200,
+     "write": "full"
+    },
+    {
+     "integrator": "i1h5",
+     "k": 240,
+     "c": 16,
+     "m": 0.35,
+     "A": 200,
+     "write": "full"
+    }
+   ]
+  },
+  "cells": {
+   "paramVectors": 4,
+   "traces": 1,
+   "total": 4
+  }
+ },
+ {
+  "id": "m08",
+  "page": "m08.html",
+  "driver": "time",
+  "engine": "chs",
+  "codeVariantKey": null,
+  "note": "G1-4 lists the driver as click; X3 (CDP click) has not landed, so a page timer starts the motion. Same page, same truth.",
+  "codeVariants": [
+   {
+    "id": "analytic",
+    "default": {
+     "omega0": 13,
+     "zeta": 0.42,
+     "A": 200,
+     "write": "full"
+    },
+    "grid": [
+     {
+      "omega0": 14,
+      "zeta": 0.25,
+      "A": 200,
+      "write": "full"
+     },
+     {
+      "omega0": 13,
+      "zeta": 0.42,
+      "A": 200,
+      "write": "full"
+     },
+     {
+      "omega0": 16,
+      "zeta": 0.6,
+      "A": 200,
+      "write": "full"
+     },
+     {
+      "omega0": 12,
+      "zeta": 1,
+      "A": 200,
+      "write": "full"
+     },
+     {
+      "omega0": 10,
+      "zeta": 1.5,
+      "A": 200,
+      "write": "full"
+     }
+    ],
+    "draw": {
+     "kind": "omega-zeta",
+     "omega0": [
+      10,
+      16
+     ],
+     "zeta": [
+      0.25,
+      1.5
+     ]
+    }
+   }
+  ],
+  "traces": {
+   "rest": "traces/m08.rest.json",
+   "retarget": "traces/m08.retarget.json",
+   "v0": "traces/m08.v0.json"
+  },
+  "regimes": [
+   "R2",
+   "R3",
+   "R4",
+   "R5",
+   "R6"
+  ],
+  "watch": {
+   "selectors": [
+    ".b0"
+   ],
+   "computedVars": [],
+   "glUniforms": [],
+   "pixelKeys": []
+  },
+  "truthClass": "spring",
+  "metrics": [
+   "M08/omega-zeta-rel-error",
+   "M08/overshoot",
+   "M08/settle",
+   "class"
+  ],
+  "params": {
+   "default": {
+    "omega0": 13,
+    "zeta": 0.42,
+    "A": 200,
+    "write": "full"
+   },
+   "grid": [
+    {
+     "omega0": 14,
+     "zeta": 0.25,
+     "A": 200,
+     "write": "full"
+    },
+    {
+     "omega0": 13,
+     "zeta": 0.42,
+     "A": 200,
+     "write": "full"
+    },
+    {
+     "omega0": 16,
+     "zeta": 0.6,
+     "A": 200,
+     "write": "full"
+    },
+    {
+     "omega0": 12,
+     "zeta": 1,
+     "A": 200,
+     "write": "full"
+    },
+    {
+     "omega0": 10,
+     "zeta": 1.5,
+     "A": 200,
+     "write": "full"
+    }
+   ]
+  },
+  "cells": {
+   "paramVectors": 5,
+   "traces": 3,
+   "total": 15
+  }
+ },
+ {
+  "id": "m10",
+  "page": "m10.html",
+  "driver": "pointer",
+  "engine": "chs",
+  "codeVariantKey": "law",
+  "note": "The pointer path is replayed by page timers that dispatch synthetic pointer events (same handlers a real pointer would hit); drive:\"external\" in params turns that off for CDP input once X3 lands.",
+  "codeVariants": [
+   {
+    "id": "frame",
+    "default": {
+     "law": "frame",
+     "friction": 0.94,
+     "write": "full"
+    },
+    "grid": [
+     {
+      "law": "frame",
+      "friction": 0.9,
+      "write": "full"
+     },
+     {
+      "law": "frame",
+      "friction": 0.94,
+      "write": "full"
+     },
+     {
+      "law": "frame",
+      "friction": 0.97,
+      "write": "full"
+     }
+    ],
+    "draw": {
+     "kind": "range",
+     "friction": [
+      0.9,
+      0.97
+     ]
+    }
+   },
+   {
+    "id": "dt",
+    "default": {
+     "law": "dt",
+     "friction": 0.95,
+     "write": "full"
+    },
+    "grid": [
+     {
+      "law": "dt",
+      "friction": 0.92,
+      "write": "full"
+     },
+     {
+      "law": "dt",
+      "friction": 0.95,
+      "write": "full"
+     }
+    ],
+    "draw": {
+     "kind": "range",
+     "friction": [
+      0.92,
+      0.95
+     ]
+    }
+   }
+  ],
+  "traces": {
+   "fast": "traces/m10.fast.json",
+   "slow": "traces/m10.slow.json",
+   "still": "traces/m10.still.json"
+  },
+  "regimes": [
+   "R2",
+   "R3",
+   "R4",
+   "R5",
+   "R6"
+  ],
+  "watch": {
+   "selectors": [
+    ".b0"
+   ],
+   "computedVars": [],
+   "glUniforms": [],
+   "pixelKeys": []
+  },
+  "truthClass": "friction",
+  "metrics": [
+   "M10/friction-rel-error",
+   "M10/stopping-distance",
+   "M09/law-class",
+   "M16/no-momentum",
+   "class"
+  ],
+  "params": {
+   "default": {
+    "law": "frame",
+    "friction": 0.94,
+    "write": "full"
+   },
+   "grid": [
+    {
+     "law": "frame",
+     "friction": 0.9,
+     "write": "full"
+    },
+    {
+     "law": "frame",
+     "friction": 0.94,
+     "write": "full"
+    },
+    {
+     "law": "frame",
+     "friction": 0.97,
+     "write": "full"
+    },
+    {
+     "law": "dt",
+     "friction": 0.92,
+     "write": "full"
+    },
+    {
+     "law": "dt",
+     "friction": 0.95,
+     "write": "full"
+    }
+   ]
+  },
+  "cells": {
+   "paramVectors": 5,
+   "traces": 3,
+   "total": 15
+  }
+ }
+]

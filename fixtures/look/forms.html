@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>look fixture: forms and unread changes</title>
+<!-- Own fixture for look's "no silent drops" (no site content). #forms, on load, by construction:
+  - opacity: CSS transition 400 ms linear, 0.2 -> 1 (a real motion, class set at 200 ms)
+  - style.transform: translate3d(0px, 0px, 0px) from 100 ms, translate(0px, 0px) from 700 ms (GSAP force3D "auto" at a
+    tween's end): the rendered transform never changes, so it is not motion
+  - filter: drop-shadow blur 4px -> 12px at 300 ms (its first number, the colour's 255, does not move): a change the
+    fitter does not read, reported as an unknown with the values
+-->
+<style>
+  html, body { margin: 0; }
+  #forms { position: absolute; left: 80px; top: 80px; width: 300px; height: 120px; background: #456; opacity: 0.2; transition: opacity 400ms linear; filter: drop-shadow(0px 0px 4px red); }
+  #forms.in { opacity: 1; }
+</style>
+</head>
+<body>
+<div id="forms"></div>
+<script>
+  const el = document.getElementById('forms');
+  setTimeout(() => { el.style.transform = 'translate3d(0px, 0px, 0px)'; }, 100);
+  setTimeout(() => { el.classList.add('in'); }, 200);
+  setTimeout(() => { el.style.filter = 'drop-shadow(0px 0px 12px red)'; }, 300);
+  setTimeout(() => { el.style.transform = 'translate(0px, 0px)'; }, 700);
+</script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+<!doctype html><meta charset="utf-8"><title>gl late</title>
+<!-- Known truth: the WebGL context is made 6500 ms after load (a late module / a timer), then uTime = seconds since its
+     first frame (a clock, 1.0 per second) that holds a stray first value 0.0167 for the first 150 ms and then runs
+     (a page that sets uTime once, then starts its clock). uLight circles with a 28.56 s period: x = 0.8 cos(2 pi t / 28.56 s),
+     y = 0.5 sin(...). A load look of 4 s sees neither unless it waits for the context. -->
+<body style="margin:0;background:#111"><script src="gl-kit.js"></script><script>
+const P = 28560;
+setTimeout(() => glKit({ vs: FLAT_VS,
+  fs: `precision mediump float;
+uniform float uTime; uniform vec2 uLight;
+void main() { gl_FragColor = vec4(vec3(0.5 + 0.5 * sin(uTime + uLight.x * 3.0 + uLight.y)), 1.0); }`,
+  frame: ({ gl, U }, t) => { gl.uniform1f(U('uTime'), t < 150 ? 0.0167 : t / 1000);
+    const a = 2 * Math.PI * t / P; gl.uniform2f(U('uLight'), Math.cos(a) * 0.8, Math.sin(a) * 0.5); } }), 6500);
+</script></body>

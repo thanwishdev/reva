@@ -1,0 +1,82 @@
+{
+ "schema": "reva.specimen.time/0",
+ "id": "m16e-go",
+ "origin": "lab",
+ "source": {
+  "kind": "labtruth",
+  "schema": "reva.labtruth/0",
+  "route": "m16e",
+  "variant": "go",
+  "regime": "R3",
+  "params": {
+   "from": 0,
+   "to": 420,
+   "D": 1400,
+   "ease": "easeOutExpo",
+   "write": "full"
+  }
+ },
+ "timeline": {
+  "frameMs": 8.333333,
+  "refreshHz": 120,
+  "leadMs": 500,
+  "sourceShiftMs": 75,
+  "durationMs": 2409,
+  "hasLoop": false
+ },
+ "viewport": {
+  "width": 1280,
+  "height": 800
+ },
+ "elements": [
+  {
+   "id": "e0",
+   "key": "#b0",
+   "x": 40,
+   "y": 60,
+   "w": 56,
+   "h": 56,
+   "tf": {
+    "tx": true,
+    "ty": false,
+    "rz": false,
+    "sx": false,
+    "sy": false
+   }
+  }
+ ],
+ "tracks": [
+  {
+   "id": "t0",
+   "el": 0,
+   "channel": "var",
+   "name": "--v",
+   "mapTo": "tx",
+   "impl": "js",
+   "label": "tween",
+   "provenance": {
+    "tier": "truth",
+    "route": "m16e"
+   },
+   "assumptions": [
+    {
+     "field": "channel",
+     "reason": "custom property --v: how the page maps it to a visual property is not in the record; mapped to translateX(px) so the box moves"
+    }
+   ],
+   "motion": {
+    "kind": "tween",
+    "from": 0,
+    "to": 420,
+    "startMs": 508.333333,
+    "durationMs": 1400,
+    "ease": {
+     "kind": "named",
+     "name": "easeOutExpo"
+    }
+   }
+  }
+ ],
+ "notes": [],
+ "digest": "a7d220c7712fc172"
+}

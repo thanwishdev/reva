@@ -1,0 +1,35 @@
+{
+ "id": "slow",
+ "route": "m10",
+ "note": "drag 0.25 px/ms, release at 905 ms",
+ "page": {
+  "path": "slow"
+ },
+ "viewport": {
+  "width": 1280,
+  "height": 800
+ },
+ "seed": 1,
+ "scene": {
+  "selectors": [
+   ".b0"
+  ]
+ },
+ "boot": {
+  "until": "document.readyState === 'complete'"
+ },
+ "actions": [
+  {
+   "eval": "window.dispatchEvent(new Event('go'))"
+  },
+  {
+   "mark": "go"
+  },
+  {
+   "hold": 6000
+  },
+  {
+   "mark": "end"
+  }
+ ]
+}

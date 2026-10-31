@@ -1,0 +1,14 @@
+<!doctype html>
+<!-- Known by construction (test/look/look-trigger.test.js): .copy fades in on load (Web Animation, opacity 0 -> 1, delay
+  1800 ms, 600 ms, fill both), so .link is sized and displayed but transparent when the page is ready. .link:hover moves
+  it: translateX 12px, CSS transition 300 ms ease-out. button.sound beside it changes nothing. A search that probed
+  button.sound while the fade ran would credit the fade to it. -->
+<html><head><meta charset="utf-8"><title>delayed reveal</title>
+<style>body{margin:0;background:#111;color:#eee;font:16px system-ui}
+.copy{margin:120px 80px;display:flex;gap:24px;align-items:center}
+.link{display:inline-block;padding:14px 20px;background:#c84;color:#111;text-decoration:none;transition:transform 300ms ease-out}
+.link:hover{transform:translateX(12px)}
+.sound{padding:14px 20px}</style></head>
+<body><div class="copy"><a class="link" href="#x">Hear it</a><button class="sound" type="button">Sound</button></div>
+<script>document.querySelector('.copy').animate([{ opacity: 0 }, { opacity: 1 }], { duration: 600, delay: 1800, fill: 'both' });</script>
+</body></html>

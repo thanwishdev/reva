@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>native scroll scrub fixture</title>
+<!--
+  Scroll-scrubbed motion on a page that scrolls NATIVELY (the wheels are not prevented; plain JS, no library; known by
+  construction, viewport 1440 x 900):
+  - #tl   a scrubbed timeline (GSAP-like scrub 1): the timeline progress P = clamp((scrollY - 1000) / 3000) is followed by
+          an expo.out tween of 1000 ms, restarted from the shown progress whenever P changes (aligned to the previous
+          frame, as measured on a real page); the child tween fills the first 90 % of the timeline:
+          translateX = -2400 * clamp(shown / 0.9). Its own corners are 1000 and 3700 px of smoothed scroll; the
+          trigger range ends at 4000 px.
+  - #pop  a time tween the scroll only starts: the first frame with scrollY >= 2000 starts scale 0.5 -> 1 over 900 ms,
+          easeInOutCubic (a ScrollTrigger toggleActions "play" reveal).
+-->
+<style>
+  html, body { margin: 0; background: #111; color: #eee; font: 16px/1.4 system-ui, sans-serif; }
+  #stage { position: sticky; top: 0; height: 900px; overflow: hidden; }
+  #tl { position: absolute; top: 200px; left: 0; width: 4000px; height: 240px; background: linear-gradient(90deg, #c84, #48c); will-change: transform; }
+  #pop { position: absolute; top: 560px; left: 600px; width: 240px; height: 240px; background: #8c4; transform: scale(0.5); will-change: transform; }
+  .long { height: 7000px; }
+</style>
+</head>
+<body>
+<div class="long"><div id="stage"><div id="tl"></div><div id="pop"></div></div></div>
+<script>
+  const clamp = (v) => Math.min(1, Math.max(0, v));
+  const expoOut = (p) => (p >= 1 ? 1 : 1 - 2 ** (-10 * p));
+  const inOutCubic = (p) => (p < 0.5 ? 4 * p * p * p : 1 - (-2 * p + 2) ** 3 / 2);
+  const tl = document.getElementById('tl'), pop = document.getElementById('pop');
+  let shown = 0, from = 0, to = 0, t0 = null, lastP = 0, prev = null, popT0 = null;
+  function frame(now) {
+    const P = clamp((scrollY - 1000) / 3000);
+    if (P !== lastP) { from = shown; to = P; t0 = prev ?? now; lastP = P; }
+    if (t0 != null) shown = from + (to - from) * expoOut((now - t0) / 1000);
+    tl.style.transform = `translateX(${-2400 * clamp(shown / 0.9)}px)`;
+    if (popT0 == null && scrollY >= 2000) popT0 = now;
+    if (popT0 != null) pop.style.transform = `scale(${0.5 + 0.5 * inOutCubic(clamp((now - popT0) / 900))})`;
+    prev = now;
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+</script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+# Site-derived research notes hold third-party site numbers (PLAN H2); a private copy lives outside the repo.
+docs/research/
+# Playwright MCP session output
+.playwright-mcp/
+node_modules/
+.venv/
+.DS_Store
+# Run output lives outside the repo (PLAN H2); this is only a guard against a misconfigured output root.
+out/
+*.har
+*.har.zip

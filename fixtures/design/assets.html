@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>REVA assets + tokens fixture</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  /* Stage D3/D4 known answers (test/design/views-fixture.test.js): every way an element references a file, and a
+     small var() graph with aliases, calc() references, a context override and typed literals. Own page, public-safe. */
+  @font-face { font-family: "WR Plant Sans"; src: url(/wr-plant.ttf) format("truetype"); font-weight: 400; font-display: block; }
+  :root { --brand: #0a7f5c; --brand-ink: var(--brand); --space: 8px; --space-2: calc(var(--space) * 2); --ease: cubic-bezier(.2, 0, 0, 1);
+    --shade: rgb(0 0 0 / .15); --fade: .8; --fam: "WR Plant Sans", system-ui; --size-lg: 1.25rem; --edge: var(--missing, 2px); }
+  .dark { --brand: #11161c; }
+  @media (min-width: 800px) { :root { --space: 12px; } }
+  body { margin: 0; font: 16px/1.5 system-ui, sans-serif; color: var(--brand-ink); }
+  .brand { font-family: var(--fam); font-size: var(--size-lg); margin: var(--space-2); }
+  .bg { height: 40px; background: url(/a/bg.svg) no-repeat, linear-gradient(#eee, #ddd); }
+  .masked { width: 40px; height: 40px; background: var(--brand); mask-image: url(/a/mask.svg); }
+  .ticks { list-style-image: url(/a/tick.svg); }
+  .icon::before { content: url(/a/icon.svg); }
+  .dark { padding: var(--space); background: var(--brand); color: #fff; box-shadow: 0 2px 8px var(--shade); opacity: var(--fade); transition: opacity .2s var(--ease); }
+</style></head>
+<body>
+<p class="brand" id="a-brand">Brand text in the planted font</p>
+<img id="a-img" src="/a/one.svg" srcset="/a/one.svg 1x, /a/one-2x.svg 2x" width="40" height="40" alt="">
+<picture id="a-pic"><source media="(min-width: 800px)" srcset="/a/wide.svg"><img id="a-pic-img" src="/a/narrow.svg" width="80" height="40" alt=""></picture>
+<div class="bg" id="a-bg"></div>
+<div class="masked" id="a-mask"></div>
+<ul class="ticks" id="a-ticks"><li>One</li><li>Two</li></ul>
+<p class="icon" id="a-icon">Icon before</p>
+<svg id="a-sprite" width="20" height="20"><use href="/a/sprite.svg#dot"></use></svg>
+<svg id="a-inline" width="20" height="20"><circle cx="10" cy="10" r="8" fill="#0a7f5c"></circle></svg>
+<video id="a-video" width="80" height="45" poster="/a/poster.svg" preload="none" src="/a/clip.webm"></video>
+<div class="dark" id="a-dark">Dark context</div>
+</body></html>

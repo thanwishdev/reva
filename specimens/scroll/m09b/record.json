@@ -1,0 +1,58 @@
+{
+ "schema": "reva.specimen-source/0",
+ "source": {
+  "kind": "labtruth",
+  "file": "lab-scroll/truth/m09b.json",
+  "variant": "speed",
+  "digest": "4c35827482f60b29",
+  "note": "Fixture Lab truth record (own fixture, public-safe)"
+ },
+ "items": [
+  {
+   "scored": true,
+   "classScored": true,
+   "target": "#c|drv:--y",
+   "role": "driver",
+   "class": "first-order smoothing",
+   "family": "ema",
+   "law": "per-frame",
+   "attribution": "wheel",
+   "params": {
+    "alpha": {
+     "value": 0.1,
+     "unit": "per frame"
+    },
+    "done_rule": "round(value) == round(target)"
+   },
+   "derived": {
+    "tau_ms": {
+     "value": 79.09351317524921,
+     "unit": "ms",
+     "at_dt_ms": 8.333333333333334
+    },
+    "alpha_per_sample": {
+     "value": 0.09999999999999998,
+     "unit": "per sample",
+     "stride": 1
+    }
+   }
+  },
+  {
+   "scored": false,
+   "classScored": true,
+   "target": "#c|ren:tx",
+   "role": "rendered-mirror",
+   "mirrorOf": "#c|drv:--y",
+   "class": "first-order smoothing",
+   "family": "ema",
+   "attribution": "wheel",
+   "law": "per-frame",
+   "params": {
+    "alpha": {
+     "value": 0.1,
+     "unit": "per frame"
+    }
+   }
+  }
+ ]
+}

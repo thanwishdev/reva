@@ -1,0 +1,35 @@
+{
+ "id": "retarget",
+ "route": "m08",
+ "note": "level 1 at 500 ms, level 0.3 at 1000 ms (velocity continuity at the retarget)",
+ "page": {
+  "sched": "retarget"
+ },
+ "viewport": {
+  "width": 1280,
+  "height": 800
+ },
+ "seed": 1,
+ "scene": {
+  "selectors": [
+   ".b0"
+  ]
+ },
+ "boot": {
+  "until": "document.readyState === 'complete'"
+ },
+ "actions": [
+  {
+   "eval": "window.dispatchEvent(new Event('go'))"
+  },
+  {
+   "mark": "go"
+  },
+  {
+   "hold": 3600
+  },
+  {
+   "mark": "end"
+  }
+ ]
+}

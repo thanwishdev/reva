@@ -1,0 +1,30 @@
+{
+ "schema": "reva.labtrace/0",
+ "route": "m12",
+ "variant": "go",
+ "viewport": {
+  "width": 1280,
+  "height": 800
+ },
+ "seed": 1,
+ "boot": {
+  "until": "window.__ready === true"
+ },
+ "actions": [
+  {
+   "hold": 400
+  },
+  {
+   "snapshot": "start"
+  },
+  {
+   "mark": "go"
+  },
+  {
+   "scrollTo": 1000
+  },
+  {
+   "hold": 2800
+  }
+ ]
+}

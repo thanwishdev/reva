@@ -1,0 +1,8 @@
+{
+  "note": "Own fixture scenario: start the bench motions and record 2.4 s.",
+  "viewport": { "width": 800, "height": 600 },
+  "seed": 1,
+  "scene": { "selectors": [".b"] },
+  "boot": { "until": "document.readyState === 'complete'" },
+  "actions": [ { "eval": "__go()" }, { "mark": "go" }, { "hold": 2400 } ]
+}

@@ -1,0 +1,34 @@
+<!doctype html>
+<!-- Background area fixture for REVA's design pass (test/design/design-bg.test.js). Known by construction, at
+     1440 px wide: html and body are 100 % tall (one viewport) while the document is 5000 px, and body's white
+     background is handed to the canvas, so white paints the whole page under the boxes. A #111111 section 3500 px tall
+     (position: relative) holds a static #333333 block 350 px tall, which paints over it. A #0d1738 panel 700 px tall is
+     used once. A 400 x 100 overflow-hidden box clips a #00aa55 child 2000 px tall. Twenty text colours used twice each
+     outnumber the panel by count. Expected shares of the page: #111111 0.63, #ffffff 0.15, #0d1738 0.14, #333333 0.07,
+     #00aa55 0.01; they add up to 1. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>bg h100 fixture</title>
+<style>
+html, body { height: 100%; margin: 0; }
+body { background-color: #ffffff; color: #222222; font-family: Georgia, serif; }
+p { margin: 0; font-size: 16px; }
+.dark { position: relative; background-color: #111111; color: #eeeeee; height: 3500px; }
+.inner { background-color: #333333; height: 350px; }
+.panel { background-color: #0d1738; color: #ffffff; height: 700px; }
+.tail { height: 800px; }
+.clip { width: 400px; height: 100px; overflow: hidden; }
+.long { background-color: #00aa55; height: 2000px; }
+</style>
+</head>
+<body>
+<div class="dark"><div class="inner"></div><p>Dark section text.</p></div>
+<div class="panel"><p>Panel text.</p></div>
+<div class="tail"><div class="clip"><div class="long"></div></div><p id="words">Light tail text.</p></div>
+<script>
+  const w = document.getElementById('words');
+  for (let i = 0; i < 20; i++) for (let k = 0; k < 2; k++) { const s = document.createElement('span'); s.textContent = 'word '; s.style.color = `rgb(${40 + i * 9}, 20, ${200 - i * 7})`; w.appendChild(s); }
+</script>
+</body>
+</html>

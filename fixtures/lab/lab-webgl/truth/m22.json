@@ -1,0 +1,1078 @@
+{
+ "note": "Generated for review by tools/gen-truth.mjs. Planned-trace values (start signal at k = 0); the scorer calls truth(route, params, regime, {variant, ctx}) with the actual take.",
+ "route": "m22",
+ "default": {
+  "steps": {
+   "R2": {
+    "schema": "reva.labtruth/0",
+    "route": "m22",
+    "params": {
+     "alpha": 0.16,
+     "snap": 0.05,
+     "gain": 0.5,
+     "max": 700,
+     "durMs": 420,
+     "ease": [
+      0.31,
+      0.12,
+      0.18,
+      0.97
+     ],
+     "write": "full"
+    },
+    "regime": "R2",
+    "variant": "steps",
+    "metrics": [
+     "class",
+     "driver_alpha",
+     "transition_timing"
+    ],
+    "stagger": null,
+    "negative": null,
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "driver": ".b0|drv:--d",
+      "class": "composite",
+      "family": "smoothing driver -> declared CSS transition",
+      "stages": [
+       {
+        "stage": "driver",
+        "channel": ".b0|drv:--d",
+        "class": "first-order smoothing",
+        "law": "per-frame",
+        "params": {
+         "alpha_per_frame": 0.16,
+         "snap_px": 0.05,
+         "tau_ms_at_T": 95.5912984519605,
+         "target_gain": 0.5,
+         "write": "full"
+        }
+       },
+       {
+        "stage": "rendered",
+        "class": "declared",
+        "kind": "css-transition",
+        "params": {
+         "property": "transform",
+         "duration_ms": 420,
+         "easing": "cubic-bezier(0.31, 0.12, 0.18, 0.97)",
+         "restart": "new transition from the current value at every driver change"
+        }
+       }
+      ],
+      "params": {
+       "alpha_per_frame": 0.16,
+       "duration_ms": 420,
+       "easing": [
+        0.31,
+        0.12,
+        0.18,
+        0.97
+       ]
+      },
+      "derived": {
+       "driver_alpha_per_frame": 0.16
+      }
+     }
+    ],
+    "attribution": {
+     ".b0|ren:tx": "scroll-linked"
+    }
+   },
+   "R3": {
+    "schema": "reva.labtruth/0",
+    "route": "m22",
+    "params": {
+     "alpha": 0.16,
+     "snap": 0.05,
+     "gain": 0.5,
+     "max": 700,
+     "durMs": 420,
+     "ease": [
+      0.31,
+      0.12,
+      0.18,
+      0.97
+     ],
+     "write": "full"
+    },
+    "regime": "R3",
+    "variant": "steps",
+    "metrics": [
+     "class",
+     "driver_alpha",
+     "transition_timing"
+    ],
+    "stagger": null,
+    "negative": null,
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "driver": ".b0|drv:--d",
+      "class": "composite",
+      "family": "smoothing driver -> declared CSS transition",
+      "stages": [
+       {
+        "stage": "driver",
+        "channel": ".b0|drv:--d",
+        "class": "first-order smoothing",
+        "law": "per-frame",
+        "params": {
+         "alpha_per_frame": 0.16,
+         "snap_px": 0.05,
+         "tau_ms_at_T": 47.79564922598025,
+         "target_gain": 0.5,
+         "write": "full"
+        }
+       },
+       {
+        "stage": "rendered",
+        "class": "declared",
+        "kind": "css-transition",
+        "params": {
+         "property": "transform",
+         "duration_ms": 420,
+         "easing": "cubic-bezier(0.31, 0.12, 0.18, 0.97)",
+         "restart": "new transition from the current value at every driver change"
+        }
+       }
+      ],
+      "params": {
+       "alpha_per_frame": 0.16,
+       "duration_ms": 420,
+       "easing": [
+        0.31,
+        0.12,
+        0.18,
+        0.97
+       ]
+      },
+      "derived": {
+       "driver_alpha_per_frame": 0.16
+      }
+     }
+    ],
+    "attribution": {
+     ".b0|ren:tx": "scroll-linked"
+    }
+   },
+   "R4": {
+    "schema": "reva.labtruth/0",
+    "route": "m22",
+    "params": {
+     "alpha": 0.16,
+     "snap": 0.05,
+     "gain": 0.5,
+     "max": 700,
+     "durMs": 420,
+     "ease": [
+      0.31,
+      0.12,
+      0.18,
+      0.97
+     ],
+     "write": "full"
+    },
+    "regime": "R4",
+    "variant": "steps",
+    "metrics": [
+     "class",
+     "driver_alpha",
+     "transition_timing"
+    ],
+    "stagger": null,
+    "negative": null,
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "driver": ".b0|drv:--d",
+      "class": "composite",
+      "family": "smoothing driver -> declared CSS transition",
+      "stages": [
+       {
+        "stage": "driver",
+        "channel": ".b0|drv:--d",
+        "class": "first-order smoothing",
+        "law": "per-frame",
+        "params": {
+         "alpha_per_frame": 0.16,
+         "snap_px": 0.05,
+         "tau_ms_at_T": 191.182596903921,
+         "target_gain": 0.5,
+         "write": "full"
+        }
+       },
+       {
+        "stage": "rendered",
+        "class": "declared",
+        "kind": "css-transition",
+        "params": {
+         "property": "transform",
+         "duration_ms": 420,
+         "easing": "cubic-bezier(0.31, 0.12, 0.18, 0.97)",
+         "restart": "new transition from the current value at every driver change"
+        }
+       }
+      ],
+      "params": {
+       "alpha_per_frame": 0.16,
+       "duration_ms": 420,
+       "easing": [
+        0.31,
+        0.12,
+        0.18,
+        0.97
+       ]
+      },
+      "derived": {
+       "driver_alpha_per_frame": 0.16
+      }
+     }
+    ],
+    "attribution": {
+     ".b0|ren:tx": "scroll-linked"
+    }
+   },
+   "R5": {
+    "schema": "reva.labtruth/0",
+    "route": "m22",
+    "params": {
+     "alpha": 0.16,
+     "snap": 0.05,
+     "gain": 0.5,
+     "max": 700,
+     "durMs": 420,
+     "ease": [
+      0.31,
+      0.12,
+      0.18,
+      0.97
+     ],
+     "write": "full"
+    },
+    "regime": "R5",
+    "variant": "steps",
+    "metrics": [
+     "class",
+     "driver_alpha",
+     "transition_timing"
+    ],
+    "stagger": null,
+    "negative": null,
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "driver": ".b0|drv:--d",
+      "class": "composite",
+      "family": "smoothing driver -> declared CSS transition",
+      "stages": [
+       {
+        "stage": "driver",
+        "channel": ".b0|drv:--d",
+        "class": "first-order smoothing",
+        "law": "per-frame",
+        "params": {
+         "alpha_per_frame": 0.16,
+         "snap_px": 0.05,
+         "tau_ms_at_T": 95.5912984519605,
+         "target_gain": 0.5,
+         "write": "full"
+        }
+       },
+       {
+        "stage": "rendered",
+        "class": "declared",
+        "kind": "css-transition",
+        "params": {
+         "property": "transform",
+         "duration_ms": 420,
+         "easing": "cubic-bezier(0.31, 0.12, 0.18, 0.97)",
+         "restart": "new transition from the current value at every driver change"
+        }
+       }
+      ],
+      "params": {
+       "alpha_per_frame": 0.16,
+       "duration_ms": 420,
+       "easing": [
+        0.31,
+        0.12,
+        0.18,
+        0.97
+       ]
+      },
+      "derived": {
+       "driver_alpha_per_frame": 0.16
+      }
+     }
+    ],
+    "attribution": {
+     ".b0|ren:tx": "scroll-linked"
+    }
+   }
+  },
+  "reversal": {
+   "R2": {
+    "schema": "reva.labtruth/0",
+    "route": "m22",
+    "params": {
+     "alpha": 0.16,
+     "snap": 0.05,
+     "gain": 0.5,
+     "max": 700,
+     "durMs": 420,
+     "ease": [
+      0.31,
+      0.12,
+      0.18,
+      0.97
+     ],
+     "write": "full"
+    },
+    "regime": "R2",
+    "variant": "reversal",
+    "metrics": [
+     "class",
+     "driver_alpha",
+     "transition_timing"
+    ],
+    "stagger": null,
+    "negative": null,
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "driver": ".b0|drv:--d",
+      "class": "composite",
+      "family": "smoothing driver -> declared CSS transition",
+      "stages": [
+       {
+        "stage": "driver",
+        "channel": ".b0|drv:--d",
+        "class": "first-order smoothing",
+        "law": "per-frame",
+        "params": {
+         "alpha_per_frame": 0.16,
+         "snap_px": 0.05,
+         "tau_ms_at_T": 95.5912984519605,
+         "target_gain": 0.5,
+         "write": "full"
+        }
+       },
+       {
+        "stage": "rendered",
+        "class": "declared",
+        "kind": "css-transition",
+        "params": {
+         "property": "transform",
+         "duration_ms": 420,
+         "easing": "cubic-bezier(0.31, 0.12, 0.18, 0.97)",
+         "restart": "new transition from the current value at every driver change"
+        }
+       }
+      ],
+      "params": {
+       "alpha_per_frame": 0.16,
+       "duration_ms": 420,
+       "easing": [
+        0.31,
+        0.12,
+        0.18,
+        0.97
+       ]
+      },
+      "derived": {
+       "driver_alpha_per_frame": 0.16
+      }
+     }
+    ],
+    "attribution": {
+     ".b0|ren:tx": "scroll-linked"
+    }
+   },
+   "R3": {
+    "schema": "reva.labtruth/0",
+    "route": "m22",
+    "params": {
+     "alpha": 0.16,
+     "snap": 0.05,
+     "gain": 0.5,
+     "max": 700,
+     "durMs": 420,
+     "ease": [
+      0.31,
+      0.12,
+      0.18,
+      0.97
+     ],
+     "write": "full"
+    },
+    "regime": "R3",
+    "variant": "reversal",
+    "metrics": [
+     "class",
+     "driver_alpha",
+     "transition_timing"
+    ],
+    "stagger": null,
+    "negative": null,
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "driver": ".b0|drv:--d",
+      "class": "composite",
+      "family": "smoothing driver -> declared CSS transition",
+      "stages": [
+       {
+        "stage": "driver",
+        "channel": ".b0|drv:--d",
+        "class": "first-order smoothing",
+        "law": "per-frame",
+        "params": {
+         "alpha_per_frame": 0.16,
+         "snap_px": 0.05,
+         "tau_ms_at_T": 47.79564922598025,
+         "target_gain": 0.5,
+         "write": "full"
+        }
+       },
+       {
+        "stage": "rendered",
+        "class": "declared",
+        "kind": "css-transition",
+        "params": {
+         "property": "transform",
+         "duration_ms": 420,
+         "easing": "cubic-bezier(0.31, 0.12, 0.18, 0.97)",
+         "restart": "new transition from the current value at every driver change"
+        }
+       }
+      ],
+      "params": {
+       "alpha_per_frame": 0.16,
+       "duration_ms": 420,
+       "easing": [
+        0.31,
+        0.12,
+        0.18,
+        0.97
+       ]
+      },
+      "derived": {
+       "driver_alpha_per_frame": 0.16
+      }
+     }
+    ],
+    "attribution": {
+     ".b0|ren:tx": "scroll-linked"
+    }
+   },
+   "R4": {
+    "schema": "reva.labtruth/0",
+    "route": "m22",
+    "params": {
+     "alpha": 0.16,
+     "snap": 0.05,
+     "gain": 0.5,
+     "max": 700,
+     "durMs": 420,
+     "ease": [
+      0.31,
+      0.12,
+      0.18,
+      0.97
+     ],
+     "write": "full"
+    },
+    "regime": "R4",
+    "variant": "reversal",
+    "metrics": [
+     "class",
+     "driver_alpha",
+     "transition_timing"
+    ],
+    "stagger": null,
+    "negative": null,
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "driver": ".b0|drv:--d",
+      "class": "composite",
+      "family": "smoothing driver -> declared CSS transition",
+      "stages": [
+       {
+        "stage": "driver",
+        "channel": ".b0|drv:--d",
+        "class": "first-order smoothing",
+        "law": "per-frame",
+        "params": {
+         "alpha_per_frame": 0.16,
+         "snap_px": 0.05,
+         "tau_ms_at_T": 191.182596903921,
+         "target_gain": 0.5,
+         "write": "full"
+        }
+       },
+       {
+        "stage": "rendered",
+        "class": "declared",
+        "kind": "css-transition",
+        "params": {
+         "property": "transform",
+         "duration_ms": 420,
+         "easing": "cubic-bezier(0.31, 0.12, 0.18, 0.97)",
+         "restart": "new transition from the current value at every driver change"
+        }
+       }
+      ],
+      "params": {
+       "alpha_per_frame": 0.16,
+       "duration_ms": 420,
+       "easing": [
+        0.31,
+        0.12,
+        0.18,
+        0.97
+       ]
+      },
+      "derived": {
+       "driver_alpha_per_frame": 0.16
+      }
+     }
+    ],
+    "attribution": {
+     ".b0|ren:tx": "scroll-linked"
+    }
+   },
+   "R5": {
+    "schema": "reva.labtruth/0",
+    "route": "m22",
+    "params": {
+     "alpha": 0.16,
+     "snap": 0.05,
+     "gain": 0.5,
+     "max": 700,
+     "durMs": 420,
+     "ease": [
+      0.31,
+      0.12,
+      0.18,
+      0.97
+     ],
+     "write": "full"
+    },
+    "regime": "R5",
+    "variant": "reversal",
+    "metrics": [
+     "class",
+     "driver_alpha",
+     "transition_timing"
+    ],
+    "stagger": null,
+    "negative": null,
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "driver": ".b0|drv:--d",
+      "class": "composite",
+      "family": "smoothing driver -> declared CSS transition",
+      "stages": [
+       {
+        "stage": "driver",
+        "channel": ".b0|drv:--d",
+        "class": "first-order smoothing",
+        "law": "per-frame",
+        "params": {
+         "alpha_per_frame": 0.16,
+         "snap_px": 0.05,
+         "tau_ms_at_T": 95.5912984519605,
+         "target_gain": 0.5,
+         "write": "full"
+        }
+       },
+       {
+        "stage": "rendered",
+        "class": "declared",
+        "kind": "css-transition",
+        "params": {
+         "property": "transform",
+         "duration_ms": 420,
+         "easing": "cubic-bezier(0.31, 0.12, 0.18, 0.97)",
+         "restart": "new transition from the current value at every driver change"
+        }
+       }
+      ],
+      "params": {
+       "alpha_per_frame": 0.16,
+       "duration_ms": 420,
+       "easing": [
+        0.31,
+        0.12,
+        0.18,
+        0.97
+       ]
+      },
+      "derived": {
+       "driver_alpha_per_frame": 0.16
+      }
+     }
+    ],
+    "attribution": {
+     ".b0|ren:tx": "scroll-linked"
+    }
+   }
+  }
+ },
+ "grid": [
+  {
+   "index": 0,
+   "params": {
+    "alpha": 0.16,
+    "durMs": 420,
+    "ease": [
+     0.31,
+     0.12,
+     0.18,
+     0.97
+    ]
+   },
+   "R3": {
+    "schema": "reva.labtruth/0",
+    "route": "m22",
+    "params": {
+     "alpha": 0.16,
+     "snap": 0.05,
+     "gain": 0.5,
+     "max": 700,
+     "durMs": 420,
+     "ease": [
+      0.31,
+      0.12,
+      0.18,
+      0.97
+     ],
+     "write": "full"
+    },
+    "regime": "R3",
+    "variant": "steps",
+    "metrics": [
+     "class",
+     "driver_alpha",
+     "transition_timing"
+    ],
+    "stagger": null,
+    "negative": null,
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "driver": ".b0|drv:--d",
+      "class": "composite",
+      "family": "smoothing driver -> declared CSS transition",
+      "stages": [
+       {
+        "stage": "driver",
+        "channel": ".b0|drv:--d",
+        "class": "first-order smoothing",
+        "law": "per-frame",
+        "params": {
+         "alpha_per_frame": 0.16,
+         "snap_px": 0.05,
+         "tau_ms_at_T": 47.79564922598025,
+         "target_gain": 0.5,
+         "write": "full"
+        }
+       },
+       {
+        "stage": "rendered",
+        "class": "declared",
+        "kind": "css-transition",
+        "params": {
+         "property": "transform",
+         "duration_ms": 420,
+         "easing": "cubic-bezier(0.31, 0.12, 0.18, 0.97)",
+         "restart": "new transition from the current value at every driver change"
+        }
+       }
+      ],
+      "params": {
+       "alpha_per_frame": 0.16,
+       "duration_ms": 420,
+       "easing": [
+        0.31,
+        0.12,
+        0.18,
+        0.97
+       ]
+      },
+      "derived": {
+       "driver_alpha_per_frame": 0.16
+      }
+     }
+    ],
+    "attribution": {
+     ".b0|ren:tx": "scroll-linked"
+    }
+   }
+  },
+  {
+   "index": 1,
+   "params": {
+    "alpha": 0.07,
+    "durMs": 520,
+    "ease": [
+     0.31,
+     0.12,
+     0.18,
+     0.97
+    ]
+   },
+   "R3": {
+    "schema": "reva.labtruth/0",
+    "route": "m22",
+    "params": {
+     "alpha": 0.07,
+     "snap": 0.05,
+     "gain": 0.5,
+     "max": 700,
+     "durMs": 520,
+     "ease": [
+      0.31,
+      0.12,
+      0.18,
+      0.97
+     ],
+     "write": "full"
+    },
+    "regime": "R3",
+    "variant": "steps",
+    "metrics": [
+     "class",
+     "driver_alpha",
+     "transition_timing"
+    ],
+    "stagger": null,
+    "negative": null,
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "driver": ".b0|drv:--d",
+      "class": "composite",
+      "family": "smoothing driver -> declared CSS transition",
+      "stages": [
+       {
+        "stage": "driver",
+        "channel": ".b0|drv:--d",
+        "class": "first-order smoothing",
+        "law": "per-frame",
+        "params": {
+         "alpha_per_frame": 0.07,
+         "snap_px": 0.05,
+         "tau_ms_at_T": 114.83056048947013,
+         "target_gain": 0.5,
+         "write": "full"
+        }
+       },
+       {
+        "stage": "rendered",
+        "class": "declared",
+        "kind": "css-transition",
+        "params": {
+         "property": "transform",
+         "duration_ms": 520,
+         "easing": "cubic-bezier(0.31, 0.12, 0.18, 0.97)",
+         "restart": "new transition from the current value at every driver change"
+        }
+       }
+      ],
+      "params": {
+       "alpha_per_frame": 0.07,
+       "duration_ms": 520,
+       "easing": [
+        0.31,
+        0.12,
+        0.18,
+        0.97
+       ]
+      },
+      "derived": {
+       "driver_alpha_per_frame": 0.07
+      }
+     }
+    ],
+    "attribution": {
+     ".b0|ren:tx": "scroll-linked"
+    }
+   }
+  },
+  {
+   "index": 2,
+   "params": {
+    "alpha": 0.11,
+    "durMs": 300,
+    "ease": [
+     0.17,
+     0.8,
+     0.33,
+     0.98
+    ]
+   },
+   "R3": {
+    "schema": "reva.labtruth/0",
+    "route": "m22",
+    "params": {
+     "alpha": 0.11,
+     "snap": 0.05,
+     "gain": 0.5,
+     "max": 700,
+     "durMs": 300,
+     "ease": [
+      0.17,
+      0.8,
+      0.33,
+      0.98
+     ],
+     "write": "full"
+    },
+    "regime": "R3",
+    "variant": "steps",
+    "metrics": [
+     "class",
+     "driver_alpha",
+     "transition_timing"
+    ],
+    "stagger": null,
+    "negative": null,
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "driver": ".b0|drv:--d",
+      "class": "composite",
+      "family": "smoothing driver -> declared CSS transition",
+      "stages": [
+       {
+        "stage": "driver",
+        "channel": ".b0|drv:--d",
+        "class": "first-order smoothing",
+        "law": "per-frame",
+        "params": {
+         "alpha_per_frame": 0.11,
+         "snap_px": 0.05,
+         "tau_ms_at_T": 71.51000114018613,
+         "target_gain": 0.5,
+         "write": "full"
+        }
+       },
+       {
+        "stage": "rendered",
+        "class": "declared",
+        "kind": "css-transition",
+        "params": {
+         "property": "transform",
+         "duration_ms": 300,
+         "easing": "cubic-bezier(0.17, 0.8, 0.33, 0.98)",
+         "restart": "new transition from the current value at every driver change"
+        }
+       }
+      ],
+      "params": {
+       "alpha_per_frame": 0.11,
+       "duration_ms": 300,
+       "easing": [
+        0.17,
+        0.8,
+        0.33,
+        0.98
+       ]
+      },
+      "derived": {
+       "driver_alpha_per_frame": 0.11
+      }
+     }
+    ],
+    "attribution": {
+     ".b0|ren:tx": "scroll-linked"
+    }
+   }
+  },
+  {
+   "index": 3,
+   "params": {
+    "alpha": 0.24,
+    "durMs": 560,
+    "ease": [
+     0.4,
+     0.05,
+     0.2,
+     0.95
+    ]
+   },
+   "R3": {
+    "schema": "reva.labtruth/0",
+    "route": "m22",
+    "params": {
+     "alpha": 0.24,
+     "snap": 0.05,
+     "gain": 0.5,
+     "max": 700,
+     "durMs": 560,
+     "ease": [
+      0.4,
+      0.05,
+      0.2,
+      0.95
+     ],
+     "write": "full"
+    },
+    "regime": "R3",
+    "variant": "steps",
+    "metrics": [
+     "class",
+     "driver_alpha",
+     "transition_timing"
+    ],
+    "stagger": null,
+    "negative": null,
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "driver": ".b0|drv:--d",
+      "class": "composite",
+      "family": "smoothing driver -> declared CSS transition",
+      "stages": [
+       {
+        "stage": "driver",
+        "channel": ".b0|drv:--d",
+        "class": "first-order smoothing",
+        "law": "per-frame",
+        "params": {
+         "alpha_per_frame": 0.24,
+         "snap_px": 0.05,
+         "tau_ms_at_T": 30.365213213350536,
+         "target_gain": 0.5,
+         "write": "full"
+        }
+       },
+       {
+        "stage": "rendered",
+        "class": "declared",
+        "kind": "css-transition",
+        "params": {
+         "property": "transform",
+         "duration_ms": 560,
+         "easing": "cubic-bezier(0.4, 0.05, 0.2, 0.95)",
+         "restart": "new transition from the current value at every driver change"
+        }
+       }
+      ],
+      "params": {
+       "alpha_per_frame": 0.24,
+       "duration_ms": 560,
+       "easing": [
+        0.4,
+        0.05,
+        0.2,
+        0.95
+       ]
+      },
+      "derived": {
+       "driver_alpha_per_frame": 0.24
+      }
+     }
+    ],
+    "attribution": {
+     ".b0|ren:tx": "scroll-linked"
+    }
+   }
+  },
+  {
+   "index": 4,
+   "params": {
+    "alpha": 0.33,
+    "durMs": 380,
+    "ease": [
+     0.31,
+     0.12,
+     0.18,
+     0.97
+    ]
+   },
+   "R3": {
+    "schema": "reva.labtruth/0",
+    "route": "m22",
+    "params": {
+     "alpha": 0.33,
+     "snap": 0.05,
+     "gain": 0.5,
+     "max": 700,
+     "durMs": 380,
+     "ease": [
+      0.31,
+      0.12,
+      0.18,
+      0.97
+     ],
+     "write": "full"
+    },
+    "regime": "R3",
+    "variant": "steps",
+    "metrics": [
+     "class",
+     "driver_alpha",
+     "transition_timing"
+    ],
+    "stagger": null,
+    "negative": null,
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "driver": ".b0|drv:--d",
+      "class": "composite",
+      "family": "smoothing driver -> declared CSS transition",
+      "stages": [
+       {
+        "stage": "driver",
+        "channel": ".b0|drv:--d",
+        "class": "first-order smoothing",
+        "law": "per-frame",
+        "params": {
+         "alpha_per_frame": 0.33,
+         "snap_px": 0.05,
+         "tau_ms_at_T": 20.808489734249076,
+         "target_gain": 0.5,
+         "write": "full"
+        }
+       },
+       {
+        "stage": "rendered",
+        "class": "declared",
+        "kind": "css-transition",
+        "params": {
+         "property": "transform",
+         "duration_ms": 380,
+         "easing": "cubic-bezier(0.31, 0.12, 0.18, 0.97)",
+         "restart": "new transition from the current value at every driver change"
+        }
+       }
+      ],
+      "params": {
+       "alpha_per_frame": 0.33,
+       "duration_ms": 380,
+       "easing": [
+        0.31,
+        0.12,
+        0.18,
+        0.97
+       ]
+      },
+      "derived": {
+       "driver_alpha_per_frame": 0.33
+      }
+     }
+    ],
+    "attribution": {
+     ".b0|ren:tx": "scroll-linked"
+    }
+   }
+  }
+ ]
+}

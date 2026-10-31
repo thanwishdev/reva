@@ -1,0 +1,11 @@
+<!doctype html>
+<!-- Known by construction (test/look/look-trigger.test.js): three button.go; the first is aria-current and ignores
+  clicks. A click on another one adds .is-on to it: translateY -20px, CSS transition 300 ms linear. A click look on .go
+  that hits only the first match sees nothing; the other matches react. -->
+<html><head><meta charset="utf-8"><title>other matches</title>
+<style>body{margin:0;background:#111;color:#eee;font:16px system-ui}
+nav{margin:120px 80px;display:flex;gap:24px}
+.go{padding:14px 20px;transition:transform 300ms linear}.go.is-on{transform:translateY(-20px)}</style></head>
+<body><nav><button class="go" type="button" aria-current="true">One</button><button class="go" type="button">Two</button><button class="go" type="button">Three</button></nav>
+<script>document.querySelectorAll('.go').forEach((b) => { b.onclick = () => { if (b.getAttribute('aria-current') !== 'true') b.classList.add('is-on'); }; });</script>
+</body></html>

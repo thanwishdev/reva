@@ -1,0 +1,232 @@
+{
+ "canvas": {
+  "src": "corpus capture A (20261023 full)",
+  "points": [
+   {
+    "id": "A-1440x900",
+    "cls": "A",
+    "w": 1440,
+    "h": 900,
+    "kind": "captured"
+   }
+  ],
+  "noise": {
+   "perClass": {
+    "A": 13350,
+    "E": 11847
+   }
+  },
+  "identity": {
+   "fails": {
+    "A-1440x900": {
+     "oracle": {},
+     "pixel": "blob 332 px^2 > 64"
+    }
+   },
+   "unstable": {
+    "A-1440x900": {
+     "oracleFailed": 0,
+     "elements": 934,
+     "unstablePctViewport": 0,
+     "unstablePctPage": 0,
+     "regions": [],
+     "regionsTotal": 0,
+     "pixel": {
+      "reason": "blob 332 px^2 > 64",
+      "diffPx": 8073,
+      "blob": 332,
+      "blobBox": [
+       448,
+       55,
+       489,
+       91
+      ],
+      "opaqueUnder": {
+       "canvas": 1
+      },
+      "why": "pixels under canvas"
+     }
+    }
+   }
+  },
+  "captureSession": {
+   "sameAsOrig1": {
+    "A-1440x900": false
+   }
+  },
+  "verdict": {
+   "identityPass": false,
+   "captureSessionSame": true,
+   "allPass": true,
+   "auditPass": true,
+   "mutantsPass": true,
+   "scriptOwnedUndeclared": 0,
+   "installStalled": false
+  }
+ },
+ "motion": {
+  "src": "corpus capture B (20261023 full)",
+  "points": [
+   {
+    "id": "A-1440x900",
+    "cls": "A",
+    "w": 1440,
+    "h": 900,
+    "kind": "captured"
+   }
+  ],
+  "noise": {
+   "perClass": {
+    "A": 0,
+    "E": 0
+   }
+  },
+  "identity": {
+   "fails": {
+    "A-1440x900": {
+     "oracle": {
+      "prop": 4
+     }
+    }
+   },
+   "unstable": {
+    "A-1440x900": {
+     "oracleFailed": 4,
+     "elements": 337,
+     "unstablePctViewport": 65.15,
+     "unstablePctPage": 65.15,
+     "regions": [
+      {
+       "k": "html/body[1]/div[5]/main[1]/div[1]/div[1]/div[1]/div[1]/div[4]",
+       "reason": "motion-state",
+       "reasons": {
+        "motion-state": 1
+       },
+       "elements": 1,
+       "props": [
+        "transform:1"
+       ],
+       "box": [
+        227.27,
+        163.22,
+        763.62,
+        816.23
+       ],
+       "areaPx": 623290
+      },
+      {
+       "k": "html/body[1]/div[5]/main[1]/div[1]/div[1]/div[1]/div[1]/div[3]",
+       "reason": "motion-state",
+       "reasons": {
+        "motion-state": 1
+       },
+       "elements": 1,
+       "props": [
+        "transform:1"
+       ],
+       "box": [
+        482.92,
+        188.47,
+        749.11,
+        821.02
+       ],
+       "areaPx": 615034
+      },
+      {
+       "k": "html/body[1]/div[5]/main[1]/div[1]/div[1]/div[1]/div[1]/div[1]",
+       "reason": "motion-state",
+       "reasons": {
+        "motion-state": 1
+       },
+       "elements": 1,
+       "props": [
+        "transform:1"
+       ],
+       "box": [
+        234.71,
+        270.57,
+        724.41,
+        825.27
+       ],
+       "areaPx": 597834
+      }
+     ],
+     "regionsTotal": 4
+    }
+   }
+  },
+  "captureSession": {
+   "sameAsOrig1": {
+    "A-1440x900": false
+   }
+  },
+  "verdict": {
+   "identityPass": false,
+   "captureSessionSame": true,
+   "allPass": true,
+   "auditPass": true,
+   "mutantsPass": true,
+   "scriptOwnedUndeclared": 0,
+   "installStalled": false
+  }
+ },
+ "audit": {
+  "src": "corpus capture C (20261022 full)",
+  "audit": {
+   "A": {
+    "pass": false,
+    "issues": [
+     {
+      "kind": "network",
+      "n": 4,
+      "sample": [
+       "script https://sandbox.example.com/ui/js/talkerapi.ui.js",
+       "script https://sandbox.example.com/ui/js/app.js",
+       "script https://example.com/api/project/0000/libs.js?nc=8"
+      ]
+     }
+    ]
+   }
+  }
+ },
+ "unpaintable": {
+  "src": "corpus capture D (20261023 full) A-1440x900",
+  "id": "A-1440x900",
+  "result": {
+   "kind": "captured",
+   "pass": false,
+   "oracle": {
+    "pass": true,
+    "failedElements": 0,
+    "byKind": {}
+   },
+   "pixel": {
+    "pass": false,
+    "reason": "diffPx 647 > noise cap 0",
+    "diffPx": 647,
+    "decodePx": 0,
+    "pct": 0.0089,
+    "blob": 111,
+    "blobBox": [
+     713,
+     4367,
+     726,
+     4380
+    ],
+    "cap": 0,
+    "size": [
+     1440,
+     5047
+    ]
+   },
+   "unpaintable": {
+    "elements": [
+     "html/body[1]/div[1]/main[1]/canvas[1]",
+     "html/body[1]/div[2]/section[4]/div[1]/div[1]/div[2]/canvas[1]"
+    ],
+    "maskedPx": 1447680,
+    "pctViewport": 111.7
+   }
+  }
+ }
+}

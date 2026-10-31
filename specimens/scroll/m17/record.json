@@ -1,0 +1,183 @@
+{
+ "schema": "reva.specimen-source/0",
+ "source": {
+  "kind": "labtruth",
+  "file": "lab-easing/truth/m17.go.json",
+  "variant": "go",
+  "digest": "27464af0c7a4498f",
+  "note": "Fixture Lab truth record (own fixture, public-safe)"
+ },
+ "items": [
+  {
+   "target": "html::view-transition-group(g0)",
+   "class": "declared",
+   "sub": "view-transition",
+   "family": "view-transition-group",
+   "provenance": "declared",
+   "params": {
+    "start_ms": 450,
+    "delay_ms": 0,
+    "duration_ms": 600,
+    "easing": [
+     0.2,
+     0.9,
+     0.1,
+     1
+    ],
+    "old": {
+     "x": 100,
+     "y": 120,
+     "w": 120,
+     "h": 80
+    },
+    "new": {
+     "x": 520,
+     "y": 300,
+     "w": 260,
+     "h": 140
+    },
+    "delta": {
+     "dx": 420,
+     "dy": 180,
+     "dw": 140,
+     "dh": 60
+    },
+    "companions": [
+     "fade-in",
+     "fade-out",
+     "plus-lighter",
+     "plus-lighter"
+    ],
+    "animation_name": "-ua-view-transition-group-anim-g0",
+    "frames_after_trigger": 2
+   }
+  },
+  {
+   "target": "#b0|ren:bx",
+   "class": "step",
+   "family": "layout-update",
+   "provenance": "measured",
+   "params": {
+    "from": 100,
+    "to": 520
+   },
+   "note": "the live element jumps to the new layout; the view-transition animation runs on pseudo-elements the recorder does not sample"
+  },
+  {
+   "target": "#b0|ren:by",
+   "class": "step",
+   "family": "layout-update",
+   "provenance": "measured",
+   "params": {
+    "from": 120,
+    "to": 300
+   },
+   "note": "the live element jumps to the new layout; the view-transition animation runs on pseudo-elements the recorder does not sample"
+  },
+  {
+   "target": "#b0|ren:bw",
+   "class": "step",
+   "family": "layout-update",
+   "provenance": "measured",
+   "params": {
+    "from": 120,
+    "to": 260
+   },
+   "note": "the live element jumps to the new layout; the view-transition animation runs on pseudo-elements the recorder does not sample"
+  },
+  {
+   "target": "#b0|ren:bh",
+   "class": "step",
+   "family": "layout-update",
+   "provenance": "measured",
+   "params": {
+    "from": 80,
+    "to": 140
+   },
+   "note": "the live element jumps to the new layout; the view-transition animation runs on pseudo-elements the recorder does not sample"
+  },
+  {
+   "target": "html::view-transition-group(g1)",
+   "class": "declared",
+   "sub": "view-transition",
+   "family": "view-transition-group",
+   "provenance": "declared",
+   "params": {
+    "start_ms": 450,
+    "delay_ms": 0,
+    "duration_ms": 400,
+    "easing": "linear",
+    "old": {
+     "x": 100,
+     "y": 420,
+     "w": 60,
+     "h": 60
+    },
+    "new": {
+     "x": 340,
+     "y": 520,
+     "w": 60,
+     "h": 60
+    },
+    "delta": {
+     "dx": 240,
+     "dy": 100,
+     "dw": 0,
+     "dh": 0
+    },
+    "companions": [
+     "fade-in",
+     "fade-out",
+     "plus-lighter",
+     "plus-lighter"
+    ],
+    "animation_name": "-ua-view-transition-group-anim-g1",
+    "frames_after_trigger": 2
+   }
+  },
+  {
+   "target": "#b1|ren:bx",
+   "class": "step",
+   "family": "layout-update",
+   "provenance": "measured",
+   "params": {
+    "from": 100,
+    "to": 340
+   },
+   "note": "the live element jumps to the new layout; the view-transition animation runs on pseudo-elements the recorder does not sample"
+  },
+  {
+   "target": "#b1|ren:by",
+   "class": "step",
+   "family": "layout-update",
+   "provenance": "measured",
+   "params": {
+    "from": 420,
+    "to": 520
+   },
+   "note": "the live element jumps to the new layout; the view-transition animation runs on pseudo-elements the recorder does not sample"
+  },
+  {
+   "target": "#b1|ren:bw",
+   "class": "step",
+   "family": "layout-update",
+   "provenance": "measured",
+   "params": {
+    "from": 60,
+    "to": 60
+   },
+   "note": "the live element jumps to the new layout; the view-transition animation runs on pseudo-elements the recorder does not sample"
+  },
+  {
+   "target": "#b1|ren:bh",
+   "class": "step",
+   "family": "layout-update",
+   "provenance": "measured",
+   "params": {
+    "from": 60,
+    "to": 60
+   },
+   "note": "the live element jumps to the new layout; the view-transition animation runs on pseudo-elements the recorder does not sample"
+  }
+ ]
+}

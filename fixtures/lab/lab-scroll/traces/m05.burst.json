@@ -1,0 +1,68 @@
+{
+ "schema": "reva.labtrace/0",
+ "route": "m05",
+ "variant": "burst",
+ "note": "Same-direction wheels while a tween runs (swallowed, no restart), then opposite wheels in quick succession.",
+ "actions": [
+  {
+   "hold": 500
+  },
+  {
+   "scrollTo": 3100
+  },
+  {
+   "hold": 500
+  },
+  {
+   "wheel": {
+    "dy": 120,
+    "n": 1
+   }
+  },
+  {
+   "hold": 100
+  },
+  {
+   "wheel": {
+    "dy": 120,
+    "n": 1
+   }
+  },
+  {
+   "hold": 100
+  },
+  {
+   "wheel": {
+    "dy": -120,
+    "n": 1
+   }
+  },
+  {
+   "hold": 100
+  },
+  {
+   "wheel": {
+    "dy": 120,
+    "n": 1
+   }
+  },
+  {
+   "hold": 1200
+  },
+  {
+   "scrollTo": 100
+  },
+  {
+   "hold": 300
+  },
+  {
+   "wheel": {
+    "dy": 120,
+    "n": 1
+   }
+  },
+  {
+   "hold": 300
+  }
+ ]
+}

@@ -1,0 +1,1171 @@
+{
+ "note": "Generated for review by tools/gen-truth.mjs. Planned-trace values (start signal at k = 0); the scorer calls truth(route, params, regime, {variant, ctx}) with the actual take.",
+ "route": "m13",
+ "default": {
+  "steps": {
+   "R2": {
+    "schema": "reva.labtruth/0",
+    "route": "m13",
+    "params": {
+     "law": "frame",
+     "alpha": 0.1,
+     "lambda": 8,
+     "snap": 0.01,
+     "write": "full"
+    },
+    "regime": "R2",
+    "variant": "steps",
+    "metrics": [
+     "class",
+     "law",
+     "alpha_per_frame",
+     "tau_at_T",
+     "attribution"
+    ],
+    "stagger": null,
+    "negative": null,
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "driver": ".b0|drv:--x",
+      "class": "first-order smoothing",
+      "family": "lerp",
+      "law": "per-frame",
+      "params": {
+       "alpha_per_frame": 0.1,
+       "lambda_per_s": null,
+       "tau_ms": 158.18702635049843,
+       "snap_px": 0.01,
+       "write": "full"
+      },
+      "derived": {
+       "alpha_per_frame_at_T": 0.1,
+       "tau_ms_at_T": 158.18702635049843,
+       "settle_frames_first_input": 109
+      }
+     },
+     {
+      "target": ".b0|ren:ty",
+      "driver": ".b0|drv:--y",
+      "class": "first-order smoothing",
+      "family": "lerp",
+      "law": "per-frame",
+      "params": {
+       "alpha_per_frame": 0.1,
+       "lambda_per_s": null,
+       "tau_ms": 158.18702635049843,
+       "snap_px": 0.01,
+       "write": "full"
+      },
+      "derived": {
+       "alpha_per_frame_at_T": 0.1,
+       "tau_ms_at_T": 158.18702635049843,
+       "settle_frames_first_input": 109
+      }
+     }
+    ],
+    "attribution": {
+     ".b0|ren:tx": "pointer",
+     ".b0|ren:ty": "pointer"
+    }
+   },
+   "R3": {
+    "schema": "reva.labtruth/0",
+    "route": "m13",
+    "params": {
+     "law": "frame",
+     "alpha": 0.1,
+     "lambda": 8,
+     "snap": 0.01,
+     "write": "full"
+    },
+    "regime": "R3",
+    "variant": "steps",
+    "metrics": [
+     "class",
+     "law",
+     "alpha_per_frame",
+     "tau_at_T",
+     "attribution"
+    ],
+    "stagger": null,
+    "negative": null,
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "driver": ".b0|drv:--x",
+      "class": "first-order smoothing",
+      "family": "lerp",
+      "law": "per-frame",
+      "params": {
+       "alpha_per_frame": 0.1,
+       "lambda_per_s": null,
+       "tau_ms": 79.09351317524921,
+       "snap_px": 0.01,
+       "write": "full"
+      },
+      "derived": {
+       "alpha_per_frame_at_T": 0.1,
+       "tau_ms_at_T": 79.09351317524921,
+       "settle_frames_first_input": 109
+      }
+     },
+     {
+      "target": ".b0|ren:ty",
+      "driver": ".b0|drv:--y",
+      "class": "first-order smoothing",
+      "family": "lerp",
+      "law": "per-frame",
+      "params": {
+       "alpha_per_frame": 0.1,
+       "lambda_per_s": null,
+       "tau_ms": 79.09351317524921,
+       "snap_px": 0.01,
+       "write": "full"
+      },
+      "derived": {
+       "alpha_per_frame_at_T": 0.1,
+       "tau_ms_at_T": 79.09351317524921,
+       "settle_frames_first_input": 109
+      }
+     }
+    ],
+    "attribution": {
+     ".b0|ren:tx": "pointer",
+     ".b0|ren:ty": "pointer"
+    }
+   },
+   "R4": {
+    "schema": "reva.labtruth/0",
+    "route": "m13",
+    "params": {
+     "law": "frame",
+     "alpha": 0.1,
+     "lambda": 8,
+     "snap": 0.01,
+     "write": "full"
+    },
+    "regime": "R4",
+    "variant": "steps",
+    "metrics": [
+     "class",
+     "law",
+     "alpha_per_frame",
+     "tau_at_T",
+     "attribution"
+    ],
+    "stagger": null,
+    "negative": null,
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "driver": ".b0|drv:--x",
+      "class": "first-order smoothing",
+      "family": "lerp",
+      "law": "per-frame",
+      "params": {
+       "alpha_per_frame": 0.1,
+       "lambda_per_s": null,
+       "tau_ms": 316.37405270099686,
+       "snap_px": 0.01,
+       "write": "full"
+      },
+      "derived": {
+       "alpha_per_frame_at_T": 0.1,
+       "tau_ms_at_T": 316.37405270099686,
+       "settle_frames_first_input": null
+      }
+     },
+     {
+      "target": ".b0|ren:ty",
+      "driver": ".b0|drv:--y",
+      "class": "first-order smoothing",
+      "family": "lerp",
+      "law": "per-frame",
+      "params": {
+       "alpha_per_frame": 0.1,
+       "lambda_per_s": null,
+       "tau_ms": 316.37405270099686,
+       "snap_px": 0.01,
+       "write": "full"
+      },
+      "derived": {
+       "alpha_per_frame_at_T": 0.1,
+       "tau_ms_at_T": 316.37405270099686,
+       "settle_frames_first_input": null
+      }
+     }
+    ],
+    "attribution": {
+     ".b0|ren:tx": "pointer",
+     ".b0|ren:ty": "pointer"
+    }
+   },
+   "R5": {
+    "schema": "reva.labtruth/0",
+    "route": "m13",
+    "params": {
+     "law": "frame",
+     "alpha": 0.1,
+     "lambda": 8,
+     "snap": 0.01,
+     "write": "full"
+    },
+    "regime": "R5",
+    "variant": "steps",
+    "metrics": [
+     "class",
+     "law",
+     "alpha_per_frame",
+     "tau_at_T",
+     "attribution"
+    ],
+    "stagger": null,
+    "negative": null,
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "driver": ".b0|drv:--x",
+      "class": "first-order smoothing",
+      "family": "lerp",
+      "law": "per-frame",
+      "params": {
+       "alpha_per_frame": 0.1,
+       "lambda_per_s": null,
+       "tau_ms": 158.18702635049843,
+       "snap_px": 0.01,
+       "write": "full"
+      },
+      "derived": {
+       "alpha_per_frame_at_T": 0.1,
+       "tau_ms_at_T": 158.18702635049843,
+       "settle_frames_first_input": 109
+      }
+     },
+     {
+      "target": ".b0|ren:ty",
+      "driver": ".b0|drv:--y",
+      "class": "first-order smoothing",
+      "family": "lerp",
+      "law": "per-frame",
+      "params": {
+       "alpha_per_frame": 0.1,
+       "lambda_per_s": null,
+       "tau_ms": 158.18702635049843,
+       "snap_px": 0.01,
+       "write": "full"
+      },
+      "derived": {
+       "alpha_per_frame_at_T": 0.1,
+       "tau_ms_at_T": 158.18702635049843,
+       "settle_frames_first_input": 109
+      }
+     }
+    ],
+    "attribution": {
+     ".b0|ren:tx": "pointer",
+     ".b0|ren:ty": "pointer"
+    }
+   }
+  },
+  "reversal": {
+   "R2": {
+    "schema": "reva.labtruth/0",
+    "route": "m13",
+    "params": {
+     "law": "frame",
+     "alpha": 0.1,
+     "lambda": 8,
+     "snap": 0.01,
+     "write": "full"
+    },
+    "regime": "R2",
+    "variant": "reversal",
+    "metrics": [
+     "class",
+     "law",
+     "alpha_per_frame",
+     "tau_at_T",
+     "attribution"
+    ],
+    "stagger": null,
+    "negative": null,
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "driver": ".b0|drv:--x",
+      "class": "first-order smoothing",
+      "family": "lerp",
+      "law": "per-frame",
+      "params": {
+       "alpha_per_frame": 0.1,
+       "lambda_per_s": null,
+       "tau_ms": 158.18702635049843,
+       "snap_px": 0.01,
+       "write": "full"
+      },
+      "derived": {
+       "alpha_per_frame_at_T": 0.1,
+       "tau_ms_at_T": 158.18702635049843,
+       "settle_frames_first_input": null
+      }
+     },
+     {
+      "target": ".b0|ren:ty",
+      "driver": ".b0|drv:--y",
+      "class": "first-order smoothing",
+      "family": "lerp",
+      "law": "per-frame",
+      "params": {
+       "alpha_per_frame": 0.1,
+       "lambda_per_s": null,
+       "tau_ms": 158.18702635049843,
+       "snap_px": 0.01,
+       "write": "full"
+      },
+      "derived": {
+       "alpha_per_frame_at_T": 0.1,
+       "tau_ms_at_T": 158.18702635049843,
+       "settle_frames_first_input": null
+      }
+     }
+    ],
+    "attribution": {
+     ".b0|ren:tx": "pointer",
+     ".b0|ren:ty": "pointer"
+    }
+   },
+   "R3": {
+    "schema": "reva.labtruth/0",
+    "route": "m13",
+    "params": {
+     "law": "frame",
+     "alpha": 0.1,
+     "lambda": 8,
+     "snap": 0.01,
+     "write": "full"
+    },
+    "regime": "R3",
+    "variant": "reversal",
+    "metrics": [
+     "class",
+     "law",
+     "alpha_per_frame",
+     "tau_at_T",
+     "attribution"
+    ],
+    "stagger": null,
+    "negative": null,
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "driver": ".b0|drv:--x",
+      "class": "first-order smoothing",
+      "family": "lerp",
+      "law": "per-frame",
+      "params": {
+       "alpha_per_frame": 0.1,
+       "lambda_per_s": null,
+       "tau_ms": 79.09351317524921,
+       "snap_px": 0.01,
+       "write": "full"
+      },
+      "derived": {
+       "alpha_per_frame_at_T": 0.1,
+       "tau_ms_at_T": 79.09351317524921,
+       "settle_frames_first_input": null
+      }
+     },
+     {
+      "target": ".b0|ren:ty",
+      "driver": ".b0|drv:--y",
+      "class": "first-order smoothing",
+      "family": "lerp",
+      "law": "per-frame",
+      "params": {
+       "alpha_per_frame": 0.1,
+       "lambda_per_s": null,
+       "tau_ms": 79.09351317524921,
+       "snap_px": 0.01,
+       "write": "full"
+      },
+      "derived": {
+       "alpha_per_frame_at_T": 0.1,
+       "tau_ms_at_T": 79.09351317524921,
+       "settle_frames_first_input": null
+      }
+     }
+    ],
+    "attribution": {
+     ".b0|ren:tx": "pointer",
+     ".b0|ren:ty": "pointer"
+    }
+   },
+   "R4": {
+    "schema": "reva.labtruth/0",
+    "route": "m13",
+    "params": {
+     "law": "frame",
+     "alpha": 0.1,
+     "lambda": 8,
+     "snap": 0.01,
+     "write": "full"
+    },
+    "regime": "R4",
+    "variant": "reversal",
+    "metrics": [
+     "class",
+     "law",
+     "alpha_per_frame",
+     "tau_at_T",
+     "attribution"
+    ],
+    "stagger": null,
+    "negative": null,
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "driver": ".b0|drv:--x",
+      "class": "first-order smoothing",
+      "family": "lerp",
+      "law": "per-frame",
+      "params": {
+       "alpha_per_frame": 0.1,
+       "lambda_per_s": null,
+       "tau_ms": 316.37405270099686,
+       "snap_px": 0.01,
+       "write": "full"
+      },
+      "derived": {
+       "alpha_per_frame_at_T": 0.1,
+       "tau_ms_at_T": 316.37405270099686,
+       "settle_frames_first_input": null
+      }
+     },
+     {
+      "target": ".b0|ren:ty",
+      "driver": ".b0|drv:--y",
+      "class": "first-order smoothing",
+      "family": "lerp",
+      "law": "per-frame",
+      "params": {
+       "alpha_per_frame": 0.1,
+       "lambda_per_s": null,
+       "tau_ms": 316.37405270099686,
+       "snap_px": 0.01,
+       "write": "full"
+      },
+      "derived": {
+       "alpha_per_frame_at_T": 0.1,
+       "tau_ms_at_T": 316.37405270099686,
+       "settle_frames_first_input": null
+      }
+     }
+    ],
+    "attribution": {
+     ".b0|ren:tx": "pointer",
+     ".b0|ren:ty": "pointer"
+    }
+   },
+   "R5": {
+    "schema": "reva.labtruth/0",
+    "route": "m13",
+    "params": {
+     "law": "frame",
+     "alpha": 0.1,
+     "lambda": 8,
+     "snap": 0.01,
+     "write": "full"
+    },
+    "regime": "R5",
+    "variant": "reversal",
+    "metrics": [
+     "class",
+     "law",
+     "alpha_per_frame",
+     "tau_at_T",
+     "attribution"
+    ],
+    "stagger": null,
+    "negative": null,
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "driver": ".b0|drv:--x",
+      "class": "first-order smoothing",
+      "family": "lerp",
+      "law": "per-frame",
+      "params": {
+       "alpha_per_frame": 0.1,
+       "lambda_per_s": null,
+       "tau_ms": 158.18702635049843,
+       "snap_px": 0.01,
+       "write": "full"
+      },
+      "derived": {
+       "alpha_per_frame_at_T": 0.1,
+       "tau_ms_at_T": 158.18702635049843,
+       "settle_frames_first_input": null
+      }
+     },
+     {
+      "target": ".b0|ren:ty",
+      "driver": ".b0|drv:--y",
+      "class": "first-order smoothing",
+      "family": "lerp",
+      "law": "per-frame",
+      "params": {
+       "alpha_per_frame": 0.1,
+       "lambda_per_s": null,
+       "tau_ms": 158.18702635049843,
+       "snap_px": 0.01,
+       "write": "full"
+      },
+      "derived": {
+       "alpha_per_frame_at_T": 0.1,
+       "tau_ms_at_T": 158.18702635049843,
+       "settle_frames_first_input": null
+      }
+     }
+    ],
+    "attribution": {
+     ".b0|ren:tx": "pointer",
+     ".b0|ren:ty": "pointer"
+    }
+   }
+  },
+  "gaps": {
+   "R2": {
+    "schema": "reva.labtruth/0",
+    "route": "m13",
+    "params": {
+     "law": "frame",
+     "alpha": 0.1,
+     "lambda": 8,
+     "snap": 0.01,
+     "write": "full"
+    },
+    "regime": "R2",
+    "variant": "gaps",
+    "metrics": [
+     "class",
+     "law",
+     "alpha_per_frame",
+     "tau_at_T",
+     "attribution"
+    ],
+    "stagger": null,
+    "negative": null,
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "driver": ".b0|drv:--x",
+      "class": "first-order smoothing",
+      "family": "lerp",
+      "law": "per-frame",
+      "params": {
+       "alpha_per_frame": 0.1,
+       "lambda_per_s": null,
+       "tau_ms": 158.18702635049843,
+       "snap_px": 0.01,
+       "write": "full"
+      },
+      "derived": {
+       "alpha_per_frame_at_T": 0.1,
+       "tau_ms_at_T": 158.18702635049843,
+       "settle_frames_first_input": 105
+      }
+     },
+     {
+      "target": ".b0|ren:ty",
+      "driver": ".b0|drv:--y",
+      "class": "first-order smoothing",
+      "family": "lerp",
+      "law": "per-frame",
+      "params": {
+       "alpha_per_frame": 0.1,
+       "lambda_per_s": null,
+       "tau_ms": 158.18702635049843,
+       "snap_px": 0.01,
+       "write": "full"
+      },
+      "derived": {
+       "alpha_per_frame_at_T": 0.1,
+       "tau_ms_at_T": 158.18702635049843,
+       "settle_frames_first_input": 105
+      }
+     }
+    ],
+    "attribution": {
+     ".b0|ren:tx": "pointer",
+     ".b0|ren:ty": "pointer"
+    }
+   },
+   "R3": {
+    "schema": "reva.labtruth/0",
+    "route": "m13",
+    "params": {
+     "law": "frame",
+     "alpha": 0.1,
+     "lambda": 8,
+     "snap": 0.01,
+     "write": "full"
+    },
+    "regime": "R3",
+    "variant": "gaps",
+    "metrics": [
+     "class",
+     "law",
+     "alpha_per_frame",
+     "tau_at_T",
+     "attribution"
+    ],
+    "stagger": null,
+    "negative": null,
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "driver": ".b0|drv:--x",
+      "class": "first-order smoothing",
+      "family": "lerp",
+      "law": "per-frame",
+      "params": {
+       "alpha_per_frame": 0.1,
+       "lambda_per_s": null,
+       "tau_ms": 79.09351317524921,
+       "snap_px": 0.01,
+       "write": "full"
+      },
+      "derived": {
+       "alpha_per_frame_at_T": 0.1,
+       "tau_ms_at_T": 79.09351317524921,
+       "settle_frames_first_input": 105
+      }
+     },
+     {
+      "target": ".b0|ren:ty",
+      "driver": ".b0|drv:--y",
+      "class": "first-order smoothing",
+      "family": "lerp",
+      "law": "per-frame",
+      "params": {
+       "alpha_per_frame": 0.1,
+       "lambda_per_s": null,
+       "tau_ms": 79.09351317524921,
+       "snap_px": 0.01,
+       "write": "full"
+      },
+      "derived": {
+       "alpha_per_frame_at_T": 0.1,
+       "tau_ms_at_T": 79.09351317524921,
+       "settle_frames_first_input": 105
+      }
+     }
+    ],
+    "attribution": {
+     ".b0|ren:tx": "pointer",
+     ".b0|ren:ty": "pointer"
+    }
+   },
+   "R4": {
+    "schema": "reva.labtruth/0",
+    "route": "m13",
+    "params": {
+     "law": "frame",
+     "alpha": 0.1,
+     "lambda": 8,
+     "snap": 0.01,
+     "write": "full"
+    },
+    "regime": "R4",
+    "variant": "gaps",
+    "metrics": [
+     "class",
+     "law",
+     "alpha_per_frame",
+     "tau_at_T",
+     "attribution"
+    ],
+    "stagger": null,
+    "negative": null,
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "driver": ".b0|drv:--x",
+      "class": "first-order smoothing",
+      "family": "lerp",
+      "law": "per-frame",
+      "params": {
+       "alpha_per_frame": 0.1,
+       "lambda_per_s": null,
+       "tau_ms": 316.37405270099686,
+       "snap_px": 0.01,
+       "write": "full"
+      },
+      "derived": {
+       "alpha_per_frame_at_T": 0.1,
+       "tau_ms_at_T": 316.37405270099686,
+       "settle_frames_first_input": null
+      }
+     },
+     {
+      "target": ".b0|ren:ty",
+      "driver": ".b0|drv:--y",
+      "class": "first-order smoothing",
+      "family": "lerp",
+      "law": "per-frame",
+      "params": {
+       "alpha_per_frame": 0.1,
+       "lambda_per_s": null,
+       "tau_ms": 316.37405270099686,
+       "snap_px": 0.01,
+       "write": "full"
+      },
+      "derived": {
+       "alpha_per_frame_at_T": 0.1,
+       "tau_ms_at_T": 316.37405270099686,
+       "settle_frames_first_input": null
+      }
+     }
+    ],
+    "attribution": {
+     ".b0|ren:tx": "pointer",
+     ".b0|ren:ty": "pointer"
+    }
+   },
+   "R5": {
+    "schema": "reva.labtruth/0",
+    "route": "m13",
+    "params": {
+     "law": "frame",
+     "alpha": 0.1,
+     "lambda": 8,
+     "snap": 0.01,
+     "write": "full"
+    },
+    "regime": "R5",
+    "variant": "gaps",
+    "metrics": [
+     "class",
+     "law",
+     "alpha_per_frame",
+     "tau_at_T",
+     "attribution"
+    ],
+    "stagger": null,
+    "negative": null,
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "driver": ".b0|drv:--x",
+      "class": "first-order smoothing",
+      "family": "lerp",
+      "law": "per-frame",
+      "params": {
+       "alpha_per_frame": 0.1,
+       "lambda_per_s": null,
+       "tau_ms": 158.18702635049843,
+       "snap_px": 0.01,
+       "write": "full"
+      },
+      "derived": {
+       "alpha_per_frame_at_T": 0.1,
+       "tau_ms_at_T": 158.18702635049843,
+       "settle_frames_first_input": 105
+      }
+     },
+     {
+      "target": ".b0|ren:ty",
+      "driver": ".b0|drv:--y",
+      "class": "first-order smoothing",
+      "family": "lerp",
+      "law": "per-frame",
+      "params": {
+       "alpha_per_frame": 0.1,
+       "lambda_per_s": null,
+       "tau_ms": 158.18702635049843,
+       "snap_px": 0.01,
+       "write": "full"
+      },
+      "derived": {
+       "alpha_per_frame_at_T": 0.1,
+       "tau_ms_at_T": 158.18702635049843,
+       "settle_frames_first_input": 105
+      }
+     }
+    ],
+    "attribution": {
+     ".b0|ren:tx": "pointer",
+     ".b0|ren:ty": "pointer"
+    }
+   }
+  }
+ },
+ "grid": [
+  {
+   "index": 0,
+   "params": {
+    "law": "frame",
+    "alpha": 0.1
+   },
+   "R3": {
+    "schema": "reva.labtruth/0",
+    "route": "m13",
+    "params": {
+     "law": "frame",
+     "alpha": 0.1,
+     "lambda": 8,
+     "snap": 0.01,
+     "write": "full"
+    },
+    "regime": "R3",
+    "variant": "steps",
+    "metrics": [
+     "class",
+     "law",
+     "alpha_per_frame",
+     "tau_at_T",
+     "attribution"
+    ],
+    "stagger": null,
+    "negative": null,
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "driver": ".b0|drv:--x",
+      "class": "first-order smoothing",
+      "family": "lerp",
+      "law": "per-frame",
+      "params": {
+       "alpha_per_frame": 0.1,
+       "lambda_per_s": null,
+       "tau_ms": 79.09351317524921,
+       "snap_px": 0.01,
+       "write": "full"
+      },
+      "derived": {
+       "alpha_per_frame_at_T": 0.1,
+       "tau_ms_at_T": 79.09351317524921,
+       "settle_frames_first_input": 109
+      }
+     },
+     {
+      "target": ".b0|ren:ty",
+      "driver": ".b0|drv:--y",
+      "class": "first-order smoothing",
+      "family": "lerp",
+      "law": "per-frame",
+      "params": {
+       "alpha_per_frame": 0.1,
+       "lambda_per_s": null,
+       "tau_ms": 79.09351317524921,
+       "snap_px": 0.01,
+       "write": "full"
+      },
+      "derived": {
+       "alpha_per_frame_at_T": 0.1,
+       "tau_ms_at_T": 79.09351317524921,
+       "settle_frames_first_input": 109
+      }
+     }
+    ],
+    "attribution": {
+     ".b0|ren:tx": "pointer",
+     ".b0|ren:ty": "pointer"
+    }
+   }
+  },
+  {
+   "index": 1,
+   "params": {
+    "law": "frame",
+    "alpha": 0.06
+   },
+   "R3": {
+    "schema": "reva.labtruth/0",
+    "route": "m13",
+    "params": {
+     "law": "frame",
+     "alpha": 0.06,
+     "lambda": 8,
+     "snap": 0.01,
+     "write": "full"
+    },
+    "regime": "R3",
+    "variant": "steps",
+    "metrics": [
+     "class",
+     "law",
+     "alpha_per_frame",
+     "tau_at_T",
+     "attribution"
+    ],
+    "stagger": null,
+    "negative": null,
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "driver": ".b0|drv:--x",
+      "class": "first-order smoothing",
+      "family": "lerp",
+      "law": "per-frame",
+      "params": {
+       "alpha_per_frame": 0.06,
+       "lambda_per_s": null,
+       "tau_ms": 134.6792559334416,
+       "snap_px": 0.01,
+       "write": "full"
+      },
+      "derived": {
+       "alpha_per_frame_at_T": 0.06,
+       "tau_ms_at_T": 134.6792559334416,
+       "settle_frames_first_input": 185
+      }
+     },
+     {
+      "target": ".b0|ren:ty",
+      "driver": ".b0|drv:--y",
+      "class": "first-order smoothing",
+      "family": "lerp",
+      "law": "per-frame",
+      "params": {
+       "alpha_per_frame": 0.06,
+       "lambda_per_s": null,
+       "tau_ms": 134.6792559334416,
+       "snap_px": 0.01,
+       "write": "full"
+      },
+      "derived": {
+       "alpha_per_frame_at_T": 0.06,
+       "tau_ms_at_T": 134.6792559334416,
+       "settle_frames_first_input": 185
+      }
+     }
+    ],
+    "attribution": {
+     ".b0|ren:tx": "pointer",
+     ".b0|ren:ty": "pointer"
+    }
+   }
+  },
+  {
+   "index": 2,
+   "params": {
+    "law": "frame",
+    "alpha": 0.18
+   },
+   "R3": {
+    "schema": "reva.labtruth/0",
+    "route": "m13",
+    "params": {
+     "law": "frame",
+     "alpha": 0.18,
+     "lambda": 8,
+     "snap": 0.01,
+     "write": "full"
+    },
+    "regime": "R3",
+    "variant": "steps",
+    "metrics": [
+     "class",
+     "law",
+     "alpha_per_frame",
+     "tau_at_T",
+     "attribution"
+    ],
+    "stagger": null,
+    "negative": null,
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "driver": ".b0|drv:--x",
+      "class": "first-order smoothing",
+      "family": "lerp",
+      "law": "per-frame",
+      "params": {
+       "alpha_per_frame": 0.18,
+       "lambda_per_s": null,
+       "tau_ms": 41.99190685074005,
+       "snap_px": 0.01,
+       "write": "full"
+      },
+      "derived": {
+       "alpha_per_frame_at_T": 0.18,
+       "tau_ms_at_T": 41.99190685074005,
+       "settle_frames_first_input": 58
+      }
+     },
+     {
+      "target": ".b0|ren:ty",
+      "driver": ".b0|drv:--y",
+      "class": "first-order smoothing",
+      "family": "lerp",
+      "law": "per-frame",
+      "params": {
+       "alpha_per_frame": 0.18,
+       "lambda_per_s": null,
+       "tau_ms": 41.99190685074005,
+       "snap_px": 0.01,
+       "write": "full"
+      },
+      "derived": {
+       "alpha_per_frame_at_T": 0.18,
+       "tau_ms_at_T": 41.99190685074005,
+       "settle_frames_first_input": 58
+      }
+     }
+    ],
+    "attribution": {
+     ".b0|ren:tx": "pointer",
+     ".b0|ren:ty": "pointer"
+    }
+   }
+  },
+  {
+   "index": 3,
+   "params": {
+    "law": "dt",
+    "lambda": 6
+   },
+   "R3": {
+    "schema": "reva.labtruth/0",
+    "route": "m13",
+    "params": {
+     "law": "dt",
+     "alpha": 0.1,
+     "lambda": 6,
+     "snap": 0.01,
+     "write": "full"
+    },
+    "regime": "R3",
+    "variant": "steps",
+    "metrics": [
+     "class",
+     "law",
+     "alpha_per_frame",
+     "tau_at_T",
+     "attribution"
+    ],
+    "stagger": null,
+    "negative": null,
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "driver": ".b0|drv:--x",
+      "class": "first-order smoothing",
+      "family": "lerp",
+      "law": "dt-aware",
+      "params": {
+       "alpha_per_frame": 0.048770575499285984,
+       "lambda_per_s": 6,
+       "tau_ms": 166.66666666666666,
+       "snap_px": 0.01,
+       "write": "full"
+      },
+      "derived": {
+       "alpha_per_frame_at_T": 0.048770575499285984,
+       "tau_ms_at_T": 166.66666666666666,
+       "settle_frames_first_input": 229
+      }
+     },
+     {
+      "target": ".b0|ren:ty",
+      "driver": ".b0|drv:--y",
+      "class": "first-order smoothing",
+      "family": "lerp",
+      "law": "dt-aware",
+      "params": {
+       "alpha_per_frame": 0.048770575499285984,
+       "lambda_per_s": 6,
+       "tau_ms": 166.66666666666666,
+       "snap_px": 0.01,
+       "write": "full"
+      },
+      "derived": {
+       "alpha_per_frame_at_T": 0.048770575499285984,
+       "tau_ms_at_T": 166.66666666666666,
+       "settle_frames_first_input": 229
+      }
+     }
+    ],
+    "attribution": {
+     ".b0|ren:tx": "pointer",
+     ".b0|ren:ty": "pointer"
+    }
+   }
+  },
+  {
+   "index": 4,
+   "params": {
+    "law": "dt",
+    "lambda": 12
+   },
+   "R3": {
+    "schema": "reva.labtruth/0",
+    "route": "m13",
+    "params": {
+     "law": "dt",
+     "alpha": 0.1,
+     "lambda": 12,
+     "snap": 0.01,
+     "write": "full"
+    },
+    "regime": "R3",
+    "variant": "steps",
+    "metrics": [
+     "class",
+     "law",
+     "alpha_per_frame",
+     "tau_at_T",
+     "attribution"
+    ],
+    "stagger": null,
+    "negative": null,
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "driver": ".b0|drv:--x",
+      "class": "first-order smoothing",
+      "family": "lerp",
+      "law": "dt-aware",
+      "params": {
+       "alpha_per_frame": 0.09516258196404048,
+       "lambda_per_s": 12,
+       "tau_ms": 83.33333333333333,
+       "snap_px": 0.01,
+       "write": "full"
+      },
+      "derived": {
+       "alpha_per_frame_at_T": 0.09516258196404048,
+       "tau_ms_at_T": 83.33333333333333,
+       "settle_frames_first_input": 115
+      }
+     },
+     {
+      "target": ".b0|ren:ty",
+      "driver": ".b0|drv:--y",
+      "class": "first-order smoothing",
+      "family": "lerp",
+      "law": "dt-aware",
+      "params": {
+       "alpha_per_frame": 0.09516258196404048,
+       "lambda_per_s": 12,
+       "tau_ms": 83.33333333333333,
+       "snap_px": 0.01,
+       "write": "full"
+      },
+      "derived": {
+       "alpha_per_frame_at_T": 0.09516258196404048,
+       "tau_ms_at_T": 83.33333333333333,
+       "settle_frames_first_input": 115
+      }
+     }
+    ],
+    "attribution": {
+     ".b0|ren:tx": "pointer",
+     ".b0|ren:ty": "pointer"
+    }
+   }
+  }
+ ]
+}

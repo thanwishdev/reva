@@ -1,0 +1,2270 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>REVA card</title>
+<style>
+/* REVA card, v4 (WORKING page: people read and use it).
+   Structure: six pages in one file, one page on screen at a time (hash routes: #overview, #motion/<n>, #timeline,
+   #design[/type|colour|spacing|shapes|layout|states], #libraries, #recording). Each page has its own layout.
+   Reading order on every page: what a person understands first (the replay, one plain sentence, one or two big
+   numbers); everything technical (intervals, models, selectors, provenance) sits behind "Details" on that page.
+   Type: one system sans; mono only inside code blocks. Ground: pure white / near black. Grouping by soft tinted
+   panels (tone, space), never by borders or boxes. One accent (blue): moving elements, the playhead, the current item,
+   and a faint tint on the motion stage. Motion: short and functional. Page change: fade + 8 px rise, 220 ms on the
+   house curve cubic-bezier(.4,0,.2,1) (corpus: top-tier working pages, a docs site's curve; hover p50 180 ms); reduced
+   motion makes it instant. Buttons 40 px, radius 10 (working-page buttons p50 36-40 px). Body 16 px. */
+:root{
+  --bg:#ffffff; --surface:#f4f4f6; --surface2:#e9e9ed; --ink:#111113; --ink2:#4a4d54; --faint:#6a6d74;
+  --line:#e2e2e7; --line2:#ededf1; --ring:transparent;
+  --accent:#2a5bff; --accent-soft:rgba(42,91,255,.12); --good:#16794a; --bad:#c0362c; --warn:#7a4800;
+  --panel:#f6f6f8; --stage:color-mix(in srgb,var(--accent) 6%,#f7f8fb); --code:var(--surface);
+  --sans:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --mono:ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --ease:cubic-bezier(.4,0,.2,1); --t1:160ms; --t2:220ms;
+  --gut:40px; --max:1120px; --pad:32px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0c0c0e; --surface:#17171a; --surface2:#222227; --ink:#f2f2f4; --ink2:#b2b4bb; --faint:#8e9198;
+    --line:#2b2b31; --line2:#1f1f24; --ring:rgba(255,255,255,.09); --accent:#7f9bff; --accent-soft:rgba(127,155,255,.18);
+    --good:#5cc98f; --bad:#ff8a7d; --warn:#e0b252; --panel:#141417; --stage:color-mix(in srgb,var(--accent) 9%,#111114);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0c0c0e; --surface:#17171a; --surface2:#222227; --ink:#f2f2f4; --ink2:#b2b4bb; --faint:#8e9198;
+  --line:#2b2b31; --line2:#1f1f24; --ring:rgba(255,255,255,.09); --accent:#7f9bff; --accent-soft:rgba(127,155,255,.18);
+  --good:#5cc98f; --bad:#ff8a7d; --warn:#e0b252; --panel:#141417; --stage:color-mix(in srgb,var(--accent) 9%,#111114);
+}
+*{box-sizing:border-box}
+html{scroll-padding-top:24px}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 var(--sans);-webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums}
+a{color:inherit;text-underline-offset:3px}
+h1,h2,h3,h4{margin:0;font-weight:600;line-height:1.15;letter-spacing:-.015em}
+p{margin:0}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+[tabindex="-1"]:focus{outline:none}
+code,pre{font-family:var(--mono);font-size:13.5px}
+.mono,.v,.hx{font-family:var(--sans);font-variant-numeric:tabular-nums}
+.muted{color:var(--ink2)} .faint{color:var(--faint)}
+.small{font-size:15px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.warn{color:var(--warn)}
+.pass{color:var(--good)} .fail{color:var(--bad);font-weight:600}
+
+/* shell: a quiet page list on the left (desktop), a frosted top bar on narrower screens. The current page is the
+   darker, heavier word: no pill, no bar (owner taste). */
+.shell{display:grid;grid-template-columns:184px minmax(0,1fr);gap:72px;max-width:1440px;margin:0 auto;padding:0 var(--gut)}
+.side{position:sticky;top:0;align-self:start;height:100vh;overflow-y:auto;padding:40px 0 32px;scrollbar-width:none;display:flex;flex-direction:column}
+.side .brand{display:block;font-weight:650;letter-spacing:-.01em;text-decoration:none}
+.side .site{display:block;color:var(--ink2);font-size:15px;line-height:1.4;margin-top:4px;overflow-wrap:anywhere}
+.side nav{display:flex;flex-direction:column;margin-top:40px}
+.side nav a{display:block;padding:7px 0;color:var(--ink2);text-decoration:none;font-size:16px;transition:color var(--t1) var(--ease)}
+.side nav a:hover{color:var(--ink)}
+.side nav a[aria-current="page"],.side nav a[aria-current="true"]{color:var(--ink);font-weight:600}
+.side nav a.sub{padding:4px 0 4px 14px;font-size:15px;display:none}
+.side nav.in-design a.sub{display:block}
+.findbtn{margin-top:28px;display:flex;align-items:center;gap:8px;height:40px;padding:0 12px;border:0;border-radius:10px;background:var(--surface);color:var(--ink2);font-size:15px;width:100%;text-align:left;transition:background var(--t1) var(--ease),color var(--t1) var(--ease)}
+.findbtn:hover{color:var(--ink);background:var(--surface2)}
+.findbtn svg{width:16px;height:16px;flex:none}
+.findbtn kbd{margin-left:auto;font:inherit;font-size:14px;color:var(--faint)}
+main{min-width:0;max-width:1120px;padding-bottom:96px}
+
+/* pages: one on screen; the others stay findable (hidden="until-found") and print in order */
+.view{min-width:0}
+.view>.vin{padding-top:48px}
+.view.enter>.vin{animation:vin var(--t2) var(--ease) both}
+@keyframes vin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.ptitle{font-size:40px;letter-spacing:-.03em;line-height:1.1}
+.lead{color:var(--ink2);max-width:62ch;font-size:18px;line-height:1.5;margin-top:12px}
+.sub2{font-size:22px;letter-spacing:-.015em;margin:0 0 6px}
+/* a group on a page: a soft tinted panel, no border */
+.panel{background:var(--panel);border-radius:24px;padding:var(--pad);margin-top:24px;min-width:0}
+.panel>.sub2:first-child{margin-top:0}
+.panel .plead{color:var(--ink2);max-width:64ch;margin:2px 0 18px}
+.foot{padding:64px 0 0;color:var(--ink2);font-size:15px;max-width:64ch}
+
+/* ---------- overview ---------- */
+.ov-head .sum{font-size:20px;line-height:1.45;color:var(--ink2);max-width:58ch;margin-top:14px}
+.mini-wrap{position:relative;margin:36px auto 0;width:min(100%,calc((100vh - 140px) * 1.6))}
+.mini{position:relative;width:100%;aspect-ratio:1440/900;overflow:hidden;border-radius:18px;background:#fff;box-shadow:0 0 0 1px var(--ring),0 1px 2px rgba(0,0,0,.06),0 16px 48px rgba(0,0,0,.10)}
+.mini .mb{position:absolute;padding:0;border:0;border-radius:4px;background:transparent no-repeat;background-size:100% 100%;cursor:pointer;
+  outline:1.5px solid color-mix(in srgb,var(--accent) 65%,transparent);outline-offset:2px;transition:outline-color var(--t1) var(--ease),box-shadow var(--t2) var(--ease)}
+.mini .bd{position:absolute;background:no-repeat;background-size:100% 100%;pointer-events:none;opacity:0}
+.mini .mb.nocrop{outline-style:dashed}
+.mini .mb.nocrop.live{background-color:var(--accent-soft)}
+.mini .mb.live{outline-color:var(--accent);box-shadow:0 0 0 6px var(--accent-soft)}
+.mini .mb.sel{outline:2.5px solid var(--accent)}
+.mini .mb:hover{outline-color:var(--accent)}
+.mini .mb.gl,.mini .mb.gl.live{outline-style:solid;background-color:transparent;box-shadow:none}
+.mini .pt{position:absolute;pointer-events:none}
+.ctl[hidden]{display:none}
+.ctl{position:absolute;left:16px;right:16px;bottom:16px;display:flex;align-items:center;gap:14px;padding:8px 14px 8px 8px;border-radius:14px;
+  background:color-mix(in srgb,var(--bg) 74%,transparent);backdrop-filter:blur(16px) saturate(1.4);-webkit-backdrop-filter:blur(16px) saturate(1.4);box-shadow:0 4px 24px rgba(0,0,0,.12)}
+.off{margin-top:16px;color:var(--ink2);font-size:15px;text-align:center}
+.pv-wrap{margin-top:36px}
+.pageview{max-height:min(78vh,880px);overflow-y:auto;border-radius:18px;background:var(--surface);box-shadow:0 0 0 1px var(--ring),0 1px 2px rgba(0,0,0,.06),0 16px 48px rgba(0,0,0,.10);overscroll-behavior:contain}
+.pvin{position:relative;width:100%}
+.pvin .mb{position:absolute;padding:0;border:0;border-radius:4px;background:transparent;cursor:pointer;outline:1.5px dashed color-mix(in srgb,var(--accent) 70%,transparent);outline-offset:2px;transition:outline-color var(--t1) var(--ease)}
+.pvin .mb:hover,.pvin .mb.sel{outline:2.5px solid var(--accent)}
+.pvwin{position:absolute;left:0;right:0;pointer-events:none}
+/* what moves: one plain line per motion, a picture of it, a click opens its page */
+.wm-h{margin-top:64px}
+.wmlist{list-style:none;margin:16px 0 0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 24px}
+.wm{display:grid;grid-template-columns:72px minmax(0,1fr) auto;gap:16px;align-items:center;width:100%;text-align:left;border:0;background:none;padding:12px;margin:0;border-radius:16px;color:var(--ink);text-decoration:none;transition:background var(--t1) var(--ease)}
+.wm:hover{background:var(--panel)}
+.wm .thumb{width:72px;height:52px;border-radius:10px;background:var(--surface)}
+.wm .wn{display:block;font-weight:600;overflow-wrap:anywhere;line-height:1.35}
+.wm .wf{display:block;color:var(--ink2);line-height:1.4;margin-top:2px}
+.wm .go{color:var(--faint);transition:transform var(--t1) var(--ease),color var(--t1) var(--ease)}
+.wm:hover .go{color:var(--accent);transform:translateX(3px)}
+.ct{color:var(--ink2);font-weight:400}
+.mi .thumb,.thumb{display:flex;align-items:center;justify-content:center;overflow:hidden}
+.thumb .tc{display:block;background-repeat:no-repeat;border-radius:3px}
+
+/* ---------- buttons, toggles, ranges ---------- */
+.btn{height:40px;padding:0 16px;border:0;border-radius:10px;background:var(--surface);color:var(--ink);font-size:15px;font-weight:500;white-space:nowrap;transition:background var(--t1) var(--ease),opacity var(--t1) var(--ease)}
+.btn:hover{background:var(--surface2)}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.btn.pri{background:var(--ink);color:var(--bg);min-width:84px}
+.btn.pri:hover{opacity:.86;background:var(--ink)}
+.btn.icon{width:40px;padding:0;display:inline-flex;align-items:center;justify-content:center}
+.btn.icon svg{width:18px;height:18px}
+input[type=range]{flex:1;accent-color:var(--accent);min-width:0;height:24px}
+.ms{font-size:15px;color:var(--ink2);min-width:64px;text-align:right;font-variant-numeric:tabular-nums}
+.seg{display:inline-flex;gap:2px;padding:4px;border-radius:12px;background:var(--surface)}
+.seg button{height:32px;min-width:44px;border:0;background:none;padding:0 12px;border-radius:8px;color:var(--ink2);font-size:15px;font-weight:500;transition:background var(--t1) var(--ease),color var(--t1) var(--ease)}
+.seg button[aria-pressed="true"],.seg button[aria-selected="true"]{background:var(--bg);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.seg button[disabled]{opacity:.45;cursor:not-allowed}
+.tabs{display:inline-flex;gap:2px;padding:4px;border-radius:12px;background:var(--surface)}
+.tabs button{height:32px;border:0;background:none;padding:0 14px;border-radius:8px;color:var(--ink2);font-size:15px;font-weight:500;transition:background var(--t1) var(--ease),color var(--t1) var(--ease)}
+.tabs button[aria-selected="true"]{background:var(--bg);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.1)}
+
+/* ---------- motion: one per page ---------- */
+.mtop{display:flex;align-items:center;gap:16px;justify-content:space-between}
+.mtop .of{color:var(--ink2);font-size:16px}
+.mtop .pn{display:flex;gap:8px}
+.mlist{display:flex;gap:4px;overflow-x:auto;margin:20px calc(var(--gut) * -1) 0;padding:0 var(--gut) 6px;scrollbar-width:none}
+.mlist::-webkit-scrollbar{display:none}
+.mi{flex:none;display:flex;align-items:center;gap:10px;max-width:240px;border:0;background:none;padding:6px 14px 6px 6px;border-radius:14px;text-align:left;color:var(--ink2);transition:background var(--t1) var(--ease),color var(--t1) var(--ease)}
+.mi:hover{background:var(--surface);color:var(--ink)}
+.mi[aria-selected="true"]{background:var(--surface);color:var(--ink)}
+.mi .thumb{flex:none;width:44px;height:32px;border-radius:8px;background:var(--surface2)}
+.mi .thumb.none{background:var(--surface2)}
+.mi .nm{font-size:15px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mi[aria-selected="true"] .nm{font-weight:600}
+.mpanel{margin-top:40px;min-width:0;overflow-wrap:anywhere}
+.mpanel[hidden]{margin:0}
+.mpanel.enter{animation:vin var(--t2) var(--ease) both}
+.mpanel h2{font-size:40px;letter-spacing:-.03em;line-height:1.1}
+.mpanel .sentence{font-size:22px;line-height:1.45;margin-top:14px;max-width:44ch}
+.tag{display:inline-flex;align-items:center;gap:7px;margin-top:16px;padding:5px 12px 5px 10px;border-radius:999px;font-size:15px;font-weight:500;background:var(--surface);color:var(--ink2)}
+.tag::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--faint)}
+.tag.t-exact{background:color-mix(in srgb,var(--good) 10%,var(--bg));color:var(--good)}
+.tag.t-exact::before{background:var(--good)}
+.tag.t-fitted{background:var(--accent-soft);color:color-mix(in srgb,var(--accent) 80%,var(--ink))}
+.tag.t-fitted::before{background:var(--accent)}
+/* the hero: the element's own pixels on a soft tinted stage */
+.viz{margin-top:32px}
+.stage[hidden]{display:none}
+.stage{position:relative;height:440px;background:var(--stage);border-radius:24px;overflow:hidden}
+.stage .ghost{position:absolute;border-radius:4px;box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--accent) 45%,transparent)}
+.stage .se{position:absolute;border-radius:6px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;overflow:hidden;transform-origin:50% 50%}
+.stage .se.img{background:none;border-radius:4px;box-shadow:0 1px 2px rgba(0,0,0,.08),0 12px 40px rgba(0,0,0,.10)}
+.stage .se.img img{object-fit:fill}
+.stage .still{position:absolute;left:20px;bottom:16px;font-size:15px;color:var(--ink2);background:color-mix(in srgb,var(--bg) 80%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);padding:6px 12px;border-radius:10px}
+.pctl[hidden]{display:none}
+.pctl{display:flex;align-items:center;gap:12px;margin-top:14px}
+.caption{font-size:15px;color:var(--ink2);line-height:1.45}
+.mbody{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,7fr);gap:48px;align-items:start;margin-top:48px}
+.nums{display:flex;flex-direction:column;gap:28px}
+.num .big{font-size:44px;line-height:1;letter-spacing:-.03em;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+.num .big .u{font-size:18px;font-weight:500;color:var(--ink2);margin-left:5px;letter-spacing:0}
+.num .lab{margin-top:8px;font-size:16px;color:var(--ink2)}
+.num .why{margin-top:6px;font-size:15px;color:var(--warn);line-height:1.45}
+.curvebox{background:var(--panel);border-radius:24px;padding:24px 24px 12px}
+.curvebox .ch{display:flex;justify-content:space-between;gap:12px;align-items:baseline;font-weight:600}
+.curvebox .ch .cl{font-weight:400;color:var(--ink2);font-size:15px;text-align:right}
+.use{margin-top:40px;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.use[hidden]{display:none}
+.plot{width:100%;height:auto;display:block;overflow:visible;margin-top:12px}
+.plot text{font:15px var(--sans);fill:var(--faint)}
+.plot .lbl{fill:var(--ink2)}
+.plot .curve-line{fill:none;stroke:var(--ink);stroke-width:2.6;stroke-linejoin:round;stroke-linecap:round}
+.plot .ref{fill:none;stroke:var(--faint);stroke-width:1.2;stroke-dasharray:1 5;stroke-linecap:round}
+.plot .axis{stroke:var(--line);stroke-width:1}
+.plot .head{stroke:var(--accent);stroke-width:1.5}
+.plot .dotp{fill:var(--accent)}
+.plot .band{fill:var(--accent-soft)}
+.plot .hollow{fill:none;stroke:var(--faint);stroke-width:1.5;stroke-dasharray:2 5}
+.fit{cursor:help;position:relative;display:inline-block;line-height:1.1;border-bottom:1.5px dotted var(--ink2)}
+.fit[data-ci]:hover::after,.fit[data-ci]:focus-visible::after{content:attr(data-ci);position:absolute;right:0;top:calc(100% + 8px);z-index:30;background:var(--ink);color:var(--bg);padding:6px 10px;border-radius:8px;font:500 14px/1.3 var(--sans);white-space:nowrap;letter-spacing:0}
+
+/* folds: no rules, a chevron, content fades in */
+details>summary{list-style:none;cursor:pointer}
+details>summary::-webkit-details-marker{display:none}
+.mpanel .folds{margin-top:40px}
+.mpanel details>summary,.fold>summary{display:flex;align-items:center;gap:10px;min-height:44px;font-weight:500;color:var(--ink);border-radius:10px}
+.mpanel details>summary::after,.fold>summary::after{content:"";width:8px;height:8px;border-right:1.6px solid currentColor;border-bottom:1.6px solid currentColor;transform:translateY(-2px) rotate(45deg);transition:transform var(--t2) var(--ease);opacity:.6;flex:none}
+details[open]>summary::after{transform:translateY(2px) rotate(-135deg)}
+details[open]>:not(summary){animation:fin var(--t2) var(--ease) both}
+@keyframes fin{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.mpanel details>summary:hover,.fold>summary:hover{color:var(--accent)}
+.mpanel details[open]{background:var(--panel);border-radius:20px;padding:4px 24px 24px;margin:8px -24px 0}
+.dgrp{margin-top:20px}
+.dgrp h3{font-size:17px;margin-bottom:6px}
+.facts-p p{margin:6px 0;max-width:80ch;color:var(--ink)}
+.mean{margin:6px 0 0;padding:0;list-style:none}
+.mean li{margin:8px 0;max-width:80ch}
+.vals{width:100%;border-collapse:collapse;margin:12px 0 20px;font-size:15px}
+.vals caption{text-align:left;font-weight:600;padding:8px 0 6px}
+.vals td,.vals th{padding:7px 0;border-top:1px solid var(--line2);vertical-align:top;font-weight:400;text-align:left}
+.vals td.n{text-align:right;padding-left:16px;overflow-wrap:anywhere}
+.vals td.c{text-align:right;color:var(--ink2);width:80px;padding-left:12px;font-size:14px}
+.vals td.u{color:var(--ink2);width:64px;padding-left:6px;font-size:14px}
+pre{margin:0;background:var(--bg);border-radius:12px;padding:16px 18px;overflow:auto;line-height:1.6;white-space:pre-wrap;word-break:break-word}
+.codeblk+.codeblk{margin-top:12px}
+.codemeta{font-size:15px;color:var(--ink2);margin:4px 0 8px}
+.selrow{font-size:15px;color:var(--ink2);margin:4px 0 14px}
+.nocode{font-size:15px;color:var(--ink2);margin-top:12px}
+.know{background:var(--panel);border-radius:24px;padding:24px}
+.know h4{margin:0 0 10px;font-size:17px}
+.know dl{margin:0;display:grid;grid-template-columns:max-content 1fr;gap:8px 18px}
+.know dt{color:var(--ink2)}
+.know dd{margin:0}
+.know ul{margin:0;padding-left:18px}
+
+/* ---------- timeline ---------- */
+.tl-ctl{display:flex;align-items:center;gap:12px;margin-top:28px}
+.legend{display:flex;flex-wrap:wrap;gap:8px 28px;align-items:center;color:var(--ink2);font-size:15px;margin-top:24px}
+.legend .li{display:inline-flex;gap:10px;align-items:center}
+.legend .sw{display:inline-block;width:28px;height:10px;border-radius:5px;background:var(--accent)}
+.legend .sw.f{background:color-mix(in srgb,var(--accent) 50%,transparent)}
+.legend .sw.u{background:none;box-shadow:inset 0 0 0 1.5px var(--faint)}
+.choreo .sentence{color:var(--ink2);margin-bottom:12px}
+.crow{display:grid;grid-template-columns:220px 1fr;gap:20px;align-items:center;padding:9px 12px;margin:0 -12px;border:0;background:none;width:calc(100% + 24px);text-align:left;border-radius:12px;transition:background var(--t1) var(--ease)}
+.crow:hover{background:color-mix(in srgb,var(--bg) 60%,transparent)}
+.crow:hover .cname{color:var(--accent)}
+.cname{font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cchip{position:absolute;left:6px;top:50%;transform:translateY(-50%);font-size:15px;color:var(--ink2);white-space:nowrap}
+.ctrack{position:relative;height:22px;background:linear-gradient(var(--line),var(--line)) center/100% 1px no-repeat}
+.cbar{position:absolute;top:4px;height:14px;border-radius:7px;background:var(--accent)}
+.cbar.k-fitted{background:color-mix(in srgb,var(--accent) 50%,transparent)}
+.cbar.k-unknown{background:none;box-shadow:inset 0 0 0 1.5px var(--faint)}
+.clead{position:absolute;top:4px;height:14px;border-radius:7px 0 0 7px;background:var(--surface2)}
+.csettle{position:absolute;top:0;height:22px;border-left:1.5px dotted var(--ink)}
+.cnote{margin-left:252px;font-size:15px;color:var(--ink2);margin-top:10px}
+.caxis{position:relative;height:24px;margin-left:252px;margin-right:12px;font-size:14px;color:var(--ink2)}
+.caxis span{position:absolute;transform:translateX(-50%)}
+.caxis span:last-child{transform:translateX(-100%)}
+.cwrap{position:relative}
+.cwrap .playhost{position:absolute;left:240px;right:0;top:0;bottom:0;pointer-events:none}
+.playline{position:absolute;top:-2px;bottom:-2px;width:0;border-left:1.5px solid var(--accent);pointer-events:none;z-index:3}
+.curves{display:flex;flex-wrap:wrap;gap:20px}
+.curve{display:flex;flex-direction:column;gap:10px;font-size:15px;color:var(--ink2);line-height:1.45;max-width:180px}
+.curves+.fold{margin-top:20px}
+.curve svg{width:112px;height:66px;background:var(--bg);border-radius:12px;color:var(--ink)}
+.dots{position:relative;height:56px;margin:36px 0 24px}
+.dots .bz em{position:absolute;top:26px;left:0;font-style:normal;font-size:14px;color:var(--ink2);white-space:nowrap}
+.dots .bands{position:absolute;left:0;right:0;top:26px;height:20px}
+.dots .bz{position:absolute;top:0;height:20px;background:var(--bg);border-radius:6px}
+.dots .d{position:absolute;top:30px;width:12px;height:12px;border-radius:50%;background:var(--accent);transform:translateX(-50%)}
+.dots .d.f{background:var(--bg);box-shadow:inset 0 0 0 2px var(--accent)}
+.dots .t{position:absolute;transform:translateX(-50%);font-size:14px;color:var(--ink2);white-space:nowrap}
+
+/* ---------- libraries, recording ---------- */
+.libs{list-style:none;margin:0;padding:0}
+.lib{padding:14px 0}
+.lib+.lib{border-top:1px solid color-mix(in srgb,var(--ink) 6%,transparent)}
+.lib .ln{font-size:20px;font-weight:600;letter-spacing:-.01em}
+.lib .ls{color:var(--ink2);margin-top:2px}
+.fold{margin-top:6px;color:var(--ink)}
+.fold[open]>summary{margin-bottom:8px}
+.ev{margin:0;padding:0;list-style:none;font-size:15px}
+.ev li{padding:8px 0;border-top:1px solid var(--line2);overflow-wrap:anywhere}
+.snip{font-size:13px;color:var(--ink2);overflow-wrap:anywhere}
+.folded ul,.mv{margin:8px 0 0;padding:0;list-style:none}
+.mv li{padding:6px 0;overflow-wrap:anywhere}
+.glsrc{white-space:pre;overflow:auto;max-height:420px}
+.rl{margin:8px 0 0;padding:0;list-style:none}
+.rl li{padding:5px 0;overflow-wrap:anywhere}
+.rd p{max-width:72ch}
+.rd+.rd{margin-top:28px}
+.rd .gname{margin-top:20px}
+.declist{list-style:none;margin:10px 0 0;padding:0}.dec{padding:16px 0}
+.decbody{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center;margin-top:6px}
+.dplot{width:120px;height:56px;flex:none;background:var(--bg);border-radius:10px}.dplot .ref{stroke:var(--faint);stroke-dasharray:3 4;fill:none}.dplot .curve-line{fill:none;stroke:var(--ink);stroke-width:2}
+.dprops{list-style:none;margin:6px 0 0;padding:0}.dprops li{margin:4px 0;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.swc{display:inline-block;width:14px;height:14px;border-radius:4px;box-shadow:inset 0 0 0 1px var(--line)}
+.cert.k-exact{font-size:14px;color:var(--ink2)}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:24px 32px}
+.fact .fv{font-size:21px;font-weight:600;letter-spacing:-.015em;line-height:1.25}
+.fact .fl{color:var(--ink2);margin-top:4px}
+.nm ul{margin:0;padding-left:20px}
+.nm li{margin:8px 0;max-width:80ch}
+
+/* ---------- design: a design-system page, each group a tinted panel ---------- */
+.dnav{display:none;flex-wrap:wrap;gap:4px 18px;margin:20px 0 0;font-size:16px}
+.dnav a{padding:6px 0;text-decoration:none;color:var(--ink2)}
+.dnav a:hover{color:var(--ink)}
+.dsec{scroll-margin-top:24px}
+.dsec h2{font-size:24px;letter-spacing:-.02em;margin-bottom:6px}
+.dsec>.lead,.dsec .plead{font-size:16px;margin:4px 0 20px}
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:stretch}
+.two>.panel{margin-top:24px}
+.tgroup{display:grid;grid-template-columns:90px minmax(0,1fr);gap:0 16px;padding:10px 0}
+.gname{font-size:15px;font-weight:600;color:var(--ink);margin:10px 0 4px}
+.tyrow{display:grid;grid-template-columns:minmax(0,1fr) 210px;gap:14px;padding:8px 0;align-items:baseline}
+.tyrow .smp{line-height:1.1;overflow-wrap:anywhere;min-width:0}
+.tyrow .tm{font-size:15px;text-align:right;white-space:nowrap;color:var(--ink2)}
+.tyrow .tm .v{color:var(--ink)}
+.tbl{width:100%;border-collapse:collapse;font-size:15px}
+.tbl th{font-weight:600;text-align:left;padding:8px 10px 8px 0;border-bottom:1px solid var(--line)}
+.tbl td{padding:6px 10px 6px 0;border-top:1px solid var(--line2);vertical-align:middle}
+.tbl td.r,.tbl th.r{text-align:right}
+.scroll{overflow-x:auto}
+.crole{margin:22px 0 10px;font-weight:600}
+.cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:20px}
+.cch{display:flex;flex-direction:column;gap:10px;font-size:15px;min-width:0}
+.cch .sq{display:block;width:100%;height:88px;border-radius:16px;box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--ink) 8%,transparent)}
+.cch .hx{font-weight:600;color:var(--ink)}
+.cgrid.sm{grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:14px}
+.cgrid.sm .cch .sq{height:48px;border-radius:12px}
+.pairs{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px 24px;margin-top:8px}
+.pair{display:grid;grid-template-columns:64px 1fr;gap:14px;align-items:center;font-size:15px}
+.pair .chip{height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:600;box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--ink) 8%,transparent)}
+.spbar{height:16px;border-radius:5px;background:var(--accent);min-width:1px;max-width:100%}
+.steps{display:flex;flex-direction:column;gap:6px;margin:6px 0 4px}
+.stp{display:grid;grid-template-columns:62px 130px minmax(0,1fr);align-items:center;gap:12px;font-size:15px;padding:3px 0}
+.stp .uses{display:flex;align-items:center;gap:8px;color:var(--ink2)}
+.ubar{display:inline-block;height:6px;border-radius:3px;background:var(--faint)}
+.shapes{display:grid;grid-template-columns:1fr;gap:16px}
+.rad{display:flex;flex-wrap:wrap;gap:20px}
+.rad .r{display:flex;flex-direction:column;gap:6px;font-size:15px;color:var(--ink2)}
+.rad .tile{width:64px;height:64px;border:2px solid var(--ink);background:var(--bg)}
+.shd{display:flex;flex-wrap:wrap;gap:20px;padding:20px;border-radius:16px}
+.shd .s{display:flex;flex-direction:column;gap:12px;font-size:15px}
+.shd .tile{width:96px;height:60px;border-radius:12px}
+.pat{margin:6px 0 0;padding:0;list-style:none}
+.pat li{padding:6px 0;max-width:80ch}
+.rulerbox{margin:8px 0 0}
+.ruler{width:100%;height:auto;display:block}
+.ruler text{font:14px var(--sans);fill:var(--ink2)}
+.strip{display:flex;flex-direction:column;width:130px}
+.strip div{background:var(--bg);margin-top:2px;font-size:12px;color:var(--ink2);overflow:hidden;padding-left:4px}
+.sw-mini{display:inline-block;width:12px;height:12px;border-radius:3px;box-shadow:inset 0 0 0 1px var(--line);vertical-align:-1px;margin-right:4px}
+
+/* ---------- search (the fallback for find in hidden pages) ---------- */
+.find{position:fixed;inset:0;z-index:60;display:flex;justify-content:center;align-items:flex-start;padding:12vh 16px 16px;background:color-mix(in srgb,var(--bg) 40%,transparent);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.find[hidden]{display:none}
+.find .box{width:min(560px,100%);max-height:70vh;display:flex;flex-direction:column;background:var(--bg);border-radius:20px;box-shadow:0 0 0 1px var(--ring),0 24px 64px rgba(0,0,0,.18);overflow:hidden}
+.find input{border:0;background:none;font:inherit;font-size:18px;color:var(--ink);padding:20px 22px;outline:none;width:100%}
+.find ul{list-style:none;margin:0;padding:0 8px 8px;overflow-y:auto}
+.find li button{display:block;width:100%;text-align:left;border:0;background:none;padding:10px 14px;border-radius:12px;color:var(--ink)}
+.find li button:hover,.find li button.on{background:var(--surface)}
+.find .fp{font-size:14px;color:var(--ink2)}
+.find .fs{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.find mark{background:var(--accent-soft);color:inherit;border-radius:3px}
+.find .none{padding:6px 22px 18px;color:var(--ink2)}
+.hit{animation:hit 1.6s var(--ease)}
+@keyframes hit{0%,40%{background:var(--accent-soft)}100%{background:transparent}}
+
+@media (max-width:1079px){
+  /* the page list becomes a frosted top bar that scrolls sideways */
+  html{scroll-padding-top:72px}
+  .shell{display:block;padding:0}
+  main{padding:0 var(--gut) 72px;margin:0 auto}
+  .side{position:sticky;top:0;z-index:20;height:56px;flex-direction:row;align-items:center;gap:20px;padding:0 var(--gut);overflow:hidden;
+    background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:blur(14px) saturate(1.4);-webkit-backdrop-filter:blur(14px) saturate(1.4)}
+  .side .site{display:none}
+  .side nav{flex-direction:row;margin:0;gap:2px;overflow-x:auto;scrollbar-width:none;min-width:0;flex:1;mask-image:linear-gradient(90deg,#000 calc(100% - 24px),transparent)}
+  .side nav::-webkit-scrollbar{display:none}
+  .side nav a{padding:8px 10px;white-space:nowrap;font-size:15px}
+  .side nav a.sub,.side nav.in-design a.sub{display:none}
+  .findbtn{margin:0;width:40px;padding:0;justify-content:center;flex:none}
+  .findbtn span,.findbtn kbd{display:none}
+  .dnav{display:flex}
+  .view>.vin{padding-top:32px}
+}
+@media (max-width:980px){
+  .mbody{grid-template-columns:1fr;gap:36px}
+  .nums{flex-direction:row;flex-wrap:wrap;gap:28px 40px}
+  .two{grid-template-columns:1fr;gap:0}
+  .wmlist{grid-template-columns:1fr}
+}
+@media (max-width:640px){
+  :root{--gut:16px;--pad:20px}
+  .side{gap:8px}
+  .side nav a{padding:8px 8px}
+  .ptitle,.mpanel h2{font-size:30px}
+  .lead{font-size:17px}
+  .ov-head .sum{font-size:18px}
+  .mini-wrap{margin-top:24px}
+  .mini{border-radius:12px}
+  .ctl{position:static;margin-top:12px;padding:0;background:none;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none}
+  .panel{border-radius:20px}
+  .mpanel .sentence{font-size:19px}
+
+  .nums{gap:24px 28px}
+  .num .big{font-size:34px}
+  .stage{height:260px;border-radius:20px}
+  .pctl{flex-wrap:wrap}
+  .pctl input[type=range]{flex-basis:100%;order:5}
+  .plot text{font-size:24px}
+  .curvebox{padding:16px 14px 8px;border-radius:20px}
+  .mpanel details[open]{padding:4px 16px 20px;margin:8px -16px 0}
+  .crow{grid-template-columns:1fr;gap:4px}
+  .wm{grid-template-columns:56px minmax(0,1fr) auto;gap:12px;padding:10px 8px}
+  .wm .thumb{width:56px;height:42px}
+  .caxis,.cnote{margin-left:0}
+  .cwrap .playhost{left:12px}
+  .caxis .tminor{display:none}
+  .tgroup{grid-template-columns:1fr}
+  .tyrow{grid-template-columns:1fr;gap:2px}
+  .tyrow .tm{text-align:left}
+  .stp{grid-template-columns:58px 100px minmax(0,1fr)}
+  .ruler text{font-size:22px}
+  .cgrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+  .cch .sq{height:64px}
+  .know dl{grid-template-columns:1fr;gap:2px}
+  .know dd{margin-bottom:10px}
+}
+@media (max-width:820px),(pointer:coarse){.mpanel details>summary{min-height:44px}}
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{transition:none!important;animation:none!important}
+}
+@media print{
+  /* every page, in order, each from a new sheet */
+  .side,.ctl,.pctl,.dnav,.use,.mlist,.mtop .pn,.tl-ctl,.find,.findbtn{display:none!important}
+  .shell{display:block;padding:0}
+  .view[hidden],.mpanel[hidden]{display:block!important;content-visibility:visible!important}
+  .view+.view{break-before:page}
+  .mpanel+.mpanel{break-before:page;margin-top:0}
+  .pageview{max-height:none!important;overflow:visible!important}
+  .mini{box-shadow:none}
+  pre{white-space:pre-wrap}
+  .panel,.curvebox,.stage{break-inside:avoid}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+<aside class="side">
+  <a class="brand" href="#overview">REVA</a><span class="site" id="site"></span>
+  <nav id="secnav" aria-label="Card pages">
+    <a href="#overview" data-s="overview">Overview</a>
+    <a href="#motion" data-s="motion">Motion</a>
+    <a href="#timeline" data-s="timeline">Timeline</a>
+    <a href="#design" data-s="design">Design</a>
+    <a class="sub" href="#design/type" data-s="design" data-sub="type">Type</a>
+    <a class="sub" href="#design/colour" data-s="design" data-sub="colour">Colour</a>
+    <a class="sub" href="#design/spacing" data-s="design" data-sub="spacing">Spacing</a>
+    <a class="sub" href="#design/shapes" data-s="design" data-sub="shapes">Radii and shadows</a>
+    <a class="sub" href="#design/layout" data-s="design" data-sub="layout">Layout</a>
+    <a class="sub" href="#design/states" data-s="design" data-sub="states">Hover and focus</a>
+    <a href="#libraries" data-s="libraries">Libraries</a>
+    <a href="#recording" data-s="recording">Recording</a>
+  </nav>
+  <button type="button" class="findbtn" id="findbtn" aria-label="Search this card" title="Search every page of this card (/)"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.6" fill="none" stroke="currentColor" stroke-width="1.6"/><line x1="10.4" y1="10.4" x2="14" y2="14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><span>Search</span><kbd>/</kbd></button>
+</aside>
+<main>
+  <section id="overview" class="block view" aria-labelledby="h-overview"></section>
+  <section id="motion" class="block view" aria-labelledby="h-motion" hidden="until-found"></section>
+  <section id="timeline" class="block view" aria-labelledby="h-timeline" hidden="until-found"></section>
+  <section id="design" class="block view" aria-labelledby="h-design" hidden="until-found"><div class="vin" id="design-body"></div></section>
+  <section id="libraries" class="block view" aria-labelledby="h-libraries" hidden="until-found"></section>
+  <section id="recording" class="block view" aria-labelledby="h-recording" hidden="until-found"></section>
+</main>
+</div>
+<div class="find" id="find" hidden role="dialog" aria-modal="true" aria-label="Search this card">
+  <div class="box"><input id="findq" type="search" placeholder="Search every page of this card" aria-label="Search every page of this card" autocomplete="off"><ul id="findres" role="listbox" aria-label="Matches"></ul></div>
+</div>
+
+<script>
+const DATA = /*__DATA__*/null;
+const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------- small helpers ---------- */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function nf(n, d) {
+  if (n == null || typeof n !== 'number' || isNaN(n)) return '—';
+  if (d == null) d = Math.abs(n) >= 100 ? 0 : Math.abs(n) >= 10 ? 1 : 2;
+  let s = n.toFixed(d);
+  if (s.includes('.')) s = s.replace(/\.?0+$/, '');
+  return s === '-0' ? '0' : s;
+}
+const ms = n => nf(n) + ' ms';
+const pct = (x, d = 1) => nf(x * 100, d) + ' %';
+const unit = v => v && v.unit ? (v.unit === 'px' || v.unit === '%' ? v.unit : ' ' + v.unit) : '';
+const px = v => v == null ? '—' : (typeof v === 'object' ? nf(v.value) + ' ' + (v.unit || 'px') : nf(v) + ' px');
+function anchorHead(tag, id, text, cls) {
+  return `<${tag} class="${cls || ''}" id="${id}">${esc(text)}</${tag}>`;
+}
+function hd(tag, id, text, cls) {
+  return `<${tag} id="${id}" class="${cls || ''}" tabindex="-1">${esc(text)}</${tag}>`;
+}
+/* durations in plain words: seconds, as a person says them ("0.32 s", "1 s", "4.05 s") */
+const secs = n => (n == null || !Number.isFinite(n) ? '?' : nf(n / 1000, 2) + ' s');
+function fitSpan(text, ci, label) {
+  return `<span class="fit" tabindex="0" data-ci="${esc(ci || 'fitted from the recorded frames; no interval recorded')}">${text}</span>`;
+}
+function ciText(p, u) {
+  if (!p || !p.ci95) return null;
+  return `95 % interval ${nf(p.ci95[0], 2)} to ${nf(p.ci95[1], 2)}${u ? ' ' + u : ''}`;
+}
+
+/* ---------- easing ---------- */
+const KEYWORDS = { linear:[0,0,1,1], ease:[.25,.1,.25,1], 'ease-in':[.42,0,1,1], 'ease-out':[0,0,.58,1], 'ease-in-out':[.42,0,.58,1] };
+function bezierFn(x1, y1, x2, y2) {
+  // missing or non-numeric control points (a ramp piece has none): a straight line, never NaN. Callers that must not
+  // draw a straight line for an unknown curve check the points themselves (isBz) before asking for the function.
+  if (![x1, y1, x2, y2].every(Number.isFinite)) return t => (t <= 0 ? 0 : t >= 1 ? 1 : t);
+  const cx = 3 * x1, bx = 3 * (x2 - x1) - cx, ax = 1 - cx - bx;
+  const cy = 3 * y1, by = 3 * (y2 - y1) - cy, ay = 1 - cy - by;
+  const X = s => ((ax * s + bx) * s + cx) * s, Y = s => ((ay * s + by) * s + cy) * s;
+  return t => {
+    if (t <= 0) return 0; if (t >= 1) return 1;
+    let lo = 0, hi = 1, s = t;
+    for (let i = 0; i < 40; i++) { const x = X(s); if (x < t) lo = s; else hi = s; s = (lo + hi) / 2; }
+    const y = Y(s);
+    return Number.isFinite(y) ? y : t;
+  };
+}
+const isBz = a => Array.isArray(a) && a.length === 4 && a.every(Number.isFinite);
+/* SVG point list that never carries a NaN: a point that is not finite is left out */
+const ptsStr = list => list.filter(q => Number.isFinite(q[0]) && Number.isFinite(q[1])).map(q => q[0] + ',' + q[1]).join(' ');
+function parseEasing(str) {
+  if (!str) return null;
+  const k = KEYWORDS[String(str).trim()];
+  if (k) return k;
+  const m = /cubic-bezier\(\s*([-\d.]+)\s*,\s*([-\d.]+)\s*,\s*([-\d.]+)\s*,\s*([-\d.]+)\s*\)/.exec(str);
+  return m ? m.slice(1, 5).map(Number) : null;
+}
+/* named eases (Penner / easings.net names, GSAP names): exact functions, not bezier look-alikes */
+const PW_N = n => ({ in: p => Math.pow(p, n), out: p => 1 - Math.pow(1 - p, n), inOut: p => (p < .5 ? Math.pow(2, n - 1) * Math.pow(p, n) : 1 - Math.pow(-2 * p + 2, n) / 2) });
+const BK1 = 1.70158, BK2 = BK1 * 1.525, BK3 = BK1 + 1;
+const EASE_FAMILIES = {
+  sine: { in: p => 1 - Math.cos(p * Math.PI / 2), out: p => Math.sin(p * Math.PI / 2), inOut: p => -(Math.cos(Math.PI * p) - 1) / 2 },
+  quad: PW_N(2), cubic: PW_N(3), quart: PW_N(4), quint: PW_N(5),
+  expo: { in: p => Math.pow(2, 10 * p - 10), out: p => 1 - Math.pow(2, -10 * p), inOut: p => (p < .5 ? Math.pow(2, 20 * p - 10) / 2 : (2 - Math.pow(2, -20 * p + 10)) / 2) },
+  circ: { in: p => 1 - Math.sqrt(1 - p * p), out: p => Math.sqrt(1 - (p - 1) * (p - 1)), inOut: p => (p < .5 ? (1 - Math.sqrt(1 - 4 * p * p)) / 2 : (Math.sqrt(1 - Math.pow(-2 * p + 2, 2)) + 1) / 2) },
+  back: { in: p => BK3 * p * p * p - BK1 * p * p, out: p => 1 + BK3 * Math.pow(p - 1, 3) + BK1 * Math.pow(p - 1, 2), inOut: p => (p < .5 ? Math.pow(2 * p, 2) * ((BK2 + 1) * 2 * p - BK2) / 2 : (Math.pow(2 * p - 2, 2) * ((BK2 + 1) * (p * 2 - 2) + BK2) + 2) / 2) },
+};
+function namedEaseFn(name) {
+  const n = String(name || '').trim();
+  let m = /^ease(In|Out|InOut)([A-Z][a-z]+)$/.exec(n), g;
+  if (m && EASE_FAMILIES[m[2].toLowerCase()]) g = EASE_FAMILIES[m[2].toLowerCase()][m[1] === 'In' ? 'in' : m[1] === 'Out' ? 'out' : 'inOut'];
+  if (!g && (m = /^(sine|quad|cubic|quart|quint|expo|circ|back)\.(in|out|inOut)$/.exec(n))) g = EASE_FAMILIES[m[1]][m[2]];
+  if (!g && (m = /^power([1-4])\.(in|out|inOut)$/.exec(n))) g = EASE_FAMILIES[['quad', 'cubic', 'quart', 'quint'][+m[1] - 1]][m[2]];
+  return g ? (t => (t <= 0 ? 0 : t >= 1 ? 1 : g(t))) : null;
+}
+function easeName(bz, given) {
+  if (given && KEYWORDS[given]) return given;
+  if (!bz) return given || 'unknown';
+  for (const [k, v] of Object.entries(KEYWORDS)) if (v.every((n, i) => Math.abs(n - bz[i]) < 0.006)) return k;
+  return `cubic-bezier(${bz.map(n => nf(n, 3)).join(', ')})`;
+}
+function easeWords(f) {
+  if (!f) return 'has an easing REVA could not identify, so its pace is not described';
+  const a = f(.25), c = f(.75);
+  let mx = 1, mn = 0; for (let k = 1; k < 100; k++) { const v = f(k / 100); if (v > mx) mx = v; if (v < mn) mn = v; }
+  const over = mx > 1.01 ? `, overshoots its end value by ${nf((mx - 1) * 100, 0)} % and settles back` : '', under = mn < -0.01 ? `, first pulls back ${nf(-mn * 100, 0)} % the wrong way` : '';
+  let base = 'eases';
+  if (Math.abs(a - .25) < .04 && Math.abs(c - .75) < .04 && !over && !under) base = 'moves at an even pace';
+  else if (a > .33 && c > .82) base = 'starts fast and settles gently';
+  else if (a < .25 && c > .75) base = 'eases in and out (slow start, slow end)';
+  else if (a < .25 && c < .75) base = 'starts slowly and ends fast';
+  if (over) base = base.replace(' and settles gently', '');
+  return base + under + over;
+}
+function springFn(omega, zeta, v0n) {
+  const wd = omega * Math.sqrt(1 - zeta * zeta), a = zeta * omega, B = (a - v0n) / wd;
+  return tms => { const t = Math.max(0, tms) / 1000; return 1 - Math.exp(-a * t) * (Math.cos(wd * t) + B * Math.sin(wd * t)); };
+}
+const MATERIAL = [['short', 50, 200], ['medium', 250, 400], ['long', 450, 600], ['extra long', 700, 1000]];
+
+/* ---------- channels ---------- */
+const CH = {
+  'ren:tx': { k: 'tx', css: 'translateX' }, 'ren:ty': { k: 'ty', css: 'translateY' },
+  'ren:sx': { k: 'sx' }, 'ren:sy': { k: 'sy' }, 'ren:rz': { k: 'rz' }, 'ren:opacity': { k: 'opacity' },
+};
+function firstNum(s) { const m = /-?\d*\.?\d+(?:e-?\d+)?/i.exec(String(s)); return m ? parseFloat(m[0]) : null; }
+function parseCss(code) {
+  if (!code) return null;
+  const a = /\.el \{ ([\w-]+): ([^;]+);/.exec(code), b = /\.el\.to \{ [\w-]+: ([^;]+);/.exec(code);
+  if (!a || !b) return null;
+  const f = /none/.test(a[2]) ? 0 : firstNum(a[2]), t = /none/.test(b[1]) ? 0 : firstNum(b[1]);
+  // u: a translate written in % of the element's own size stays in % (not read as px)
+  return f == null || t == null ? null : { from: f, to: t, fn: (/^\s*([a-z-]+)\(/i.exec(a[2]) || [])[1] || null, u: /translate[XY]?\(\s*-?[\d.]+%/.test(a[2] + b[1]) ? '%' : null };
+}
+const CHWORD = { tx: 'horizontal position', ty: 'vertical position', sx: 'horizontal scale', sy: 'vertical scale', rz: 'rotation', rx: 'tilt forward', ry: 'tilt sideways', opacity: 'opacity' };
+const GLCAM = { fov: 'camera field of view (°)', aspect: 'camera aspect', x: 'camera position x', y: 'camera position y', z: 'camera position z', rx: 'camera rotation x (°)', ry: 'camera rotation y (°)', rz: 'camera rotation z (°)' };
+const chWord = c => { const dv = /^drv:(.+)$/.exec(String(c)); if (dv) return chWord('ren:' + dv[1]) + ' (set by script)'; const g = /^gl:(.+)$/.exec(String(c)); if (g) { const k = /^camera\.(\w+)$/.exec(g[1]); return k ? (GLCAM[k[1]] || 'camera ' + k[1]) : 'WebGL uniform ' + g[1]; } const r = String(c).replace('ren:', ''); return CHWORD[r] || CHNAME[r] || r; };
+const CHNAME = { bw: 'width', bh: 'height', bx: 'left edge', by: 'top edge', radius: 'corner radius', 'clipPath.bottom': 'bottom clip edge', 'clipPath.top': 'top clip edge', 'clipPath.left': 'left clip edge', 'clipPath.right': 'right clip edge', blur: 'blur', rz: 'rotation' };
+function chPhrase(ch, ft) {
+  const k = (CH[ch] || {}).k, name = chWord(ch), raw = String(ch).replace(/^(ren|drv):/, '');
+  if (raw === 'text') return 'swaps its text';
+  if (/^drv:/.test(ch) && !ft) return 'moves';
+  if ((raw === 'sx' || raw === 'sy') && !ft) return 'changes size';
+  if (ft && !k && Number.isFinite(ft.from) && Number.isFinite(ft.to)) {
+    const d = ft.to - ft.from, r0 = nf(ft.from, 0), r1 = nf(ft.to, 0), a = nf(Math.abs(d), 0);
+    if (raw === 'bw') return d > 0 ? `widens from ${r0} to ${r1} px` : `narrows from ${r0} to ${r1} px`;
+    if (raw === 'bh') return d > 0 ? `grows from ${r0} to ${r1} px tall` : `shrinks from ${r0} to ${r1} px tall`;
+    if (raw === 'bx') return d < 0 ? `shifts left ${a} px` : `shifts right ${a} px`;
+    if (raw === 'by') return d < 0 ? `moves up ${a} px` : `moves down ${a} px`;
+  }
+  if (!ft) return `changes ${name}`;
+  const d = ft.to - ft.from;
+  const pu = ft.u === '%' ? (k === 'ty' ? ' % of its height' : ' % of its width') : ' px';
+  if (k === 'ty') return d < 0 ? `rises ${nf(Math.abs(d))}${pu}` : `drops ${nf(Math.abs(d))}${pu}`;
+  if (k === 'tx') return d < 0 ? `moves left ${nf(Math.abs(d))}${pu}` : `moves right ${nf(Math.abs(d))}${pu}`;
+  if (k === 'opacity') return ft.from === 0 && ft.to === 1 ? 'fades in' : ft.from === 1 && ft.to === 0 ? 'fades out' : `opacity ${nf(ft.from)} → ${nf(ft.to)}`;
+  if (k === 'sx' || k === 'sy') return `scales ${nf(ft.from)} → ${nf(ft.to)}`;
+  if (k === 'rz') return `rotates ${nf(ft.from)} → ${nf(ft.to)} degrees`;
+  if (ft.fn === 'blur') return ft.to < ft.from ? (ft.to === 0 ? `sharpens from a ${nf(ft.from)} px blur` : `sharpens from a ${nf(ft.from)} to a ${nf(ft.to)} px blur`) : `blurs from ${nf(ft.from)} to ${nf(ft.to)} px`;
+  return `${name} ${nf(ft.from)} → ${nf(ft.to)}`;
+}
+
+/* ---------- naming ---------- */
+function humanName(desc, box) {
+  const m = /^([A-Za-z0-9]+)(.*)$/.exec(desc || '');
+  const tag = (m ? m[1] : '').toLowerCase();
+  const classes = ((m && m[2]) || '').split(/[.#]/).filter(Boolean);
+  const hint = classes.map(c => c.replace(/^[A-Za-z0-9]{5,7}_/, '')).find(c => !/^(hide|show|sc|css)-/.test(c) && c.length > 1 && !/^[a-z]{1,3}[A-Z0-9][A-Za-z0-9]{4,}$/.test(c));
+  const words = hint ? hint.replace(/([a-z])([A-Z])/g, '$1 $2').replace(/[-_]+/g, ' ').toLowerCase().split(' ').filter(Boolean) : [];
+  const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
+  const tiny = box && box.w <= 32 && box.h <= 32;
+  if (tag === 'h1') return 'Main heading';
+  if (/^h[2-6]$/.test(tag)) return cap(words.join(' ') + ' heading').trim();
+  if (tag === 'p') return words.length ? cap(words.join(' ') + ' paragraph') : 'Paragraph';
+  if (tag === 'nav') return words.includes('sidebar') ? 'Sidebar navigation' : 'Navigation';
+  if (tag === 'img') return 'Image'; if (tag === 'svg') return 'Graphic'; if (tag === 'button') return 'Button'; if (tag === 'a') return 'Link';
+  if (tag === 'span') return words.length ? cap(words.join(' ')) : 'Text';
+  if (!words.length) return cap(tag) + ' block';
+  if (tiny) return cap(words.join(' '));
+  const last = words[words.length - 1];
+  return cap(words.join(' ')) + (/^(wrapper|panel|layer|box|sidebar|container)$/.test(last) ? '' : ' panel');
+}
+
+/* ---------- build motion models ---------- */
+function buildMotions(L) {
+  const rowsIn = (L.page ? [Object.assign({}, L.page, { rank: 'page', desc: 'Page scroll', selector: '(the page scroll)', isPage: true })] : []).concat(L.motions, L.gl && L.gl.items ? L.gl.items : []);
+  return rowsIn.map((m, i) => {
+    const line = (m.lines && m.lines[0]) || {};
+    const recs = (m.records || []).filter(r => r.tier !== 'unknown');
+    const rec = recs.find(r => (line.channels || []).includes(r.channel)) || recs[0] || null;
+    const V = n => (line.values || []).find(v => v.name === n);
+    const LK = line.kind;
+    const kind = LK === 'declared' ? 'declared' : LK === 'spring' ? 'spring' : (LK === 'tween' || LK === 'ramp') ? 'tween' : LK === 'unknown' ? 'unknown' : LK === 'step' ? 'step' : LK === 'smoothing' ? 'smooth' : LK === 'scroll map' ? 'map' : LK === 'pin' ? 'pin' : LK === 'periodic' ? 'periodic' : 'other';
+    // a WebGL line labelled measured is decoded from the numbers the page sent to the GPU: read, not fitted
+    const cert = line.label === 'exact' || (line.label === 'measured' && m.kind === 'gl') ? 'exact' : line.label === 'fitted' ? 'fitted' : 'unknown';
+    const channels = m.channels || [];
+    const ft = {};
+    for (const e of (m.exports || [])) {
+      const css = (e.exports || []).find(x => x.lib === 'css' && x.code);
+      const p = css && parseCss(css.code);
+      if (p) ft[e.channel] = p;
+    }
+    const o = { i, rank: m.rank, raw: m, line, rec, kind, cert, channels, ft, selector: m.selector, desc: m.desc, box: m.box,
+      weight: m.weightShare || 0, count: m.count || 1, name: m.isPage ? 'Page scroll' : m.isGl ? m.desc : m.kind === 'gl' ? 'WebGL scene' : humanName(m.desc, m.box), t0: line.t0 == null ? null : line.t0 };
+    o.axisOff = 0; o.axisLabel = 'ms since the motion began'; o.unit = 'ms'; o.playRate = 1; o.know = false; o.plain = false; o.drive = null;
+    o.ramp = LK === 'ramp';
+    for (const e of (m.exports || [])) { const em = e.model || {}; if (CH[e.channel] && !o.ft[e.channel] && Number.isFinite(em.from) && Number.isFinite(em.to)) o.ft[e.channel] = { from: em.from, to: em.to }; }
+    // start and end values of every channel (layout box, width ...), for the words only: the replay uses ft
+    o.ftAll = Object.assign({}, o.ft);
+    for (const e of (m.exports || [])) { const em = e.model || {}; if (!o.ftAll[e.channel] && Number.isFinite(em.from) && Number.isFinite(em.to)) o.ftAll[e.channel] = { from: em.from, to: em.to }; }
+    const attr = (rec && rec.attribution) || '';
+    const drvKind = rec && rec.model && rec.model.driver && rec.model.driver.kind;
+    const pcs = kind === 'tween' && rec && rec.model && rec.model.family === 'piecewise' && !V('duration') ? (rec.model.pieces || []).filter(x => x.params && Number.isFinite(x.params.D)) : null;
+    if (pcs && pcs.length) {
+      // several curves in a row (the target changed mid-flight): chain them, each piece rising by an equal share
+      // a piece is a cubic Bézier (x1..y2) or a straight ramp (from/to, no control points); anything else cannot be drawn
+      const isRamp = x => x.family === 'ramp' || x.cls === 'ramp';
+      const drawable = pcs.every(x => isRamp(x) || isBz([x.params.x1, x.params.y1, x.params.x2, x.params.y2]));
+      const t00 = pcs[0].params.t0, fs = pcs.map(x => { const q = x.params; return isRamp(x) ? (u => u) : bezierFn(q.x1, q.y1, q.x2, q.y2); });
+      o.nRamp = pcs.filter(isRamp).length; o.nBez = pcs.length - o.nRamp; o.pieceRamp = pcs.map(isRamp); o.curveUnknown = !drawable;
+      const ends = pcs.map(x => x.params.t0 + x.params.D - t00);
+      o.pieces = pcs.length; o.bz = null; o.easeLabel = 'custom curve'; o.dur = ends[ends.length - 1]; o.delay = 0;
+      o.p = tl => { if (tl <= 0) return 0; for (let k = 0; k < pcs.length; k++) { const a = pcs[k].params.t0 - t00; if (tl < ends[k] || k === pcs.length - 1) { const f = fs[k](Math.max(0, Math.min(1, (tl - a) / pcs[k].params.D))); return (k + f) / pcs.length; } } return 1; };
+      o.f = null; o.len = o.dur; o.lead = 0; o.span = o.len; o.plotSpan = o.span; o.curveKey = 'pw' + pcs.length + ':' + o.dur.toFixed(0); o.curveLabel = o.nRamp ? `${pcs.length} pieces in a row` : `${pcs.length} curves in a row`;
+      { let pk = 1; for (let k = 0; k <= 200; k++) { const v = o.p(o.dur * k / 200); if (Number.isFinite(v)) pk = Math.max(pk, v); } o.peak = pk; }
+      o.marks = ends.slice(0, -1).map((e, k) => ({ t: e, p: (k + 1) / pcs.length, text: `target changes at ${nf(e + (o.t0 || 0))} ms` }));
+    } else if (kind === 'declared' || kind === 'tween') {
+      o.dur = V('duration') ? V('duration').value : null;
+      o.delay = V('delay') ? V('delay').value : 0;
+      const given = V('easing') ? V('easing').value : null;
+      o.bz = o.ramp ? null : kind === 'declared' ? parseEasing(given) : (rec && rec.model.bezier) || parseEasing(rec && rec.model.ease);
+      o.easeLabel = o.ramp ? 'linear' : easeName(o.bz, kind === 'declared' ? given : (rec && rec.model.ease));
+      const easeStr = kind === 'declared' ? given : (rec && rec.model.ease);
+      const nfn = o.ramp || o.bz ? null : namedEaseFn(easeStr);
+      // an ease REVA cannot draw is not drawn as a straight line: the shape is simply not shown
+      o.curveUnknown = !o.ramp && !o.bz && !nfn;
+      const f = o.bz ? bezierFn(...o.bz) : nfn || (x => x);
+      o.f = o.curveUnknown ? null : f;
+      o.p = tl => f(tl / o.dur);
+      o.len = o.dur; o.lead = o.delay;
+      o.span = o.lead + o.len;
+      o.plotSpan = o.span;
+      o.curveKey = o.bz ? 'b' + o.bz.map(n => n.toFixed(3)).join(',') : o.curveUnknown ? 'u' + o.easeLabel : 'n' + o.easeLabel;
+      o.curveLabel = o.easeLabel;
+      if (!Number.isFinite(o.dur) || o.dur <= 0) { o.know = true; o.p = null; o.len = null; o.span = null; o.lead = 0; o.plotSpan = 1; o.reason = 'the duration was not read for this motion'; }
+    } else if (kind === 'spring') {
+      const om = V('omega').value, ze = V('zeta').value;
+      const ex = (m.exports || []).map(e => e.model && e.model.v0n).find(x => x != null);
+      o.omega = om; o.zeta = ze; o.v0n = ex == null ? 0 : ex;
+      o.settle = V('settle').value; o.overshoot = V('overshoot') ? V('overshoot').value : null;
+      const sp = springFn(om, ze, o.v0n);
+      o.p = sp; o.len = o.settle; o.lead = 0; o.span = o.len; o.plotSpan = o.len * 1.4;
+      let peak = 0; for (let t = 0; t <= o.plotSpan; t += 2) peak = Math.max(peak, sp(t)); o.peak = peak;
+      o.curveKey = 's' + om.toFixed(2) + ',' + ze.toFixed(3); o.curveLabel = `spring, ζ ${nf(ze, 2)}`;
+      o.f = null;
+    } else if (kind === 'step') {
+      o.lead = 100; o.len = 0; o.span = 100; o.plotSpan = 300; o.axisOff = -100; o.plain = true; o.p = () => 1; o.peak = 1;
+      o.axisLabel = 'ms around the change'; o.curveKey = 'step'; o.curveLabel = 'instant change';
+    } else if (kind === 'smooth') {
+      const tau = V('tau') ? V('tau').value : 100;
+      o.tau = tau; o.lerp60 = V('lerp60') ? V('lerp60').value : null; o.lead = 0; o.len = tau * 4.6; o.span = o.len; o.plotSpan = o.len * 1.1; o.peak = 1;
+      o.p = t => 1 - Math.exp(-t / tau); o.f = null;
+      o.axisLabel = 'ms after the target jumps'; o.marks = [{ t: tau, p: 1 - Math.exp(-1), text: `time constant ${nf(tau)} ms` }];
+      o.curveKey = 'm' + tau.toFixed(1); o.curveLabel = `smoothing, τ ${nf(tau)} ms`;
+      if (/scroll|wheel/.test(attr)) o.drive = 'scroll';
+    } else if (kind === 'map' || kind === 'pin') {
+      const rm = (rec && rec.model && rec.model.map) || {}, pin = (rec && rec.model && rec.model.pin) || {};
+      let s0 = kind === 'pin' ? (pin.start && pin.start.value) : (V('scrollStart') ? V('scrollStart').value : null);
+      let s1 = kind === 'pin' ? (pin.end && pin.end.value) : (V('scrollEnd') ? V('scrollEnd').value : null);
+      if (kind === 'pin' && s0 == null && s1 != null && pin.held_px) { s0 = Math.max(0, s1 - pin.held_px); o.pinDerived = true; }
+      o.drive = kind === 'pin' ? 'scroll' : (drvKind === 'pointer' ? 'pointer' : drvKind === 'wheel' ? 'wheel' : /pointer/.test(attr) ? 'pointer' : /wheel/.test(attr) ? 'wheel' : 'scroll');
+      o.shape = rm.shape || null; o.s0 = s0; o.s1 = s1;
+      // a range edge the look marks [unknown] is a guess, not a fact: remember it so no tile or sentence states it plainly
+      const unkEdge = n => { const v = V(n); return v && v.label === 'unknown' ? (v.reason || 'not identified') : null; };
+      if (kind === 'map') { o.s0Unk = unkEdge('scrollStart'); o.s1Unk = unkEdge('scrollEnd'); }
+      o.mapFrom = V('from') ? V('from').value : null; o.mapTo = V('to') ? V('to').value : null;
+      if (Number.isFinite(s0) && Number.isFinite(s1) && s1 > s0) {
+        const r = s1 - s0, off = s0 >= 0 ? Math.max(0, s0 - r * .35) : s0 - r * .35;
+        o.axisOff = off; o.lead = s0 - off; o.len = r; o.span = o.lead + r; o.plotSpan = (s1 + r * .35) - off; o.plain = true; o.peak = 1;
+        const mf = kind === 'map' && o.shape && o.shape !== 'linear' ? namedEaseFn(o.shape) : null;
+        o.shapeDrawn = !!mf;
+        o.p = mf ? x => mf(Math.max(0, Math.min(1, x / r))) : x => Math.max(0, Math.min(1, x / r)); o.playRate = o.plotSpan / 2600; o.unit = 'px';
+        o.axisLabel = o.drive === 'pointer' ? 'pointer position, px' : o.drive === 'wheel' ? 'wheel input summed, px' : 'page scroll position, px';
+        o.curveKey = 'x' + kind; o.curveLabel = kind === 'pin' ? 'pinned' : 'scroll-linked';
+      } else { o.know = true; o.p = null; o.len = null; o.lead = 0; o.span = null; o.plotSpan = 1; o.reason = 'the scroll range was not fully reached in this take'; }
+      o.t0 = null;
+    } else {
+      o.p = null; o.len = null; o.lead = 0; o.span = null; o.plotSpan = 1; o.know = true;
+      const t = line.text || '';
+      o.reason = (/\[unknown\]:\s*(.*)$/.exec(t) || [])[1] || (kind === 'periodic' ? 'it repeats; the shape of one cycle is not modelled' : t);
+      if (o.reason) { const seenR = new Set(); o.reason = o.reason.split(/(?<=[)\w])\.\s+(?=[A-Z])/).filter(x => { const k = x.replace(/[0-9.e+-]+/g, '#'); if (seenR.has(k)) return false; seenR.add(k); return true; }).join('. ').replace(/\.?$/, '.'); }
+      if (kind === 'periodic') o.period = V('period') ? V('period').value : null;
+    }
+    if (kind === 'unknown') o.know = true;
+    if (o.drive) o.t0 = null;
+    const stg = m.stagger;
+    if (stg && stg.n > 1 && o.p && !o.drive && kind !== 'step') {
+      const iv = (stg.values || []).find(v => v.name === 'interval');
+      if (iv && Number.isFinite(iv.value) && iv.value > 0) { o.stag = { n: stg.n, step: iv.value }; o.plotSpan = o.plotSpan + (stg.n - 1) * iv.value; o.playRate = 1; }
+    }
+    o.fmtT = tl => nf(tl + o.axisOff, 0) + ' ' + o.unit;
+    const ps = m.position;
+    o.winS = (o.t0 == null || o.know) && ps && ps.start && ps.start.t != null ? ps.start.t : null;
+    o.winE = o.winS != null && ps.end && ps.end.t != null ? ps.end.t : null;
+    if (o.winE == null) o.winS = null;
+    o.rowT = o.t0 != null ? o.t0 : o.winS;
+    o.startAbs = o.t0 == null ? null : o.t0 - o.lead;
+    o.endAbs = o.t0 == null || o.len == null ? null : o.t0 + o.len + (o.stag ? (o.stag.n - 1) * o.stag.step : 0);
+    // sentence
+    const chs = channels.filter(c => ft[c] || kind === 'unknown' || true);
+    // a scroll map's own start and end values are on its line; the exported model may be extrapolated far past them
+    if (kind === 'map' && Number.isFinite(o.mapFrom) && Number.isFinite(o.mapTo) && (line.channels || [])[0]) o.ftAll[line.channels[0]] = { from: o.mapFrom, to: o.mapTo };
+    const phrases = []; const seen = new Set();
+    for (const c of channels) { let ph = chPhrase(c, o.ftAll[c]); if (m.isPage) ph = ph.replace(/^moves up/, 'scrolls down').replace(/^moves down/, 'scrolls up').replace(/^moves$|^changes .*/, 'scrolls'); if (!seen.has(ph)) { seen.add(ph); phrases.push(ph); } }
+    if (m.isPage && !phrases.length) phrases.push('scrolls');
+    o.phrases = phrases;
+    const joinAnd = a => a.length < 2 ? a.join('') : a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1];
+    // several unmeasured properties read as one list: "changes A, B and C", not "changes A and changes B and ..."
+    const what = !phrases.length ? 'moves' : phrases.length > 1 && phrases.every(p => /^changes /.test(p)) ? 'changes ' + joinAnd(phrases.map(p => p.slice(8))) : joinAnd(phrases);
+    if (kind === 'declared') {
+      o.sentence = `${cap1(what)} over ${ms(o.dur)}, and it ${easeWords(o.f)}${o.delay ? `, after waiting ${ms(o.delay)}` : ''}. The page's own CSS sets this.`;
+    } else if (kind === 'tween') {
+      o.sentence = o.pieces ? `${cap1(what)} over ${ms(o.dur)} in ${pieceWords(o)} one after another: the target changed while it was moving, and each piece carries on from the position the one before had reached. Measured from the recorded frames; it starts at ${ms(o.t0)}. The plot gives each piece an equal share of the rise${o.nRamp ? ' and draws the ramp as a straight segment' : ''}${o.curveUnknown ? '; a piece whose shape was not read is not drawn' : ''}.` : `${cap1(what)} over ${ms(o.dur)}, and it ${easeWords(o.f)}. Measured from the recorded frames and matched to a curve; it starts at ${ms(o.t0)}.`;
+    } else if (kind === 'spring') {
+      o.sentence = `${cap1(what)}, ${Number.isFinite(o.overshoot) ? `overshoots by ${nf(o.overshoot, 0)} % and settles` : 'settles'} in about ${ms(o.settle)}${Number.isFinite(o.overshoot) ? '' : ' (the overshoot was not measured)'}. It behaves like a spring; the site's own stiffness and damping cannot be told apart from one recording.`;
+    } else if (kind === 'step') {
+      o.sentence = `${cap1(what)} instantly${o.t0 != null ? ` at ${ms(o.t0)}` : ''}, with no in-between frames at ${L.take.rate} fps.`;
+    } else if (kind === 'smooth') {
+      o.sentence = `${cap1(what)} with a smooth catch-up: each moment it closes part of the gap to its target, 63 % after ${ms(o.tau)} (the time constant) and within 1 % after about ${ms(o.len)}. ${o.drive ? 'It follows the scroll. ' : ''}The curve is the step response, how it reacts when the target jumps.`;
+    } else if (kind === 'map' || kind === 'pin') {
+      const via = { scroll: 'the page scroll', wheel: 'the wheel input', pointer: 'the pointer' }[o.drive];
+      if (kind === 'pin') o.sentence = o.know ? 'It is pinned while the page scrolls, but the pin edges were not both reached in this take.' : `It stays in place while the page scrolls from ${nf(o.s0)} to ${nf(o.s1)} px${o.pinDerived ? ' (the start is taken from the held distance, the page scroll did not reach it)' : ''}.`;
+      else if (o.know) o.sentence = `${cap1(what)}, linked to ${via}, but its range was not fully reached in this take.`;
+      else o.sentence = `${cap1(what)} in step with ${via}, not with time: it goes from ${o.mapFrom == null ? 'its start' : nf(o.mapFrom)} to ${o.mapTo == null ? 'its end' : nf(o.mapTo)} while ${o.drive === 'pointer' ? 'the pointer moves' : o.drive === 'wheel' ? 'the wheel input adds up' : 'the page scrolls'} ${mapRangeText(o)}${o.shape && o.shape !== 'linear' && o.shapeDrawn ? `, along ${aan(o.shape)} curve` : o.shape && o.shape !== 'linear' ? `, along ${aan(o.shape)} curve (drawn straight here)` : ', along a straight line'}.`;
+    } else if (kind === 'periodic') {
+      o.sentence = `${cap1(what)}, repeating every ${o.period == null ? '?' : ms(o.period)}. REVA measured the repeat time; the shape of one cycle is not modelled.`;
+    } else {
+      o.sentence = `${cap1(what)}. REVA saw it move but no curve fits it, so its timing is not measured.`;
+    }
+    if (o.stag) o.sentence += ` ${o.stag.n} alike elements start one after another, every ${ms(o.stag.step)}; the plot shows each one's own timeline.`;
+    if (o.ramp) o.sentence = o.sentence.replace(/, and it [^.]*\./, ', at a constant speed (a linear ramp).');
+    o.say = saySentence(o, m, what);
+    return o;
+  });
+}
+/* the one plain sentence a person reads first: what it does, how long, how it feels. No model names, no provenance
+   (the tag beside it says where the numbers come from; the full technical sentence is under Details). */
+function saySentence(o, m, what) {
+  const W = cap1(what);
+  const pace = o.ramp ? 'It moves at a constant speed.' : o.f ? cap1(easeWords(o.f)) + '.' : o.curveUnknown ? 'Its pace could not be identified.' : '';
+  let s;
+  if (m.kind === 'gl') {
+    const cov = (/(\d+(?:\.\d+)?) % of the screen/.exec(m.desc || '') || [])[1];
+    const seen = (/over the ([\d.]+) s seen/.exec(o.line.text || '') || [])[1];
+    const still = o.line.kind === 'unsettled' || /still moving/i.test(o.line.text || '');
+    return `An animated WebGL scene${cov ? ` filling ${cov} % of the screen` : ''}. ` +
+      (still ? `It never came to rest: it kept moving for the whole ${seen ? nf(+seen, 1) + ' s ' : ''}recording, so it loops or runs longer than REVA watched.` : o.know ? 'REVA saw it change but could not read a curve from it.' : pace);
+  }
+  const via = { scroll: 'the scroll', wheel: 'the wheel', pointer: 'the pointer' }[o.drive] || 'the scroll';
+  if ((o.kind === 'declared' || o.kind === 'tween') && !o.know) {
+    s = o.pieces ? `${W} over ${secs(o.dur)}, in ${o.pieces} steps: its target changed while it was moving.`
+      : `${W} over ${secs(o.dur)}${o.delay ? `, after a ${secs(o.delay)} wait` : ''}. ${pace}`;
+  } else if (o.kind === 'spring') {
+    s = `${W} like a spring: it ${Number.isFinite(o.overshoot) && o.overshoot >= 1 ? `overshoots by ${nf(o.overshoot, 0)} % and ` : ''}settles in ${secs(o.settle)}.`;
+  } else if (o.kind === 'step') {
+    s = `${W} instantly${o.t0 != null ? `, ${secs(o.t0)} in` : ''}, with no in-between frames.`;
+  } else if (o.kind === 'smooth') {
+    s = `${W} with a smooth catch-up${o.drive ? ` behind ${via}` : ''}: most of the way in ${secs(o.tau)}, settled after about ${secs(o.len)}.`;
+  } else if (o.kind === 'pin') {
+    s = o.know ? 'Stays pinned while the page scrolls; where the pin ends was not reached in this recording.' : `Stays in place while the page scrolls ${spaced(o.s1 - o.s0)} px.`;
+  } else if (o.kind === 'map') {
+    const what2 = o.drive === 'pointer' ? 'pointer travel' : o.drive === 'wheel' ? 'wheel input' : 'scrolling';
+    s = o.know ? `${W} in step with ${via}; the recording did not reach its whole range.` : `${W} in step with ${via}, not with time${!o.s0Unk && !o.s1Unk ? `, across ${spaced(o.s1 - o.s0)} px of ${what2}` : ''}.`;
+  } else if (o.kind === 'periodic') {
+    s = `${W}, repeating every ${secs(o.period)}.`;
+  } else if (o.know && (o.kind === 'declared' || o.kind === 'tween')) {
+    s = `${W}. How long it takes was not read.`;
+  } else {
+    s = `${W}, but no curve fits it, so its timing is not measured.`;
+  }
+  if (o.stag) s += ` ${o.stag.n} alike pieces start one after another, ${secs(o.stag.step)} apart.`;
+  return s;
+}
+/* where the numbers come from, as a small friendly tag */
+function tagOf(m) {
+  const gl = m.raw && m.raw.kind === 'gl';
+  if (m.cert === 'exact') return { cls: 't-exact', text: gl ? 'Read from the graphics calls' : 'From the site’s code', tip: gl ? 'Decoded from the numbers the page sent to the graphics card.' : 'Read from the page’s own CSS, Web Animations or script, not estimated.' };
+  if (m.cert === 'fitted') return { cls: 't-fitted', text: 'Measured', tip: 'Measured from the recorded frames and matched to a curve.' };
+  return { cls: 't-unknown', text: gl ? 'Seen, not measurable' : 'Seen, not measured', tip: 'REVA saw it move but could not measure its timing.' };
+}
+const cap1 = s => s.charAt(0).toUpperCase() + s.slice(1);
+const aan = w => (/^(?:[aeio]|u(?![ns]i))/i.test(w) ? 'an ' : 'a ') + w;
+/* what the millisecond clock counts from depends on what the look did */
+function clockFrom() {
+  const d = L && L.action && L.action.do;
+  return d === 'load' ? 'the first frame of the page load' : d === 'scroll' ? 'the start of the scroll recording' : d === 'hover' ? 'the start of the pointer recording' : d === 'click' ? 'the start of the click recording' : 'the start of the recording';
+}
+const startsCaption = m => `Counted from ${clockFrom()}.`;
+const recWord = () => (L && L.action && L.action.do === 'load' ? 'load' : 'recording');
+/* "3 pieces: 2 cubic Bézier curves and 1 straight ramp" */
+function pieceWords(o) {
+  const b = o.nBez, r = o.nRamp, bits = [];
+  if (b) bits.push(`${b} cubic Bézier ${b === 1 ? 'curve' : 'curves'}`);
+  if (r) bits.push(`${r} straight ${r === 1 ? 'ramp' : 'ramps'}`);
+  return `${o.pieces} pieces (${bits.join(' and ')})`;
+}
+/* "A to B px", with an edge the look marks unknown named as not identified instead of stated as a number */
+function mapRangeText(o) {
+  if (o.s0Unk && o.s1Unk) return '(neither end of the range was identified)';
+  if (o.s0Unk) return `to ${nf(o.s1)} px (where it starts was not identified)`;
+  if (o.s1Unk) return `from ${nf(o.s0)} px (where it ends was not identified)`;
+  return `from ${nf(o.s0)} to ${nf(o.s1)} px`;
+}
+const unkWhy = r => !r || /^not identified$/i.test(r) ? 'Not identified from this recording.' : 'Not identified: ' + r;
+
+/* ---------- state ---------- */
+const S = { sel: 0, T: 0, playing: false, raf: 0, last: 0 };
+let M = [], L = null, AX = 3000;
+const panelPlayers = {};
+
+/* ---------- key (lives in the Motion header) ---------- */
+function legendHTML() {
+  return `<span class="li"><span class="sw"></span><span>Timing from the site’s code</span></span>
+  <span class="li"><span class="sw f"></span><span>Measured from the recording</span></span>
+  <span class="li"><span class="sw u"></span><span>Moved, timing not measured</span></span>`;
+}
+
+/* ---------- overview ---------- */
+const isCurve = m => ['declared', 'tween', 'spring', 'smooth'].includes(m.kind) && !m.drive && !m.know && typeof m.p === 'function' && !m.curveUnknown && m.len > 0;
+function titleOf(L) {
+  const u = L.source.startUrl || '';
+  try { const h = new URL(u).hostname; if (h && h !== 'localhost') return h; } catch (e) {}
+  return 'REVA demo page';
+}
+function whenOf(L) {
+  const m = /^(\d{4}-\d{2}-\d{2})T(\d{2})-(\d{2})/.exec(L.dirName);
+  return m ? `${m[1]} ${m[2]}:${m[3]} UTC` : '';
+}
+function summaryOf(L) {
+  if (!M.length) return L.declaredOnly && L.declaredOnly.length ? 'No element motion was sampled. The page declares colour, background or shadow changes; they are listed under Motion.' : 'No motion was found in this recording.';
+  const known = M.filter(m => m.kind !== 'unknown'), unk = M.filter(m => m.kind === 'unknown');
+  const nEl = M.filter(m => !m.raw.isPage).length || M.length;
+  const end = Math.max(0, ...M.map(m => m.endAbs != null ? m.endAbs : (m.winE || 0)));
+  const decl = known.filter(m => m.kind === 'declared').length, tw = known.filter(m => m.kind === 'tween').length, sp = known.filter(m => m.kind === 'spring').length;
+  const lk = M.filter(m => m.drive).length, stp = M.filter(m => m.kind === 'step' || m.kind === 'periodic').length;
+  const parts = [];
+  if (decl) parts.push(`${decl} set by the site’s own code`);
+  if (tw) parts.push(`${tw} measured from the frames`);
+  if (sp) parts.push(`${sp} ${sp === 1 ? 'spring' : 'springs'}`);
+  if (lk) parts.push(`${lk} tied to the scroll or pointer`);
+  if (stp) parts.push(`${stp} instant or repeating`);
+  if (unk.length) parts.push(`${unk.length} with no measured timing`);
+  const big = M.filter(m => !m.raw.isPage && !m.raw.isGl && m.raw.kind !== 'gl' && m.weight > 0).sort((a, b) => b.weight - a.weight)[0];
+  return `${L.action.do === 'load' ? 'On load' : 'During the ' + L.action.do}, ${M.length} ${M.length === 1 ? 'element moves' : 'elements move'} ${end > 0 ? `and everything timed has settled after ${nf(end / 1000, 1)} s` : 'and none has a measured end time'}: ${parts.join(', ')}.${big ? ` ${big.name} takes the most of the moving area, ${pct(big.weight, 0)}.` : ''}`;
+}
+function choreoSentence() {
+  const known = M.filter(m => m.t0 != null && m.endAbs != null).sort((a, b) => a.t0 - b.t0);
+  const linked = M.filter(m => m.drive).length;
+  const tail = linked ? ` ${linked} ${linked === 1 ? 'follows' : 'follow'} the scroll or pointer instead of the clock.` : '';
+  if (!known.length) return linked ? `Nothing here runs on its own clock.${tail}` : '';
+  const last = known.reduce((a, b) => (b.endAbs > a.endAbs ? b : a));
+  return last === known[0] ? `${last.name} starts first and is the last to finish, ${secs(last.endAbs)} in.${tail}` : `${known[0].name} starts first; ${last.name} is the last to finish, ${secs(last.endAbs)} in.${tail}`;
+}
+function axisEnd() {
+  const e = Math.max(...M.map(m => m.endAbs != null ? m.endAbs : (m.winE || 0)), 500);
+  return Math.ceil(e / 250) * 250;
+}
+function lineSample(cert) {
+  const d = cert === 'fitted' ? '6 4' : '';
+  if (cert === 'unknown') return `<svg class="ls" viewBox="0 0 26 8" aria-hidden="true"><rect x=".75" y=".75" width="24.5" height="6.5" rx="2" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="1.5 3"/></svg>`;
+  return `<svg class="ls" viewBox="0 0 26 8" aria-hidden="true"><line x1="0" y1="4" x2="26" y2="4" stroke="currentColor" stroke-width="2.2" ${d ? `stroke-dasharray="${d}"` : ''}/></svg>`;
+}
+
+/* where each element is: start and end box (viewport px), from look.json motions[].position */
+function geom(m) {
+  const p = m.raw.position;
+  let g;
+  if (!p) g = m.box ? { s: m.box, e: m.box, travel: 0, crop: null, p: null } : null;
+  else {
+    const gp = p.group || {};
+    const s = p.start || gp.start || m.box, e = p.end || gp.end || s;
+    if (!s) return null;
+    const travel = Math.hypot((e.x + e.w / 2) - (s.x + s.w / 2), (e.y + e.h / 2) - (s.y + s.h / 2));
+    const grew = Math.abs(e.w - s.w) + Math.abs(e.h - s.h) > 2;
+    g = { s, e, travel, grew, crop: p.image && p.image.data ? p.image : null, p };
+  }
+  // no crop of its own (a WebGL canvas, an element the look did not cut): its end pixels come from the end screen itself
+  if (g && !g.crop && SHOT && g.e && g.e.w > 2 && g.e.h > 2 && inView(g, viewportOf())) g.crop = { box: g.e, sheet: true };
+  return g;
+}
+/* the CSS that paints a crop: its own picture, or a window onto the end screen (one image, set once as --shot) */
+function cropBg(c) {
+  if (!c) return '';
+  if (!c.sheet) return `background-image:url(${c.data});background-size:100% 100%`;
+  const vp = viewportOf(), b = c.box;
+  const sx = vp.width / b.w * 100, sy = vp.height / b.h * 100;
+  const px = vp.width - b.w ? b.x / (vp.width - b.w) * 100 : 0, py = vp.height - b.h ? b.y / (vp.height - b.h) * 100 : 0;
+  return `background-image:var(--shot);background-size:${nf(sx, 3)}% ${nf(sy, 3)}%;background-position:${nf(px, 3)}% ${nf(py, 3)}%`;
+}
+/* a small picture of a crop inside a w x h frame, never stretched */
+function cropThumb(c, w, h, cls) {
+  if (!c) return `<span class="${cls} none" aria-hidden="true"></span>`;
+  const b = c.box || { w: 1, h: 1 }, k = Math.min(w / Math.max(1, b.w), h / Math.max(1, b.h));
+  return `<span class="${cls}" aria-hidden="true"><span class="tc" style="width:${nf(b.w * k, 1)}px;height:${nf(b.h * k, 1)}px;${cropBg(c)}"></span></span>`;
+}
+function progAt(m, T) {
+  if (m.t0 != null && m.p) return T < m.t0 ? 0 : (T >= m.endAbs ? 1 : Math.max(0, Math.min(1, m.p(T - m.t0))));
+  if (m.winS != null) return T >= m.winE ? 1 : 0;
+  return T > 0 ? 1 : 0;
+}
+function placeBox(b, g, pr, vp) {
+  const lerp = (a, c) => a + (c - a) * pr;
+  b.style.left = (lerp(g.s.x, g.e.x) / vp.width * 100) + '%';
+  b.style.top = (lerp(g.s.y, g.e.y) / vp.height * 100) + '%';
+  b.style.width = (lerp(g.s.w, g.e.w) / vp.width * 100) + '%';
+  b.style.height = (lerp(g.s.h, g.e.h) / vp.height * 100) + '%';
+}
+
+function librariesHTML() {
+  const lb = L.libraries;
+  if (!lb) return '<p class="small muted">Libraries were not scanned for this look.</p>';
+  if (lb.ok === false) return `<p class="small muted">The library scan failed${lb.error ? ': ' + esc(lb.error) : ''}.</p>`;
+  const sc = lb.scanned || {};
+  const mech = lb.mechanisms || {};
+  const names = { css_transition: 'CSS transition', css_animation: 'CSS animation', web_animation: 'Web Animations', view_transition: 'view transition', script_driven: 'script-driven', unexplained: 'unexplained' };
+  const mt = Object.keys(names).filter(k => mech[k]).map(k => `${names[k]} × ${mech[k]}`).join(', ');
+  const scan = `${sc.scripts || 0} script${sc.scripts === 1 ? '' : 's'}${sc.inline ? ' and ' + sc.inline + ' inline' : ''} scanned (${nf((sc.bytes || 0) / 1024, 0)} KB)${sc.skipped ? `; ${sc.skipped} not read (${esc(sc.skippedReason || 'skipped')})` : ''}`;
+  let body;
+  if (!lb.list.length) {
+    body = `<p><b>None found.</b> <span class="muted">Not found is not the same as not there.</span></p>`;
+  } else {
+    body = lb.list.map(x => {
+      const nm = x.name.replace(/\s*\(.*$/, '');
+      const run = x.running && x.running.state === 'observed' ? 'seen running' : 'found in the code, not seen running';
+      const ver = x.version && x.version.value ? 'version ' + x.version.value : 'version not stated by the build';
+      const ev = (x.evidence || []).map(e => `<li><span class="v">${esc(e.signal)}</span> in <span class="v">${esc(String(e.file || '').split('/').pop() || e.where)}${e.line ? ':' + e.line : ''}</span>${e.snippet ? `<br><code class="snip">${esc(e.snippet)}</code>` : ''}${e.observed ? `<br><span class="muted">${esc(typeof e.observed === 'string' ? e.observed : JSON.stringify(e.observed))}</span>` : ''}</li>`).join('');
+      return `<div class="lib"><div class="ln">${esc(nm)}</div><p class="ls">${esc(cap1(run))}; ${esc(ver)}. <span class="faint">Confidence: ${esc(x.status)}.</span></p>
+        <details class="fold"><summary>Why REVA thinks so: ${(x.evidence || []).length} of ${x.evidenceTotal || (x.evidence || []).length} signals</summary><ul class="ev">${ev}</ul></details></div>`;
+    }).join('');
+  }
+  return `${body}<p class="muted" style="margin-top:14px">${mt ? 'The motion on this page is made by ' + esc(mt) + '. ' : ''}Found by matching code signatures; ${esc(scan)}.</p>`;
+}
+
+/* the crop is of the group's box, not of this element's own box */
+const isGroupCrop = g => { const a = g.crop && g.crop.box, b = g.e; return !!(a && b) && (Math.abs(a.x - b.x) + Math.abs(a.y - b.y) + Math.abs(a.w - b.w) + Math.abs(a.h - b.h) > 4); };
+/* the take's first screen: the screens' own size when the look has them, else the design pass's viewport */
+const viewportOf = () => (L.screens && L.screens.viewport ? { width: L.screens.viewport.w, height: L.screens.viewport.h } : L.screens && L.screens.before ? { width: L.screens.before.w, height: L.screens.before.h } : L.design && L.design.viewport ? L.design.viewport : { width: 1440, height: 900 });
+let SHOT = null;   // the end screen as a data URI (look.json screens.viewport), or null in older looks
+/* a box that touches the first screen at its start or its end */
+const inView = (g, vp) => [g.s, g.e].some(b => b && b.x < vp.width && b.y < vp.height && b.x + b.w > 0 && b.y + b.h > 0);
+/* the one plain sentence under the title: how many move, when it is over, what the reader cannot see in the replay */
+function plainSummary() {
+  if (!M.length) return summaryOf(L);
+  const vp = viewportOf(), n = M.length;
+  const on = L.action.do === 'load' ? 'On load' : 'During the ' + L.action.do;
+  const end = Math.max(0, ...M.map(m => m.endAbs != null ? m.endAbs : (m.winE || 0)));
+  const clocked = M.some(m => !m.drive);
+  let s = `${on}, ${n} ${n === 1 ? 'element moves' : 'elements move'}`;
+  s += clocked && end > 0 ? `, and all of it has settled after ${nf(end / 1000, 1)} s.` : clocked ? '.' : `, each in step with ${M.some(m => m.drive === 'pointer') ? 'the pointer or the scroll' : 'the scroll'}, not the clock.`;
+  const below = M.filter(m => { const g = geom(m); return !g || !inView(g, vp); }).length;
+  if (below && below < n) s += ` ${below === 1 ? 'One of them is' : below + ' of them are'} outside the first screen.`;
+  return s;
+}
+function renderOverview() {
+  const el = $('#overview'); const d = L.design;
+  const vp = viewportOf(), SC = L.screens || {};
+  const bg = d && d.palette && d.palette.pageBackground ? d.palette.pageBackground.hex.value : '#ffffff';
+  const act = L.action.do === 'load' ? 'Page load' : cap1(L.action.do);
+  const noClock = M.length > 0 && M.every(m => m.drive);                       // every row follows the scroll or the pointer, not the clock
+  const noScrub = noClock && M.every(m => m.drive !== 'pointer');              // scroll-only: no clock scrubber
+  const st = b => `left:${b.x / vp.width * 100}%;top:${b.y / vp.height * 100}%;width:${b.w / vp.width * 100}%;height:${b.h / vp.height * 100}%`;
+  // background: the page at rest before the action (screens.before), else the end screen (screens.viewport), else a flat
+  // colour. Every crop is cut from the end screen, so a crop drawn at its own box shows the real end pixels. On a screen
+  // background a moving element's other place is covered by a patch of the page colour while it is away from it.
+  const back = SC.before ? SC.before : SC.viewport ? SC.viewport : null;
+  OV.bg = back ? (SC.before ? 'before' : 'end') : 'flat';
+  const backs = M.map(m => {
+    const g = geom(m); if (!g || !g.crop || !isGroupCrop(g) || m.raw.kind === 'gl') return '';
+    return `<span class="bd" data-b="${m.i}" style="${st(g.crop.box)};${cropBg(g.crop)}" aria-hidden="true"></span>`;
+  }).join('');
+  const patches = OV.bg === 'flat' || noScrub ? '' : M.map(m => {
+    const g = geom(m); if (!g || !inView(g, vp) || m.drive || m.raw.isGl || m.raw.kind === 'gl' || (m.kind === 'unknown' || m.know) && !g.travel) return '';
+    const box = OV.bg === 'end' ? (g.crop && isGroupCrop(g) ? g.crop.box : g.e) : g.s;
+    return `<span class="pt" data-p="${m.i}" style="${st(box)};background:${esc(bg)}" aria-hidden="true"></span>`;
+  }).join('');
+  const boxes = M.map(m => {
+    const g = geom(m); if (!g || !inView(g, vp)) return '';
+    const own = g.crop && !isGroupCrop(g);
+    return `<button class="mb k-${m.cert}${own ? '' : ' nocrop'}${m.raw.kind === 'gl' ? ' gl' : ''}" type="button" data-i="${m.i}" style="${st(g.s)}${own ? ';' + cropBg(g.crop) : ''}" title="${esc(m.name)}" aria-label="${esc(m.name)}: open this motion"></button>`;
+  }).join('');
+  const backStyle = back ? `background:${esc(bg)} url(${back.data}) 0 0/100% 100% no-repeat` : `background:${esc(bg)}`;
+  let stage = '';
+  // a scroll look with a picture of the whole page: the page itself, each mover where it ends (the clock replay of a fixed
+  // first screen would hide that the page scrolled under it)
+  const pageMode = M.length && SC.page && (noScrub || L.action.do === 'scroll');
+  if (pageMode) stage = pageViewHTML(SC, bg);
+  else if (M.length && (!noScrub || back)) stage = `<div class="mini-wrap">
+    <div class="mini" id="mini" style="${backStyle};aspect-ratio:${vp.width}/${vp.height}" role="group" aria-label="The first screen of the page, ${vp.width} by ${vp.height}, with each moving element outlined${noScrub ? ' where it ends' : ' and replayed in place'}">${patches}${backs}${boxes}</div>
+    ${noScrub ? '' : `<div class="ctl">
+      <button class="btn pri" id="play" type="button">Play</button>
+      <input type="range" id="scrub" min="0" max="${AX}" step="1" value="0" aria-label="Replay position">
+      <span class="ms" id="tnow">0.00 s</span>
+    </div>`}
+  </div>
+  ${noScrub ? `<p class="off">These elements move with the scroll, so they are shown where they end. Open one to play it against the scroll.</p>` : REDUCED ? '<p class="off">Replay is off because your system asks for reduced motion. Drag the slider to scrub.</p>' : ''}`;
+  el.innerHTML = `<div class="vin">
+  <div class="ov-head">
+    <h1 id="h-overview" class="ptitle" tabindex="-1">${esc(titleOf(L))}, ${esc(act.toLowerCase())}</h1>
+    <p class="sum">${esc(plainSummary())}</p>
+  </div>
+  ${stage}
+  ${whatMovesHTML()}</div>`;
+  if (pageMode) initPageView();
+  const pb = $('#play'), sb = $('#scrub');
+  if (pb) pb.addEventListener('click', togglePlay);
+  if (sb) sb.addEventListener('input', e => { stopPlay(); setT(+e.target.value); });
+  el.addEventListener('click', e => {
+    const t = e.target.closest('[data-i]'); if (!t || !el.contains(t)) return;
+    e.preventDefault(); go('motion/' + t.dataset.i);
+  });
+}
+const OV = { bg: 'flat' };
+/* what moves, at a glance: one plain line per motion, in rank order; a click opens it */
+function whatMovesHTML() {
+  if (!M.length) return (L.declaredOnly || []).length ? `<p class="lead" style="margin-top:28px">The page declares ${L.declaredOnly.length} colour, background or shadow ${L.declaredOnly.length === 1 ? 'change' : 'changes'}; they are under <a href="#motion">Motion</a>.</p>` : '';
+  const rows = M.map(m => { const g = geom(m);
+    return `<li><a class="wm" href="#motion/${m.i}" data-i="${m.i}"${rankWhy(m) ? ` title="${esc(rankWhy(m))}"` : ''}>${cropThumb(g && g.crop, 72, 52, 'thumb')}<span><span class="wn">${esc(m.name)}${m.count > 1 ? ` <span class="ct">× ${m.count}</span>` : ''}</span><span class="wf">${esc(factOf(m))}</span></span><span class="go" aria-hidden="true">→</span></a></li>`; }).join('');
+  const nOth = (L.others || []).length;
+  return `<h2 class="sub2 wm-h" id="what-moves">What moves</h2>
+    <ul class="wmlist">${rows}</ul>
+    ${nOth ? `<p class="muted" style="margin-top:16px">${nOth} smaller ${nOth === 1 ? 'mover is' : 'movers are'} listed under <a href="#recording">Recording</a>.</p>` : ''}`;
+}
+/* why this motion is ranked where it is (look.json motions[].notice.why), shown on hover only */
+const rankWhy = m => { const r = m.raw && (m.raw.notice || m.raw.rank); return r && typeof r === 'object' && (r.why || []).length ? 'Ranked here: ' + r.why.join('; ') : ''; };
+/* a scroll look: the whole page as one tall picture, each moving element outlined where it ends on the page */
+function pageViewHTML(SC, bg) {
+  const P = SC.page, vp = viewportOf(), y0 = SC.viewport ? SC.viewport.scrollY || 0 : 0;
+  const st = b => `left:${b.x / P.w * 100}%;top:${(b.y + y0) / P.h * 100}%;width:${b.w / P.w * 100}%;height:${b.h / P.h * 100}%`;
+  const boxes = M.map(m => {
+    const g = geom(m); if (!g || !g.e) return '';
+    return `<button class="mb k-${m.cert} nocrop" type="button" data-i="${m.i}" style="${st(g.e)}" title="${esc(m.name)}" aria-label="${esc(m.name)}: open this motion"></button>`;
+  }).join('');
+  return `<div class="pv-wrap">
+    <div class="pageview" id="pageview" tabindex="0" role="group" aria-label="The whole page, ${Math.round(P.w)} by ${Math.round(P.h)} px, with each moving element outlined where it ends">
+      <div class="pvin" style="aspect-ratio:${P.w}/${P.h};background:${esc(bg)} url(${P.data}) 0 0/100% 100% no-repeat">${boxes}${SC.viewport ? `<span class="pvwin" style="top:${y0 / P.h * 100}%;height:${vp.height / P.h * 100}%" aria-hidden="true"></span>` : ''}</div>
+    </div>
+    <p class="off">The whole page, ${spaced(P.h)} px tall. It opens where the recording ended; scroll inside it. Each outline is a moving element where it ends.</p>
+  </div>`;
+}
+function initPageView() {
+  // open on the end screen's place on the page, so the outlined elements are in view
+  const pv = $('#pageview'), win = pv && $('.pvwin', pv); if (!pv || !win) return;
+  requestAnimationFrame(() => { pv.scrollTop = Math.max(0, win.offsetTop - pv.clientHeight * .15); });
+}
+
+/* ---------- timeline, libraries, recording: their own sections ---------- */
+function timelineHTML() {
+  if (!M.length) return '';
+  const tickStep = [250, 500, 1000, 2000, 2500, 5000, 10000].find(st => AX / st <= 8) || 20000;
+  const ticks = []; for (let t = 0; t <= AX; t += tickStep) ticks.push(t);
+  const noClock = M.every(m => m.drive);
+  const order = [...M].sort((a, b) => (a.rowT == null) - (b.rowT == null) || (a.rowT || 0) - (b.rowT || 0) || a.i - b.i);
+  const rows = order.map(m => {
+    let bar = '';
+    if (m.drive) {
+      const via = { scroll: 'the scroll', wheel: 'the wheel', pointer: 'the pointer' }[m.drive];
+      bar = `<span class="cchip">${m.kind === 'smooth' ? `smooths ${via}` : m.know ? `follows ${via}` : m.s0Unk || m.s1Unk ? `follows ${via}, range not fully identified` : `follows ${via}, ${nf(m.s0, 0)} to ${nf(m.s1, 0)} px`}</span>`;
+    } else if (m.t0 != null) {
+      const own = m.stag ? (m.stag.n - 1) * m.stag.step : 0;
+      const cl = v => Math.max(0, Math.min(100, v));
+      const x0 = cl(m.startAbs / AX * 100), xs = cl(m.t0 / AX * 100), xe = cl((m.endAbs - own) / AX * 100), xz = cl(m.endAbs / AX * 100);
+      if (m.lead) bar += `<span class="clead" style="left:${x0}%;width:${xs - x0}%" title="declared delay ${ms(m.lead)}"></span>`;
+      bar += `<span class="cbar k-${m.cert}" style="left:${xs}%;width:${Math.max(Math.min(xe, 100) - xs, .6)}%"></span>`;
+      if (m.stag) bar += `<span class="cbar k-${m.cert}" style="left:${xe}%;width:${Math.max(xz - xe, .6)}%;opacity:.35" title="${m.stag.n} members start ${nf(m.stag.step)} ms apart"></span>`;
+      if (m.kind === 'spring') bar += `<span class="csettle" style="left:${xz}%" title="settles at ${ms(m.endAbs)}"></span>`;
+    } else if (m.winS != null) {
+      bar = `<span class="cbar k-unknown" style="left:${Math.min(m.winS / AX * 100, 99)}%;width:${Math.max(Math.min((m.winE - m.winS) / AX * 100, 100 - m.winS / AX * 100), .6)}%" title="changed between ${ms(m.winS)} and ${ms(m.winE)}; no curve fits it"></span>`;
+    } else {
+      bar = `<span class="cbar k-unknown" style="left:0;width:100%" title="moved, start and curve unknown"></span>`;
+    }
+    return `<button class="crow" type="button" data-i="${m.i}"><span class="cname">${esc(m.name)}</span><span class="ctrack">${bar}</span></button>`;
+  }).join('');
+  return `<div class="choreo">
+      <p class="sentence">${esc(choreoSentence())}</p>
+      <div class="cwrap">${rows}${noClock ? '' : '<div class="playhost"><span class="playline" id="pline" style="left:0"></span></div>'}</div>
+      ${noClock ? '' : `<div class="caxis">${ticks.map((t, k) => `<span${ticks.length > 4 && k % 2 ? ' class="tminor"' : ''} style="left:${t / AX * 100}%">${t}</span>`).join('')}</div>`}
+      <p class="cnote">${noClock ? 'Every motion here follows the scroll or the pointer, so there is no clock to read. The bars show the input range.' : `Milliseconds since the ${L.action.do === 'load' ? 'page started loading' : 'recording started'}; the blue line is the replay.`}${M.some(m => m.lead) ? ' The grey lead-in is a wait before it starts.' : ''}</p>
+    </div>`;
+}
+function systemHTML() {
+  const known = M.filter(isCurve);
+  if (!known.length) return '<p class="muted">No motion in this look runs on a measured curve over time, so there is no curve set to compare.</p>';
+  const curves = new Map();
+  for (const m of known) { const c = curves.get(m.curveKey) || { m, n: 0, durs: [] }; c.n++; c.durs.push(m.len); curves.set(m.curveKey, c); }
+  // each curve with the durations it runs at: the shape and the time, which is what a person copies
+  const curveHTML = [...curves.values()].map(c => `<div class="curve" title="${esc(c.m.curveLabel)}">${thumb(c.m)}<span><b style="color:var(--ink);font-weight:500">${esc(c.m.curveLabel.length > 22 ? 'Custom curve' : cap1(c.m.curveLabel))}</b><br>${esc([...new Set(c.durs.map(d => secs(d)))].join(', '))}${c.n > 1 ? ` <span class="faint">(${c.n} motions)</span>` : ''}</span></div>`).join('');
+  const durs = new Map();
+  for (const m of known) { const k = Math.round(m.len); const e = durs.get(k) || { n: 0, cert: m.cert }; e.n++; durs.set(k, e); }
+  const bandOf = k => { const b = MATERIAL.find(x => k >= x[1] - 25 && k <= x[2] + 25); return b ? b[0] : (k > 1000 ? 'beyond the longest' : 'between bands'); };
+  const bandTxt = [...durs.keys()].sort((a, b) => a - b).map(k => `${k} ms is ${bandOf(k)}`).join(', ');
+  const dmax = Math.max(1000, ...[...durs.keys()]) * 1.06;
+  // a band too narrow for its name keeps the name in its tooltip only
+  const zones = MATERIAL.map(b => `<span class="bz" style="left:${b[1] / dmax * 100}%;width:${(b[2] - b[1]) / dmax * 100}%" title="${b[0]}: ${b[1]} to ${b[2]} ms">${(b[2] - b[1]) / dmax >= .09 ? `<em>${b[0]}</em>` : ''}</span>`).join('');
+  const durDots = [...durs.entries()].sort((x, y) => x[0] - y[0]).map(([k, e], j) => `<span class="d ${e.cert === 'fitted' ? 'f' : ''}" style="left:${k / dmax * 100}%" title="${k} ms"></span><span class="t" style="left:${k / dmax * 100}%;top:${(j % 2) ? -22 : 0}px">${k}${e.n > 1 ? ' ×' + e.n : ''}</span>`).join('');
+  return `<p class="plead">${known.length} timed ${known.length === 1 ? 'motion uses' : 'motions use'} ${curves.size} ${curves.size === 1 ? 'curve' : 'curves'}.</p>
+    <div class="curves">${curveHTML}</div>
+    ${fold('Durations against Material 3’s duration bands', `<p>${esc(bandTxt)}.</p><div class="dots"><div class="bands">${zones}</div>${durDots}</div>`)}`;
+}
+function aboutHTML() {
+  const vp = viewportOf();
+  const rep = L.source.kind === 'archive' ? `A saved copy of the site${L.take.misses ? ` (${L.take.misses} ${L.take.misses === 1 ? 'file was' : 'files were'} missing)` : ''}` : 'A local page';
+  const fact = (v, l) => `<div class="fact"><div class="fv">${esc(v)}</div><div class="fl">${esc(l)}</div></div>`;
+  const what = L.action.do === 'load' ? 'The page loading' : L.action.do === 'scroll' ? 'Scrolling down the page' : L.action.do === 'hover' ? 'Moving the pointer over an element' : L.action.do === 'click' ? 'A click' : cap1(String(L.action.do || 'unknown'));
+  return `<div class="facts">${fact(whenOf(L) || 'Unknown', 'Recorded')}${fact(what, 'What was recorded')}${fact(`${vp.width} × ${vp.height}`, 'Screen size, px')}${fact(`${L.take.frames} at ${L.take.rate} fps`, 'Frames')}${fact(rep, 'Played from')}</div>
+    <p class="plead" style="margin:24px 0 0">${esc(summaryOf(L))}</p>
+    ${fold('How the replay on Overview is drawn', `<p class="muted" style="max-width:72ch">${L.screens && (L.screens.before || L.screens.viewport) ? `The replay is the first screen, drawn on ${L.screens.before ? 'a picture of the page at rest before the ' + recWord() : 'a picture of the page at the end of the recording'}.` : 'The replay is the first screen on the page’s background colour.'} Each outlined box is a moving element: its own pixels from the end of the recording, moved from where it started to where it ended on the measured curve. A group of alike elements shows the picture of the whole group in place, appearing while the group moves, with its first member’s box moving on top. Anything outside the first screen is cut off.</p>`)}`;
+}
+function othersHTML() {
+  if (!L.others.length) return '';
+  return `<p class="plead">${L.others.length} smaller ${L.others.length === 1 ? 'thing also moved' : 'things also moved'}, ${pct(weightOthers(), 1)} of the moving area together. REVA did not measure their timing.</p>
+    ${(() => { const share = w => (w || 0) < .001 ? 'under 0.1 %' : pct(w, 1); const li = o => `<li><b>${esc(humanName(o.desc, o.box))}</b> <span class="muted">${share(o.weightShare)}</span><br><span class="faint" style="font-size:15px">${esc(o.selector)}</span></li>`;
+      return `<ul class="mv">${L.others.slice(0, 6).map(li).join('')}</ul>${L.others.length > 6 ? fold(`${L.others.length - 6} more`, `<ul class="mv">${L.others.slice(6).map(li).join('')}</ul>`) : ''}`; })()}`;
+}
+function renderTimeline() {
+  const el = $('#timeline');
+  const clock = M.length && !M.every(m => m.drive);
+  el.innerHTML = `<div class="vin">${hd('h1', 'h-timeline', 'Timeline', 'ptitle')}
+  ${M.length ? `<p class="lead">Every motion on one clock, in the order it starts. Pick a row to open it.</p>
+  ${clock && !REDUCED ? `<div class="tl-ctl"><button class="btn pri" id="tplay" type="button">Play</button><span class="ms" id="tnow2" style="text-align:left">0.00 s</span></div>` : ''}
+  <div class="panel">${timelineHTML()}
+  <div class="legend" aria-label="How to read the bars">${legendHTML()}</div></div>
+  <div class="panel" id="timeline-curves"><h2 class="sub2">Curves and durations</h2>
+  ${systemHTML()}</div>` : '<p class="lead">No element motion was sampled, so there is nothing to put on a clock.</p>'}</div>`;
+  el.addEventListener('click', e => {
+    const t = e.target.closest('.crow[data-i]'); if (!t) return;
+    go('motion/' + t.dataset.i);
+  });
+  const tp = $('#tplay'); if (tp) tp.addEventListener('click', () => { if (S.playing) stopPlay(); else { if (S.T >= AX) setT(0); startPlay(); } });
+}
+
+/* what the page runs: read from the page itself where possible (GSAP, Lenis, Swiper / Lottie / Locomotive / anime.js),
+   then what the code scan found. Lines that were read are shown as they are; the long lists open on demand. */
+const tagless = t => String(t || '').replace(/ \[(exact|fitted|measured|derived|unknown)\]/g, '');
+function readHTML() {
+  const R = L.read; if (!R) return { found: '', notRead: '' };
+  const out = [], notRead = [];
+  const g = R.gsap;
+  if (g && g.found) {
+    const sm = g.summary || {}, E = g.entries || [];
+    const bits = [];
+    if (sm.matched) bits.push(`${sm.matched} ${sm.matched === 1 ? 'matches' : 'match'} the fit`);
+    if (sm.partlyChecked) bits.push(`${sm.partlyChecked} partly checked`);
+    if (sm.disagrees) bits.push(`${sm.disagrees} ${sm.disagrees === 1 ? 'disagrees' : 'disagree'}`);
+    if (sm.noFit) bits.push(`${sm.noFit} had no recorded motion to compare with`);
+    const dis = E.filter(e => e.status === 'disagrees'), ok = E.filter(e => e.status === 'matched' || e.status === 'partly-checked');
+    const seen = new Map(); for (const e of ok) { const k = (e.desc || '') + '|' + e.text; const x = seen.get(k) || { e, n: 0 }; x.n++; seen.set(k, x); }
+    const okRows = [...seen.values()];
+    const seen2 = new Map(); for (const e of dis) { const k = (e.desc || '') + '|' + e.text; const x = seen2.get(k) || { e, n: 0 }; x.n++; seen2.set(k, x); }
+    const disRows = [...seen2.values()];
+    const li = (e, n) => `<li><b>${esc(humanName(e.desc))}</b> ${esc(tagless(e.text).replace(/^GSAP declared/, '').replace(/^ \(/, '(').replace(/^: /, ''))}${n > 1 ? ` <span class="muted">× ${n}</span>` : ''}</li>`;
+    const all = `<div class="scroll"><table class="tbl"><thead><tr><th>Element</th><th>Property</th><th>Declared</th><th>Against the fit</th></tr></thead><tbody>${E.map(e => `<tr><td>${esc(e.desc)}</td><td class="v">${esc(e.prop || '')}</td><td>${esc(tagless(e.text).replace(/^GSAP declared( \([^)]*\))?: /, '').split(': disagrees')[0])}</td><td>${e.status === 'disagrees' ? `<span class="warn">disagrees</span>${e.fitted ? `, fit ${esc(e.fitted.durationMs != null ? nf(e.fitted.durationMs, 0) + ' ms' : '')}${e.fitted.ease ? ', ' + esc(e.fitted.ease) : ''}` : ''}` : esc(e.status === 'noFit' || e.status === 'no-fit' ? 'nothing recorded to compare' : e.status || '')}</td></tr>`).join('')}</tbody></table></div>`;
+    out.push(`<div class="rd"><h3 class="gname" style="font-size:20px" id="lib-gsap">GSAP${g.version ? ' ' + esc(g.version) : ''}</h3>
+      <p>Read from the page${g.via ? ` (<code>${esc(g.via)}</code>)` : ''}: ${nf(g.tweens || 0, 0)} tweens, ${nf(g.timelines || 0, 0)} timelines and ${nf(g.scrollTriggers || 0, 0)} ScrollTriggers${g.truncated ? ', the list cut at the probe’s cap' : ''}. Of its ${nf(sm.entries || E.length, 0)} declared ${(sm.entries || E.length) === 1 ? 'value' : 'values'}, compared with what REVA measured: ${esc(bits.join(', ') || 'none compared')}.</p>
+      ${okRows.length ? `<h4 class="gname">Declared values that match the recording</h4><ul class="rl">${okRows.slice(0, 8).map(x => li(x.e, x.n)).join('')}</ul>` : ''}
+      ${disRows.length ? `<h4 class="gname">Declared values that disagree with the recording</h4><ul class="rl">${disRows.slice(0, 6).map(x => li(x.e, x.n)).join('')}</ul>` : ''}
+      ${E.length ? fold(`All ${E.length} compared values${okRows.length > 8 || disRows.length > 6 ? ', including those not listed above' : ''}`, all) : ''}</div>`);
+  } else if (g) notRead.push(['GSAP', g.why]);
+  const l = R.lenis;
+  if (l && l.found) out.push(`<div class="rd"><h3 class="gname" style="font-size:20px" id="lib-lenis">Lenis${l.version ? ' ' + esc(l.version) : ''}</h3>
+      <p>${esc(tagless(l.text || 'Found on the page; its options were not readable.').replace(/^Lenis declared[^:]*: /, 'Read from the page: '))}${l.tauMs != null ? `. That is a time constant of ${nf(l.tauMs)} ms.` : '.'}</p>
+      ${l.compare ? `<p class="muted" style="margin-top:6px">${esc(cap1(l.compare))}.</p>` : ''}</div>`);
+  else if (l) notRead.push(['Lenis', l.why]);
+  const o = R.other;
+  if (o && o.found) out.push(`<div class="rd"><h3 class="gname" style="font-size:20px" id="lib-other">Sliders, Lottie and other players</h3><ul class="rl">${o.lines.map(t => `<li>${esc(tagless(t))}</li>`).join('')}</ul></div>`);
+  else if (o) notRead.push(['Swiper, Lottie, Locomotive Scroll, anime.js', o.why]);
+  const nr = notRead.length ? `<h2 class="sub2" id="lib-notread">What could not be read</h2><p class="plead">REVA tried to read these libraries’ own settings from the page. Where it could not, their motion is measured from the recorded frames instead.</p><ul class="rl">${notRead.map(x => `<li><b>${esc(x[0])}</b>${x[1] ? `: ${esc(x[1])}` : ''}</li>`).join('')}</ul>` : '';
+  return { found: out.join(''), notRead: nr };
+}
+function renderLibraries() {
+  const el = $('#libraries');
+  const rd = readHTML(), gl = glHTML();   // read values first, then the code scan; what could not be read comes last
+  const lb = L.libraries, names = lb && lb.list ? lb.list.map(x => x.name.replace(/\s*\(.*$/, '')) : [];
+  const R = L.read || {}, readNames = [R.gsap && R.gsap.found && 'GSAP', R.lenis && R.lenis.found && 'Lenis', R.other && R.other.found && 'sliders and players'].filter(Boolean);
+  const join = a => a.length > 1 ? a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1] : a[0];
+  const lead = (names.length ? `This page uses ${join(names)}.` : 'REVA found no motion library in this page’s code.') +
+    (!L.read ? '' : readNames.length ? ` REVA read the exact settings of ${join(readNames)} from the running page.` : ' None of them let REVA read their own settings, so their motion is measured from the recording instead.');
+  el.innerHTML = `<div class="vin">${hd('h1', 'h-libraries', 'Libraries', 'ptitle')}
+  <p class="lead">${esc(lead)}</p>
+  ${rd.found ? `<div class="panel"><h2 class="sub2" id="lib-read">Read from the page</h2><p class="plead">These values come straight from the libraries running on the page, so they are exact.</p>${rd.found}</div>` : ''}
+  <div class="panel"><h2 class="sub2" id="lib-scan">Found in the code</h2><p class="plead">The page’s scripts contain these libraries. Being in the code does not prove a library makes the motion you see.</p>${librariesHTML()}</div>
+  ${gl ? `<div class="panel"><h2 class="sub2" id="lib-webgl">WebGL</h2>${gl}</div>` : ''}
+  ${rd.notRead ? `<div class="panel">${rd.notRead}</div>` : ''}${!L.read ? '<p class="muted" style="margin-top:28px">This look did not try to read any library from the page.</p>' : ''}</div>`;
+}
+
+/* about this look: when and how it was recorded, what could not be settled, the smaller movers */
+function recordingHTML() {
+  const d = L.design || {}, lb = L.libraries;
+  const unk = M.filter(m => m.kind === 'unknown');
+  const gaps = d.gaps || [];
+  const act0 = L.action.do;
+  const mnot = [];
+  if (L.fit.flags.length) L.fit.flags.forEach(f => mnot.push(`Motion: ${f}`));
+  unk.forEach(m => mnot.push(`${m.name} moved but is not fitted. ${cap1(m.reason || '')}`.trim()));
+  if (L.take.misses) mnot.push(`${L.take.misses} request${L.take.misses === 1 ? '' : 's'} the saved copy did not have, so the replay may differ slightly from the live site.`);
+  if (lb && lb.scanned && lb.scanned.skipped) mnot.push(`${lb.scanned.skipped} scripts were not read (${lb.scanned.skippedReason}); a library not listed is not proven absent.`);
+  const notLoaded = d.fonts ? (d.fonts.families || []).filter(f => f.loaded === false) : [];
+  if (notLoaded.length) mnot.push(`${notLoaded.map(f => f.family).join(' and ')} did not load, so type was measured in a fallback.`);
+  mnot.push(act0 === 'scroll' ? 'Pointer-linked motion: this look recorded the scroll only.' : act0 === 'hover' || act0 === 'click' ? 'Scroll-linked motion: this look recorded the pointer only.' : 'Scroll-linked and pointer-linked motion: this look recorded the page load only.');
+  if (L.pointerDriven) mnot.push(`${L.pointerDriven} ${L.pointerDriven === 1 ? 'element follows' : 'elements follow'} the pointer and ${L.pointerDriven === 1 ? 'was' : 'were'} left out.`);
+  if (L.alreadyMoving) mnot.push(`${L.alreadyMoving} ${L.alreadyMoving === 1 ? 'element was' : 'elements were'} already moving before the ${act0} and ${L.alreadyMoving === 1 ? 'was' : 'were'} left out.`);
+  for (const x of (L.screens && L.screens.dropped) || []) mnot.push(cap1(x) + '.');
+  const gapHTML = gaps.map(g => `<li>${esc(g.what)}${g.count > 1 ? ` <span class="faint">(${g.count})</span>` : ''}${g.probe ? ` <span class="muted">To resolve: ${esc(g.probe)}.</span>` : ''}</li>`).join('');
+  const warn = [...(L.warnings || []), ...(L.errors || []).map(e => typeof e === 'string' ? e : (e && (e.message || e.detail)) || JSON.stringify(e))];
+  const oth = othersHTML();
+  return `<div class="vin">${hd('h1', 'h-recording', 'Recording', 'ptitle')}
+    <p class="lead">When and how this look was made, what it could not settle, and the smaller things that also moved.</p>
+    <div class="panel">${aboutHTML()}</div>
+    <div class="panel"><h2 class="sub2" id="recording-unknowns">What REVA could not settle</h2>
+    <div class="nm"><ul>${mnot.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>
+    ${gaps.length ? fold(`${gaps.length} design ${gaps.length === 1 ? 'value' : 'values'} REVA could not settle`, `<div class="nm"><ul>${gapHTML}</ul></div>`) : ''}</div>
+    ${warn.length ? `<div class="panel"><h2 class="sub2" id="recording-warnings">Warnings</h2><div class="nm"><ul>${warn.map(w => `<li>${esc(w)}</li>`).join('')}</ul></div></div>` : ''}
+    ${oth ? `<div class="panel"><h2 class="sub2" id="recording-others">Smaller movers</h2>${oth}</div>` : ''}
+    <p class="foot">Every number on this card comes from one REVA look; the page itself estimates nothing.</p></div>`;
+}
+function renderRecording() { $('#recording').innerHTML = recordingHTML(); }
+const fold = (title, body) => `<details class="fold"><summary>${title}</summary>${body}</details>`;
+
+function thumb(m) {
+  const W = 76, H = 44, pad = 6, n = 60, span = m.plotSpan - m.lead;
+  const ymax = Math.max(1.05, (m.peak || 1) * 1.05), ymin = -0.02;
+  const pts = []; for (let k = 0; k <= n; k++) { const t = span * k / n; const p = m.p(t); pts.push([pad + (W - 2 * pad) * k / n, H - pad - (H - 2 * pad) * (p - ymin) / (ymax - ymin)]); }
+  return `<svg viewBox="0 0 ${W} ${H}" aria-hidden="true"><polyline points="${ptsStr(pts)}" fill="none" stroke="currentColor" stroke-width="1.8" ${m.cert === 'fitted' ? 'stroke-dasharray="5 3"' : ''}/></svg>`;
+}
+
+/* ---------- global replay ---------- */
+function setT(T) {
+  S.T = Math.max(0, Math.min(AX, T));
+  const sc = $('#scrub'); if (sc) sc.value = S.T;
+  for (const tn of [$('#tnow'), $('#tnow2')]) if (tn) tn.textContent = (S.T / 1000).toFixed(2) + ' s';
+  const pl = $('#pline'); if (pl) pl.style.left = (S.T / AX * 100) + '%';
+  const vp = viewportOf();
+  for (const m of M) {
+    const b = $(`.mb[data-i="${m.i}"]`); if (!b) continue;
+    let st = '';
+    if (m.t0 != null) { if (S.T >= m.startAbs && S.T < m.endAbs) st = 'live'; else if (S.T >= m.endAbs) st = 'done'; }
+    else if (m.winS != null) { if (S.T >= m.winS && S.T < m.winE) st = 'live'; else if (S.T >= m.winE) st = 'done'; }
+    else st = S.T > 0 && S.T < AX ? 'live' : '';
+    b.classList.toggle('live', st === 'live'); b.classList.toggle('done', st === 'done');
+    const g = geom(m), pr = progAt(m, S.T); if (g) placeBox(b, g, pr, vp);
+    // the element's own opacity and rotation replay too (box position and size come from the measured start and end boxes)
+    const op = m.ft['ren:opacity'], rz = m.ft['ren:rz'];
+    b.style.opacity = op ? String(Math.max(0, Math.min(1, op.from + (op.to - op.from) * pr))) : '';
+    b.style.transform = rz ? `rotate(${rz.from + (rz.to - rz.from) * pr}deg)` : '';
+  }
+  // group backdrops appear over the group's own window: from the first member's onset to the last member's stop
+  for (const bd of $$('.mini .bd')) {
+    const m = M[+bd.dataset.b], gp = m.raw.position && m.raw.position.group;
+    const a = gp && gp.start && gp.start.t != null ? gp.start.t : (m.startAbs != null ? m.startAbs : 0), z = gp && gp.end && gp.end.t != null ? gp.end.t : (m.endAbs != null ? m.endAbs : AX);
+    bd.style.opacity = String(Math.max(0, Math.min(1, (S.T - a) / Math.max(1, z - a))));
+  }
+  // patches over a screen background: on the end screen the element's end place is covered until it arrives there; on the
+  // rest screen its start place is covered once it has left
+  for (const pt of $$('.mini .pt')) {
+    const m = M[+pt.dataset.p];
+    const a = m.startAbs != null ? m.startAbs : m.winS != null ? m.winS : 0, z = m.endAbs != null ? m.endAbs : m.winE != null ? m.winE : AX;
+    pt.style.opacity = OV.bg === 'end' ? (S.T < z ? '1' : '0') : (S.T >= a ? '1' : '0');
+  }
+}
+
+function tick(now) {
+  if (!S.playing) return;
+  const dt = now - S.last; S.last = now;
+  setT(S.T + dt);
+  if (S.T >= AX) { stopPlay(); return; }
+  S.raf = requestAnimationFrame(tick);
+}
+function startPlay() {
+  if (REDUCED) return;
+  if (S.T >= AX) setT(0);
+  S.playing = true; S.last = performance.now(); for (const pb of [$('#play'), $('#tplay')]) if (pb) pb.textContent = 'Pause';
+  S.raf = requestAnimationFrame(tick);
+}
+function stopPlay() { S.playing = false; cancelAnimationFrame(S.raf); for (const b of [$('#play'), $('#tplay')]) if (b) b.textContent = S.T >= AX ? 'Replay' : 'Play'; }
+function togglePlay() { S.playing ? stopPlay() : startPlay(); }
+
+/* ---------- motion section ---------- */
+function weightOthers() { return L.others.reduce((a, o) => a + (o.weightShare || 0), 0); }
+function factOf(m) {
+  // the two most visible changes: where it goes first, then size, then fading, then the rest
+  const pri = p => /^(rises|drops|moves|shifts|scrolls)/.test(p) ? 0 : /^(widens|narrows|grows|shrinks|scales|changes size)/.test(p) ? 1 : /^fades/.test(p) ? 2 : 3;
+  const top2 = m.phrases.slice().sort((a, b) => pri(a) - pri(b)).slice(0, 2);
+  const P = top2.length ? cap1(top2.join(' and ')) : 'Moves';
+  if (m.raw.kind === 'gl') return m.know ? 'Animated scene that never comes to rest' : `Animated scene${m.dur ? ', ' + secs(m.dur) : ''}`;
+  if ((m.kind === 'declared' || m.kind === 'tween') && !m.know) return `${P}, ${secs(m.dur)}`;
+  if (m.kind === 'spring') return `${P}, springs in ${secs(m.settle)}`;
+  if (m.kind === 'step') return `${m.phrases[0] ? P : 'Changes'} instantly`;
+  if (m.kind === 'smooth') return `${P}, eases after ${m.drive === 'pointer' ? 'the pointer' : 'the scroll'}`;
+  if (m.kind === 'map') return `${P} with ${m.drive === 'pointer' ? 'the pointer' : m.drive === 'wheel' ? 'the wheel' : 'the scroll'}`;
+  if (m.kind === 'pin') return 'Stays put while the page scrolls';
+  if (m.kind === 'periodic') return `Repeats${m.period != null ? ' every ' + secs(m.period) : ''}`;
+  return `${P}, timing not measured`;
+}
+function renderMotion() {
+  const el = $('#motion');
+  const items = M.map(m => {
+    const g = geom(m), img = g && g.crop;
+    const th = cropThumb(img, 44, 32, 'thumb');
+    const gl = m.raw.isGl || m.raw.kind === 'gl';
+    const tip = `${factOf(m)}${gl ? ', inside a WebGL canvas' : `, ${pct(m.weight, m.weight < .1 ? 1 : 0)} of the moving area`}${rankWhy(m) ? '. ' + rankWhy(m) : ''}`;
+    return `<button class="mi" type="button" role="tab" aria-selected="${m.i === S.sel}" aria-controls="mp-${m.i}" id="mt-${m.i}" data-m="${m.i}" title="${esc(tip)}" tabindex="${m.i === S.sel ? 0 : -1}">${th}<span class="nm">${esc(m.name)}${m.count > 1 ? ` <span class="ct">× ${m.count}</span>` : ''}</span></button>`;
+  }).join('');
+  const arrow = d => `<svg viewBox="0 0 18 18" aria-hidden="true"><path d="${d}" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  el.innerHTML = `<div class="vin">
+    ${M.length ? `<div class="mtop"><h1 id="h-motion" class="of" tabindex="-1">Motion <span class="faint" id="mof">1 of ${M.length}</span></h1>
+      ${M.length > 1 ? `<span class="pn"><button type="button" class="btn icon" id="mprev" aria-label="Previous motion">${arrow('M11 4 6 9l5 5')}</button><button type="button" class="btn icon" id="mnext" aria-label="Next motion">${arrow('M7 4l5 5-5 5')}</button></span>` : ''}</div>
+    <div class="mlist" role="tablist" aria-label="All motions">${items}</div>
+    <div id="mpanels">${M.map(panelHTML).join('')}</div>
+    ${(L.declaredOnly || []).length ? `<div class="panel" style="margin-top:64px"><h2 class="sub2" id="declared-changes">Colour and shadow changes the page declares</h2>${declaredHTML(false)}</div>` : ''}` : `${hd('h1', 'h-motion', 'Motion', 'ptitle')}<p class="lead">No element was sampled moving in this recording.${(L.declaredOnly || []).length ? ' What the page itself declares is listed below.' : ''}</p>${declaredHTML(true)}`}</div>`;
+  const tabs = $$('.mi', el);
+  tabs.forEach(b => b.addEventListener('click', () => go('motion/' + b.dataset.m)));
+  const step = d => go('motion/' + ((S.sel + d + M.length) % M.length));
+  const pv = $('#mprev', el), nx = $('#mnext', el);
+  if (pv) pv.addEventListener('click', () => step(-1));
+  if (nx) nx.addEventListener('click', () => step(1));
+  // arrow keys move between motions (tab pattern)
+  const list = $('.mlist', el);
+  if (list) list.addEventListener('keydown', e => {
+    const k = tabs.findIndex(b => b === document.activeElement); if (k < 0) return;
+    const to = e.key === 'ArrowRight' ? k + 1 : e.key === 'ArrowLeft' ? k - 1 : e.key === 'Home' ? 0 : e.key === 'End' ? tabs.length - 1 : null;
+    if (to == null) return; e.preventDefault();
+    const b = tabs[(to + tabs.length) % tabs.length]; b.focus(); go('motion/' + b.dataset.m);
+  });
+  $$('.mpanel', el).forEach(p => { p.addEventListener('beforematch', () => { select(+p.dataset.i, false, true); history.replaceState(null, '', '#motion/' + p.dataset.i); CUR.sub = p.dataset.i; }); initPanel(M[+p.dataset.i], p); });
+}
+/* WebGL light: shaders (source collapsed by default), camera, clocks and what was not read; uniform motion is in the list above */
+function glHTML() {
+  const G = L.gl; if (!G) return '';
+  const lab = t => `<span class="muted">(${esc(t)})</span>`;
+  const notes = (G.lines || []).map(l => `<li>${esc(String(l.text).replace(/^WebGL /, '').replace(/ \[(measured|derived|fitted|unknown)\]/g, ''))} ${lab(l.label)}</li>`).join('');
+  const src = (x, what) => x && x.source != null ? `<details class="fold"><summary>${what} shader, ${x.lines} lines${x.truncated ? ' (cut at 200 kB)' : ''}</summary><pre class="glsrc"><code>${esc(x.source)}</code></pre></details>` : x && x.omitted ? `<p class="muted">${what} shader: ${esc(x.omitted)}</p>` : '';
+  const progs = (G.programs || []).map(p => `<details class="fold"><summary>Program p${p.id}${p.used ? '' : ' (not used during the take)'}: ${esc(p.summary || 'no known technique pattern')} ${lab('derived')}</summary>
+      <p class="muted">Program hash <code>${esc(p.hash)}</code></p>
+      ${(p.technique || []).length ? `<ul>${p.technique.map(t => `<li>${esc(t.text)}${t.evidence ? ` <code class="snip">${esc(t.evidence)}</code>` : ''}</li>`).join('')}</ul>` : ''}
+      ${(p.uniforms || []).length ? `<p>Uniforms: <code>${(p.uniforms || []).map(u => esc(u.type + ' ' + u.name + (u.size > 1 ? '[' + u.size + ']' : ''))).join(', ')}</code></p>` : ''}
+      ${src(p.vertex, 'Vertex')}${src(p.fragment, 'Fragment')}</details>`).join('');
+  return `<div class="glsec" id="h-gl">
+    <p>Read from the page’s WebGL calls: shader sources as linked, the uniforms it sets and the camera matrices. Technique notes are patterns in the source (derived), not what the author meant.</p>
+    ${notes ? `<ul>${notes}</ul>` : ''}${progs}</div>`;
+}
+/* colour, background and shadow changes the page declares: exact timing and end values, not sampled frame by frame */
+const COLOUR = /^(#[0-9a-f]{3,8}|rgba?\(\s*[\d.\s,%\/]+\)|hsla?\(\s*[\d.\s,%\/deg]+\))$/i;
+function declaredHTML(withHead) {
+  const D = L.declaredOnly || [];
+  if (!D.length) return '';
+  const rows = D.map((d, k) => {
+    const kind = { 'css-transition': 'CSS transition', 'css-animation': 'CSS animation', waapi: 'Web Animation' }[d.kind] || 'declared';
+    const bz = parseEasing(d.easing);
+    let plot = '';
+    if (bz) {
+      const f = bezierFn(...bz), W = 120, H = 56, pts = [];
+      for (let j = 0; j <= 40; j++) { const x = j / 40; pts.push(`${nf(6 + (W - 12) * x, 1)},${nf(H - 8 - (H - 16) * f(x), 1)}`); }
+      plot = `<svg class="dplot" data-plot="declared" viewBox="0 0 ${W} ${H}" aria-hidden="true"><line class="ref" x1="6" y1="${H - 8}" x2="${W - 6}" y2="8"/><polyline class="curve-line" points="${pts.join(' ')}"/></svg>`;
+    }
+    const props = (d.properties || []).map(p => {
+      const sw = v => COLOUR.test(String(v || '').trim()) ? `<i class="swc" style="background:${esc(String(v).trim())}"></i>` : '';
+      const val = v => v == null ? '<span class="muted">not read</span>' : `${sw(v)}<code>${esc(v)}</code>`;
+      return `<li>${esc(p.word || p.prop)} ${val(p.from)} <span aria-hidden="true">→</span><span class="sr"> to </span> ${val(p.to)}</li>`;
+    }).join('');
+    const bits = [`${ms(d.durationMs)}`, d.delayMs ? `after ${ms(d.delayMs)}` : '', d.easing ? esc(d.easing) : ''].filter(Boolean);
+    return `<li class="dec"><div class="dhead"><b>${esc(humanName(d.desc))}</b> <span class="muted">${kind}${d.t != null ? ', from ' + ms(d.t) : ''}</span></div>
+      <div class="decbody">${plot}<div><div>${bits.join(', ')} <span class="mk k-exact cert">exact</span></div><ul class="dprops">${props}</ul></div></div></li>`;
+  }).join('');
+  return `<div class="declared" id="declared">${withHead ? hd('h3', 'declared-changes', 'Colour and shadow changes the page declares', 'sub') : ''}
+    <p class="muted" style="margin-top:8px">Timing, easing and end values are read from the page's own CSS or Web Animations. The colour between the two end values is not sampled frame by frame.</p>
+    <ul class="declist">${rows}</ul></div>`;
+}
+function select(i, scroll, fromFind) {
+  if (scroll) { go('motion/' + i); return; }
+  S.sel = i;
+  $$('.mi').forEach(b => { const on = +b.dataset.m === i; b.setAttribute('aria-selected', String(on)); b.tabIndex = on ? 0 : -1; });
+  $$('.mpanel').forEach(p => {
+    if (+p.dataset.i === i) { p.removeAttribute('hidden'); if (!REDUCED && !fromFind) { p.classList.remove('enter'); void p.offsetWidth; p.classList.add('enter'); } }
+    else p.setAttribute('hidden', 'until-found');
+  });
+  $$('.mb').forEach(b => b.classList.toggle('sel', +b.dataset.i === i));
+  const of = $('#mof'); if (of) of.textContent = `${i + 1} of ${M.length}`;
+  const tab = $('#mt-' + i), list = tab && tab.parentElement;
+  if (tab && list) { const l = tab.offsetLeft - list.offsetLeft, r = l + tab.offsetWidth; if (l < list.scrollLeft || r > list.scrollLeft + list.clientWidth) list.scrollLeft = Math.max(0, l - 24); }
+  for (const k in panelPlayers) panelPlayers[k].pause();
+  if (panelPlayers[i]) panelPlayers[i].reset();
+}
+function posLine(m) {
+  const g = geom(m); if (!g) return '';
+  const s = g.s, e = g.e, r = n => nf(n, 0);
+  const dx = e.x - s.x, dy = e.y - s.y, dir = [];
+  if (Math.abs(dy) >= 1) dir.push(`${r(Math.abs(dy))} px ${dy < 0 ? 'up' : 'down'}`);
+  if (Math.abs(dx) >= 1) dir.push(`${r(Math.abs(dx))} px ${dx < 0 ? 'left' : 'right'}`);
+  const grp = g.p && g.p.group ? `a group of ${g.p.group.members} alike elements, ` : '';
+  const size = g.grew ? `${r(s.w)} × ${r(s.h)} growing to ${r(e.w)} × ${r(e.h)} px` : `${r(e.w)} × ${r(e.h)} px`;
+  const clip = g.crop && /partial/.test(g.crop.visible || '') ? ' Part of it lies below the first screen.' : '';
+  return `${cap1(grp)}${grp ? 'starting' : 'Starts'} at x ${r(s.x)}, y ${r(s.y)}, ${size}${dir.length ? ', and moves ' + dir.join(' and ') : '; it stays where it is'}.${clip}`;
+}
+
+/* numbers: the big value, its name with an exact / fitted mark; what it means is one click away */
+function keyNumbers(m) {
+  const means = [];
+  // a tile is the number, its unit and a plain name; what it means and its interval are listed under Details
+  const cell = (big, unitS, lab, cmp, why, fitCi) => {
+    if (cmp || fitCi) means.push([lab, (cmp || '') + (fitCi ? ` <span class="muted">(${esc(fitCi)})</span>` : '')]);
+    return `<div class="num"><div class="big">${big}<span class="u">${esc(big === '—' ? '' : unitS || '')}</span></div><div class="lab">${esc(lab)}</div>${why ? `<div class="why">${esc(why)}</div>` : ''}</div>`;
+  };
+  return { html: keyCells(m, cell), means };
+}
+function keyCells(m, cell) {
+  const p = m.rec && m.rec.model && m.rec.model.params || {};
+  if (m.raw && m.raw.kind === 'gl') {
+    const cov = (/(\d+(?:\.\d+)?) % of the screen/.exec(m.desc || '') || [])[1];
+    const seen = (/over the ([\d.]+) s seen/.exec(m.line.text || '') || [])[1];
+    const unis = [...new Set(m.channels.filter(c => /^gl:/.test(c)).map(c => c.slice(3)))];
+    return (cov ? cell(cov, '%', 'Of the screen', 'How much of the first screen the canvas covers.', '', null) : '') +
+      (seen ? cell(nf(+seen, 1), 's', 'Moving, never at rest', 'It was still moving when the recording ended, so it loops or runs longer than REVA watched.', '', null) : '') +
+      cell(String(unis.length), unis.length === 1 ? 'value' : 'values', 'Read from the scene', `Numbers the page sends to the graphics card every frame${unis.length ? ': ' + esc(unis.join(', ')) : ''}.`, '', null);
+  }
+  if (m.pieces) {
+    return cell(nf(m.dur), 'ms', 'Total duration', `${m.pieces} pieces in a row; the target changed mid-flight.`, '', null, true) +
+      cell(nf(m.t0), 'ms', 'Starts at', startsCaption(m), '', null, true) +
+      cell(String(m.pieces), '', m.nRamp ? 'Pieces' : 'Curves', `${m.nRamp && m.nBez ? 'Each is a cubic Bézier curve or a straight ramp' : m.nRamp ? 'Each is a straight ramp' : 'Each is a cubic Bézier'}; the table below lists them.`, '', null, true);
+  }
+  if (m.kind === 'declared' || m.kind === 'tween') {
+    const isFit = m.kind === 'tween';
+    const band = MATERIAL.find(b => m.dur >= b[1] - 25 && m.dur <= b[2] + 25);
+    const c1 = band ? `Material 3’s <b>${band[0]}</b> band (${band[1]}–${band[2]} ms); most UI runs 150–300 ms.` : (m.dur > 1000 ? 'Longer than any Material 3 token (1000 ms); most UI runs 150–300 ms.' : 'Between Material 3’s duration tokens; most UI runs 150–300 ms.');
+    const c2 = m.kind === 'declared' && m.delay ? `Includes a declared ${ms(m.delay)} delay. ${startsCaption(m)}` : startsCaption(m);
+    const half = m.f ? bisectHalf(m.f) : null, cssHalf = bisectHalf(bezierFn(...KEYWORDS.ease));
+    const c3 = half == null ? '' : `When it has covered half its travel. CSS <code>ease</code> gets there at ${pct(cssHalf, 0)} of the time, a straight line at 50 %.`;
+    return cell(nf(m.dur), 'ms', 'Duration', c1, '', ciText(p.D, 'ms'), isFit, isFit ? 'fitted' : 'exact') +
+      cell(nf(m.t0, m.t0 >= 100 ? 0 : 1), 'ms', 'Starts at', c2, '', ciText(p.t0, 'ms'), isFit, isFit ? 'fitted' : '') +
+      (half == null ? cell('—', '', 'Half-way after start', '', 'Not shown: the easing was not identified.', null, false) : cell(nf(half * m.dur), 'ms', 'Half-way after start', c3, '', null, false, ''));
+  }
+  if (m.kind === 'smooth') {
+    return cell(nf(m.tau, 1), 'ms', 'Time constant τ', 'Each moment it closes part of the gap to its target; 63 % of a jump is covered after τ.', '', ciText(p.tau, 'ms'), true) +
+      cell(nf(m.len), 'ms', 'Within 1 % after', 'About 4.6 time constants.', '', null, true) +
+      (m.lerp60 != null ? cell(nf(m.lerp60, 3), '', 'Per 60 Hz frame', 'The same smoothing written as a lerp factor per frame (0.1 is a common default).', '', null, true) : '');
+  }
+  if (m.kind === 'map' || m.kind === 'pin') {
+    if (m.know) return cell('—', '', 'Range', '', 'Not measured: ' + (m.reason || 'the range was not reached'), null, false);
+    const unit = m.unit;
+    const rngUnk = m.s0Unk || m.s1Unk;
+    return (rngUnk ? cell('—', '', 'Range', '', unkWhy(m.s0Unk || m.s1Unk), null, false) : cell(nf(m.s1 - m.s0, 0), unit, m.kind === 'pin' ? 'Held for' : 'Range', m.kind === 'pin' ? 'How far the page scrolls while it stays in place.' : 'How far the input travels while it moves.', '', null, true)) +
+      (m.s0Unk ? cell('—', '', 'Starts at', '', unkWhy(m.s0Unk), null, false) : cell(nf(m.s0, 0), unit, 'Starts at', m.drive === 'pointer' ? 'Pointer position when it begins to move.' : m.drive === 'wheel' ? 'Summed wheel input when it begins to move.' : 'Page scroll position when it begins to move.', m.pinDerived ? 'Taken from the held distance; the take did not reach the edge.' : '', null, true)) +
+      (m.mapFrom != null ? cell(`${nf(m.mapFrom)} → ${nf(m.mapTo)}`, '', 'Value over the range', 'Start and end value of the property.', '', null, true) : '');
+  }
+  if (m.kind === 'step') {
+    return cell(m.t0 != null ? nf(m.t0, 1) : '—', m.t0 != null ? 'ms' : '', 'Changes at', 'Between two recorded frames, so within one frame (' + nf(1000 / (L.take.rate || 120), 1) + ' ms).', '', null, true) +
+      cell('0', 'frames', 'In-between frames', 'It jumps; there is nothing to ease.', '', null, false, '');
+  }
+  if (m.kind === 'periodic') {
+    return cell(m.period != null ? nf(m.period, 0) : '—', m.period != null ? 'ms' : '', 'Repeats every', 'Measured repeat time; the shape of one cycle is not modelled.', '', null, true);
+  }
+  if (m.kind === 'spring') {
+    return cell(nf(m.overshoot, 0), '%', 'Overshoot', 'How far past the target it swings; ζ = 1 has none.', '', null, true) +
+      cell(nf(m.settle), 'ms', 'Settles in', 'Time until it stays within 1 % of the target; most UI runs 150–300 ms.', '', null, true) +
+      cell(nf(m.zeta, 2), '', 'Damping ratio ζ', 'Below 1 bounces, 1 is critical, above 1 is sluggish.', '', ciText(p.zeta, ''), true);
+  }
+  const win = m.winS != null ? `Its pixels changed between ${ms(m.winS)} and ${ms(m.winE)} (measured frames).` : '';
+  // no curve: when it changed (seen in the frames) and how much of the moving area it is; no empty duration tile
+  return cell(m.winS != null ? `${nf(m.winS / 1000, 2)}–${nf(m.winE / 1000, 2)}` : '—', m.winS != null ? 's' : '', 'When it changed', win, m.winS != null ? '' : 'Not measured: ' + (m.reason || 'no model'), null, false, '') +
+    (m.raw.isGl ? '' : m.weight >= .001 ? cell(pct(m.weight, 1).replace(' %', ''), '%', 'Of the moving area', 'How much of the moving area and time it takes.', '', null, false, '') : '');
+}
+function bisectHalf(f) { let lo = 0, hi = 1; for (let i = 0; i < 40; i++) { const m = (lo + hi) / 2; if (f(m) < .5) lo = m; else hi = m; } return (lo + hi) / 2; }
+
+/* all values */
+function allValues(m) {
+  if (!['declared', 'tween', 'spring', 'unknown'].includes(m.kind) || m.pieces || (m.know && m.kind === 'tween')) {
+    const pcv = ((m.rec && m.rec.model.pieces) || []).map((x, k) => { const q = x.params || {}; const rampP = x.family === 'ramp' || x.cls === 'ramp';
+      const span = Number.isFinite(q.t0) && Number.isFinite(q.D) ? `${esc(nf(q.t0, 0))} to ${esc(nf(q.t0 + q.D, 0))} ms, ` : '';
+      const shape = rampP ? `straight ramp${Number.isFinite(q.from) && Number.isFinite(q.to) ? `, ${esc(nf(q.from))} to ${esc(nf(q.to))}` : ''}` : isBz([q.x1, q.y1, q.x2, q.y2]) ? `cubic-bezier(${[q.x1, q.y1, q.x2, q.y2].map(n => nf(n, 3)).join(', ')})` : 'shape not read';
+      return `<tr><th scope="row">${rampP ? 'Ramp' : 'Curve'} ${k + 1}</th><td class="n">${span}${shape}</td><td class="u"></td><td class="c">fitted</td></tr>`; });
+    const vals = pcv.concat((m.line.values || []).map(v => `<tr><th scope="row">${esc(v.name)}</th><td class="n">${v.value == null ? '—' : esc(typeof v.value === 'number' ? nf(v.value, 3) : v.value)}</td><td class="u">${esc(v.unit || '')}</td><td class="c" ${v.reason ? `title="${esc(v.reason)}"` : ''}>${esc(v.label || '')}</td></tr>`));
+    const mv = m.channels.map(c => { const f = m.ft[c]; return `<tr><th scope="row">${esc(cap1(chWord(c)))}</th><td class="n">${f ? esc(nf(f.from) + ' → ' + nf(f.to)) : '—'}</td><td class="u"></td><td class="c">${f ? 'fitted' : 'unknown'}</td></tr>`; });
+    const r0 = m.rec;
+    const fq = [`<tr><th scope="row">Model</th><td class="n">${esc(r0 ? r0.model.family : '—')}</td><td class="u"></td><td class="c">${esc(m.cert)}</td></tr>`];
+    if (r0 && r0.attribution) fq.push(`<tr><th scope="row">Started by</th><td class="n">${esc(r0.attribution)}</td><td class="u"></td><td class="c">inferred</td></tr>`);
+    if (!m.raw.isGl) fq.push(`<tr><th scope="row">Weight share</th><td class="n">${esc(nf(m.weight * 100, 1))}</td><td class="u">%</td><td class="c">derived</td></tr>`);
+    const tb = (cap, rows) => rows.length ? `<table class="vals"><caption>${cap}</caption><tbody>${rows.join('')}</tbody></table>` : '';
+    return tb('Values', vals) + tb('Movement', mv) + tb('Fit', fq);
+  }
+  const r = m.rec, p = (r && r.model.params) || {}, dv = (r && r.derived) || {}, fit = (r && r.fit) || {};
+  const row = (label, v, u, cert, ci) => {
+    const cellv = cert === 'fitted' ? fitSpan(esc(v), ci) : esc(v);
+    return `<tr><th scope="row">${esc(label)}</th><td class="n">${cellv}</td><td class="u">${esc(u || '')}</td><td class="c">${esc(cert || '')}</td></tr>`;
+  };
+  const dash = (label, reason) => `<tr><th scope="row">${esc(label)}</th><td class="n">—</td><td class="u"></td><td class="c" title="${esc(reason)}">unknown</td></tr>`;
+  const tim = [], mov = [], fq = [];
+  const tier = m.cert;
+  if (m.kind === 'unknown') {
+    tim.push(dash('Starts at', m.reason)); tim.push(dash('Duration', 'no curve fits this motion'));
+  } else {
+    tim.push(row('Starts at', nf(m.t0, 1), 'ms', tier, ciText(p.t0, 'ms')));
+    if (m.kind !== 'spring') {
+      if (m.delay) tim.push(row('Declared delay', nf(m.delay), 'ms', 'exact'));
+      tim.push(row('Duration', nf(m.dur), 'ms', tier, ciText(p.D, 'ms')));
+      tim.push(row('Easing', m.easeLabel, '', tier));
+      if (m.bz) tim.push(row('Bézier points', m.bz.map(n => nf(n, 3)).join(', '), '', tier));
+    } else {
+      tim.push(row('Settles in', nf(m.settle, 1), 'ms', 'fitted'));
+    }
+    for (const k of ['t10', 't50', 't90', 't99']) if (dv[k] != null) tim.push(row({ t10: 'Time to 10 % of travel', t50: 'Time to 50 %', t90: 'Time to 90 %', t99: 'Time to 99 %' }[k], nf(dv[k], 1), 'ms', 'derived'));
+  }
+  for (const c of m.channels) {
+    const f = m.ft[c]; const name = cap1(chWord(c));
+    mov.push(f ? row(`${name}, start to end`, `${nf(f.from)} → ${nf(f.to)}`, CH[c] && CH[c].k === 'opacity' ? '' : (CH[c] && (CH[c].k === 'tx' || CH[c].k === 'ty')) ? (f.u === '%' ? '%' : 'px') : '', 'fitted', null) : dash(`${name}, start to end`, 'start and end values were not read'));
+  }
+  if (m.kind === 'spring') {
+    mov.push(row('Overshoot', nf(m.overshoot, 2), '%', 'fitted'));
+    mov.push(row('Natural frequency ω', nf(m.omega, 2), 'rad/s', 'fitted', ciText(p.omega, 'rad/s')));
+    mov.push(row('Damping ratio ζ', nf(m.zeta, 3), '', 'fitted', ciText(p.zeta, '')));
+    mov.push(dash('Stiffness / damping (site’s own)', 'the integrator could not be identified from one recording'));
+  }
+  if (dv.peakVelocity != null && m.kind !== 'spring') mov.push(row('Peak speed', nf(dv.peakVelocity, 2), '× travel per s', 'derived'));
+  if (!m.raw.isGl) mov.push(row('Weight share', nf(m.weight * 100, 1), '%', 'derived'));
+  if (r) {
+    fq.push(row('Model', r.model.family, '', tier));
+    if (fit.n != null) fq.push(row('Frames fitted', String(fit.n), 'frames', 'measured'));
+    if (fit.rms != null) fq.push(row('Error, rms', fit.rms.toExponential(2), 'of travel', 'measured'));
+    if (fit.nrmse != null) fq.push(row('Error, normalised', fit.nrmse.toExponential(2), '', 'measured'));
+    if (r.runnerUp) fq.push(row('Runner-up model', r.runnerUp.family, '', 'measured'));
+    if (r.runnerUp && r.runnerUp.rms != null) fq.push(row('Runner-up error, rms', r.runnerUp.rms.toExponential(2), '', 'measured'));
+    if (r.attribution) fq.push(row('Started by', r.attribution, '', 'inferred'));
+  } else fq.push(dash('Fit', m.reason));
+  const tb = (cap, rows) => `<table class="vals"><caption>${cap}</caption><tbody>${rows.join('')}</tbody></table>`;
+  return tb('Timing', tim) + tb('Movement', mov) + tb('Fit quality', fq);
+}
+
+/* code: every library REVA exported for this motion; one with no code says why */
+const LIBNAME = { css: 'CSS', gsap: 'GSAP', motion: 'Motion', lenis: 'Lenis', waapi: 'Web Animations', raf: 'requestAnimationFrame', 'react-spring': 'React Spring' };
+function codeFor(m) {
+  const seen = new Set(['css', 'gsap', 'motion']);
+  for (const e of (m.raw.exports || [])) for (const x of e.exports || []) if (x.lib) seen.add(x.lib);
+  const order = Object.keys(LIBNAME);
+  const libs = [...seen].sort((a, b) => (order.indexOf(a) + 1 || 99) - (order.indexOf(b) + 1 || 99)).map(k => [k, LIBNAME[k] || k]);
+  const out = {}, why = {};
+  for (const [k] of libs) {
+    const blocks = [];
+    for (const e of (m.raw.exports || [])) {
+      for (const x of e.exports || []) {
+        if (x.lib !== k) continue;
+        if (!x.code) { if (!why[k]) why[k] = (x.match && x.match.why) || x.note || ''; continue; }
+        const body = x.code.replace(/^\/\* REVA:[^\n]*\*\/\n?/, '');
+        blocks.push({ ch: e.channel, body, acc: x.accuracy && x.accuracy.label, word: x.match && x.match.word, why: x.match && x.match.why, form: x.form });
+      }
+    }
+    out[k] = blocks;
+  }
+  return { libs, out, why };
+}
+/* plot */
+const PW = 640, PH = 268, PL = 44, PR = 24, PT = 18, PB = 52;
+function plotHTML(m) {
+  if (m.know) return knowHTML(m);
+  if (m.stag) return staggerPlot(m);
+  const span = m.plotSpan, ymax = Math.max(1.06, (m.peak || 1) * 1.1), ymin = -0.06;
+  const X = t => PL + (PW - PL - PR) * t / span, Y = p => PT + (PH - PT - PB) * (1 - (p - ymin) / (ymax - ymin));
+  const n = 160, pts = [];
+  for (let k = 0; k <= n; k++) { const tl = span * k / n; const p = tl < m.lead ? 0 : m.p(tl - m.lead); pts.push([Math.round(X(tl) * 10) / 10, Math.round(Y(p) * 10) / 10]); }
+  let s = `<svg class="plot" viewBox="0 0 ${PW} ${PH}" role="img" aria-label="${esc(m.name)}: progress against time" data-i="${m.i}">
+  <defs><pattern id="hatch-${m.i}" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" stroke="var(--line)" stroke-width="2"/></pattern></defs>`;
+  if (m.lead && !m.plain) s += `<rect x="${X(0)}" y="${PT}" width="${X(m.lead) - X(0)}" height="${PH - PT - PB}" fill="url(#hatch-${m.i})"/><text class="lbl" x="${(X(0) + X(m.lead)) / 2}" y="${PT + 12}" text-anchor="middle">waits ${nf(m.lead)} ms</text>`;
+  if (m.kind === 'spring') {
+    s += `<rect class="band" x="${X(0)}" y="${Math.min(Y(m.peak), Y(1))}" width="${PW - PL - PR}" height="${Math.abs(Y(1) - Y(m.peak))}"/><text class="lbl" x="${PW - PR}" y="${Y(m.peak) - 4}" text-anchor="end">overshoot ${nf(m.overshoot, 0)} %</text>`;
+  }
+  s += `<line class="axis" x1="${PL}" x2="${PW - PR}" y1="${Y(0)}" y2="${Y(0)}"/><line class="axis" x1="${PL}" x2="${PW - PR}" y1="${Y(1)}" y2="${Y(1)}"/>
+  <text x="${PL - 6}" y="${Y(0) + 4}" text-anchor="end">start</text><text x="${PL - 6}" y="${Y(1) + 4}" text-anchor="end">end</text>`;
+  if ((m.kind === 'tween' || m.kind === 'declared') && !m.curveUnknown && !m.pieces) s += `<line class="ref" x1="${X(m.lead)}" y1="${Y(0)}" x2="${X(m.lead + m.len)}" y2="${Y(1)}"/><text x="${X(m.lead + m.len * .62)}" y="${Y(.62) + 16}">straight line</text>`;
+  if (m.kind === 'spring') s += `<line x1="${X(m.settle)}" x2="${X(m.settle)}" y1="${PT}" y2="${PH - PB}" stroke="var(--ink)" stroke-dasharray="1 4" stroke-width="1.5"/><text class="lbl" x="${X(m.settle) + 5}" y="${Y(0) - 8}">settles ${nf(m.settle)} ms</text>`;
+  const ticks = niceTicks(span, m.axisOff);
+  s += ticks.map(t => `<line x1="${X(t)}" x2="${X(t)}" y1="${PH - PB}" y2="${PH - PB + 4}" stroke="var(--faint)"/><text x="${X(t)}" y="${PH - PB + 17}" text-anchor="middle">${nf(t + m.axisOff, 0)}</text>`).join('');
+  s += `<text x="${PW - PR}" y="${PH - 4}" text-anchor="end">${esc(m.axisLabel)}</text>`;
+  const s0Txt = m.s0Unk ? 'start not identified' : nf(m.s0), s0X = Math.max(X(m.lead), PL + 6 + s0Txt.length * 6.8);   // keep the label clear of the "start" axis label on the left
+  if (m.kind === 'map' || m.kind === 'pin') s += `<text class="lbl" x="${s0X}" y="${Y(0) - 8}" text-anchor="end">${s0Txt}</text><text class="lbl" x="${X(m.lead + m.len)}" y="${Y(1) + 15}">${m.s1Unk ? 'end not identified' : nf(m.s1)}</text><line x1="${X(m.lead)}" x2="${X(m.lead)}" y1="${PT}" y2="${PH - PB}" stroke="var(--faint)" stroke-dasharray="1 4"/><line x1="${X(m.lead + m.len)}" x2="${X(m.lead + m.len)}" y1="${PT}" y2="${PH - PB}" stroke="var(--faint)" stroke-dasharray="1 4"/>`;
+  for (const mk of (m.curveUnknown ? [] : (m.marks || [])).filter(q => Number.isFinite(q.t) && Number.isFinite(q.p))) s += `<circle cx="${X(mk.t)}" cy="${Y(mk.p)}" r="4.5" fill="var(--bg)" stroke="var(--ink)" stroke-width="1.6"/><text class="lbl" x="${X(mk.t) + 8}" y="${Y(mk.p) + 16}">${esc(mk.text)}</text>`;
+  if (m.curveUnknown) s += `<text class="lbl" x="${X(m.lead + m.len / 2)}" y="${Y(.5)}" text-anchor="middle">curve not drawn: the easing was not identified</text>`;
+  else s += `<polyline class="curve-line" points="${ptsStr(pts)}" ${m.cert === 'fitted' ? 'stroke-dasharray="7 5"' : ''}/>`;
+  s += `<line class="head" id="ph-${m.i}" x1="${X(0)}" x2="${X(0)}" y1="${PT}" y2="${PH - PB}"/>${m.curveUnknown ? '' : `<circle class="dotp" id="pd-${m.i}" r="5" cx="${X(0)}" cy="${Y(0)}"/>`}</svg>`;
+  return s;
+}
+
+/* what REVA knows when there is no curve */
+const REASONS = [
+  [/no family explains/i, 'Its frames do not follow any known motion curve closely enough, so REVA does not guess one.'],
+  [/canvas|webgl/i, 'This is drawn on a canvas or WebGL surface. It changes pixels, not element properties, so REVA can see that it moves but cannot read a curve from the page.'],
+  [/below.*noise|noise floor/i, 'The change is smaller than the noise of the measurement, so no curve can be told from it.'],
+  [/ambiguous/i, 'More than one model fits the frames equally well, so REVA does not pick one.'],
+  [/not settled/i, 'The motion had not finished when the recording ended.'],
+  [/scroll range|not fully reached/i, 'The recording did not scroll far enough to see the whole range, so the map is not stated.'],
+];
+function plainReason(t) {
+  const hit = REASONS.find(r => r[0].test(t || ''));
+  return hit ? hit[1] : (t ? cap1(String(t).replace(/\s*\(to resolve:[^)]*\)/, '').replace(/\s*\[unknown\]/g, '')) + (/[.!?]$/.test(t) ? '' : '.') : 'REVA saw this move but no model explains it.');
+}
+function knowHTML(m) {
+  const g = geom(m), cr = g && g.crop, ps = m.raw.position;
+  if (m.raw.kind === 'gl') {
+    const rd = (m.raw.lines || []).map(l => { const t = String(l.text || ''); const v = /^WebGL (.+?): (-?[\d.]+) → (-?[\d.]+)/.exec(t), seen = /over the ([\d.]+) s seen/.exec(t);
+      return v ? `${cap1(v[1].replace(/^uniform /, 'the value '))} went from ${v[2]} to ${v[3]}${seen ? ` in the ${nf(+seen[1], 1)} s REVA watched` : ''}.` : tagless(t).replace(/^WebGL /, '').replace(/^./, c => c.toUpperCase()) + (/[.]$/.test(t) ? '' : '.'); });
+    const still = m.line.kind === 'unsettled' || /still moving/i.test(m.line.text || '');
+    return `<div class="know" data-plot="know" role="group" aria-label="What REVA read from ${esc(m.name)}">
+    <h4>What REVA read from the scene</h4>
+    <dl><dt>Inside the scene</dt><dd>${rd.length > 1 ? `<ul>${rd.map(x => `<li>${esc(x)}</li>`).join('')}</ul>` : esc(rd[0] || 'No value inside the canvas was read.')}</dd>
+    <dt>Why there is no curve</dt><dd>${still ? 'It kept moving for the whole recording, so there is no start and end to fit a curve to.' : 'A canvas changes pixels, not element properties, so no curve can be read from the page itself.'}</dd>
+    <dt>Picture</dt><dd>${cr ? 'The still above is the canvas at the end of the recording, with the page drawn over it.' : 'No picture of the canvas was cut.'}</dd></dl></div>`;
+  }
+  const ws = ps && ps.start && ps.start.t, we = ps && ps.end && ps.end.t;
+  const rs = []; const add = t => { if (t) { const x = plainReason(t); if (!rs.includes(x)) rs.push(x); } };
+  add(m.reason);
+  (m.raw.unknowns || []).forEach(u => add(u.reason));
+  (m.raw.records || []).forEach(r => (r.unknowns || []).forEach(u => add(u.reason)));
+  const chs = m.channels.length ? m.channels : (m.raw.unknowns || []).map(u => u.channel).filter(Boolean);
+  const props = chs.filter(c => c !== '*').map(c => { const f = m.ft[c]; return `<li><span>${esc(cap1(chWord(c)))}</span> ${f ? `${nf(f.from)} → ${nf(f.to)}` : '<span class="muted">start and end values not recorded</span>'}</li>`; }).join('');
+  const when = ws != null && we != null ? `Its pixels changed between ${ms(ws)} and ${ms(we)} on the page clock (measured frames).` : (m.t0 != null ? `First seen at ${ms(m.t0)}.` : 'When it moved is not known.');
+  const pic = cr ? 'The picture above is the element at the end of the recording.' : `No picture: ${esc((ps && ps.image && ps.image.reason) || 'the element had no box to cut out')}.`;
+  return `<div class="know" data-plot="know" role="group" aria-label="What REVA knows about ${esc(m.name)}">
+    <h4>No curve for this one</h4>
+    <dl><dt>When</dt><dd>${esc(when)}</dd>
+    <dt>What changed</dt><dd>${props ? `<ul>${props}</ul>` : 'REVA could not tell which property.'}</dd>
+    <dt>Why there is no curve</dt><dd>${rs.map(esc).join(' ') || 'REVA saw this move but no model explains it.'}</dd>
+    <dt>Picture</dt><dd>${pic}</dd></dl></div>`;
+}
+function staggerPlot(m) {
+  const { n, step } = m.stag, span = m.plotSpan, rowsN = Math.min(n, 10), bh = (PH - PT - PB) / rowsN;
+  const X = t => PL + (PW - PL - PR) * t / span;
+  const own = m.lead + (m.kind === 'spring' ? m.len * 1.4 : m.len);
+  let s = `<svg class="plot" data-plot="stagger" viewBox="0 0 ${PW} ${PH}" role="img" aria-label="${esc(m.name)}: ${n} members, each starting ${nf(step)} ms after the one before" data-i="${m.i}">`;
+  for (let j = 0; j < rowsN; j++) {
+    const y0 = PT + bh * (j + 1) - 3, h = bh - 8, off = j * step, pts = [];
+    for (let k = 0; k <= 60; k++) { const tl = own * k / 60, p = tl < m.lead ? 0 : m.p(tl - m.lead); pts.push([Math.round(X(off + tl) * 10) / 10, Math.round((y0 - h * Math.min(p, 1.3)) * 10) / 10]); }
+    s += `<line class="axis" x1="${X(off)}" x2="${PW - PR}" y1="${y0}" y2="${y0}"/><polyline class="curve-line" ${j ? 'style="opacity:.55"' : ''} points="${ptsStr(pts)}" ${m.cert === 'fitted' ? 'stroke-dasharray="7 5"' : ''}/>`;
+  }
+  if (n > rowsN) s += `<text class="lbl" x="${PL}" y="${PT + 10}">first ${rowsN} of ${n} shown</text>`;
+  s += niceTicks(span).map(t => `<line x1="${X(t)}" x2="${X(t)}" y1="${PH - PB}" y2="${PH - PB + 4}" stroke="var(--faint)"/><text x="${X(t)}" y="${PH - PB + 17}" text-anchor="middle">${t}</text>`).join('');
+  s += `<text x="${PW - PR}" y="${PH - 4}" text-anchor="end">ms since the first member began</text>`;
+  s += `<line class="head" id="ph-${m.i}" x1="${X(0)}" x2="${X(0)}" y1="${PT}" y2="${PH - PB}"/></svg>`;
+  return s;
+}
+function niceTicks(span, off = 0) {
+  let st = 1; for (let k = 0; k < 12 && span / st > 6; k++) { st = [1, 2, 5].map(x => x * Math.pow(10, k)).find(x => span / x <= 6) || st; if (span / st <= 6) break; st = Math.pow(10, k + 1); }
+  const t = []; for (let v = Math.ceil(off / st) * st; v <= off + span + 1e-9; v += st) t.push(v - off); return t;
+}
+
+function panelHTML(m) {
+  const sel = m.i === S.sel;
+  const cd = codeFor(m);
+  const isGlScene = m.raw && m.raw.kind === 'gl';
+  const cert = isGlScene && m.cert === 'exact' ? 'Read from the numbers the page sent to the GPU.' : { exact: 'Read from the page’s own CSS.', fitted: 'Measured from the recorded frames and fitted.', unknown: 'Not measured.' }[m.cert];
+  const mixed = m.kind === 'declared' && Object.values(m.ft).length ? ' Start and end values are fitted from the frames.' : '';
+  const chList = m.channels.length ? [...new Set(m.channels.map(chWord))].join(', ') : '—';
+  const has = cd.libs.filter(([k]) => cd.out[k].length);
+  const codeTabs = has.map(([k, lab], j) => `<button type="button" role="tab" id="ct-${m.i}-${k}" data-lib="${k}" aria-selected="${j === 0}">${esc(lab)}</button>`).join('');
+  const codePanes = has.map(([k], j) => `<div class="codepane" data-lib="${k}" ${j ? 'hidden' : ''}>${cd.out[k].map(b => `<div class="codeblk"><p class="codemeta">${esc(cap1(chWord(b.ch)))}: ${esc(b.acc || b.word || '')}${b.why ? '. ' + esc(cap1(b.why)) : ''}</p><pre><code>${esc(b.body)}</code></pre></div>`).join('')}</div>`).join('');
+  const none = cd.libs.filter(([k]) => !cd.out[k].length).map(([k, lab]) => `${lab}${cd.why[k] ? ' (' + cd.why[k].replace(/\.$/, '') + ')' : ''}`);
+  const noneTxt = !has.length ? `No code for this motion: ${m.know ? 'the motion has no model.' : 'no library can express it.'}` : none.length ? `No code from ${none.join(', ')}: ${m.know ? 'the motion has no model.' : 'they cannot express this motion.'}` : '';
+  const facts = [`${cert}${mixed}${m.channels.length ? ` Affects ${chList}.` : ''}`, posLine(m), ...((m.raw && m.raw.facts) || [])].filter(Boolean);
+  const live = !m.know && !REDUCED;
+  const tg = tagOf(m), kn = keyNumbers(m);
+  const over = m.drive === 'pointer' ? 'How it follows the pointer' : m.drive === 'wheel' ? 'How it follows the wheel' : m.drive ? 'How it follows the scroll' : m.stag ? 'Each piece over time' : 'How it moves over time';
+  const cname = m.curveLabel && !/^cubic-bezier|^custom/.test(m.curveLabel) && m.curveLabel.length <= 28 ? m.curveLabel : '';
+  const viz = m.know ? plotHTML(m) : `<div class="curvebox"><div class="ch"><span>${esc(over)}</span><span class="cl">${esc(cname)}</span></div>${plotHTML(m)}</div>`;
+  return `
+  <article class="mpanel" id="mp-${m.i}" data-i="${m.i}" role="tabpanel" aria-labelledby="mt-${m.i}" ${sel ? '' : 'hidden="until-found"'}>
+    <h2 id="motion-${m.i}">${esc(m.name)}${m.count > 1 ? ` <span class="ct">× ${m.count}</span>` : ''}</h2>
+    <p class="sentence">${esc(m.say)}</p>
+    <span class="tag ${tg.cls}" title="${esc(tg.tip)}">${esc(tg.text)}</span>
+    <div class="viz">
+      <div class="stage" id="stage-${m.i}" role="img" aria-label="${esc(m.name)}: replay of the motion"></div>
+      <div class="pctl"><button type="button" class="btn pri pp" ${live ? '' : 'disabled'}>Play</button>
+        <span class="seg" role="group" aria-label="Replay speed"><button type="button" class="sp1" aria-pressed="true" ${live ? '' : 'disabled'}>1×</button><button type="button" class="slow" aria-pressed="false" ${live ? '' : 'disabled'} title="A quarter of the speed">¼×</button></span>
+        <input type="range" class="ps" min="0" max="${m.plotSpan ? Math.round(m.plotSpan) : 1}" step="1" value="0" ${m.know ? 'disabled' : ''} aria-label="Playhead for ${esc(m.name)}">
+        <span class="ms pt">0 ms</span></div>
+    </div>
+    <div class="mbody">
+      <div class="nums">${kn.html}</div>
+      ${viz}
+    </div>
+    <div class="use"${!has.length ? ' hidden' : ''}>
+      ${has.length ? `<div class="tabs" role="tablist" aria-label="Code library">${codeTabs}</div>` : ''}
+      <button type="button" class="btn pri cp" ${has.length ? '' : 'disabled'}>Copy code</button>
+    </div>
+    <div class="folds">
+    <details class="vd"><summary>Details</summary>
+      <div class="dgrp"><h3>In full</h3><p>${esc(m.sentence)}</p></div>
+      ${kn.means.length ? `<div class="dgrp"><h3>What the numbers mean</h3><ul class="mean">${kn.means.map(([l, c]) => `<li><b>${esc(l)}</b>: ${c}</li>`).join('')}</ul></div>` : ''}
+      <div class="dgrp"><h3>Where it comes from</h3><div class="facts-p">${facts.map(f => `<p>${esc(f)}</p>`).join('')}<p class="speccap"></p></div><p class="selrow">Selector <code>${esc(m.selector)}</code></p></div>
+      <div class="dgrp"><h3>Every value</h3>${allValues(m)}</div>
+    </details>
+    <details class="cd"><summary>Show the code</summary>
+      ${codePanes}${noneTxt ? `<p class="nocode">${esc(noneTxt)}</p>` : ''}
+    </details>
+    </div>
+  </article>`;
+}
+
+/* panel behaviour */
+function initPanel(m, el) {
+  const plot = $('svg.plot', el);
+  const stage = $('.stage', el), cap = $('.speccap', el);
+  const ps = $('.ps', el), pt = $('.pt', el), pp = $('.pp', el), slow = $('.slow', el), sp1 = $('.sp1', el);
+  const span = m.plotSpan || 1;
+  // specimen: the element's own pixels (crop) when we have them, else a plain block; centred on its own travel
+  const g = geom(m), cr = g && g.crop;
+  const chs = m.channels.filter(c => m.ft[c] && (CH[c] || m.ft[c].fn === 'blur'));
+  const kOf = c => (CH[c] ? CH[c].k : 'blur');
+  let bx = cr ? cr.box : (g ? g.e : (m.box || { w: 120, h: 44 }));
+  // no picture and an empty box (hidden at this width, like a phone-only line): a plain block of a readable size stands in
+  const emptyBox = !cr && (!bx || bx.w < 4 || bx.h < 4);
+  if (emptyBox) bx = { x: 0, y: 0, w: 240, h: 56 };
+  // the stage is 440 px tall on a desktop (260 on a phone); a still with no travel may use more of it
+  const mob = matchMedia('(max-width: 640px)').matches, still = m.know || !chs.length, MW = mob ? 300 : 760, MH = mob ? (still ? 210 : 180) : (still ? 370 : 320);
+  let x0 = 0, x1 = 0, y0 = 0, y1 = 0;
+  for (const c of chs) { const k = kOf(c), f = m.ft[c], px = (v, s) => f.u === '%' ? v / 100 * s : v;
+    if (k === 'tx') { x0 = Math.min(px(f.from, bx.w), px(f.to, bx.w)); x1 = Math.max(px(f.from, bx.w), px(f.to, bx.w)); }
+    if (k === 'ty') { y0 = Math.min(px(f.from, bx.h), px(f.to, bx.h)); y1 = Math.max(px(f.from, bx.h), px(f.to, bx.h)); } }
+  // small elements are drawn larger so the motion reads (at most 2x, the crop's pixels stay sharp enough)
+  const boost = bx.w < 200 && bx.h < 100 ? 2 : bx.w < 480 && bx.h < 240 ? 1.5 : 1;
+  const sc = Math.min(boost, MW / Math.max(1, bx.w + x1 - x0), MH / Math.max(1, bx.h + y1 - y0));
+  const SW = Math.max(6, Math.round(bx.w * sc)), SH = Math.max(6, Math.round(bx.h * sc));
+  const pos = `left:calc(50% - ${nf(SW / 2 + (x0 + x1) / 2 * sc, 1)}px);top:calc(50% - ${nf(SH / 2 + (y0 + y1) / 2 * sc, 1)}px);width:${SW}px;height:${SH}px`;
+  const inner = cr ? (cr.sheet ? `<span style="display:block;width:100%;height:100%;${cropBg(cr)}"></span>` : `<img src="${cr.data}" alt="" style="width:100%;height:100%;display:block">`) : (SW >= 90 ? esc(m.name) : '');
+  const seCls = cr ? 'se img' : 'se';
+  const scaleNote = sc < 1 ? ` Drawn at ${nf(sc * 100, 0)} % of its real size.` : sc > 1 ? ` Drawn at ${nf(sc, 0)} times its real size.` : ' Drawn at its real size.';
+  function look(p) {
+    let tr = '', op = '', fl = '';
+    for (const c of chs) {
+      const k = kOf(c), f = m.ft[c], v = f.from + (f.to - f.from) * p;
+      if (k === 'blur') { fl = `blur(${nf(Math.max(0, v) * sc, 2)}px)`; continue; }
+      if (k === 'tx') tr += ` translateX(${f.u === '%' ? v + '%' : v * sc + 'px'})`; else if (k === 'ty') tr += ` translateY(${f.u === '%' ? v + '%' : v * sc + 'px'})`;
+      else if (k === 'sx') tr += ` scaleX(${v})`; else if (k === 'sy') tr += ` scaleY(${v})`;
+      else if (k === 'rz') tr += ` rotate(${v}deg)`; else if (k === 'opacity') op = String(Math.max(0, Math.min(1, v)));
+    }
+    return { tr: tr.trim(), op, fl };
+  }
+  // an element that changes its layout box (position, width, height) and has no transform: a plain block in its place,
+  // moved and resized on the measured curve between the recorded start and end boxes
+  const LB = k => m.ftAll['ren:' + k];
+  let layFn = null;
+  if (!m.know && !chs.length && ['bx', 'by', 'bw', 'bh'].some(LB)) {
+    const b0g = g ? g.s : (m.box || { x: 0, y: 0, w: 120, h: 44 }), b1g = g ? g.e : b0g;
+    const at = (k, p, a, b) => { const f = LB(k); return f ? f.from + (f.to - f.from) * p : a + (b - a) * p; };
+    const box = p => ({ x: at('bx', p, b0g.x, b1g.x), y: at('by', p, b0g.y, b1g.y), w: at('bw', p, b0g.w, b1g.w), h: at('bh', p, b0g.h, b1g.h) });
+    const b0 = box(0), b1 = box(1);
+    const ex0 = Math.min(b0.x, b1.x), ey0 = Math.min(b0.y, b1.y), ex1 = Math.max(b0.x + b0.w, b1.x + b1.w), ey1 = Math.max(b0.y + b0.h, b1.y + b1.h);
+    const lsc = Math.min(2, MW / Math.max(1, ex1 - ex0), MH / Math.max(1, ey1 - ey0)), W = (ex1 - ex0) * lsc, H = (ey1 - ey0) * lsc;
+    const place = b => `left:${nf((b.x - ex0) * lsc, 1)}px;top:${nf((b.y - ey0) * lsc, 1)}px;width:${nf(b.w * lsc, 1)}px;height:${nf(b.h * lsc, 1)}px`;
+    stage.innerHTML = `<span style="position:absolute;left:calc(50% - ${nf(W / 2, 1)}px);top:calc(50% - ${nf(H / 2, 1)}px);width:${nf(W, 1)}px;height:${nf(H, 1)}px"><span class="ghost" style="${place(b1)}"></span><span class="se" style="${place(b0)}">${b1.w * lsc >= 90 ? esc(m.name) : ''}</span></span><span class="still">A stand-in block: no picture of it was cut</span>`;
+    const se0 = $('.se', stage);
+    // a travel many times the element's own size (a scroll map over thousands of px) cannot be drawn to scale: no
+    // stage then, the curve and its playhead carry it
+    if (lsc < .1) { stage.hidden = true; stage.innerHTML = ''; }
+    layFn = p => { const b = box(p); se0.style.left = nf((b.x - ex0) * lsc, 1) + 'px'; se0.style.top = nf((b.y - ey0) * lsc, 1) + 'px'; se0.style.width = nf(b.w * lsc, 1) + 'px'; se0.style.height = nf(b.h * lsc, 1) + 'px'; };
+    cap.textContent = `No picture of it was cut, so a plain block stands in its place: it moves and resizes on the measured curve between the recorded start and end boxes. The outline is where it ends.${lsc < 1 ? ` Drawn at ${nf(lsc * 100, 0)} % of its real size.` : lsc > 1 ? ` Drawn at ${nf(lsc, 1)} times its real size.` : ''}`;
+    if (lsc < .1) cap.textContent = `It travels ${nf(Math.max(ex1 - ex0, ey1 - ey0), 0)} px, too far to draw to scale here; the curve and its playhead show it instead.`;
+  } else if (m.know || !chs.length) {
+    stage.innerHTML = cr ? `<span class="${seCls}" style="${pos}">${inner}</span><span class="still">${m.know ? 'A still from the end of the recording' : 'A still: its start and end values were not read'}</span>` : '';
+    stage.hidden = !cr;
+    if (m.know) { const pc = $('.pctl', el); if (pc) pc.hidden = true; }
+    cap.textContent = cr ? `${m.know ? 'No curve was measured, so it cannot be replayed.' : 'Start and end values were not read, so it is not replayed.'} The picture is the element at the end of the recording.${scaleNote}` : `No start and end values to draw a live specimen${m.know ? ' (not measured)' : ''}.`;
+  } else {
+    const end = look(1);
+    stage.innerHTML = `<span class="ghost" style="${pos};transform:${end.tr || 'none'}"></span><span class="${seCls}" style="${pos}">${inner}</span>${cr ? '' : '<span class="still">A stand-in block: no picture of it was cut</span>'}`;
+    cap.textContent = `${cr ? (isGroupCrop(g) && g.p && g.p.group ? `The pixels of the whole group of ${g.p.group.members}` : 'The element’s own pixels') : emptyBox ? 'Its box was empty in this recording (it is hidden at this width), so a plain block of a readable size stands in. It is' : 'A plain block'}, replayed ${m.curveUnknown ? 'at an even pace because the easing was not identified (the real pace differs)' : 'on the measured curve'}. The outline is where it ends.${emptyBox ? '' : scaleNote}`;
+  }
+  const se = $('.se', stage);
+  function apply(tl) {
+    const p = m.p ? (tl <= m.lead ? 0 : m.p(tl - m.lead)) : 0;
+    if (se && chs.length) { const v = look(p); se.style.transform = v.tr; se.style.opacity = v.op; se.style.filter = v.fl; }
+    if (layFn) layFn(p);
+    if (plot && (m.p || m.stag)) {
+      const ymax = Math.max(1.06, (m.peak || 1) * 1.1), ymin = -0.06;
+      const x = PL + (PW - PL - PR) * tl / span, y = PT + (PH - PT - PB) * (1 - (p - ymin) / (ymax - ymin));
+      const ph = $('#ph-' + m.i, el), pd = $('#pd-' + m.i, el);
+      ph.setAttribute('x1', x); ph.setAttribute('x2', x); if (pd) { pd.setAttribute('cx', x); pd.setAttribute('cy', y); }
+    }
+    if (ps) ps.value = tl; if (pt) pt.textContent = m.fmtT(tl);
+  }
+  const pl = { tl: 0, playing: false, raf: 0, last: 0, rate: 1 };
+  function loop(now) { if (!pl.playing) return; pl.tl += (now - pl.last) * m.playRate * pl.rate; pl.last = now; if (pl.tl >= span) { pl.tl = span; apply(pl.tl); pause(); return; } apply(pl.tl); pl.raf = requestAnimationFrame(loop); }
+  function play() { if (REDUCED || m.know) return; if (pl.tl >= span) pl.tl = 0; pl.playing = true; pl.last = performance.now(); pp.textContent = 'Pause'; pl.raf = requestAnimationFrame(loop); }
+  function pause() { pl.playing = false; cancelAnimationFrame(pl.raf); if (pp) pp.textContent = pl.tl >= span ? 'Replay' : 'Play'; }
+  panelPlayers[m.i] = { pause, reset() { pause(); pl.tl = m.know || REDUCED ? span : 0; apply(pl.tl); if (!REDUCED && m.kind !== 'unknown') play(); }, apply };
+  pp.addEventListener('click', () => pl.playing ? pause() : play());
+  const rate = r => { pl.rate = r; slow.setAttribute('aria-pressed', String(r !== 1)); sp1.setAttribute('aria-pressed', String(r === 1)); if (!pl.playing) { pl.tl = 0; play(); } };
+  slow.addEventListener('click', () => rate(.25));
+  sp1.addEventListener('click', () => rate(1));
+  ps.addEventListener('input', () => { pause(); pl.tl = +ps.value; apply(pl.tl); });
+  pl.tl = REDUCED || m.know ? span : 0; apply(pl.tl);
+  // code tabs + copy (copies the chosen library's code, folded or not)
+  const tabs = $$('.tabs [role=tab]', el), panes = $$('.codepane', el);
+  tabs.forEach(t => t.addEventListener('click', () => {
+    tabs.forEach(x => x.setAttribute('aria-selected', String(x === t)));
+    panes.forEach(p => { p.hidden = p.dataset.lib !== t.dataset.lib; });
+  }));
+  const cp = $('.cp', el);
+  cp.addEventListener('click', async () => {
+    const pane = panes.find(p => !p.hidden); if (!pane) return;
+    const txt = $$('pre', pane).map(x => x.textContent).join('\n\n');
+    try { await navigator.clipboard.writeText(txt); cp.textContent = 'Copied'; } catch (e) { const cd = $('details.cd', el); cd.open = true; const r = document.createRange(); r.selectNodeContents($('pre', pane)); getSelection().removeAllRanges(); getSelection().addRange(r); cp.textContent = 'Selected'; }
+    setTimeout(() => cp.textContent = 'Copy code', 1400);
+  });
+}
+/* ---------- design ---------- */
+const hexRGB = h => { h = h.replace('#', ''); if (h.length === 3) h = [...h].map(c => c + c).join(''); return [0, 2, 4].map(i => parseInt(h.slice(i, i + 2), 16)); };
+const isHex = v => typeof v === 'string' && /^#[0-9a-f]{6}([0-9a-f]{2})?$/i.test(v);
+const alphaOf = h => h.length === 9 ? parseInt(h.slice(7, 9), 16) / 255 : 1;
+function lum(h) { const [r, g, b] = hexRGB(h.slice(0, 7)).map(v => { v /= 255; return v <= .03928 ? v / 12.92 : Math.pow((v + .055) / 1.055, 2.4); }); return .2126 * r + .7152 * g + .0722 * b; }
+const spaced = n => nf(n, 0).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+/* the 6-8 role colours: background, surface, up to 3 text, border, up to 2 accents */
+function pickColours(d) {
+  const cols = (d.palette && d.palette.colours || []).slice();
+  const uses = c => Object.values(c.uses || {}).reduce((a, b) => a + b, 0);
+  const take = (role, n) => cols.filter(c => c.role === role).sort((a, b) => uses(b) - uses(a)).slice(0, n);
+  const out = [];
+  const pb = d.palette && d.palette.pageBackground && d.palette.pageBackground.hex.value;
+  const bgc = cols.find(c => c.role === 'background' && pb && c.hex.value.toLowerCase() === pb.toLowerCase()) || take('background', 1)[0];
+  if (bgc) out.push(bgc);
+  out.push(...take('surface', 1).filter(c => !out.includes(c)));
+  const texts = take('text', 6).filter(c => c.alpha == null || c.alpha >= .5);
+  const bgL = bgc ? lum(bgc.hex.value) : 1;
+  const strongest = texts.slice().sort((a, b) => Math.abs(lum(b.hex.value) - bgL) - Math.abs(lum(a.hex.value) - bgL))[0];
+  const picked = [take('text', 1)[0], strongest, texts.slice().sort((a, b) => Math.abs(lum(a.hex.value) - bgL) - Math.abs(lum(b.hex.value) - bgL))[0]].filter(Boolean);
+  for (const c of picked) if (!out.includes(c)) out.push(c);
+  out.push(...take('border', 1));
+  out.push(...take('accent', 2));
+  return out.slice(0, 8);
+}
+function topSpacing(d, n) {
+  const v = (d.spacing && d.spacing.values || []).slice().sort((a, b) => b.count - a.count);
+  return n ? v.slice(0, n) : v;
+}
+/* the main type scale: display / heading / body / small, 6-8 steps that exist as measured styles */
+function typeSteps(d) {
+  const styles = d.type.styles || [];
+  const bySize = new Map();
+  for (const s of styles) { const k = s.size.value; if (!bySize.has(k) || s.count > bySize.get(k).count) bySize.set(k, s); }
+  const sizes = [...bySize.keys()].sort((a, b) => b - a);
+  const cnt = k => ((d.type.scale || []).find(x => x.size.value === k) || {}).count || bySize.get(k).count;
+  const group = k => k >= 48 ? 'Display' : k >= 24 ? 'Heading' : k >= 15 ? 'Body' : 'Small';
+  const pickTop = (g, n, byCount) => sizes.filter(k => group(k) === g).sort((a, b) => byCount ? cnt(b) - cnt(a) : b - a).slice(0, n);
+  const chosen = [...pickTop('Display', 3), ...pickTop('Heading', 2, true), ...pickTop('Body', 2, true), ...pickTop('Small', 2, true)].sort((a, b) => b - a);
+  return chosen.map(k => ({ size: k, group: group(k), style: bySize.get(k), count: cnt(k) }));
+}
+/* hover / focus patterns in words */
+function statePatterns(d) {
+  const st = (d.states && d.states.changes) || [];
+  const noun = { a: 'links', button: 'buttons', section: 'sections', input: 'inputs', summary: 'summaries' };
+  const nm = on => noun[on] || on + ' elements';
+  const phrase = ch => {
+    const get = p => ch.find(c => c.property === p);
+    const out = [];
+    const bg = get('background-color'), co = get('color'), bo = get('border-color');
+    if (bg && isHex(bg.from) && isHex(bg.to)) out.push(alphaOf(bg.from) < .05 ? `gain a ${alphaOf(bg.to) < .2 ? 'faint ' : ''}background (${bg.to})` : `${lum(bg.to) > lum(bg.from) ? 'lighten' : 'darken'} their background`);
+    else if (bg) out.push('change their background');
+    if (co && isHex(co.from) && isHex(co.to)) out.push(`${lum(co.to) > lum(co.from) ? 'brighten' : 'dim'} their text (${co.to})`);
+    if (bo && isHex(bo.from) && isHex(bo.to)) out.push(`${lum(bo.to) > lum(bo.from) ? 'lighten' : 'darken'} their border`);
+    const ow = get('outline-width'), oc = get('outline-color'), os = get('outline-style');
+    if (oc || ow || os) out.push(`draw a ${ow ? ow.to : ''} ${os ? os.to : ''} outline${oc ? ' in ' + oc.to : ''}`.replace(/\s+/g, ' '));
+    const bs = get('box-shadow'); if (bs) out.push('add a ring shadow');
+    const op = get('opacity'); if (op) out.push(op.from === '0' ? 'fade in' : 'change opacity');
+    const fl = get('filter'); if (fl) out.push(`apply ${fl.to}`);
+    for (const c of ch) if (!['background-color', 'color', 'border-color', 'outline-width', 'outline-color', 'outline-style', 'box-shadow', 'opacity', 'filter'].includes(c.property)) out.push(`change ${c.property}`);
+    return out.join(' and ');
+  };
+  const res = {};
+  for (const r of st) {
+    const key = phrase(r.changes), g = res[r.state] = res[r.state] || { total: 0, map: new Map() };
+    g.total += r.count;
+    const e = g.map.get(key) || { subj: new Set(), n: 0 }; e.subj.add(nm(r.on)); e.n += r.count; g.map.set(key, e);
+  }
+  const join = a => a.length > 1 ? a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1] : a[0];
+  return Object.entries(res).map(([state, g]) => {
+    const parts = [...g.map.entries()].sort((a, b) => b[1].n - a[1].n);
+    const shown = parts.slice(0, 3).map(([k, e]) => `${join([...e.subj])} ${k}`);
+    return { state, total: g.total, text: shown.join('; '), more: parts.length - shown.length };
+  });
+}
+
+function renderDesign() {
+  const el = $('#design-body'); const d = L.design;
+  if (!d || d.ok === false) { el.innerHTML = `${hd('h1', 'h-design', 'Design', 'ptitle')}<p class="lead">The design pass did not run for this look${d && d.error ? ': ' + esc(d.error) : ''}.</p>`; return; }
+  const fams = d.fonts ? d.fonts.families : [];
+  const bg = d.palette && d.palette.pageBackground ? d.palette.pageBackground.hex.value : '#ffffff';
+  const stackOf = fam => { const f = fams.find(x => x.family === fam); return [fam, ...(f && f.fallbacks || [])].map(x => /\s/.test(x) ? `"${x}"` : x).join(', '); };
+  const scheme = d.scheme && d.scheme.colorScheme || '';
+  const fold = (title, body) => `<details class="fold"><summary>${title}</summary>${body}</details>`;
+  const sec = (id, title, body) => `<section class="dsec panel" id="${id}" aria-labelledby="${id}-h">${hd('h2', id + '-h', title)}${body}</section>`;
+
+  /* ---- type ---- */
+  const steps = typeSteps(d);
+  const dscale = d.type.scale || [], mob = d.mobile && d.mobile.typeSizes || [];
+  const dsz = dscale.map(s => s.size.value), msz = mob.map(s => s.size.value);
+  const gone = dsz.filter(v => !msz.includes(v)), fresh = msz.filter(v => !dsz.includes(v));
+  const bigD = dsz[0], bigM = msz[0];
+  const famLine = fams.map(f => `<b>${esc(f.family)}</b>`).join(' and ');
+  const notLoaded = fams.filter(f => f.loaded === false);
+  const fontNote = notLoaded.length ? ` <span class="warn">${notLoaded.length === fams.length ? (fams.length > 1 ? 'Neither' : 'It') : notLoaded.map(f => esc(f.family)).join(' and ')} loaded in the recording, so the page was drawn in ${esc([...new Set(notLoaded.flatMap(f => f.drawnAs || []))].join(', ') || 'a fallback')} and every size below is that fallback’s.</span>` : '';
+  const stepRow = s => {
+    const t = s.style;
+    const style = `font-family:${esc(stackOf(t.family))};font-size:min(${t.size.value}px,13vw);font-weight:${t.weight.value};line-height:${t.lineHeight.value === 'normal' ? 'normal' : t.lineHeight.value + 'px'};letter-spacing:${t.letterSpacing.value === 'normal' ? 'normal' : t.letterSpacing.value + 'px'};`;
+    const lh = t.lineHeight.value === 'normal' ? 'normal' : nf(t.lineHeight.value);
+    const ls = t.letterSpacing.value === 'normal' ? '' : ` · tracking ${nf(t.letterSpacing.value, 2)}`;
+    return `<div class="tyrow"><div class="smp" style="${style}">${s.size >= 32 ? 'Motion over time' : 'Every value comes from the page'}</div>
+      <div class="tm"><span class="v">${s.size} px</span> <span class="v">${t.weight.value}</span><br><span class="muted">line ${lh}${ls} · ${s.count} ×</span></div></div>`;
+  };
+  const groups = ['Display', 'Heading', 'Body', 'Small'].map(g => {
+    const rows = steps.filter(s => s.group === g); if (!rows.length) return '';
+    return `<div class="tgroup"><h4 class="gname">${g}</h4><div>${rows.map(stepRow).join('')}</div></div>`;
+  }).join('');
+  const allStyles = d.type.styles || [];
+  const cnt = (arr, v) => { const e = arr.find(s => s.size.value === v); return e ? e.count : 0; };
+  const allSizes = [...new Set([...dsz, ...msz])].sort((a, b) => b - a);
+  const typeFold = fold(`All ${allStyles.length} text styles${d.type.more ? ` (${d.type.more} rarer ones are not listed)` : ''} and sizes at 390 px`,
+    `<div class="scroll"><table class="tbl"><thead><tr><th>Size</th><th>Weight</th><th>Line</th><th>Tracking</th><th>Family</th><th>Role</th><th class="r">Elements</th></tr></thead><tbody>${allStyles.map(t => `<tr><td class="v">${t.size.value} px</td><td class="v">${t.weight.value}</td><td class="v">${t.lineHeight.value === 'normal' ? 'normal' : nf(t.lineHeight.value) + ' px'}</td><td class="v">${t.letterSpacing.value === 'normal' ? 'normal' : nf(t.letterSpacing.value, 2) + ' px'}</td><td>${esc(t.family)}</td><td>${esc(t.role)}</td><td class="r v">${t.count}</td></tr>`).join('')}</tbody></table></div>
+    <h4 class="gname" style="margin:18px 0 6px">Elements per size, 1440 px against 390 px wide</h4>
+    <div class="scroll"><table class="tbl"><thead><tr><th>Size</th><th class="r">At 1440</th><th class="r">At 390</th></tr></thead><tbody>${allSizes.map(v => `<tr><td class="v">${v} px</td><td class="r v">${cnt(dscale, v) || '—'}</td><td class="r v">${cnt(mob, v) || '—'}</td></tr>`).join('')}</tbody></table></div>`);
+  const typeSec = sec('design-type', 'Type', `<p class="lead">${famLine} ${notLoaded.length ? 'declared.' : 'in use.'}${fontNote} Body text is ${px(d.type.bodySize)} (derived). Samples are drawn at the measured size, weight, line height and tracking.</p>
+    ${groups}
+    <p class="small muted" style="margin-top:12px">At 390 px wide the largest text is ${bigM ? bigM + ' px' : 'not read'}${bigD ? ' (' + bigD + ' px at 1440)' : ''}.${gone.length ? ` Sizes only on desktop: ${gone.join(', ')} px.` : ''}${fresh.length ? ` New on a phone: ${fresh.join(', ')} px.` : ''}</p>${typeFold}`);
+
+  /* ---- colour ---- */
+  const pick = pickColours(d);
+  const uses = c => Object.entries(c.uses || {}).map(([k, v]) => `${k} ${v}`).join(', ');
+  const cch = c => `<div class="cch"><span class="sq" style="background:linear-gradient(${esc(c.hex.value)},${esc(c.hex.value)}),${esc(bg)}"></span><div><span class="hx">${esc(c.hex.value)}</span><br><span class="muted">${esc(c.role)}${c.backgroundShare && c.backgroundShare.value ? ', ' + pct(c.backgroundShare.value, 0) + ' of the page' : ''}</span></div></div>`;
+  const cc = d.contrast || {}, allPairs = cc.pairs || [];
+  const pairsTop = allPairs.slice().sort((a, b) => b.count - a.count).slice(0, 5);
+  const pairHTML = pairsTop.map(p => {
+    const fail = /fail/i.test(p.grade);
+    return `<div class="pair"><span class="chip" style="color:${esc(p.text)};background:${esc(p.background)}">Aa</span><div><span class="v">${p.ratio.value.toFixed(2)} : 1</span> ${fail ? '<span class="fail">fails AA</span>' : `<span class="pass">${esc(p.grade)}</span>`}<br><span class="muted">${esc(p.text)} on ${esc(p.background)}, ${p.count} elements</span></div></div>`;
+  }).join('');
+  const roleOrder = ['background', 'surface', 'text', 'border', 'accent', 'graphic'];
+  const cols = d.palette.colours || [], byRole = {}; cols.forEach(c => (byRole[c.role] = byRole[c.role] || []).push(c));
+  const roleHTML = roleOrder.filter(r => byRole[r]).map(r => `<div class="crole">${cap1(r === 'graphic' ? 'graphics and icons' : r === 'border' ? 'borders' : r)}</div><div class="cgrid sm">${byRole[r].map(c => `<div class="cch"><span class="sq" style="background:linear-gradient(${esc(c.hex.value)},${esc(c.hex.value)}),${esc(bg)}"></span><div><span class="hx">${esc(c.hex.value)}</span><br><span class="muted">${esc(c.hex.label)}${c.alpha < 1 ? ', ' + pct(c.alpha, 0) + ' opaque' : ''} · ${esc(uses(c))}</span></div></div>`).join('')}</div>`).join('');
+  const notg = [['over an image or gradient', cc.overImage], ['over media', cc.overMedia], ['overlapped by another box', cc.overlapped], ['hidden', cc.hidden], ['with no background colour', cc.noBackground]].filter(x => x[1]);
+  const colourFold = fold(`All ${cols.length} colours${d.palette.more ? ` (${d.palette.more} more are not listed)` : ''} and all ${allPairs.length} contrast pairs`,
+    `${roleHTML}<h4 class="gname" style="margin:20px 0 6px">Every text on background pair</h4><div class="scroll"><table class="tbl"><thead><tr><th>Text</th><th>Background</th><th class="r">Ratio</th><th>Grade</th><th class="r">Elements</th><th class="r">Smallest</th></tr></thead><tbody>${allPairs.map(p => `<tr><td class="v"><span class="sw-mini" style="background:${esc(p.text)}"></span>${esc(p.text)}</td><td class="v"><span class="sw-mini" style="background:${esc(p.background)}"></span>${esc(p.background)}</td><td class="r v">${p.ratio.value.toFixed(2)}</td><td>${/fail/i.test(p.grade) ? '<span class="fail">fails AA</span>' : esc(p.grade)}</td><td class="r v">${p.count}</td><td class="r v">${px(p.smallestSize)}</td></tr>`).join('')}</tbody></table></div>${notg.length ? `<p class="muted small" style="margin-top:8px">Not graded: ${notg.map(x => `${x[1]} ${x[0]}`).join(', ')}.</p>` : ''}`);
+  const colourSec = sec('design-colour', 'Colour', `<p class="lead">${pick.length} colours do most of the work, by role (derived from how the page uses them).</p>
+    <div class="cgrid">${pick.map(cch).join('')}</div>
+    <p class="crole" style="margin-top:22px">Text on background, the pairs used most</p>
+    <p class="muted small">${cc.failingPairs ? `<span class="fail">${cc.failingPairs} of the ${allPairs.length} listed pairs fail AA</span> (${cc.failingElements} elements).` : 'No pair fails AA.'}</p>
+    <div class="pairs">${pairHTML}</div>${colourFold}`);
+
+  /* ---- spacing ---- */
+  const sp = d.spacing || {}, spAll = (sp.values || []).slice().sort((a, b) => a.value - b.value);
+  const spTop = topSpacing(d, 6).sort((a, b) => a.value - b.value);
+  const spMax = Math.max(...spTop.map(v => v.count), 1);
+  const spaceHTML = `<p class="lead">${sp.base ? `Base unit <span class="v">${px(sp.base)}</span> (derived), dividing ${pct(sp.base.coverage || 0, 0)} of the values.` : 'No single base unit: no 2, 4 or 8 px step divides 85 % of the values (derived).'} The steps used most:</p>
+    <div class="steps">${spTop.map(v => `<div class="stp" style="grid-template-columns:62px ${Math.min(Math.max(...spTop.map(x => x.value)), 120)}px minmax(0,1fr)"><span class="v">${nf(v.value)} px</span><span class="spbar" style="width:${Math.min(v.value, 120)}px"></span><span class="uses"><span class="ubar" style="width:${Math.max(v.count / spMax * 90, 2)}px"></span><span class="v">${v.count} ×</span></span></div>`).join('')}</div>
+    ${fold(`All ${spAll.length} spacing values${sp.more ? ` (${sp.more} more are not listed)` : ''}`, `<div class="scroll"><table class="tbl"><thead><tr><th>Value</th><th>Drawn at its real length</th><th class="r">Used</th></tr></thead><tbody>${spAll.map(v => `<tr><td class="v">${nf(v.value)} px${v.label === 'exact' ? ' <span class="faint">exact</span>' : ''}</td><td><div class="spbar" style="width:${Math.min(v.value, 240)}px"></div></td><td class="r v">${v.count}${v.by ? ' (' + Object.entries(v.by).map(([k, n]) => k + ' ' + n).join(', ') + ')' : ''}</td></tr>`).join('')}</tbody></table></div>${sp.negative ? `<p class="muted small" style="margin-top:8px">${sp.negative} negative margins also appear.</p>` : ''}`)}`;
+
+  /* ---- radii and shadows ---- */
+  const rvAll = (d.radii && d.radii.values) || [], rv = rvAll.slice().sort((a, b) => b.count - a.count).slice(0, 4);
+  const shAll = (d.shadows && d.shadows.values) || [], sh = shAll.slice().sort((a, b) => b.count - a.count).slice(0, 3);
+  const surf = (byRole.surface && byRole.surface[0] && byRole.surface[0].hex.value) || bg;
+  const radTxt = r => r.corners ? 'four corners differ' : (r.unit === 'px' && r.value >= 999 ? 'pill' : `${nf(r.value)}${r.unit || ''}`);
+  const shCss = s => s.layers.map(l => `${l.inset ? 'inset ' : ''}${l.x}px ${l.y}px ${l.blur}px ${l.spread}px ${l.color}`).join(', ');
+  const shapes = `<div class="shapes"><div><h4 class="gname">Radii</h4><div class="rad">${rv.map(r => `<div class="r"><div class="tile" style="border-radius:${esc(r.corners ? Object.values(r.corners).join(' ') : r.value + (r.unit || ''))}"></div><span class="v" style="color:var(--ink)">${esc(radTxt(r))}</span><span>${r.count} ×</span></div>`).join('')}</div></div>
+    <div><h4 class="gname">Shadows</h4><div class="shd" style="background:${esc(bg)}">${sh.map(s => `<div class="s"><div class="tile" style="background:${esc(surf)};box-shadow:${esc(shCss(s))}"></div><span class="muted">${s.count} ×${s.layers.length === 1 && s.layers[0].inset ? ', inset' : ''}</span></div>`).join('')}</div></div></div>
+    ${fold(`All ${rvAll.length} radii and ${shAll.length} shadows`, `<div class="scroll"><table class="tbl"><thead><tr><th>Radius</th><th class="r">Elements</th><th>Label</th></tr></thead><tbody>${rvAll.map(r => `<tr><td class="v">${esc(r.corners ? Object.values(r.corners).join(' ') : nf(r.value) + (r.unit || ''))}</td><td class="r v">${r.count}</td><td class="muted">${esc(r.label || '')}</td></tr>`).join('')}</tbody></table></div><div class="scroll" style="margin-top:14px"><table class="tbl"><thead><tr><th>Shadow</th><th class="r">Elements</th></tr></thead><tbody>${shAll.map(s => `<tr><td class="v">${esc(shCss(s))}</td><td class="r v">${s.count}</td></tr>`).join('')}</tbody></table></div>`)}`;
+  const spaceSec = sec('design-spacing', 'Spacing', spaceHTML);
+  const shapeSec = sec('design-shapes', 'Radii and shadows', shapes);
+
+  /* ---- layout and breakpoints ---- */
+  const lay = d.layout || {}, conts = lay.containers || [], grids = lay.grids || [], flex = lay.flexRows || [], secn = lay.sections;
+  const lf = [];
+  if (conts[0]) lf.push(`content ${nf(conts[0].width.value)} px wide (${conts[0].count} blocks)`);
+  if (grids[0]) lf.push(`${grids.length} grid ${grids.length === 1 ? 'layout' : 'layouts'}, mostly ${grids[0].columns} columns`);
+  if (lay.documentHeight) lf.push(`page ${spaced(lay.documentHeight.value)} px tall${d.mobile && d.mobile.documentHeight ? ` (${spaced(d.mobile.documentHeight.value)} px at 390)` : ''}`);
+  const bp = d.breakpoints || {}, lc = bp.layoutChanges || [];
+  const range = bp.range || { from: 320, to: 1920 };
+  const RW = 1000, RX = w => 30 + (RW - 60) * (w - range.from) / (range.to - range.from);
+  let rsvg = `<svg class="ruler" viewBox="0 0 ${RW} 104" role="img" aria-label="Width ruler from ${range.from} to ${range.to} px with ${lc.length} layout changes"><line x1="30" x2="${RW - 30}" y1="62" y2="62" stroke="var(--faint)" stroke-width="1.5"/>`;
+  for (let w = Math.ceil(range.from / 320) * 320; w <= range.to; w += 320) rsvg += `<line x1="${RX(w)}" x2="${RX(w)}" y1="62" y2="68" stroke="var(--faint)"/><text x="${RX(w)}" y="86" text-anchor="middle">${w}</text>`;
+  const lastX = [-99, -99, -99, -99];
+  lc.forEach((b, i) => {
+    const x = RX(b.at); let lv = lastX.findIndex(v => x - v > 40); if (lv < 0) lv = i % 4; lastX[lv] = x;
+    const up = [38, 26, 14, 2][lv] + 8;
+    rsvg += `<line x1="${x}" x2="${x}" y1="${up + 4}" y2="62" stroke="var(--ink)" stroke-width="1.2"/>` + (b.query ? `<circle cx="${x}" cy="62" r="4.5" fill="var(--ink)"/>` : `<circle cx="${x}" cy="62" r="4.5" fill="var(--bg)" stroke="var(--ink)" stroke-width="1.5" stroke-dasharray="2 2"/>`) + `<text x="${x}" y="${up}" text-anchor="middle" style="fill:var(--ink);paint-order:stroke;stroke:var(--bg);stroke-width:4px">${b.at}</text>`;
+  });
+  rsvg += `</svg>`;
+  const bpRows = lc.map(b => `<tr><td class="v">${b.at} px</td><td class="v">${b.queries && b.queries.length ? b.queries.map(esc).join('<br>') : '<span class="faint">no media query explains it: script-driven or fluid</span>'}</td><td>${b.query ? 'exact query, measured edge' : 'measured only'}</td></tr>`).join('');
+  const stripHTML = secn && secn.heights ? (() => { const tot = secn.heights.reduce((a, b) => a + b, 0) + (secn.gapsBetween || []).reduce((a, b) => a + b, 0); return `<div style="display:flex;gap:22px;align-items:flex-start;margin-top:14px"><div class="strip" role="img" aria-label="Section heights, to scale">${secn.heights.map(h => `<div style="height:${Math.max(h / tot * 300, 14)}px">${nf(h)}</div>`).join('')}</div><p class="muted small" style="max-width:48ch">${secn.count} stacked sections in a ${esc(secn.in)}, to scale, heights in px.${secn.padding ? ` Most common padding: ${secn.padding.top} px above, ${secn.padding.bottom} px below.` : ''}</p></div>`; })() : '';
+  const layoutFold = fold(`${lc.length} breakpoints with their queries, containers, grids and sections`,
+    `<div class="scroll"><table class="tbl"><thead><tr><th>Layout changes at</th><th>Media query</th><th>How we know</th></tr></thead><tbody>${bpRows || '<tr><td colspan="3" class="muted">No layout change found.</td></tr>'}</tbody></table></div>
+    <h4 class="gname" style="margin:18px 0 6px">Containers, grids and rows</h4>
+    <div class="scroll"><table class="tbl"><tbody>${conts.map(c => `<tr><td>Content width</td><td class="v">${nf(c.width.value)} px</td><td class="r v">${c.count} ×</td></tr>`).join('')}${grids.map(g => `<tr><td>Grid, ${g.columns} columns</td><td class="v">${g.tracks.slice(0, 6).map(t => nf(t)).join(' + ')} px${g.tracks.length > 6 ? ' …' : ''}, gap ${g.gap == null ? '—' : nf(g.gap) + ' px'}</td><td class="r v">${g.count} ×</td></tr>`).join('')}${flex.map(g => `<tr><td>Flex row, ${g.items} items</td><td class="v">gap ${g.gap == null ? '—' : nf(g.gap) + ' px'}</td><td class="r v">${g.count} ×</td></tr>`).join('')}</tbody></table></div>${stripHTML}`);
+  const layoutSec = sec('design-layout', 'Layout and breakpoints', `<p class="lead">${esc(cap1(lf.join(' · ')))}. Layout changes at ${lc.length} widths between ${range.from} and ${range.to} px; a filled dot has a media query behind it, a hollow one was seen with none. REVA records <i>that</i> the layout changes there, not yet <i>which</i> elements change.</p><div class="rulerbox">${rsvg}</div>${layoutFold}`);
+
+  /* ---- hover and focus ---- */
+  const stp = statePatterns(d), stAll = (d.states && d.states.changes) || [];
+  const sw2 = v => isHex(v) ? `<span class="sw-mini" style="background:${esc(v)}"></span>` : '';
+  const stateSec = sec('design-states', 'Hover and focus', `<p class="lead">${d.states ? d.states.elements : 0} interactive elements were forced into hover and focus and compared with their resting style.</p>
+    ${stp.length ? `<ul class="pat">${stp.map(p => `<li><b>${cap1(p.state)}</b> (${p.total} elements): ${esc(p.text)}${p.more > 0 ? `; ${p.more} more ${p.more === 1 ? 'pattern' : 'patterns'} in the full list` : ''}.</li>`).join('')}</ul>` : '<p class="muted">No state changes found.</p>'}
+    ${fold(`All ${stAll.length} state changes`, `<div class="scroll"><table class="tbl"><thead><tr><th>State</th><th>On</th><th>What changes</th><th class="r">Elements</th></tr></thead><tbody>${stAll.map(s => `<tr><td>${esc(s.state)}</td><td class="v">${esc(s.on)}</td><td class="v">${s.changes.map(ch => `${esc(ch.property)}: ${sw2(ch.from)}${esc(ch.from)} → ${sw2(ch.to)}${esc(ch.to)}`).join('<br>')}</td><td class="r v">${s.count}</td></tr>`).join('')}</tbody></table></div>`)}`);
+
+  /* ---- tokens + not measured ---- */
+  const cp = d.customProperties;
+  const gaps = d.gaps || [];
+  const unk = M.filter(m => m.kind === 'unknown');
+  const lb = L.libraries;
+  const lines = [];
+  if (notLoaded.length) lines.push(`${notLoaded.map(f => f.family).join(' and ')} did not load, so type was measured in a fallback`);
+  if (unk.length) lines.push(`${unk.length} ${unk.length === 1 ? 'motion moved' : 'motions moved'} without a fitted model`);
+  const unexpl = gaps.find(g => g.id === 'unk_breakpoint_unexplained');
+  if (unexpl) lines.push(`${unexpl.count} layout changes have no media query behind them`);
+  if (lb && lb.scanned && lb.scanned.skipped) lines.push(`${lb.scanned.skipped} scripts were not scanned for libraries`);
+  const act0 = L.action.do, notRec = act0 === 'scroll' ? 'pointer-linked motion was not recorded (scroll recording only)' : act0 === 'hover' || act0 === 'click' ? 'scroll-linked motion was not recorded (pointer recording only)' : 'scroll-linked and pointer-linked motion were not recorded (page load only)';
+  lines.push(notRec);
+  const mnot = [];
+  if (L.fit.flags.length) L.fit.flags.forEach(f => mnot.push(`Motion: ${f}`));
+  unk.forEach(m => mnot.push(`Motion: ${m.name} moved but is not fitted. ${m.reason}`));
+  if (L.take.misses) mnot.push(`Recording: ${L.take.misses} request${L.take.misses === 1 ? '' : 's'} the saved copy did not have, so the replay may differ slightly from the live site.`);
+  if (lb && lb.scanned && lb.scanned.skipped) mnot.push(`Libraries: ${lb.scanned.skipped} scripts were not read (${lb.scanned.skippedReason}); a library not listed is not proven absent.`);
+  mnot.push(act0 === 'scroll' ? 'Pointer-linked motion: this look recorded the scroll only.' : act0 === 'hover' || act0 === 'click' ? 'Scroll-linked motion: this look recorded the pointer only.' : 'Scroll-linked and pointer-linked motion: this look recorded the page load only.');
+  const gapHTML = gaps.map(g => `<li>${esc(g.what)}${g.count > 1 ? ` <span class="faint">(${g.count})</span>` : ''}${g.probe ? ` <span class="muted">To resolve: ${esc(g.probe)}.</span>` : ''}</li>`).join('');
+  const tokensHTML = cp && cp.count ? fold(`${cp.count} CSS variables the page declares`, `<p class="muted small">${Object.entries(cp.byKind || {}).map(([k, v]) => v + ' ' + k).join(', ')}.${cp.label === 'partial' ? ' <span class="warn">Partial: some stylesheets could not be read.</span>' : ''} <code>reva design &lt;url&gt; --tokens</code> writes them as <code>design-tokens.css</code> and <code>.json</code>.</p><div class="scroll"><table class="tbl"><tbody>${(cp.list || []).slice(0, 12).map(x => `<tr><td class="v">${esc(x.name)}</td><td class="v">${sw2(x.value)}${esc(x.value)}</td><td class="muted">${esc(x.label)}</td></tr>`).join('')}</tbody></table></div>`) : '';
+  // what was not measured lives in Recording (recordingHTML), from the same look
+  const tokSec = tokensHTML ? sec('design-tokens', 'CSS variables', tokensHTML) : '';
+
+  const nav = [['type', 'Type'], ['colour', 'Colour'], ['spacing', 'Spacing'], ['shapes', 'Radii and shadows'], ['layout', 'Layout'], ['states', 'Hover and focus']].concat(tokensHTML ? [['tokens', 'CSS variables']] : []);
+  el.innerHTML = `${hd('h1', 'h-design', 'Design', 'ptitle')}<p class="lead">What the page is made of, read at ${d.viewport.width} px wide${scheme ? ' in its ' + esc(scheme) + ' scheme' : ''}. Each part shows what matters; the full lists open under it.</p>
+  <nav class="dnav" aria-label="Design parts">${nav.map(([id, t]) => `<a href="#design/${id}">${esc(t)}</a>`).join('')}</nav>
+  <div class="dbody">${typeSec}${colourSec}<div class="two">${spaceSec}${shapeSec}</div>${layoutSec}${stateSec}${tokSec}</div>`;
+}
+
+/* ---------- render all ---------- */
+function load() {
+  stopPlay();
+  for (const k in panelPlayers) { panelPlayers[k].pause(); delete panelPlayers[k]; }
+  L = DATA.look; M = buildMotions(L); AX = axisEnd(); S.sel = 0; S.T = 0;
+  // two motions with the same name are told apart by their order on screen ("Title line", "Title line 2")
+  { const seen = {}; for (const m of M) { const k = m.name; seen[k] = (seen[k] || 0) + 1; if (seen[k] > 1) m.name = `${k} ${seen[k]}`; } }
+  document.title = `REVA card: ${titleOf(L)}`;
+  SHOT = L.screens && L.screens.viewport ? L.screens.viewport.data : null;
+  if (SHOT) document.documentElement.style.setProperty('--shot', `url(${SHOT})`);
+  { const si = $('#site'); if (si) si.textContent = `${titleOf(L)}, ${L.action.do === 'load' ? 'page load' : L.action.do}`; }
+  renderOverview(); renderMotion(); renderTimeline(); renderDesign(); renderLibraries(); renderRecording();
+  $$('.mb').forEach(b => b.classList.toggle('sel', +b.dataset.i === S.sel));
+  setT(REDUCED || !$('#play') ? AX : 0);
+  FIND.index = null;
+  route({ initial: true });
+}
+
+/* ---------- pages: one on screen, a hash per page ----------
+   #overview  #motion/<n>  #timeline  #design[/type|colour|spacing|shapes|layout|states|tokens]  #libraries  #recording
+   The pages not on screen are hidden="until-found": the browser's own find still reaches them, and a match opens its
+   page (beforematch). Older in-page anchors (#design-type, #motion-2, #recording-others ...) still land on their page. */
+const VIEWS = ['overview', 'motion', 'timeline', 'design', 'libraries', 'recording'];
+const VIEWNAME = { overview: 'Overview', motion: 'Motion', timeline: 'Timeline', design: 'Design', libraries: 'Libraries', recording: 'Recording' };
+const CUR = { view: null, sub: null };
+function parseHash(h) {
+  let s = String(h || '').replace(/^#/, '');
+  try { s = decodeURIComponent(s); } catch (e) {}
+  const parts = s.split('/'); let v = parts[0], sub = parts.slice(1).join('/') || null, mm;
+  if ((mm = /^design-(\w+)$/.exec(v))) { v = 'design'; sub = mm[1]; }
+  else if ((mm = /^motion-(\d+)$/.exec(v))) { v = 'motion'; sub = mm[1]; }
+  else if (v === 'what-moves') v = 'overview';
+  else if (v === 'declared-changes' || v === 'declared') v = 'motion';
+  else if (/^timeline-/.test(v)) v = 'timeline';
+  else if (/^recording-/.test(v)) v = 'recording';
+  else if (/^lib-/.test(v)) v = 'libraries';
+  if (!VIEWS.includes(v)) { v = 'overview'; sub = null; }
+  return { v, sub };
+}
+function go(h) {
+  if (location.hash.slice(1) === h) route({ user: true }); else location.hash = h;
+}
+function route(opts = {}) { const { v, sub } = parseHash(location.hash); show(v, sub, opts); }
+function show(v, sub, opts = {}) {
+  const changed = CUR.view !== v, first = CUR.view === null;
+  const prevSel = S.sel;
+  if (changed) {
+    for (const id of VIEWS) { const sec = document.getElementById(id); if (id === v) sec.removeAttribute('hidden'); else sec.setAttribute('hidden', 'until-found'); }
+    const sec = document.getElementById(v);
+    if (!REDUCED && !opts.find && !first) { sec.classList.remove('enter'); void sec.offsetWidth; sec.classList.add('enter'); }
+    // what plays on the page being left stops
+    if (CUR.view === 'motion') for (const k in panelPlayers) panelPlayers[k].pause();
+    if (CUR.view === 'overview' || CUR.view === 'timeline') stopPlay();
+  }
+  CUR.view = v; CUR.sub = sub;
+  // the page list shows the current page (and, on Design, the current part)
+  const nav = $('#secnav');
+  if (nav) {
+    for (const a of $$('a[data-s]', nav)) {
+      const on = a.classList.contains('sub') ? v === 'design' && a.dataset.sub === sub : a.dataset.s === v;
+      if (on) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
+    }
+    nav.classList.toggle('in-design', v === 'design');
+    const act = $$('a[data-s]:not(.sub)', nav).find(a => a.dataset.s === v);
+    if (act && nav.scrollWidth > nav.clientWidth) { const l = act.offsetLeft - nav.offsetLeft, r = l + act.offsetWidth; if (l < nav.scrollLeft || r > nav.scrollLeft + nav.clientWidth) nav.scrollTo({ left: Math.max(0, l - 16), behavior: REDUCED ? 'auto' : 'smooth' }); }
+  }
+  document.title = `${v === 'motion' && M[S.sel] ? '' : VIEWNAME[v] + ', '}REVA card: ${titleOf(L)}`;
+  let n = S.sel;
+  if (v === 'motion' && M.length) {
+    n = sub != null && /^\d+$/.test(sub) ? Math.max(0, Math.min(M.length - 1, +sub)) : S.sel;
+    if (changed || n !== prevSel || opts.user) select(n, false, opts.find);
+    document.title = `${M[n].name}, REVA card: ${titleOf(L)}`;
+  }
+  if (v === 'overview' && changed) {
+    initPageView();
+    if ($('#play') && !REDUCED && !opts.find) { setT(0); startPlay(); }
+  }
+  if (opts.find) return;
+  if (v === 'design' && sub) {
+    const t = document.getElementById('design-' + sub);
+    if (t) requestAnimationFrame(() => t.scrollIntoView({ block: 'start', behavior: changed || REDUCED ? 'auto' : 'smooth' }));
+  } else if (changed || (v === 'motion' && n !== prevSel)) {
+    if (!first || location.hash) scrollTo(0, 0);
+  }
+  if (changed && !first && opts.user) { const h = $(`#${v} h1`); if (h) h.focus({ preventScroll: true }); }
+}
+addEventListener('hashchange', () => route({ user: true }));
+for (const id of VIEWS) {
+  const sec = document.getElementById(id);
+  // the browser's find matched text on a page that is not on screen: open that page where the match is
+  sec.addEventListener('beforematch', () => {
+    const h = id === 'motion' && M.length ? `motion/${S.sel}` : id;
+    if (location.hash.slice(1) !== h) history.replaceState(null, '', '#' + h);
+    show(id, id === 'motion' ? String(S.sel) : null, { find: true });
+  });
+}
+/* the same nav link clicked again (e.g. a Design part after scrolling away) scrolls to it again */
+document.addEventListener('click', e => {
+  const a = e.target.closest('a[href^="#"]'); if (!a || e.metaKey || e.ctrlKey || e.shiftKey) return;
+  if (a.getAttribute('href') === location.hash) { e.preventDefault(); route({ user: true }); }
+});
+/* every page, as the routes the screenshot tools and tests walk */
+window.ROUTES = () => ['overview', ...(M.length ? M.map((m, i) => 'motion/' + i) : ['motion']), 'timeline', 'design', 'libraries', 'recording'];
+
+/* ---------- search: a small box that finds text on every page, for browsers whose find cannot open hidden pages ---------- */
+const FIND = { index: null, hits: [], on: 0 };
+const FINDSEL = 'h1,h2,h3,h4,p,li,td,th,summary,dt,dd,.wn,.wf,.lab,.big,.hx,.cname,.fv,.fl,.tag,.nm,.smp,.tm,.ln,.ls,pre,figcaption';
+function findIndex() {
+  if (FIND.index) return FIND.index;
+  const out = [];
+  for (const id of VIEWS) for (const el of $$(FINDSEL, document.getElementById(id))) {
+    if (el.querySelector(FINDSEL)) continue;   // the innermost text block only
+    const text = el.textContent.replace(/\s+/g, ' ').trim(); if (text.length < 2) continue;
+    const mp = el.closest('.mpanel'), ds = el.closest('.dsec');
+    out.push({ el, id, text, low: text.toLowerCase(), mi: mp ? +mp.dataset.i : null, part: ds ? ds.id.replace(/^design-/, '') : null });
+  }
+  return (FIND.index = out);
+}
+function findOpen() {
+  const f = $('#find'); f.hidden = false; const q = $('#findq'); q.value = ''; findRender(''); q.focus();
+}
+function findClose(back) { $('#find').hidden = true; if (back) { const b = $('#findbtn'); if (b) b.focus(); } }
+function findRender(q) {
+  const ul = $('#findres'); q = q.trim().toLowerCase();
+  if (q.length < 2) { ul.innerHTML = ''; FIND.hits = []; return; }
+  const all = findIndex().filter(x => x.low.includes(q));
+  FIND.hits = all.slice(0, 40); FIND.on = 0;
+  const snip = x => { const k = x.low.indexOf(q), a = Math.max(0, k - 40); return (a ? '…' : '') + esc(x.text.slice(a, k)) + '<mark>' + esc(x.text.slice(k, k + q.length)) + '</mark>' + esc(x.text.slice(k + q.length, k + q.length + 80)); };
+  const where = x => VIEWNAME[x.id] + (x.mi != null && M[x.mi] ? ', ' + M[x.mi].name : '') + (x.part ? ', ' + x.part : '');
+  ul.innerHTML = FIND.hits.length ? FIND.hits.map((x, k) => `<li><button type="button" role="option" data-k="${k}" class="${k ? '' : 'on'}"><span class="fp">${esc(where(x))}</span><span class="fs">${snip(x)}</span></button></li>`).join('') + (all.length > 40 ? `<li class="none">${all.length - 40} more; type more to narrow it.</li>` : '')
+    : `<li class="none">Nothing on this card matches.</li>`;
+}
+function findGo(k) {
+  const x = FIND.hits[k]; if (!x) return;
+  findClose(false);
+  const h = x.id === 'motion' && x.mi != null ? 'motion/' + x.mi : x.id;
+  if (location.hash.slice(1) !== h) history.pushState(null, '', '#' + h);
+  show(x.id, x.id === 'motion' && x.mi != null ? String(x.mi) : null, { user: true });
+  for (let d = x.el.closest('details'); d; d = d.parentElement && d.parentElement.closest('details')) d.open = true;
+  requestAnimationFrame(() => { x.el.scrollIntoView({ block: 'center', behavior: 'auto' }); x.el.classList.remove('hit'); void x.el.offsetWidth; x.el.classList.add('hit'); });
+}
+{
+  const fb = $('#findbtn'), f = $('#find'), q = $('#findq'), ul = $('#findres');
+  fb.addEventListener('click', findOpen);
+  f.addEventListener('click', e => { if (e.target === f) findClose(true); const b = e.target.closest('button[data-k]'); if (b) findGo(+b.dataset.k); });
+  q.addEventListener('input', () => findRender(q.value));
+  q.addEventListener('keydown', e => {
+    const bs = $$('button[data-k]', ul);
+    if (e.key === 'Escape') { e.preventDefault(); findClose(true); }
+    else if (e.key === 'Enter') { e.preventDefault(); findGo(FIND.on); }
+    else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      e.preventDefault(); if (!bs.length) return;
+      FIND.on = (FIND.on + (e.key === 'ArrowDown' ? 1 : -1) + bs.length) % bs.length;
+      bs.forEach((b, k) => b.classList.toggle('on', k === FIND.on)); bs[FIND.on].scrollIntoView({ block: 'nearest' });
+    }
+  });
+  addEventListener('keydown', e => {
+    if (e.key !== '/' || e.metaKey || e.ctrlKey || e.altKey) return;
+    const t = e.target; if (t && (t.isContentEditable || /^(input|textarea|select)$/i.test(t.tagName))) return;
+    e.preventDefault(); findOpen();
+  });
+}
+window.addEventListener('beforeprint', () => $$('details').forEach(d => { d.dataset.was = d.open ? '1' : '0'; d.open = true; }));
+window.addEventListener('afterprint', () => $$('details').forEach(d => { d.open = d.dataset.was === '1'; }));
+load();
+</script>
+</body>
+</html>

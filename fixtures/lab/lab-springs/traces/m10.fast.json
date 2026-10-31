@@ -1,0 +1,35 @@
+{
+ "id": "fast",
+ "route": "m10",
+ "note": "drag 0.6 px/ms, release at 905 ms with a last-100-ms velocity of 0.6 px/ms",
+ "page": {
+  "path": "fast"
+ },
+ "viewport": {
+  "width": 1280,
+  "height": 800
+ },
+ "seed": 1,
+ "scene": {
+  "selectors": [
+   ".b0"
+  ]
+ },
+ "boot": {
+  "until": "document.readyState === 'complete'"
+ },
+ "actions": [
+  {
+   "eval": "window.dispatchEvent(new Event('go'))"
+  },
+  {
+   "mark": "go"
+  },
+  {
+   "hold": 7000
+  },
+  {
+   "mark": "end"
+  }
+ ]
+}

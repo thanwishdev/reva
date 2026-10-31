@@ -1,0 +1,9 @@
+<!doctype html><meta charset="utf-8"><title>gl scroll</title>
+<!-- Known truth: uniform uScroll = clamp((scrollY - 300) / 1200, 0, 1): linear over the scroll range 300 -> 1500 px.
+     The canvas is fixed; the page is 4000 px tall. Raw WebGL, no library. -->
+<body style="margin:0;background:#111;height:4000px"><script src="gl-kit.js"></script><script>
+const k = glKit({ vs: FLAT_VS,
+  fs: 'precision mediump float; uniform float uScroll; void main() { gl_FragColor = vec4(uScroll, 0.4, 1.0 - uScroll, 1.0); }',
+  frame: ({ gl, U }) => { gl.uniform1f(U('uScroll'), Math.min(1, Math.max(0, (scrollY - 300) / 1200))); } });
+k.canvas.style.position = 'fixed'; k.canvas.style.top = '0';
+</script></body>

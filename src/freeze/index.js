@@ -1,0 +1,12 @@
+export { freeze, targetConfig } from './freeze.js';
+export { freezeMain, FREEZE_HELP } from './cli.js';
+export { checkArchive, checkManifest, checkKnownUrls, checkUnknownLedger } from './check.js';
+export { freezeSection, inventory, SECTION_ID } from './report.js';
+export { sanitizeHar, mergeHars, parseHarZip, packHarZip } from './sanitize.js';
+export { analyseCompletion, resolveHole, extractTemplates } from './complete.js';
+export { installMissLogger, classifyMisses } from './misslog.js';
+export { replayVerify, naiveReplayLoads } from './verify.js';
+export { buildArchive, sealArchive, unsealArchive, urlToPath } from './build.js';
+export { normalizeConfig, loadConfig, assertFreezable, isLocalHost } from './config.js';
+export { salvageArchive } from './salvage.js';
+export { rankCandidates, completenessOf, kindOf, isTelemetry } from './policy.js';

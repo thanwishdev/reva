@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>REVA design fixture</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="/style.css">
+<style>
+  /* Inline sheet on purpose: the source audit must prove a rebuild does not carry this text. */
+  .note { border-left: 3px solid var(--accent); padding-inline-start: calc(var(--gap) / 2); }
+</style></head>
+<body>
+<header class="site-head" id="d-head">
+  <span class="brand">Design fixture</span>
+  <nav aria-label="Main"><a class="nav-link" href="#d-grid">Grid</a><a class="nav-link" href="#d-cards">Cards</a><a class="nav-link" href="#d-more">More</a></nav>
+</header>
+<main>
+  <section class="hero" id="d-hero">
+    <h1 class="title">Own design page</h1>
+    <p class="lede">Fluid type with clamp(), spacing with calc() and var(), height in svh.</p>
+    <button class="btn" type="button" id="d-btn">Primary</button>
+    <a class="link" href="#d-more" id="d-link">Text link</a>
+  </section>
+  <section class="grid" id="d-grid" aria-label="Grid">
+    <div class="cell">One</div><div class="cell">Two</div><div class="cell">Three</div>
+    <div class="cell">Four</div><div class="cell">Five</div><div class="cell">Six</div>
+  </section>
+  <section class="cards" id="d-cards" aria-label="Cards">
+    <article class="card has-media"><div class="media"></div><h2>Card with media</h2><p>Container query flips this card to a row when its container is wide.</p></article>
+    <article class="card"><h2>Plain card</h2><p>No media here, so :has() does not match.</p></article>
+  </section>
+  <ul class="ticks" id="d-ticks"><li>Marker colour comes from ::marker</li><li>Second item</li><li>Third item</li></ul>
+  <p class="note" id="d-note">A note with a ::before icon and an ::after tail.</p>
+  <div class="ticker" id="d-ticker"><span class="digit" id="d-digit">7</span></div>
+  <div class="vhbox" id="d-vhbox">Height set by script from the viewport height.</div>
+  <details class="more" id="d-more"><summary>Open details</summary><p>Hidden until opened (a state for D2).</p></details>
+  <div class="menu-wrap"><button class="menu-btn" id="d-menu-btn" type="button" aria-expanded="false" aria-haspopup="true" aria-controls="d-menu">Menu</button>
+    <ul class="menu" id="d-menu" hidden><li>Profile</li><li>Settings</li></ul></div>
+  <div class="tabs" id="d-tabs"><div role="tablist" aria-label="Tabs"><button class="tab" role="tab" type="button" id="d-tab1" aria-selected="true" aria-controls="d-panel1">First</button><button class="tab" role="tab" type="button" id="d-tab2" aria-selected="false" aria-controls="d-panel2">Second</button></div>
+    <div class="panel" role="tabpanel" id="d-panel1">First panel.</div><div class="panel" role="tabpanel" id="d-panel2" hidden>Second panel, shown by script.</div></div>
+  <div class="swatch" id="d-swatch" data-state="off">Swatch</div>
+  <button class="menu-btn" id="d-open-dialog" type="button" aria-haspopup="dialog" aria-controls="d-dialog">Open dialog</button>
+  <ol class="feed" id="d-feed"></ol>
+  <dialog class="modal" id="d-dialog"><p>Dialog body (closed at rest; ::backdrop when modal).</p></dialog>
+  <div class="toast" id="d-toast" popover="manual" role="status">Saved</div>
+  <wr-badge id="d-badge" label="Shadow badge"></wr-badge>
+  <iframe class="frame" id="d-frame" src="/frame.html" title="Framed card"></iframe>
+  <footer class="foot" id="d-foot"><p>Footer text.</p></footer>
+</main>
+<script>
+  // Shadow-DOM component (open root, its own <style>): a rebuild must reproduce it without this script.
+  customElements.define('wr-badge', class extends HTMLElement {
+    connectedCallback() {
+      const r = this.attachShadow({ mode: 'open' });
+      r.innerHTML = '<style>.b{display:inline-flex;gap:6px;padding:4px 10px;border-radius:999px;background:var(--accent);color:#fff;font:600 13px/1.4 system-ui}.b::before{content:"\\2605"}</style>'
+        + '<span class="b" part="badge">' + (this.getAttribute('label') || '') + '</span>';
+    }
+  });
+  // Sticky header toggles a class on scroll (state over scroll, scored by later stages).
+  addEventListener('scroll', () => document.getElementById('d-head').classList.toggle('scrolled', scrollY > 8), { passive: true });
+  // Script-owned state (gate D1b): a clock-driven digit (inline transform from the time) and a box whose height JS
+  // sets from the viewport height. A CSS capture must not claim these; the gate finds them from the script writes.
+  const digit = document.getElementById('d-digit');
+  setInterval(() => { digit.style.transform = `translateY(${(Math.floor(Date.now() / 1000) % 10) * 2}px)`; }, 1000);
+  const vhb = document.getElementById('d-vhbox');
+  const fit = () => { vhb.style.height = Math.round(innerHeight * 0.25) + 'px'; };
+  fit(); addEventListener('resize', fit);
+  // D2 JS states: a disclosure menu, tabs, a dialog opened by a button; a toast popover opened by script at load
+  // (top layer, like a site's toast viewport)
+  const mb = document.getElementById('d-menu-btn'), menu = document.getElementById('d-menu');
+  mb.addEventListener('click', () => { const open = mb.getAttribute('aria-expanded') !== 'true'; mb.setAttribute('aria-expanded', String(open)); menu.hidden = !open; });
+  for (const t of document.querySelectorAll('#d-tabs [role=tab]')) t.addEventListener('click', () => {
+    for (const u of document.querySelectorAll('#d-tabs [role=tab]')) { const on = u === t; u.setAttribute('aria-selected', String(on)); document.getElementById(u.getAttribute('aria-controls')).hidden = !on; }
+  });
+  // listener-only state (D2b): no ARIA/HTML hint, only a click listener that flips a data attribute
+  const sw = document.getElementById('d-swatch');
+  sw.addEventListener('click', () => { sw.dataset.state = sw.dataset.state === 'on' ? 'off' : 'on'; });
+  document.getElementById('d-open-dialog').addEventListener('click', () => document.getElementById('d-dialog').showModal());
+  document.getElementById('d-toast').showPopover();
+  // viewport-driven re-render (D2 structural replay): below 700 px the feed shows 4 items, rotated by one
+  const feed = document.getElementById('d-feed'), items = ['Alpha', 'Beta', 'Gamma', 'Delta'];
+  const render = () => { const narrow = innerWidth < 700; const want = narrow ? [...items.slice(1), items[0]] : items.slice(0, 3); if (feed.dataset.mode === String(narrow)) return; feed.dataset.mode = String(narrow); feed.replaceChildren(...want.map(t => { const li = document.createElement('li'); li.textContent = t; return li; })); };
+  render(); addEventListener('resize', render);
+</script>
+</body></html>

@@ -1,0 +1,63 @@
+{
+ "schema": "reva.labtrace/0",
+ "route": "m11",
+ "variant": "reversal",
+ "viewport": {
+  "width": 1280,
+  "height": 800
+ },
+ "seed": 1,
+ "boot": {
+  "until": "window.__ready === true"
+ },
+ "actions": [
+  {
+   "hold": 400
+  },
+  {
+   "snapshot": "start"
+  },
+  {
+   "scrollTo": 700
+  },
+  {
+   "hold": 300
+  },
+  {
+   "scrollTo": 1000
+  },
+  {
+   "hold": 300
+  },
+  {
+   "scrollTo": 900
+  },
+  {
+   "hold": 300
+  },
+  {
+   "scrollTo": 1300
+  },
+  {
+   "hold": 300
+  },
+  {
+   "scrollTo": 1100
+  },
+  {
+   "hold": 300
+  },
+  {
+   "scrollTo": 1500
+  },
+  {
+   "hold": 300
+  },
+  {
+   "scrollTo": 1200
+  },
+  {
+   "hold": 600
+  }
+ ]
+}

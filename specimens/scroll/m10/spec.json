@@ -1,0 +1,328 @@
+{
+ "schema": "reva.specimen.scroll/0",
+ "id": "lab-m10",
+ "family": "scroll",
+ "contract": "window.seek(t) / window.specimen (see README.md)",
+ "viewport": {
+  "width": 1280,
+  "height": 800
+ },
+ "frameMs": 8.333333333333334,
+ "docHeight": 800,
+ "subjects": [
+  {
+   "id": "b0",
+   "source": ".b0",
+   "x": 40,
+   "y": 40,
+   "w": 180,
+   "h": 100,
+   "hue": 200
+  }
+ ],
+ "mechanisms": [
+  {
+   "id": "m0",
+   "kind": "inertia",
+   "subject": "b0",
+   "friction": 0.9,
+   "law": "frame",
+   "stopEps": 0.05,
+   "velWindowMs": 100,
+   "nominalHz": 60,
+   "x0": 100,
+   "channels": [
+    {
+     "name": "drv:--v0",
+     "kind": "var",
+     "prop": "--v0",
+     "of": "x",
+     "k0": 0,
+     "k1": 1,
+     "write": "full",
+     "role": "driver",
+     "source": ".b0|--x",
+     "compare": true
+    },
+    {
+     "name": "ren:tx",
+     "kind": "ren",
+     "prop": "tx",
+     "of": "x",
+     "k0": -100,
+     "k1": 1,
+     "role": "visual",
+     "source": null,
+     "compare": false
+    }
+   ],
+   "sources": [
+    ".b0|--x"
+   ],
+   "tier": "truth"
+  }
+ ],
+ "pins": [],
+ "input": {
+  "pointer": [
+   {
+    "T": 500,
+    "type": "down",
+    "x": 160
+   },
+   {
+    "T": 510,
+    "type": "move",
+    "x": 166
+   },
+   {
+    "T": 520,
+    "type": "move",
+    "x": 172
+   },
+   {
+    "T": 530,
+    "type": "move",
+    "x": 178
+   },
+   {
+    "T": 540,
+    "type": "move",
+    "x": 184
+   },
+   {
+    "T": 550,
+    "type": "move",
+    "x": 190
+   },
+   {
+    "T": 560,
+    "type": "move",
+    "x": 196
+   },
+   {
+    "T": 570,
+    "type": "move",
+    "x": 202
+   },
+   {
+    "T": 580,
+    "type": "move",
+    "x": 208
+   },
+   {
+    "T": 590,
+    "type": "move",
+    "x": 214
+   },
+   {
+    "T": 600,
+    "type": "move",
+    "x": 220
+   },
+   {
+    "T": 610,
+    "type": "move",
+    "x": 226
+   },
+   {
+    "T": 620,
+    "type": "move",
+    "x": 232
+   },
+   {
+    "T": 630,
+    "type": "move",
+    "x": 238
+   },
+   {
+    "T": 640,
+    "type": "move",
+    "x": 244
+   },
+   {
+    "T": 650,
+    "type": "move",
+    "x": 250
+   },
+   {
+    "T": 660,
+    "type": "move",
+    "x": 256
+   },
+   {
+    "T": 670,
+    "type": "move",
+    "x": 262
+   },
+   {
+    "T": 680,
+    "type": "move",
+    "x": 268
+   },
+   {
+    "T": 690,
+    "type": "move",
+    "x": 274
+   },
+   {
+    "T": 700,
+    "type": "move",
+    "x": 280
+   },
+   {
+    "T": 710,
+    "type": "move",
+    "x": 286
+   },
+   {
+    "T": 720,
+    "type": "move",
+    "x": 292
+   },
+   {
+    "T": 730,
+    "type": "move",
+    "x": 298
+   },
+   {
+    "T": 740,
+    "type": "move",
+    "x": 304
+   },
+   {
+    "T": 750,
+    "type": "move",
+    "x": 310
+   },
+   {
+    "T": 760,
+    "type": "move",
+    "x": 316
+   },
+   {
+    "T": 770,
+    "type": "move",
+    "x": 322
+   },
+   {
+    "T": 780,
+    "type": "move",
+    "x": 328
+   },
+   {
+    "T": 790,
+    "type": "move",
+    "x": 334
+   },
+   {
+    "T": 800,
+    "type": "move",
+    "x": 340
+   },
+   {
+    "T": 810,
+    "type": "move",
+    "x": 346
+   },
+   {
+    "T": 820,
+    "type": "move",
+    "x": 352
+   },
+   {
+    "T": 830,
+    "type": "move",
+    "x": 358
+   },
+   {
+    "T": 840,
+    "type": "move",
+    "x": 364
+   },
+   {
+    "T": 850,
+    "type": "move",
+    "x": 370
+   },
+   {
+    "T": 860,
+    "type": "move",
+    "x": 376
+   },
+   {
+    "T": 870,
+    "type": "move",
+    "x": 382
+   },
+   {
+    "T": 880,
+    "type": "move",
+    "x": 388
+   },
+   {
+    "T": 890,
+    "type": "move",
+    "x": 394
+   },
+   {
+    "T": 900,
+    "type": "move",
+    "x": 400
+   },
+   {
+    "T": 905,
+    "type": "up",
+    "x": 400
+   }
+  ],
+  "triggers": []
+ },
+ "channelMap": [
+  {
+   "source": ".b0|--x",
+   "specimen": "b0|drv:--v0",
+   "compare": true
+  }
+ ],
+ "declared": [],
+ "skipped": [
+  {
+   "target": ".b0|--x",
+   "class": "ramp",
+   "reason": "the drag segment follows the input pointer (an input, not a fitted mechanism)",
+   "kind": "inertia"
+  }
+ ],
+ "unknowns": [],
+ "assumptions": [
+  {
+   "id": "inertia_release",
+   "note": "release velocity = pointer displacement over the last 100 ms, converted at a nominal 60 Hz frame (a property of the source mechanism, not stored in a record)"
+  },
+  {
+   "id": "inertia_x0:b0",
+   "note": "the start position of the box is not in the record; 100 px is used (the post-release trajectory does not depend on it)"
+  },
+  {
+   "id": "pointer_script",
+   "note": "the pointer path is reconstructed from the record (drag start / end / speed / release time); the start x is arbitrary"
+  }
+ ],
+ "placeholders": [],
+ "boot": {
+  "until": "window.specimen && window.specimen.ready === true"
+ },
+ "scene": {
+  "selectors": [
+   "#b0"
+  ]
+ },
+ "source": {
+  "kind": "labtruth",
+  "file": "lab-springs/truth/m10.json",
+  "variant": "fast",
+  "digest": "aacb587fb01b6bf2",
+  "note": "Fixture Lab truth record (own fixture, public-safe)"
+ }
+}

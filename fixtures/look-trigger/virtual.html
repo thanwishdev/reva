@@ -1,0 +1,14 @@
+<!doctype html>
+<!-- Known by construction (test/look/look-trigger.test.js): a virtual scroller. html/body overflow hidden, every wheel is
+  prevented, the content is translated with lerp 0.1 toward the summed wheel delta. scrollY never moves. #t sits at 5000px. -->
+<html><head><meta charset="utf-8"><title>virtual scroll</title>
+<style>html,body{margin:0;overflow:hidden;background:#111}
+.wrap{position:relative;will-change:transform}
+.sec{height:1000px;border-bottom:1px solid #333}
+#t{position:absolute;top:5000px;left:100px;width:200px;height:200px;background:#c84}</style></head>
+<body><div class="wrap"><div class="sec"></div><div class="sec"></div><div class="sec"></div><div class="sec"></div><div class="sec"></div><div class="sec"></div><div class="sec"></div><div class="sec"></div><div id="t"></div></div>
+<script>
+const w=document.querySelector('.wrap');let target=0,cur=0;const max=8000-innerHeight;
+addEventListener('wheel',e=>{e.preventDefault();target=Math.max(0,Math.min(max,target+e.deltaY));},{passive:false});
+(function f(){cur+=(target-cur)*0.1;w.style.transform=`translate3d(0,${(-cur).toFixed(2)}px,0)`;requestAnimationFrame(f);})();
+</script></body></html>

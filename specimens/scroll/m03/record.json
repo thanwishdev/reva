@@ -1,0 +1,154 @@
+{
+ "schema": "reva.specimen-source/0",
+ "source": {
+  "kind": "labtruth",
+  "file": "lab-scroll/truth/m03.json",
+  "variant": "speed",
+  "digest": "f3144098a3df448d",
+  "note": "Fixture Lab truth record (own fixture, public-safe)"
+ },
+ "items": [
+  {
+   "scored": true,
+   "classScored": true,
+   "target": "#c|drv:--a",
+   "role": "driver",
+   "class": "asymmetric smoothing",
+   "family": "snap-up-ease-down",
+   "law": "per-frame",
+   "attribution": "scroll-linked",
+   "params": {
+    "alpha_down": {
+     "value": 0.25,
+     "unit": "per frame"
+    },
+    "alpha_up": {
+     "value": 1,
+     "unit": "per frame",
+     "note": "snap-on-rise"
+    },
+    "snap_eps": {
+     "value": 0.001,
+     "unit": "progress"
+    },
+    "map": {
+     "shape": "smoothstep",
+     "a": 0,
+     "b": 1,
+     "px": {
+      "s0": 2100,
+      "s1": 2420
+     },
+     "vh": {
+      "s0": 2.625,
+      "s1": 3.025
+     },
+     "elementRelative": {
+      "edge": "bottom",
+      "from": 0.5,
+      "to": 0.1,
+      "unit": "vh"
+     }
+    }
+   },
+   "derived": {
+    "tau_down_ms": {
+     "value": 28.967162473185063,
+     "unit": "ms",
+     "at_dt_ms": 8.333333333333334
+    },
+    "settle_tails": [],
+    "direction_runs": [
+     {
+      "k0": 252,
+      "k1": 283,
+      "direction": "rise",
+      "afterReversal": false,
+      "instant": 32,
+      "lagged": 0,
+      "response": "instant"
+     },
+     {
+      "k0": 294,
+      "k1": 325,
+      "direction": "fall",
+      "afterReversal": true,
+      "instant": 0,
+      "lagged": 32,
+      "response": "eased"
+     }
+    ]
+   }
+  },
+  {
+   "scored": true,
+   "classScored": true,
+   "target": "#c|drv:--b",
+   "role": "driver",
+   "class": "first-order smoothing",
+   "family": "ema",
+   "law": "per-frame",
+   "attribution": "scroll-linked",
+   "params": {
+    "alpha": {
+     "value": 0.18,
+     "unit": "per frame"
+    },
+    "snap_eps": {
+     "value": 0.001,
+     "unit": "progress"
+    },
+    "map": {
+     "shape": "smoothstep",
+     "a": 1,
+     "b": -1,
+     "px": {
+      "s0": 640,
+      "s1": 960
+     },
+     "vh": {
+      "s0": 0.8,
+      "s1": 1.2
+     },
+     "elementRelative": {
+      "edge": "bottom",
+      "from": 0.95,
+      "to": 0.55,
+      "unit": "vh"
+     },
+     "note": "target falls from 1 to 0"
+    }
+   },
+   "derived": {
+    "tau_ms": {
+     "value": 41.99190685074005,
+     "unit": "ms",
+     "at_dt_ms": 8.333333333333334
+    },
+    "settle_tails": [
+     {
+      "k0": 234,
+      "k1": 268,
+      "frames": 35,
+      "ms": 291.6666660000001,
+      "jump": -1,
+      "settled": true,
+      "interrupted": false,
+      "open": false
+     }
+    ]
+   }
+  },
+  {
+   "scored": false,
+   "classScored": true,
+   "target": "#c|drv:--p",
+   "role": "derived",
+   "class": "unknown",
+   "family": "max(a, b)",
+   "attribution": "scroll-linked",
+   "params": {},
+   "note": "p = max of the two smoothed values; scored through its two parts"
+  }
+ ]
+}

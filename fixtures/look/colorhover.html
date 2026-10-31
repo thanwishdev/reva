@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>look fixture: colour-only hover transition</title>
+<!-- Own fixture (no site content). #cta changes background-color and border-color on hover with a declared CSS transition
+  (200 ms ease-in-out): a motion with no sampled channel (the recorder samples transform, opacity, filter, radius, clip, bounds).
+  #plain has no transition. -->
+<style>
+  html, body { margin: 0; }
+  #cta { position: absolute; left: 100px; top: 100px; width: 200px; height: 60px; display: block; background-color: rgb(1, 114, 173); border: 2px solid rgb(1, 114, 173); color: #fff;
+    transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, color 0.2s ease-in-out; }
+  #cta:hover { background-color: rgb(2, 101, 154); border-color: rgb(2, 101, 154); }
+  #plain { position: absolute; left: 100px; top: 300px; width: 200px; height: 60px; background: #c63; }
+  #plain:hover { background: #36c; }
+</style>
+</head>
+<body>
+<a id="cta" href="#">Get started</a>
+<div id="plain"></div>
+</body>
+</html>

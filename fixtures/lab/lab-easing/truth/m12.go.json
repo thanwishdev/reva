@@ -1,0 +1,603 @@
+{
+ "schema": "reva.labtruth/0",
+ "route": "m12",
+ "params": {
+  "step": 90,
+  "order": "dom",
+  "du": 500,
+  "bz": [
+   0.2,
+   0.9,
+   0.1,
+   1
+  ],
+  "N": 4800,
+  "cD": 950,
+  "char": 24,
+  "text": "Measure the motion, not the pixels."
+ },
+ "regime": "R3",
+ "variant": "go",
+ "items": [
+  {
+   "target": "#b0|ren:opacity",
+   "class": "declared",
+   "sub": "css",
+   "family": "css-animation-bezier",
+   "provenance": "declared",
+   "params": {
+    "declared": {
+     "start_ms": 441.666667,
+     "delay_ms": 0,
+     "duration_ms": 500,
+     "easing": [
+      0.2,
+      0.9,
+      0.1,
+      1
+     ],
+     "iterations": 1,
+     "fill": "both",
+     "stagger_rank": 0
+    },
+    "onset_ms": 441.666667,
+    "from": 0,
+    "to": 1
+   },
+   "derived": {
+    "t10": 10.9,
+    "t50": 52.85,
+    "t90": 152.9,
+    "t99": 323.2,
+    "peakVelocity": 0.00978874223802162,
+    "tPeak": 30.225,
+    "overshoot": 0,
+    "crossings": 0,
+    "amplitude": 1,
+    "relative_to": "onset"
+   }
+  },
+  {
+   "target": "#b0|ren:ty",
+   "class": "declared",
+   "sub": "css",
+   "family": "css-animation-bezier",
+   "provenance": "declared",
+   "params": {
+    "declared": {
+     "start_ms": 441.666667,
+     "delay_ms": 0,
+     "duration_ms": 500,
+     "easing": [
+      0.2,
+      0.9,
+      0.1,
+      1
+     ],
+     "iterations": 1,
+     "fill": "both",
+     "stagger_rank": 0
+    },
+    "onset_ms": 441.666667,
+    "from": 28,
+    "to": 0
+   },
+   "derived": {
+    "t10": 10.9,
+    "t50": 52.85,
+    "t90": 152.9,
+    "t99": 323.2,
+    "peakVelocity": 0.00978874223802162,
+    "tPeak": 30.225,
+    "overshoot": 0,
+    "crossings": 0,
+    "amplitude": 1,
+    "relative_to": "onset"
+   }
+  },
+  {
+   "target": "#b1|ren:opacity",
+   "class": "declared",
+   "sub": "css",
+   "family": "css-animation-bezier",
+   "provenance": "declared",
+   "params": {
+    "declared": {
+     "start_ms": 441.666667,
+     "delay_ms": 90,
+     "duration_ms": 500,
+     "easing": [
+      0.2,
+      0.9,
+      0.1,
+      1
+     ],
+     "iterations": 1,
+     "fill": "both",
+     "stagger_rank": 1
+    },
+    "onset_ms": 531.666667,
+    "from": 0,
+    "to": 1
+   },
+   "derived": {
+    "t10": 10.9,
+    "t50": 52.85,
+    "t90": 152.9,
+    "t99": 323.2,
+    "peakVelocity": 0.009788742238008297,
+    "tPeak": 30.225,
+    "overshoot": 0,
+    "crossings": 0,
+    "amplitude": 1,
+    "relative_to": "onset"
+   }
+  },
+  {
+   "target": "#b1|ren:ty",
+   "class": "declared",
+   "sub": "css",
+   "family": "css-animation-bezier",
+   "provenance": "declared",
+   "params": {
+    "declared": {
+     "start_ms": 441.666667,
+     "delay_ms": 90,
+     "duration_ms": 500,
+     "easing": [
+      0.2,
+      0.9,
+      0.1,
+      1
+     ],
+     "iterations": 1,
+     "fill": "both",
+     "stagger_rank": 1
+    },
+    "onset_ms": 531.666667,
+    "from": 28,
+    "to": 0
+   },
+   "derived": {
+    "t10": 10.9,
+    "t50": 52.85,
+    "t90": 152.9,
+    "t99": 323.2,
+    "peakVelocity": 0.009788742238008297,
+    "tPeak": 30.225,
+    "overshoot": 0,
+    "crossings": 0,
+    "amplitude": 1,
+    "relative_to": "onset"
+   }
+  },
+  {
+   "target": "#b2|ren:opacity",
+   "class": "declared",
+   "sub": "css",
+   "family": "css-animation-bezier",
+   "provenance": "declared",
+   "params": {
+    "declared": {
+     "start_ms": 441.666667,
+     "delay_ms": 180,
+     "duration_ms": 500,
+     "easing": [
+      0.2,
+      0.9,
+      0.1,
+      1
+     ],
+     "iterations": 1,
+     "fill": "both",
+     "stagger_rank": 2
+    },
+    "onset_ms": 621.666667,
+    "from": 0,
+    "to": 1
+   },
+   "derived": {
+    "t10": 10.9,
+    "t50": 52.85,
+    "t90": 152.9,
+    "t99": 323.2,
+    "peakVelocity": 0.009788742238008297,
+    "tPeak": 30.225,
+    "overshoot": 0,
+    "crossings": 0,
+    "amplitude": 1,
+    "relative_to": "onset"
+   }
+  },
+  {
+   "target": "#b2|ren:ty",
+   "class": "declared",
+   "sub": "css",
+   "family": "css-animation-bezier",
+   "provenance": "declared",
+   "params": {
+    "declared": {
+     "start_ms": 441.666667,
+     "delay_ms": 180,
+     "duration_ms": 500,
+     "easing": [
+      0.2,
+      0.9,
+      0.1,
+      1
+     ],
+     "iterations": 1,
+     "fill": "both",
+     "stagger_rank": 2
+    },
+    "onset_ms": 621.666667,
+    "from": 28,
+    "to": 0
+   },
+   "derived": {
+    "t10": 10.9,
+    "t50": 52.85,
+    "t90": 152.9,
+    "t99": 323.2,
+    "peakVelocity": 0.009788742238008297,
+    "tPeak": 30.225,
+    "overshoot": 0,
+    "crossings": 0,
+    "amplitude": 1,
+    "relative_to": "onset"
+   }
+  },
+  {
+   "target": "#b3|ren:opacity",
+   "class": "declared",
+   "sub": "css",
+   "family": "css-animation-bezier",
+   "provenance": "declared",
+   "params": {
+    "declared": {
+     "start_ms": 441.666667,
+     "delay_ms": 270,
+     "duration_ms": 500,
+     "easing": [
+      0.2,
+      0.9,
+      0.1,
+      1
+     ],
+     "iterations": 1,
+     "fill": "both",
+     "stagger_rank": 3
+    },
+    "onset_ms": 711.666667,
+    "from": 0,
+    "to": 1
+   },
+   "derived": {
+    "t10": 10.9,
+    "t50": 52.85,
+    "t90": 152.9,
+    "t99": 323.2,
+    "peakVelocity": 0.009788742238008297,
+    "tPeak": 30.225,
+    "overshoot": 0,
+    "crossings": 0,
+    "amplitude": 1,
+    "relative_to": "onset"
+   }
+  },
+  {
+   "target": "#b3|ren:ty",
+   "class": "declared",
+   "sub": "css",
+   "family": "css-animation-bezier",
+   "provenance": "declared",
+   "params": {
+    "declared": {
+     "start_ms": 441.666667,
+     "delay_ms": 270,
+     "duration_ms": 500,
+     "easing": [
+      0.2,
+      0.9,
+      0.1,
+      1
+     ],
+     "iterations": 1,
+     "fill": "both",
+     "stagger_rank": 3
+    },
+    "onset_ms": 711.666667,
+    "from": 28,
+    "to": 0
+   },
+   "derived": {
+    "t10": 10.9,
+    "t50": 52.85,
+    "t90": 152.9,
+    "t99": 323.2,
+    "peakVelocity": 0.009788742238008297,
+    "tPeak": 30.225,
+    "overshoot": 0,
+    "crossings": 0,
+    "amplitude": 1,
+    "relative_to": "onset"
+   }
+  },
+  {
+   "target": "#b4|ren:opacity",
+   "class": "declared",
+   "sub": "css",
+   "family": "css-animation-bezier",
+   "provenance": "declared",
+   "params": {
+    "declared": {
+     "start_ms": 441.666667,
+     "delay_ms": 360,
+     "duration_ms": 500,
+     "easing": [
+      0.2,
+      0.9,
+      0.1,
+      1
+     ],
+     "iterations": 1,
+     "fill": "both",
+     "stagger_rank": 4
+    },
+    "onset_ms": 801.666667,
+    "from": 0,
+    "to": 1
+   },
+   "derived": {
+    "t10": 10.9,
+    "t50": 52.85,
+    "t90": 152.9,
+    "t99": 323.2,
+    "peakVelocity": 0.009788742238008297,
+    "tPeak": 30.225,
+    "overshoot": 0,
+    "crossings": 0,
+    "amplitude": 1,
+    "relative_to": "onset"
+   }
+  },
+  {
+   "target": "#b4|ren:ty",
+   "class": "declared",
+   "sub": "css",
+   "family": "css-animation-bezier",
+   "provenance": "declared",
+   "params": {
+    "declared": {
+     "start_ms": 441.666667,
+     "delay_ms": 360,
+     "duration_ms": 500,
+     "easing": [
+      0.2,
+      0.9,
+      0.1,
+      1
+     ],
+     "iterations": 1,
+     "fill": "both",
+     "stagger_rank": 4
+    },
+    "onset_ms": 801.666667,
+    "from": 28,
+    "to": 0
+   },
+   "derived": {
+    "t10": 10.9,
+    "t50": 52.85,
+    "t90": 152.9,
+    "t99": 323.2,
+    "peakVelocity": 0.009788742238008297,
+    "tPeak": 30.225,
+    "overshoot": 0,
+    "crossings": 0,
+    "amplitude": 1,
+    "relative_to": "onset"
+   }
+  },
+  {
+   "target": "#b5|ren:opacity",
+   "class": "declared",
+   "sub": "css",
+   "family": "css-animation-bezier",
+   "provenance": "declared",
+   "params": {
+    "declared": {
+     "start_ms": 441.666667,
+     "delay_ms": 450,
+     "duration_ms": 500,
+     "easing": [
+      0.2,
+      0.9,
+      0.1,
+      1
+     ],
+     "iterations": 1,
+     "fill": "both",
+     "stagger_rank": 5
+    },
+    "onset_ms": 891.666667,
+    "from": 0,
+    "to": 1
+   },
+   "derived": {
+    "t10": 10.9,
+    "t50": 52.85,
+    "t90": 152.9,
+    "t99": 323.2,
+    "peakVelocity": 0.009788742238008297,
+    "tPeak": 30.225,
+    "overshoot": 0,
+    "crossings": 0,
+    "amplitude": 1,
+    "relative_to": "onset"
+   }
+  },
+  {
+   "target": "#b5|ren:ty",
+   "class": "declared",
+   "sub": "css",
+   "family": "css-animation-bezier",
+   "provenance": "declared",
+   "params": {
+    "declared": {
+     "start_ms": 441.666667,
+     "delay_ms": 450,
+     "duration_ms": 500,
+     "easing": [
+      0.2,
+      0.9,
+      0.1,
+      1
+     ],
+     "iterations": 1,
+     "fill": "both",
+     "stagger_rank": 5
+    },
+    "onset_ms": 891.666667,
+    "from": 28,
+    "to": 0
+   },
+   "derived": {
+    "t10": 10.9,
+    "t50": 52.85,
+    "t90": 152.9,
+    "t99": 323.2,
+    "peakVelocity": 0.009788742238008297,
+    "tPeak": 30.225,
+    "overshoot": 0,
+    "crossings": 0,
+    "amplitude": 1,
+    "relative_to": "onset"
+   }
+  },
+  {
+   "target": "#n|drv:--c",
+   "class": "tween",
+   "family": "named:easeOutCubic",
+   "provenance": "declared-by-code",
+   "params": {
+    "t0_ms": 433.333333,
+    "duration_ms": 950,
+    "from": 0,
+    "to": 4800,
+    "ease": "easeOutCubic"
+   },
+   "derived": {
+    "t10": 32.8,
+    "t50": 196,
+    "t90": 509.05,
+    "t99": 745.35,
+    "peakVelocity": 15.157096966920136,
+    "tPeak": 0.025,
+    "overshoot": 0,
+    "crossings": 0,
+    "amplitude": 4800,
+    "relative_to": "t0"
+   }
+  },
+  {
+   "target": "#n|ren:--c",
+   "class": "tween",
+   "family": "named:easeOutCubic",
+   "params": {
+    "t0_ms": 433.333333,
+    "duration_ms": 950,
+    "from": 0,
+    "to": 4800,
+    "ease": "easeOutCubic"
+   }
+  },
+  {
+   "target": "#t|drv:--n",
+   "class": "ramp",
+   "family": "quantised-ramp",
+   "provenance": "declared-by-code",
+   "params": {
+    "t0_ms": 433.333333,
+    "char_ms": 24,
+    "length": 35,
+    "lattice": 1,
+    "rate_per_ms": 0.041666666666666664,
+    "duration_ms": 840
+   }
+  },
+  {
+   "target": "#t|ren:--n",
+   "class": "ramp",
+   "family": "quantised-ramp",
+   "params": {
+    "t0_ms": 433.333333,
+    "char_ms": 24,
+    "length": 35,
+    "lattice": 1,
+    "rate_per_ms": 0.041666666666666664,
+    "duration_ms": 840
+   }
+  }
+ ],
+ "attribution": {
+  "#b0|ren:opacity": "scroll-triggered time-based",
+  "#b0|ren:ty": "scroll-triggered time-based",
+  "#b1|ren:opacity": "scroll-triggered time-based",
+  "#b1|ren:ty": "scroll-triggered time-based",
+  "#b2|ren:opacity": "scroll-triggered time-based",
+  "#b2|ren:ty": "scroll-triggered time-based",
+  "#b3|ren:opacity": "scroll-triggered time-based",
+  "#b3|ren:ty": "scroll-triggered time-based",
+  "#b4|ren:opacity": "scroll-triggered time-based",
+  "#b4|ren:ty": "scroll-triggered time-based",
+  "#b5|ren:opacity": "scroll-triggered time-based",
+  "#b5|ren:ty": "scroll-triggered time-based",
+  "#n|drv:--c": "scroll-triggered time-based",
+  "#n|ren:--c": "scroll-triggered time-based",
+  "#t|drv:--n": "scroll-triggered time-based",
+  "#t|ren:--n": "scroll-triggered time-based"
+ },
+ "stagger": {
+  "step_ms": 90,
+  "order": "dom",
+  "direction": "forward",
+  "equivalent": [
+   "dom-index",
+   "row-major"
+  ],
+  "onsets_ms": [
+   441.666667,
+   531.666667,
+   621.666667,
+   711.666667,
+   801.666667,
+   891.666667
+  ],
+  "declared": true,
+  "grid": {
+   "cols": 3,
+   "rows": 2
+  }
+ },
+ "metrics": {
+  "m06_m12.stagger": {
+   "step_ms": 90,
+   "order": "dom"
+  },
+  "m12.onset": [
+   441.666667,
+   531.666667,
+   621.666667,
+   711.666667,
+   801.666667,
+   891.666667
+  ],
+  "m12.countup": {
+   "t0_ms": 433.333333,
+   "duration_ms": 950,
+   "ease": "easeOutCubic"
+  },
+  "class": "declared"
+ }
+}

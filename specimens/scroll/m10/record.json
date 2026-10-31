@@ -1,0 +1,56 @@
+{
+ "schema": "reva.specimen-source/0",
+ "source": {
+  "kind": "labtruth",
+  "file": "lab-springs/truth/m10.json",
+  "variant": "fast",
+  "digest": "aacb587fb01b6bf2",
+  "note": "Fixture Lab truth record (own fixture, public-safe)"
+ },
+ "items": [
+  {
+   "target": ".b0|--x",
+   "segment": "drag",
+   "class": "ramp",
+   "scored": false,
+   "note": "the box follows the pointer; velocity constant, writes quantised by the 10 ms pointer ticks; not a fitted model",
+   "derived": {
+    "from_ms": 510,
+    "to_ms": 900,
+    "speed_px_ms": 0.6
+   }
+  },
+  {
+   "target": ".b0|--x",
+   "segment": "post-release",
+   "class": "friction",
+   "family": "friction",
+   "law": "per-frame",
+   "scored": true,
+   "params": {
+    "friction": 0.9,
+    "law": "per-frame",
+    "stop_eps_px_per_frame": 0.05,
+    "release_velocity_px_per_frame_60hz": 10,
+    "release_velocity_px_ms": 0.6,
+    "unit": "v *= f per rendered frame: the stopping TIME scales with the frame period, the distance does not (release velocity converted at a nominal 60 Hz)"
+   },
+   "derived": {
+    "release_ms": 905,
+    "x_at_release_px": 360,
+    "stopping_distance_px": 89.5362,
+    "stop_ms_after_release": 411.667,
+    "frames_with_motion": 51
+   },
+   "closed_form": {
+    "note": "recurrence iterated on a constant frame period (regime dt), independent of Inertia",
+    "stopping_distance_px": 89.5362,
+    "moving_frames": 50
+   },
+   "expect": {
+    "releaseVelocityFromInputLog": 0.6,
+    "law": "per-frame"
+   }
+  }
+ ]
+}

@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>design fixture: words arrive late</title>
+<!-- Own fixture (no site content). The page is empty at load, like a preloader that has drawn nothing yet; 1.3 s later one
+  heading (40 px) and one paragraph (18 px) appear. A design read that takes three equal empty reads as "settled" sees no text at all. -->
+<style>
+  html, body { margin: 0; font-family: sans-serif; }
+  h1 { font-size: 40px; } p { font-size: 18px; }
+</style>
+</head>
+<body>
+<script>
+  setTimeout(() => { document.body.innerHTML = '<h1>Late heading</h1><p>Late paragraph</p>'; }, 1300);
+</script>
+</body>
+</html>

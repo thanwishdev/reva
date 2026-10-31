@@ -1,0 +1,11 @@
+<!doctype html>
+<meta charset="utf-8">
+<!-- The page replaces the recorder's own descriptor list (window.__WR is reachable from page script): the session must
+     strip terminal escapes and bidi overrides again on the Node side. -->
+<title>termesc-override</title>
+<div id="b" style="width:300px;height:200px;background:#36c;transition:transform 600ms ease-out">x</div>
+<script>
+const el = document.getElementById('b');
+try { const W = window.__WR; if (W) W.elDescs = (from = 0) => W.els.slice(from).map(() => 'DIV#\u001b]0;REVA-TITLE\u0007\u001b[2J\u202eevil\u0085'); } catch (e) {}
+requestAnimationFrame(() => requestAnimationFrame(() => { el.style.transform = 'translateX(400px)'; }));
+</script>

@@ -1,0 +1,420 @@
+{
+ "note": "Generated for review by tools/gen-truth.mjs. Planned-trace values (start signal at k = 0); the scorer calls truth(route, params, regime, {variant, ctx}) with the actual take.",
+ "route": "m16d",
+ "default": {
+  "steps": {
+   "R2": {
+    "schema": "reva.labtruth/0",
+    "route": "m16d",
+    "params": {
+     "amp": 140,
+     "threshold": 200
+    },
+    "regime": "R2",
+    "variant": "steps",
+    "metrics": [
+     "negative",
+     "false_spring",
+     "false_ema"
+    ],
+    "stagger": null,
+    "negative": {
+     "accept": [
+      "step",
+      "unknown"
+     ],
+     "forbid": [
+      "spring",
+      "first-order smoothing",
+      "tween",
+      "ramp"
+     ]
+    },
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "class": "step",
+      "params": {
+       "amp_px": 140,
+       "threshold_px": 200,
+       "delay_frames": 1
+      },
+      "derived": {},
+      "family": "delayed two-level map"
+     }
+    ],
+    "attribution": {}
+   },
+   "R3": {
+    "schema": "reva.labtruth/0",
+    "route": "m16d",
+    "params": {
+     "amp": 140,
+     "threshold": 200
+    },
+    "regime": "R3",
+    "variant": "steps",
+    "metrics": [
+     "negative",
+     "false_spring",
+     "false_ema"
+    ],
+    "stagger": null,
+    "negative": {
+     "accept": [
+      "step",
+      "unknown"
+     ],
+     "forbid": [
+      "spring",
+      "first-order smoothing",
+      "tween",
+      "ramp"
+     ]
+    },
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "class": "step",
+      "params": {
+       "amp_px": 140,
+       "threshold_px": 200,
+       "delay_frames": 1
+      },
+      "derived": {},
+      "family": "delayed two-level map"
+     }
+    ],
+    "attribution": {}
+   },
+   "R4": {
+    "schema": "reva.labtruth/0",
+    "route": "m16d",
+    "params": {
+     "amp": 140,
+     "threshold": 200
+    },
+    "regime": "R4",
+    "variant": "steps",
+    "metrics": [
+     "negative",
+     "false_spring",
+     "false_ema"
+    ],
+    "stagger": null,
+    "negative": {
+     "accept": [
+      "step",
+      "unknown"
+     ],
+     "forbid": [
+      "spring",
+      "first-order smoothing",
+      "tween",
+      "ramp"
+     ]
+    },
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "class": "step",
+      "params": {
+       "amp_px": 140,
+       "threshold_px": 200,
+       "delay_frames": 1
+      },
+      "derived": {},
+      "family": "delayed two-level map"
+     }
+    ],
+    "attribution": {}
+   },
+   "R5": {
+    "schema": "reva.labtruth/0",
+    "route": "m16d",
+    "params": {
+     "amp": 140,
+     "threshold": 200
+    },
+    "regime": "R5",
+    "variant": "steps",
+    "metrics": [
+     "negative",
+     "false_spring",
+     "false_ema"
+    ],
+    "stagger": null,
+    "negative": {
+     "accept": [
+      "step",
+      "unknown"
+     ],
+     "forbid": [
+      "spring",
+      "first-order smoothing",
+      "tween",
+      "ramp"
+     ]
+    },
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "class": "step",
+      "params": {
+       "amp_px": 140,
+       "threshold_px": 200,
+       "delay_frames": 1
+      },
+      "derived": {},
+      "family": "delayed two-level map"
+     }
+    ],
+    "attribution": {}
+   }
+  }
+ },
+ "grid": [
+  {
+   "index": 0,
+   "params": {
+    "amp": 140
+   },
+   "R3": {
+    "schema": "reva.labtruth/0",
+    "route": "m16d",
+    "params": {
+     "amp": 140,
+     "threshold": 200
+    },
+    "regime": "R3",
+    "variant": "steps",
+    "metrics": [
+     "negative",
+     "false_spring",
+     "false_ema"
+    ],
+    "stagger": null,
+    "negative": {
+     "accept": [
+      "step",
+      "unknown"
+     ],
+     "forbid": [
+      "spring",
+      "first-order smoothing",
+      "tween",
+      "ramp"
+     ]
+    },
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "class": "step",
+      "params": {
+       "amp_px": 140,
+       "threshold_px": 200,
+       "delay_frames": 1
+      },
+      "derived": {},
+      "family": "delayed two-level map"
+     }
+    ],
+    "attribution": {}
+   }
+  },
+  {
+   "index": 1,
+   "params": {
+    "amp": 60
+   },
+   "R3": {
+    "schema": "reva.labtruth/0",
+    "route": "m16d",
+    "params": {
+     "amp": 60,
+     "threshold": 200
+    },
+    "regime": "R3",
+    "variant": "steps",
+    "metrics": [
+     "negative",
+     "false_spring",
+     "false_ema"
+    ],
+    "stagger": null,
+    "negative": {
+     "accept": [
+      "step",
+      "unknown"
+     ],
+     "forbid": [
+      "spring",
+      "first-order smoothing",
+      "tween",
+      "ramp"
+     ]
+    },
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "class": "step",
+      "params": {
+       "amp_px": 60,
+       "threshold_px": 200,
+       "delay_frames": 1
+      },
+      "derived": {},
+      "family": "delayed two-level map"
+     }
+    ],
+    "attribution": {}
+   }
+  },
+  {
+   "index": 2,
+   "params": {
+    "amp": 90
+   },
+   "R3": {
+    "schema": "reva.labtruth/0",
+    "route": "m16d",
+    "params": {
+     "amp": 90,
+     "threshold": 200
+    },
+    "regime": "R3",
+    "variant": "steps",
+    "metrics": [
+     "negative",
+     "false_spring",
+     "false_ema"
+    ],
+    "stagger": null,
+    "negative": {
+     "accept": [
+      "step",
+      "unknown"
+     ],
+     "forbid": [
+      "spring",
+      "first-order smoothing",
+      "tween",
+      "ramp"
+     ]
+    },
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "class": "step",
+      "params": {
+       "amp_px": 90,
+       "threshold_px": 200,
+       "delay_frames": 1
+      },
+      "derived": {},
+      "family": "delayed two-level map"
+     }
+    ],
+    "attribution": {}
+   }
+  },
+  {
+   "index": 3,
+   "params": {
+    "amp": 200,
+    "threshold": 150
+   },
+   "R3": {
+    "schema": "reva.labtruth/0",
+    "route": "m16d",
+    "params": {
+     "amp": 200,
+     "threshold": 150
+    },
+    "regime": "R3",
+    "variant": "steps",
+    "metrics": [
+     "negative",
+     "false_spring",
+     "false_ema"
+    ],
+    "stagger": null,
+    "negative": {
+     "accept": [
+      "step",
+      "unknown"
+     ],
+     "forbid": [
+      "spring",
+      "first-order smoothing",
+      "tween",
+      "ramp"
+     ]
+    },
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "class": "step",
+      "params": {
+       "amp_px": 200,
+       "threshold_px": 150,
+       "delay_frames": 1
+      },
+      "derived": {},
+      "family": "delayed two-level map"
+     }
+    ],
+    "attribution": {}
+   }
+  },
+  {
+   "index": 4,
+   "params": {
+    "amp": 260,
+    "threshold": 250
+   },
+   "R3": {
+    "schema": "reva.labtruth/0",
+    "route": "m16d",
+    "params": {
+     "amp": 260,
+     "threshold": 250
+    },
+    "regime": "R3",
+    "variant": "steps",
+    "metrics": [
+     "negative",
+     "false_spring",
+     "false_ema"
+    ],
+    "stagger": null,
+    "negative": {
+     "accept": [
+      "step",
+      "unknown"
+     ],
+     "forbid": [
+      "spring",
+      "first-order smoothing",
+      "tween",
+      "ramp"
+     ]
+    },
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "class": "step",
+      "params": {
+       "amp_px": 260,
+       "threshold_px": 250,
+       "delay_frames": 1
+      },
+      "derived": {},
+      "family": "delayed two-level map"
+     }
+    ],
+    "attribution": {}
+   }
+  }
+ ]
+}

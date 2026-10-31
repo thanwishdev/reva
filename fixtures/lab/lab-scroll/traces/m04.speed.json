@@ -1,0 +1,28 @@
+{
+ "schema": "reva.labtrace/0",
+ "route": "m04",
+ "variant": "speed",
+ "note": "Dense sweep over the whole pinned range and back (crosses every hysteresis edge in both directions).",
+ "actions": [
+  {
+   "hold": 500
+  },
+  {
+   "scrollTo": 380
+  },
+  {
+   "hold": 100
+  },
+  {
+   "denseSweep": {
+    "from": 380,
+    "to": 2450,
+    "px": 10,
+    "framesPerPos": 1
+   }
+  },
+  {
+   "hold": 1000
+  }
+ ]
+}

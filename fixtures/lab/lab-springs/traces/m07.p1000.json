@@ -1,0 +1,35 @@
+{
+ "id": "p1000",
+ "route": "m07",
+ "note": "retarget every 1000 ms: levels 1, 0, 1 at 500, 1500, 2500 ms after the first frame",
+ "page": {
+  "sched": "p1000"
+ },
+ "viewport": {
+  "width": 1280,
+  "height": 800
+ },
+ "seed": 1,
+ "scene": {
+  "selectors": [
+   ".b0"
+  ]
+ },
+ "boot": {
+  "until": "document.readyState === 'complete'"
+ },
+ "actions": [
+  {
+   "eval": "window.dispatchEvent(new Event('go'))"
+  },
+  {
+   "mark": "go"
+  },
+  {
+   "hold": 6200
+  },
+  {
+   "mark": "end"
+  }
+ ]
+}

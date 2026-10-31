@@ -1,0 +1,50 @@
+{
+ "schema": "reva.labtrace/0",
+ "route": "m02",
+ "variant": "reversal",
+ "note": "Jumps with reversals before the response has settled.",
+ "actions": [
+  {
+   "hold": 500
+  },
+  {
+   "scrollTo": 1000
+  },
+  {
+   "hold": 300
+  },
+  {
+   "scrollTo": 1250
+  },
+  {
+   "hold": 300
+  },
+  {
+   "scrollTo": 1100
+  },
+  {
+   "hold": 300
+  },
+  {
+   "scrollTo": 1350
+  },
+  {
+   "hold": 300
+  },
+  {
+   "scrollTo": 900
+  },
+  {
+   "hold": 300
+  },
+  {
+   "scrollTo": 1300
+  },
+  {
+   "hold": 300
+  },
+  {
+   "hold": 500
+  }
+ ]
+}

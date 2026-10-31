@@ -1,0 +1,30 @@
+<!doctype html><meta charset="utf-8"><title>fontvar</title>
+<!-- Variable-font motion with known values, no font file needed: the recorder reads COMPUTED font-variation-settings /
+     font-weight / font-stretch, which interpolate whether or not the fallback font has the axis. Boxes have a fixed width
+     so a change of weight never reflows the box (the weight channel is the only thing that moves).
+     #h   hover: font-variation-settings 'wght' 300 -> 800, 600 ms ease-out
+     #fw  hover: font-weight 300 -> 800, 600 ms ease-in-out
+     #k   load: @keyframes 'wght' 200 -> 900 and 'wdth' 75 -> 125, 1000 ms ease-in-out
+     #s   scroll: script sets 'wght' 100 -> 900 over 0..1500 px of scroll (linear, clamped) -->
+<style>
+body { margin: 0; height: 3000px; font: 40px/1.2 sans-serif; }
+.t { position: fixed; left: 0; width: 420px; margin: 0; padding: 10px; }
+#h  { top: 0;   font-variation-settings: 'wght' 300; transition: font-variation-settings 600ms ease-out; }
+#h:hover { font-variation-settings: 'wght' 800; }
+#fw { top: 80px; font-weight: 300; transition: font-weight 600ms ease-in-out; }
+#fw:hover { font-weight: 800; }
+@keyframes kf { from { font-variation-settings: 'wght' 200, 'wdth' 75; } to { font-variation-settings: 'wght' 900, 'wdth' 125; } }
+#k  { top: 160px; font-variation-settings: 'wght' 200, 'wdth' 75; }
+body.go #k { animation: kf 1000ms ease-in-out forwards; }
+#s  { top: 240px; font-variation-settings: 'wght' 100; }
+</style>
+<p id="h" class="t">Hover weight</p>
+<p id="fw" class="t">Hover font-weight</p>
+<p id="k" class="t">Keyframe axes</p>
+<p id="s" class="t">Scroll weight</p>
+<script>
+const s = document.getElementById('s');
+function sc() { s.style.fontVariationSettings = "'wght' " + (100 + 800 * Math.min(1, scrollY / 1500)); }
+addEventListener('scroll', sc, { passive: true }); sc();
+requestAnimationFrame(() => requestAnimationFrame(() => document.body.classList.add('go')));
+</script>

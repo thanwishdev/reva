@@ -1,0 +1,666 @@
+{
+ "note": "Generated for review by tools/gen-truth.mjs. Planned-trace values (start signal at k = 0); the scorer calls truth(route, params, regime, {variant, ctx}) with the actual take.",
+ "route": "m21",
+ "default": {
+  "steps": {
+   "R2": {
+    "schema": "reva.labtruth/0",
+    "route": "m21",
+    "params": {
+     "durMs": 750,
+     "gain": 0.5,
+     "max": 700,
+     "write": "full"
+    },
+    "regime": "R2",
+    "variant": "steps",
+    "metrics": [
+     "class",
+     "law",
+     "step_response_duration"
+    ],
+    "stagger": null,
+    "negative": null,
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "driver": ".b0|drv:--v",
+      "class": "restarted tween",
+      "family": "time-based, non-LTI",
+      "law": "time-based, non-LTI",
+      "params": {
+       "dur_ms": 750,
+       "ease": "expo.out",
+       "ease_formula": "1 - 2^(-10 p), 1 at p = 1",
+       "restart": "from-current, at every change of the target",
+       "target_gain": 0.5,
+       "target_max_px": 350,
+       "write": "full"
+      },
+      "derived": {
+       "step_response_duration_ms": 750,
+       "t10_ms": 11.400232008378746,
+       "t50_ms": 75,
+       "t90_ms": 249.14460711655218,
+       "t99_ms": 498.2892142331043,
+       "final_jump_frac": 0.0009765625
+      }
+     }
+    ],
+    "attribution": {
+     ".b0|ren:tx": "scroll-triggered time-based"
+    }
+   },
+   "R3": {
+    "schema": "reva.labtruth/0",
+    "route": "m21",
+    "params": {
+     "durMs": 750,
+     "gain": 0.5,
+     "max": 700,
+     "write": "full"
+    },
+    "regime": "R3",
+    "variant": "steps",
+    "metrics": [
+     "class",
+     "law",
+     "step_response_duration"
+    ],
+    "stagger": null,
+    "negative": null,
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "driver": ".b0|drv:--v",
+      "class": "restarted tween",
+      "family": "time-based, non-LTI",
+      "law": "time-based, non-LTI",
+      "params": {
+       "dur_ms": 750,
+       "ease": "expo.out",
+       "ease_formula": "1 - 2^(-10 p), 1 at p = 1",
+       "restart": "from-current, at every change of the target",
+       "target_gain": 0.5,
+       "target_max_px": 350,
+       "write": "full"
+      },
+      "derived": {
+       "step_response_duration_ms": 750,
+       "t10_ms": 11.400232008378746,
+       "t50_ms": 75,
+       "t90_ms": 249.14460711655218,
+       "t99_ms": 498.2892142331043,
+       "final_jump_frac": 0.0009765625
+      }
+     }
+    ],
+    "attribution": {
+     ".b0|ren:tx": "scroll-triggered time-based"
+    }
+   },
+   "R4": {
+    "schema": "reva.labtruth/0",
+    "route": "m21",
+    "params": {
+     "durMs": 750,
+     "gain": 0.5,
+     "max": 700,
+     "write": "full"
+    },
+    "regime": "R4",
+    "variant": "steps",
+    "metrics": [
+     "class",
+     "law",
+     "step_response_duration"
+    ],
+    "stagger": null,
+    "negative": null,
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "driver": ".b0|drv:--v",
+      "class": "restarted tween",
+      "family": "time-based, non-LTI",
+      "law": "time-based, non-LTI",
+      "params": {
+       "dur_ms": 750,
+       "ease": "expo.out",
+       "ease_formula": "1 - 2^(-10 p), 1 at p = 1",
+       "restart": "from-current, at every change of the target",
+       "target_gain": 0.5,
+       "target_max_px": 350,
+       "write": "full"
+      },
+      "derived": {
+       "step_response_duration_ms": 750,
+       "t10_ms": 11.400232008378746,
+       "t50_ms": 75,
+       "t90_ms": 249.14460711655218,
+       "t99_ms": 498.2892142331043,
+       "final_jump_frac": 0.0009765625
+      }
+     }
+    ],
+    "attribution": {
+     ".b0|ren:tx": "scroll-triggered time-based"
+    }
+   },
+   "R5": {
+    "schema": "reva.labtruth/0",
+    "route": "m21",
+    "params": {
+     "durMs": 750,
+     "gain": 0.5,
+     "max": 700,
+     "write": "full"
+    },
+    "regime": "R5",
+    "variant": "steps",
+    "metrics": [
+     "class",
+     "law",
+     "step_response_duration"
+    ],
+    "stagger": null,
+    "negative": null,
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "driver": ".b0|drv:--v",
+      "class": "restarted tween",
+      "family": "time-based, non-LTI",
+      "law": "time-based, non-LTI",
+      "params": {
+       "dur_ms": 750,
+       "ease": "expo.out",
+       "ease_formula": "1 - 2^(-10 p), 1 at p = 1",
+       "restart": "from-current, at every change of the target",
+       "target_gain": 0.5,
+       "target_max_px": 350,
+       "write": "full"
+      },
+      "derived": {
+       "step_response_duration_ms": 750,
+       "t10_ms": 11.400232008378746,
+       "t50_ms": 75,
+       "t90_ms": 249.14460711655218,
+       "t99_ms": 498.2892142331043,
+       "final_jump_frac": 0.0009765625
+      }
+     }
+    ],
+    "attribution": {
+     ".b0|ren:tx": "scroll-triggered time-based"
+    }
+   }
+  },
+  "reversal": {
+   "R2": {
+    "schema": "reva.labtruth/0",
+    "route": "m21",
+    "params": {
+     "durMs": 750,
+     "gain": 0.5,
+     "max": 700,
+     "write": "full"
+    },
+    "regime": "R2",
+    "variant": "reversal",
+    "metrics": [
+     "class",
+     "law",
+     "step_response_duration"
+    ],
+    "stagger": null,
+    "negative": null,
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "driver": ".b0|drv:--v",
+      "class": "restarted tween",
+      "family": "time-based, non-LTI",
+      "law": "time-based, non-LTI",
+      "params": {
+       "dur_ms": 750,
+       "ease": "expo.out",
+       "ease_formula": "1 - 2^(-10 p), 1 at p = 1",
+       "restart": "from-current, at every change of the target",
+       "target_gain": 0.5,
+       "target_max_px": 350,
+       "write": "full"
+      },
+      "derived": {
+       "step_response_duration_ms": 750,
+       "t10_ms": 11.400232008378746,
+       "t50_ms": 75,
+       "t90_ms": 249.14460711655218,
+       "t99_ms": 498.2892142331043,
+       "final_jump_frac": 0.0009765625
+      }
+     }
+    ],
+    "attribution": {
+     ".b0|ren:tx": "scroll-triggered time-based"
+    }
+   },
+   "R3": {
+    "schema": "reva.labtruth/0",
+    "route": "m21",
+    "params": {
+     "durMs": 750,
+     "gain": 0.5,
+     "max": 700,
+     "write": "full"
+    },
+    "regime": "R3",
+    "variant": "reversal",
+    "metrics": [
+     "class",
+     "law",
+     "step_response_duration"
+    ],
+    "stagger": null,
+    "negative": null,
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "driver": ".b0|drv:--v",
+      "class": "restarted tween",
+      "family": "time-based, non-LTI",
+      "law": "time-based, non-LTI",
+      "params": {
+       "dur_ms": 750,
+       "ease": "expo.out",
+       "ease_formula": "1 - 2^(-10 p), 1 at p = 1",
+       "restart": "from-current, at every change of the target",
+       "target_gain": 0.5,
+       "target_max_px": 350,
+       "write": "full"
+      },
+      "derived": {
+       "step_response_duration_ms": 750,
+       "t10_ms": 11.400232008378746,
+       "t50_ms": 75,
+       "t90_ms": 249.14460711655218,
+       "t99_ms": 498.2892142331043,
+       "final_jump_frac": 0.0009765625
+      }
+     }
+    ],
+    "attribution": {
+     ".b0|ren:tx": "scroll-triggered time-based"
+    }
+   },
+   "R4": {
+    "schema": "reva.labtruth/0",
+    "route": "m21",
+    "params": {
+     "durMs": 750,
+     "gain": 0.5,
+     "max": 700,
+     "write": "full"
+    },
+    "regime": "R4",
+    "variant": "reversal",
+    "metrics": [
+     "class",
+     "law",
+     "step_response_duration"
+    ],
+    "stagger": null,
+    "negative": null,
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "driver": ".b0|drv:--v",
+      "class": "restarted tween",
+      "family": "time-based, non-LTI",
+      "law": "time-based, non-LTI",
+      "params": {
+       "dur_ms": 750,
+       "ease": "expo.out",
+       "ease_formula": "1 - 2^(-10 p), 1 at p = 1",
+       "restart": "from-current, at every change of the target",
+       "target_gain": 0.5,
+       "target_max_px": 350,
+       "write": "full"
+      },
+      "derived": {
+       "step_response_duration_ms": 750,
+       "t10_ms": 11.400232008378746,
+       "t50_ms": 75,
+       "t90_ms": 249.14460711655218,
+       "t99_ms": 498.2892142331043,
+       "final_jump_frac": 0.0009765625
+      }
+     }
+    ],
+    "attribution": {
+     ".b0|ren:tx": "scroll-triggered time-based"
+    }
+   },
+   "R5": {
+    "schema": "reva.labtruth/0",
+    "route": "m21",
+    "params": {
+     "durMs": 750,
+     "gain": 0.5,
+     "max": 700,
+     "write": "full"
+    },
+    "regime": "R5",
+    "variant": "reversal",
+    "metrics": [
+     "class",
+     "law",
+     "step_response_duration"
+    ],
+    "stagger": null,
+    "negative": null,
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "driver": ".b0|drv:--v",
+      "class": "restarted tween",
+      "family": "time-based, non-LTI",
+      "law": "time-based, non-LTI",
+      "params": {
+       "dur_ms": 750,
+       "ease": "expo.out",
+       "ease_formula": "1 - 2^(-10 p), 1 at p = 1",
+       "restart": "from-current, at every change of the target",
+       "target_gain": 0.5,
+       "target_max_px": 350,
+       "write": "full"
+      },
+      "derived": {
+       "step_response_duration_ms": 750,
+       "t10_ms": 11.400232008378746,
+       "t50_ms": 75,
+       "t90_ms": 249.14460711655218,
+       "t99_ms": 498.2892142331043,
+       "final_jump_frac": 0.0009765625
+      }
+     }
+    ],
+    "attribution": {
+     ".b0|ren:tx": "scroll-triggered time-based"
+    }
+   }
+  }
+ },
+ "grid": [
+  {
+   "index": 0,
+   "params": {
+    "durMs": 750
+   },
+   "R3": {
+    "schema": "reva.labtruth/0",
+    "route": "m21",
+    "params": {
+     "durMs": 750,
+     "gain": 0.5,
+     "max": 700,
+     "write": "full"
+    },
+    "regime": "R3",
+    "variant": "steps",
+    "metrics": [
+     "class",
+     "law",
+     "step_response_duration"
+    ],
+    "stagger": null,
+    "negative": null,
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "driver": ".b0|drv:--v",
+      "class": "restarted tween",
+      "family": "time-based, non-LTI",
+      "law": "time-based, non-LTI",
+      "params": {
+       "dur_ms": 750,
+       "ease": "expo.out",
+       "ease_formula": "1 - 2^(-10 p), 1 at p = 1",
+       "restart": "from-current, at every change of the target",
+       "target_gain": 0.5,
+       "target_max_px": 350,
+       "write": "full"
+      },
+      "derived": {
+       "step_response_duration_ms": 750,
+       "t10_ms": 11.400232008378746,
+       "t50_ms": 75,
+       "t90_ms": 249.14460711655218,
+       "t99_ms": 498.2892142331043,
+       "final_jump_frac": 0.0009765625
+      }
+     }
+    ],
+    "attribution": {
+     ".b0|ren:tx": "scroll-triggered time-based"
+    }
+   }
+  },
+  {
+   "index": 1,
+   "params": {
+    "durMs": 300
+   },
+   "R3": {
+    "schema": "reva.labtruth/0",
+    "route": "m21",
+    "params": {
+     "durMs": 300,
+     "gain": 0.5,
+     "max": 700,
+     "write": "full"
+    },
+    "regime": "R3",
+    "variant": "steps",
+    "metrics": [
+     "class",
+     "law",
+     "step_response_duration"
+    ],
+    "stagger": null,
+    "negative": null,
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "driver": ".b0|drv:--v",
+      "class": "restarted tween",
+      "family": "time-based, non-LTI",
+      "law": "time-based, non-LTI",
+      "params": {
+       "dur_ms": 300,
+       "ease": "expo.out",
+       "ease_formula": "1 - 2^(-10 p), 1 at p = 1",
+       "restart": "from-current, at every change of the target",
+       "target_gain": 0.5,
+       "target_max_px": 350,
+       "write": "full"
+      },
+      "derived": {
+       "step_response_duration_ms": 300,
+       "t10_ms": 4.560092803351498,
+       "t50_ms": 30,
+       "t90_ms": 99.65784284662088,
+       "t99_ms": 199.3156856932417,
+       "final_jump_frac": 0.0009765625
+      }
+     }
+    ],
+    "attribution": {
+     ".b0|ren:tx": "scroll-triggered time-based"
+    }
+   }
+  },
+  {
+   "index": 2,
+   "params": {
+    "durMs": 450
+   },
+   "R3": {
+    "schema": "reva.labtruth/0",
+    "route": "m21",
+    "params": {
+     "durMs": 450,
+     "gain": 0.5,
+     "max": 700,
+     "write": "full"
+    },
+    "regime": "R3",
+    "variant": "steps",
+    "metrics": [
+     "class",
+     "law",
+     "step_response_duration"
+    ],
+    "stagger": null,
+    "negative": null,
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "driver": ".b0|drv:--v",
+      "class": "restarted tween",
+      "family": "time-based, non-LTI",
+      "law": "time-based, non-LTI",
+      "params": {
+       "dur_ms": 450,
+       "ease": "expo.out",
+       "ease_formula": "1 - 2^(-10 p), 1 at p = 1",
+       "restart": "from-current, at every change of the target",
+       "target_gain": 0.5,
+       "target_max_px": 350,
+       "write": "full"
+      },
+      "derived": {
+       "step_response_duration_ms": 450,
+       "t10_ms": 6.840139205027247,
+       "t50_ms": 45,
+       "t90_ms": 149.4867642699313,
+       "t99_ms": 298.97352853986257,
+       "final_jump_frac": 0.0009765625
+      }
+     }
+    ],
+    "attribution": {
+     ".b0|ren:tx": "scroll-triggered time-based"
+    }
+   }
+  },
+  {
+   "index": 3,
+   "params": {
+    "durMs": 1050
+   },
+   "R3": {
+    "schema": "reva.labtruth/0",
+    "route": "m21",
+    "params": {
+     "durMs": 1050,
+     "gain": 0.5,
+     "max": 700,
+     "write": "full"
+    },
+    "regime": "R3",
+    "variant": "steps",
+    "metrics": [
+     "class",
+     "law",
+     "step_response_duration"
+    ],
+    "stagger": null,
+    "negative": null,
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "driver": ".b0|drv:--v",
+      "class": "restarted tween",
+      "family": "time-based, non-LTI",
+      "law": "time-based, non-LTI",
+      "params": {
+       "dur_ms": 1050,
+       "ease": "expo.out",
+       "ease_formula": "1 - 2^(-10 p), 1 at p = 1",
+       "restart": "from-current, at every change of the target",
+       "target_gain": 0.5,
+       "target_max_px": 350,
+       "write": "full"
+      },
+      "derived": {
+       "step_response_duration_ms": 1050,
+       "t10_ms": 15.960324811730244,
+       "t50_ms": 105,
+       "t90_ms": 348.80244996317305,
+       "t99_ms": 697.604899926346,
+       "final_jump_frac": 0.0009765625
+      }
+     }
+    ],
+    "attribution": {
+     ".b0|ren:tx": "scroll-triggered time-based"
+    }
+   }
+  },
+  {
+   "index": 4,
+   "params": {
+    "durMs": 1400
+   },
+   "R3": {
+    "schema": "reva.labtruth/0",
+    "route": "m21",
+    "params": {
+     "durMs": 1400,
+     "gain": 0.5,
+     "max": 700,
+     "write": "full"
+    },
+    "regime": "R3",
+    "variant": "steps",
+    "metrics": [
+     "class",
+     "law",
+     "step_response_duration"
+    ],
+    "stagger": null,
+    "negative": null,
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "driver": ".b0|drv:--v",
+      "class": "restarted tween",
+      "family": "time-based, non-LTI",
+      "law": "time-based, non-LTI",
+      "params": {
+       "dur_ms": 1400,
+       "ease": "expo.out",
+       "ease_formula": "1 - 2^(-10 p), 1 at p = 1",
+       "restart": "from-current, at every change of the target",
+       "target_gain": 0.5,
+       "target_max_px": 350,
+       "write": "full"
+      },
+      "derived": {
+       "step_response_duration_ms": 1400,
+       "t10_ms": 21.280433082306992,
+       "t50_ms": 140,
+       "t90_ms": 465.06993328423073,
+       "t99_ms": 930.1398665684613,
+       "final_jump_frac": 0.0009765625
+      }
+     }
+    ],
+    "attribution": {
+     ".b0|ren:tx": "scroll-triggered time-based"
+    }
+   }
+  }
+ ]
+}

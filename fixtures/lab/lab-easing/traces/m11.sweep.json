@@ -1,0 +1,32 @@
+{
+ "schema": "reva.labtrace/0",
+ "route": "m11",
+ "variant": "sweep",
+ "viewport": {
+  "width": 1280,
+  "height": 800
+ },
+ "seed": 1,
+ "boot": {
+  "until": "window.__ready === true"
+ },
+ "actions": [
+  {
+   "hold": 400
+  },
+  {
+   "snapshot": "start"
+  },
+  {
+   "denseSweep": {
+    "from": 700,
+    "to": 1500,
+    "px": 10,
+    "framesPerPos": 2
+   }
+  },
+  {
+   "hold": 300
+  }
+ ]
+}

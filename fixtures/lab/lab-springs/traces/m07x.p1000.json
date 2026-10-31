@@ -1,0 +1,35 @@
+{
+ "id": "p1000",
+ "route": "m07x",
+ "note": "as m07.p1000",
+ "page": {
+  "sched": "p1000"
+ },
+ "viewport": {
+  "width": 1280,
+  "height": 800
+ },
+ "seed": 1,
+ "scene": {
+  "selectors": [
+   ".b0"
+  ]
+ },
+ "boot": {
+  "until": "document.readyState === 'complete'"
+ },
+ "actions": [
+  {
+   "eval": "window.dispatchEvent(new Event('go'))"
+  },
+  {
+   "mark": "go"
+  },
+  {
+   "hold": 6200
+  },
+  {
+   "mark": "end"
+  }
+ ]
+}

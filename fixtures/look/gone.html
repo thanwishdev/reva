@@ -1,0 +1,18 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>look fixture: nodes replaced</title>
+<!-- Own fixture (no site content). Known by construction: four .tile elements get class "in" 80 ms apart (CSS
+  transition, transform 500 ms ease-out, translateY 100 px); at 1800 ms the section is rebuilt with identical markup
+  (new nodes, already in place, like a hydration or a re-render): the nodes that moved left the page.
+-->
+<style>
+body{margin:0;height:150vh}
+.tile{position:absolute;top:100px;width:120px;height:120px;background:#c63;transition:transform 500ms ease-out}
+.tile.in{transform:translateY(100px)}
+</style></head><body><section id="s"></section>
+<script>
+const s = document.getElementById('s');
+const make = () => { s.innerHTML = ''; for (let i = 0; i < 4; i++) { const d = document.createElement('div'); d.className = 'tile'; d.style.left = (50 + 150 * i) + 'px'; s.appendChild(d); } };
+make();
+setTimeout(() => document.querySelectorAll('.tile').forEach((d, i) => setTimeout(() => d.classList.add('in'), i * 80)), 400);
+// "hydration": the whole section is rebuilt after the tween (same markup, new nodes, already in place)
+setTimeout(() => { make(); document.querySelectorAll('.tile').forEach((d) => { d.style.transition = 'none'; d.classList.add('in'); }); }, 1800);
+</script></body></html>

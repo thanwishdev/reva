@@ -1,0 +1,418 @@
+{
+ "note": "Generated for review by tools/gen-truth.mjs. Planned-trace values (start signal at k = 0); the scorer calls truth(route, params, regime, {variant, ctx}) with the actual take.",
+ "route": "m16c",
+ "default": {
+  "steps": {
+   "R2": {
+    "schema": "reva.labtruth/0",
+    "route": "m16c",
+    "params": {
+     "speed": 300,
+     "gain": 0.6,
+     "max": 600
+    },
+    "regime": "R2",
+    "variant": "steps",
+    "metrics": [
+     "negative",
+     "false_spring",
+     "false_ema"
+    ],
+    "stagger": null,
+    "negative": {
+     "accept": [
+      "ramp",
+      "unknown"
+     ],
+     "forbid": [
+      "spring",
+      "first-order smoothing",
+      "tween"
+     ]
+    },
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "class": "ramp",
+      "params": {
+       "speed_px_per_s": 300
+      },
+      "derived": {
+       "note": "ramp segments at constant speed, then rest"
+      },
+      "family": "slew-limited chase"
+     }
+    ],
+    "attribution": {}
+   },
+   "R3": {
+    "schema": "reva.labtruth/0",
+    "route": "m16c",
+    "params": {
+     "speed": 300,
+     "gain": 0.6,
+     "max": 600
+    },
+    "regime": "R3",
+    "variant": "steps",
+    "metrics": [
+     "negative",
+     "false_spring",
+     "false_ema"
+    ],
+    "stagger": null,
+    "negative": {
+     "accept": [
+      "ramp",
+      "unknown"
+     ],
+     "forbid": [
+      "spring",
+      "first-order smoothing",
+      "tween"
+     ]
+    },
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "class": "ramp",
+      "params": {
+       "speed_px_per_s": 300
+      },
+      "derived": {
+       "note": "ramp segments at constant speed, then rest"
+      },
+      "family": "slew-limited chase"
+     }
+    ],
+    "attribution": {}
+   },
+   "R4": {
+    "schema": "reva.labtruth/0",
+    "route": "m16c",
+    "params": {
+     "speed": 300,
+     "gain": 0.6,
+     "max": 600
+    },
+    "regime": "R4",
+    "variant": "steps",
+    "metrics": [
+     "negative",
+     "false_spring",
+     "false_ema"
+    ],
+    "stagger": null,
+    "negative": {
+     "accept": [
+      "ramp",
+      "unknown"
+     ],
+     "forbid": [
+      "spring",
+      "first-order smoothing",
+      "tween"
+     ]
+    },
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "class": "ramp",
+      "params": {
+       "speed_px_per_s": 300
+      },
+      "derived": {
+       "note": "ramp segments at constant speed, then rest"
+      },
+      "family": "slew-limited chase"
+     }
+    ],
+    "attribution": {}
+   },
+   "R5": {
+    "schema": "reva.labtruth/0",
+    "route": "m16c",
+    "params": {
+     "speed": 300,
+     "gain": 0.6,
+     "max": 600
+    },
+    "regime": "R5",
+    "variant": "steps",
+    "metrics": [
+     "negative",
+     "false_spring",
+     "false_ema"
+    ],
+    "stagger": null,
+    "negative": {
+     "accept": [
+      "ramp",
+      "unknown"
+     ],
+     "forbid": [
+      "spring",
+      "first-order smoothing",
+      "tween"
+     ]
+    },
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "class": "ramp",
+      "params": {
+       "speed_px_per_s": 300
+      },
+      "derived": {
+       "note": "ramp segments at constant speed, then rest"
+      },
+      "family": "slew-limited chase"
+     }
+    ],
+    "attribution": {}
+   }
+  }
+ },
+ "grid": [
+  {
+   "index": 0,
+   "params": {
+    "speed": 300
+   },
+   "R3": {
+    "schema": "reva.labtruth/0",
+    "route": "m16c",
+    "params": {
+     "speed": 300,
+     "gain": 0.6,
+     "max": 600
+    },
+    "regime": "R3",
+    "variant": "steps",
+    "metrics": [
+     "negative",
+     "false_spring",
+     "false_ema"
+    ],
+    "stagger": null,
+    "negative": {
+     "accept": [
+      "ramp",
+      "unknown"
+     ],
+     "forbid": [
+      "spring",
+      "first-order smoothing",
+      "tween"
+     ]
+    },
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "class": "ramp",
+      "params": {
+       "speed_px_per_s": 300
+      },
+      "derived": {
+       "note": "ramp segments at constant speed, then rest"
+      },
+      "family": "slew-limited chase"
+     }
+    ],
+    "attribution": {}
+   }
+  },
+  {
+   "index": 1,
+   "params": {
+    "speed": 150
+   },
+   "R3": {
+    "schema": "reva.labtruth/0",
+    "route": "m16c",
+    "params": {
+     "speed": 150,
+     "gain": 0.6,
+     "max": 600
+    },
+    "regime": "R3",
+    "variant": "steps",
+    "metrics": [
+     "negative",
+     "false_spring",
+     "false_ema"
+    ],
+    "stagger": null,
+    "negative": {
+     "accept": [
+      "ramp",
+      "unknown"
+     ],
+     "forbid": [
+      "spring",
+      "first-order smoothing",
+      "tween"
+     ]
+    },
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "class": "ramp",
+      "params": {
+       "speed_px_per_s": 150
+      },
+      "derived": {
+       "note": "ramp segments at constant speed, then rest"
+      },
+      "family": "slew-limited chase"
+     }
+    ],
+    "attribution": {}
+   }
+  },
+  {
+   "index": 2,
+   "params": {
+    "speed": 240
+   },
+   "R3": {
+    "schema": "reva.labtruth/0",
+    "route": "m16c",
+    "params": {
+     "speed": 240,
+     "gain": 0.6,
+     "max": 600
+    },
+    "regime": "R3",
+    "variant": "steps",
+    "metrics": [
+     "negative",
+     "false_spring",
+     "false_ema"
+    ],
+    "stagger": null,
+    "negative": {
+     "accept": [
+      "ramp",
+      "unknown"
+     ],
+     "forbid": [
+      "spring",
+      "first-order smoothing",
+      "tween"
+     ]
+    },
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "class": "ramp",
+      "params": {
+       "speed_px_per_s": 240
+      },
+      "derived": {
+       "note": "ramp segments at constant speed, then rest"
+      },
+      "family": "slew-limited chase"
+     }
+    ],
+    "attribution": {}
+   }
+  },
+  {
+   "index": 3,
+   "params": {
+    "speed": 450
+   },
+   "R3": {
+    "schema": "reva.labtruth/0",
+    "route": "m16c",
+    "params": {
+     "speed": 450,
+     "gain": 0.6,
+     "max": 600
+    },
+    "regime": "R3",
+    "variant": "steps",
+    "metrics": [
+     "negative",
+     "false_spring",
+     "false_ema"
+    ],
+    "stagger": null,
+    "negative": {
+     "accept": [
+      "ramp",
+      "unknown"
+     ],
+     "forbid": [
+      "spring",
+      "first-order smoothing",
+      "tween"
+     ]
+    },
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "class": "ramp",
+      "params": {
+       "speed_px_per_s": 450
+      },
+      "derived": {
+       "note": "ramp segments at constant speed, then rest"
+      },
+      "family": "slew-limited chase"
+     }
+    ],
+    "attribution": {}
+   }
+  },
+  {
+   "index": 4,
+   "params": {
+    "speed": 600
+   },
+   "R3": {
+    "schema": "reva.labtruth/0",
+    "route": "m16c",
+    "params": {
+     "speed": 600,
+     "gain": 0.6,
+     "max": 600
+    },
+    "regime": "R3",
+    "variant": "steps",
+    "metrics": [
+     "negative",
+     "false_spring",
+     "false_ema"
+    ],
+    "stagger": null,
+    "negative": {
+     "accept": [
+      "ramp",
+      "unknown"
+     ],
+     "forbid": [
+      "spring",
+      "first-order smoothing",
+      "tween"
+     ]
+    },
+    "items": [
+     {
+      "target": ".b0|ren:tx",
+      "class": "ramp",
+      "params": {
+       "speed_px_per_s": 600
+      },
+      "derived": {
+       "note": "ramp segments at constant speed, then rest"
+      },
+      "family": "slew-limited chase"
+     }
+    ],
+    "attribution": {}
+   }
+  }
+ ]
+}

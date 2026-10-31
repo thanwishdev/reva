@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>look fixture: a canvas over the page</title>
+<!-- Own fixture for the recording-rate rule (no site content). A 2D canvas covers the viewport (1440 x 900), the way a WebGL
+  hero does; #box does a rAF tween (translateX 0 -> 100 px, 600 ms, linear) on load. ?small=1: the canvas is 200 x 200 (4 % of the
+  viewport), so the rate stays 120 Hz. -->
+<style>
+  html, body { margin: 0; }
+  canvas { position: fixed; left: 0; top: 0; }
+  #box { position: absolute; left: 100px; top: 300px; width: 80px; height: 80px; background: #36c; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="box"></div>
+<script>
+  const small = /small=1/.test(location.search);
+  const c = document.getElementById('c'); c.width = small ? 200 : 1440; c.height = small ? 200 : 900;
+  c.getContext('2d').fillRect(0, 0, c.width, c.height);
+  const box = document.getElementById('box'); let t0 = null;
+  requestAnimationFrame(function f(t) { if (t0 == null) t0 = t; const k = Math.min(1, (t - t0) / 600); box.style.transform = `translateX(${k * 100}px)`; if (k < 1) requestAnimationFrame(f); });
+</script>
+</body>
+</html>

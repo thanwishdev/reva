@@ -1,0 +1,42 @@
+<!doctype html><html><head><meta charset="utf-8"><title>REVA stepper bench</title>
+<style>
+body{margin:0;height:3000px;font:12px sans-serif} .b{position:fixed;left:0;width:20px;height:20px;background:#000}
+@keyframes kfa{from{transform:translateX(0)}to{transform:translateX(100px)}}
+#ae.go{animation:kfa 300ms linear forwards} #ae.go2{transform:translateX(300px)!important;transition:transform 300ms linear}
+#ae{transition:none}
+#tr{transition:transform 1000ms cubic-bezier(.42,0,.58,1)} #tr.go{transform:translateX(400px)}
+#to{transition:transform 400ms linear} #to.go{transform:translateX(200px)}
+</style></head><body>
+<div class="b" id="ctl" style="top:0"></div><div class="b" id="rate" style="top:25px"></div><div class="b" id="rev" style="top:50px"></div>
+<div class="b" id="wa" style="top:75px"></div><div class="b" id="ae" style="top:100px"></div><div class="b" id="tr" style="top:125px"></div>
+<div class="b" id="js" style="top:150px"></div><div class="b" id="ema" style="top:175px"></div><div class="b" id="to" style="top:200px"></div>
+<script>
+const $ = id => document.getElementById(id);
+const tx = el => new DOMMatrix(getComputedStyle(el).transform).m41;
+window.LOG = { micro: [], rafmicro: [], events: [], t0: null };
+window.__SAMPLE = () => ({ T: performance.now(), ctl: tx($('ctl')), rate: tx($('rate')), rev: tx($('rev')), wa: tx($('wa')), ae: tx($('ae')), tr: tx($('tr')), js: tx($('js')), ema: tx($('ema')), to: tx($('to')) });
+window.__go = () => {
+  const t0 = LOG.t0 = performance.now();
+  const lin = (el, d, dist, o = {}) => el.animate([{ transform: 'translateX(0)' }, { transform: `translateX(${dist}px)` }], Object.assign({ duration: d, easing: 'linear', fill: 'forwards' }, o));
+  const c = lin($('ctl'), 1000, 100, { iterations: Infinity });
+  const r = lin($('rate'), 1000, 100); const v = lin($('rev'), 1000, 100);
+  setTimeout(() => c.pause(), 300); setTimeout(() => c.play(), 600);
+  setTimeout(() => { r.playbackRate = 2; }, 200); setTimeout(() => v.reverse(), 400);
+  const w = $('wa').animate([{ transform: 'translateX(0)' }, { transform: 'translateX(300px)' }], { duration: 800, easing: 'cubic-bezier(0.34,1.56,0.64,1)', fill: 'forwards' });
+  w.finished.then(() => { LOG.events.push(['wafin', performance.now() - t0]); $('wa').animate([{ transform: 'translateX(300px)' }, { transform: 'translateX(500px)' }], { duration: 400, easing: 'linear', fill: 'forwards' }); });
+  $('ae').classList.add('go'); $('ae').addEventListener('animationend', () => { LOG.events.push(['aeend', performance.now() - t0]); $('ae').classList.add('go2'); }, { once: true });
+  $('ae').addEventListener('transitionend', () => LOG.events.push(['aetrend', performance.now() - t0]), { once: true });
+  $('tr').classList.add('go');
+  setTimeout(() => { LOG.events.push(['to', performance.now() - t0]); $('to').classList.add('go'); }, 500);
+  const K = 170, C = 26, w0 = Math.sqrt(K), z = C / (2 * Math.sqrt(K)), wd = w0 * Math.sqrt(1 - z * z);
+  let ema = 0;
+  const loop = (ts) => { const t = (performance.now() - t0) / 1000; const x = 500 * (1 - Math.exp(-z * w0 * t) * (Math.cos(wd * t) + z * w0 / wd * Math.sin(wd * t)));
+    $('js').style.transform = `translateX(${x}px)`; ema += (500 - ema) * 0.2; $('ema').style.transform = `translateX(${ema}px)`; if (t < 2.5) requestAnimationFrame(loop); };
+  requestAnimationFrame(loop);
+  // microtask ordering: two timers due at the same time
+  let x = 0; setTimeout(() => { x = 1; queueMicrotask(() => LOG.micro.push(x)); }, 250); setTimeout(() => { x = 2; }, 250);
+  // microtask between rAF callbacks
+  let flag = 'unset'; requestAnimationFrame(() => queueMicrotask(() => LOG.rafmicro.push(flag))); requestAnimationFrame(() => { flag = 'second-ran'; });
+  return t0;
+};
+</script></body></html>

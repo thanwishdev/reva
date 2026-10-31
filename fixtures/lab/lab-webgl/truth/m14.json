@@ -1,0 +1,2060 @@
+{
+ "note": "Generated for review by tools/gen-truth.mjs. Planned-trace values (start signal at k = 0); the scorer calls truth(route, params, regime, {variant, ctx}) with the actual take.",
+ "route": "m14",
+ "default": {
+  "steps": {
+   "R2": {
+    "schema": "reva.labtruth/0",
+    "route": "m14",
+    "params": {
+     "mode": "spring",
+     "zeta": 0.45,
+     "lag": 0.8,
+     "gain": 0.0012,
+     "capMs": 33.333333333333336,
+     "orbitRate": 0.0005,
+     "snapV": 0.0001,
+     "snapX": 0.00001
+    },
+    "regime": "R2",
+    "variant": "steps",
+    "metrics": [
+     "class",
+     "pixel_nrmse",
+     "dom_not_applicable",
+     "attribution"
+    ],
+    "stagger": null,
+    "negative": null,
+    "items": [
+     {
+      "target": "gl:u_a",
+      "class": "spring",
+      "family": "discrete-spring",
+      "integrator": {
+       "id": "I7",
+       "description": "semi-implicit Euler, one step of min(dt, cap) per frame",
+       "cap_ms": 33.333333333333336
+      },
+      "params": {
+       "k_over_m": 13.140624999999996,
+       "c_over_m": 3.2624999999999997,
+       "omega0": 3.6249999999999996,
+       "zeta": 0.45,
+       "lag_s": 0.8,
+       "gain_rad_per_px": 0.0012,
+       "snap_v": 0.0001,
+       "snap_x": 0.00001
+      },
+      "derived": {
+       "overshoot_frac": 0.199836536328452,
+       "time_to_peak_ms": 950,
+       "analytic_overshoot_frac": 0.20534602842208866
+      }
+     },
+     {
+      "target": "dom",
+      "class": "not_applicable",
+      "note": "content is drawn into a canvas; no DOM channel moves"
+     },
+     {
+      "target": "pix:m",
+      "class": "not_scored",
+      "metric": "pixel_nrmse",
+      "latent": "gl:u_a",
+      "diag_px": 1509.4369811290564,
+      "projection": {
+       "canvas": {
+        "left": 240,
+        "top": 150,
+        "w": 800,
+        "h": 500
+       },
+       "camera": {
+        "dist": 6.2,
+        "height": 2.2,
+        "look": [
+         0,
+         0.3,
+         0
+        ],
+        "fovY_deg": 45
+       },
+       "world": [
+        1.4,
+        0.9,
+        0.3
+       ]
+      }
+     },
+     {
+      "target": "pix:n",
+      "class": "not_scored",
+      "metric": "pixel_nrmse",
+      "latent": "gl:u_a",
+      "diag_px": 1509.4369811290564,
+      "projection": {
+       "canvas": {
+        "left": 240,
+        "top": 150,
+        "w": 800,
+        "h": 500
+       },
+       "camera": {
+        "dist": 6.2,
+        "height": 2.2,
+        "look": [
+         0,
+         0.3,
+         0
+        ],
+        "fovY_deg": 45
+       },
+       "world": [
+        -1.1,
+        0.6,
+        -1.3
+       ]
+      }
+     }
+    ],
+    "attribution": {
+     "gl:u_a": "scroll-linked"
+    }
+   },
+   "R3": {
+    "schema": "reva.labtruth/0",
+    "route": "m14",
+    "params": {
+     "mode": "spring",
+     "zeta": 0.45,
+     "lag": 0.8,
+     "gain": 0.0012,
+     "capMs": 33.333333333333336,
+     "orbitRate": 0.0005,
+     "snapV": 0.0001,
+     "snapX": 0.00001
+    },
+    "regime": "R3",
+    "variant": "steps",
+    "metrics": [
+     "class",
+     "pixel_nrmse",
+     "dom_not_applicable",
+     "attribution"
+    ],
+    "stagger": null,
+    "negative": null,
+    "items": [
+     {
+      "target": "gl:u_a",
+      "class": "spring",
+      "family": "discrete-spring",
+      "integrator": {
+       "id": "I7",
+       "description": "semi-implicit Euler, one step of min(dt, cap) per frame",
+       "cap_ms": 33.333333333333336
+      },
+      "params": {
+       "k_over_m": 13.140624999999996,
+       "c_over_m": 3.2624999999999997,
+       "omega0": 3.6249999999999996,
+       "zeta": 0.45,
+       "lag_s": 0.8,
+       "gain_rad_per_px": 0.0012,
+       "snap_v": 0.0001,
+       "snap_x": 0.00001
+      },
+      "derived": {
+       "overshoot_frac": 0.20257311431802139,
+       "time_to_peak_ms": 958.333333,
+       "analytic_overshoot_frac": 0.20534602842208866
+      }
+     },
+     {
+      "target": "dom",
+      "class": "not_applicable",
+      "note": "content is drawn into a canvas; no DOM channel moves"
+     },
+     {
+      "target": "pix:m",
+      "class": "not_scored",
+      "metric": "pixel_nrmse",
+      "latent": "gl:u_a",
+      "diag_px": 1509.4369811290564,
+      "projection": {
+       "canvas": {
+        "left": 240,
+        "top": 150,
+        "w": 800,
+        "h": 500
+       },
+       "camera": {
+        "dist": 6.2,
+        "height": 2.2,
+        "look": [
+         0,
+         0.3,
+         0
+        ],
+        "fovY_deg": 45
+       },
+       "world": [
+        1.4,
+        0.9,
+        0.3
+       ]
+      }
+     },
+     {
+      "target": "pix:n",
+      "class": "not_scored",
+      "metric": "pixel_nrmse",
+      "latent": "gl:u_a",
+      "diag_px": 1509.4369811290564,
+      "projection": {
+       "canvas": {
+        "left": 240,
+        "top": 150,
+        "w": 800,
+        "h": 500
+       },
+       "camera": {
+        "dist": 6.2,
+        "height": 2.2,
+        "look": [
+         0,
+         0.3,
+         0
+        ],
+        "fovY_deg": 45
+       },
+       "world": [
+        -1.1,
+        0.6,
+        -1.3
+       ]
+      }
+     }
+    ],
+    "attribution": {
+     "gl:u_a": "scroll-linked"
+    }
+   },
+   "R4": {
+    "schema": "reva.labtruth/0",
+    "route": "m14",
+    "params": {
+     "mode": "spring",
+     "zeta": 0.45,
+     "lag": 0.8,
+     "gain": 0.0012,
+     "capMs": 33.333333333333336,
+     "orbitRate": 0.0005,
+     "snapV": 0.0001,
+     "snapX": 0.00001
+    },
+    "regime": "R4",
+    "variant": "steps",
+    "metrics": [
+     "class",
+     "pixel_nrmse",
+     "dom_not_applicable",
+     "attribution"
+    ],
+    "stagger": null,
+    "negative": null,
+    "items": [
+     {
+      "target": "gl:u_a",
+      "class": "spring",
+      "family": "discrete-spring",
+      "integrator": {
+       "id": "I7",
+       "description": "semi-implicit Euler, one step of min(dt, cap) per frame",
+       "cap_ms": 33.333333333333336
+      },
+      "params": {
+       "k_over_m": 13.140624999999996,
+       "c_over_m": 3.2624999999999997,
+       "omega0": 3.6249999999999996,
+       "zeta": 0.45,
+       "lag_s": 0.8,
+       "gain_rad_per_px": 0.0012,
+       "snap_v": 0.0001,
+       "snap_x": 0.00001
+      },
+      "derived": {
+       "overshoot_frac": 0.19440209655415686,
+       "time_to_peak_ms": 933.333333,
+       "analytic_overshoot_frac": 0.20534602842208866
+      }
+     },
+     {
+      "target": "dom",
+      "class": "not_applicable",
+      "note": "content is drawn into a canvas; no DOM channel moves"
+     },
+     {
+      "target": "pix:m",
+      "class": "not_scored",
+      "metric": "pixel_nrmse",
+      "latent": "gl:u_a",
+      "diag_px": 1509.4369811290564,
+      "projection": {
+       "canvas": {
+        "left": 240,
+        "top": 150,
+        "w": 800,
+        "h": 500
+       },
+       "camera": {
+        "dist": 6.2,
+        "height": 2.2,
+        "look": [
+         0,
+         0.3,
+         0
+        ],
+        "fovY_deg": 45
+       },
+       "world": [
+        1.4,
+        0.9,
+        0.3
+       ]
+      }
+     },
+     {
+      "target": "pix:n",
+      "class": "not_scored",
+      "metric": "pixel_nrmse",
+      "latent": "gl:u_a",
+      "diag_px": 1509.4369811290564,
+      "projection": {
+       "canvas": {
+        "left": 240,
+        "top": 150,
+        "w": 800,
+        "h": 500
+       },
+       "camera": {
+        "dist": 6.2,
+        "height": 2.2,
+        "look": [
+         0,
+         0.3,
+         0
+        ],
+        "fovY_deg": 45
+       },
+       "world": [
+        -1.1,
+        0.6,
+        -1.3
+       ]
+      }
+     }
+    ],
+    "attribution": {
+     "gl:u_a": "scroll-linked"
+    }
+   },
+   "R5": {
+    "schema": "reva.labtruth/0",
+    "route": "m14",
+    "params": {
+     "mode": "spring",
+     "zeta": 0.45,
+     "lag": 0.8,
+     "gain": 0.0012,
+     "capMs": 33.333333333333336,
+     "orbitRate": 0.0005,
+     "snapV": 0.0001,
+     "snapX": 0.00001
+    },
+    "regime": "R5",
+    "variant": "steps",
+    "metrics": [
+     "class",
+     "pixel_nrmse",
+     "dom_not_applicable",
+     "attribution"
+    ],
+    "stagger": null,
+    "negative": null,
+    "items": [
+     {
+      "target": "gl:u_a",
+      "class": "spring",
+      "family": "discrete-spring",
+      "integrator": {
+       "id": "I7",
+       "description": "semi-implicit Euler, one step of min(dt, cap) per frame",
+       "cap_ms": 33.333333333333336
+      },
+      "params": {
+       "k_over_m": 13.140624999999996,
+       "c_over_m": 3.2624999999999997,
+       "omega0": 3.6249999999999996,
+       "zeta": 0.45,
+       "lag_s": 0.8,
+       "gain_rad_per_px": 0.0012,
+       "snap_v": 0.0001,
+       "snap_x": 0.00001
+      },
+      "derived": {
+       "overshoot_frac": 0.1992165943649573,
+       "time_to_peak_ms": 1083.333333,
+       "analytic_overshoot_frac": 0.20534602842208866
+      }
+     },
+     {
+      "target": "dom",
+      "class": "not_applicable",
+      "note": "content is drawn into a canvas; no DOM channel moves"
+     },
+     {
+      "target": "pix:m",
+      "class": "not_scored",
+      "metric": "pixel_nrmse",
+      "latent": "gl:u_a",
+      "diag_px": 1509.4369811290564,
+      "projection": {
+       "canvas": {
+        "left": 240,
+        "top": 150,
+        "w": 800,
+        "h": 500
+       },
+       "camera": {
+        "dist": 6.2,
+        "height": 2.2,
+        "look": [
+         0,
+         0.3,
+         0
+        ],
+        "fovY_deg": 45
+       },
+       "world": [
+        1.4,
+        0.9,
+        0.3
+       ]
+      }
+     },
+     {
+      "target": "pix:n",
+      "class": "not_scored",
+      "metric": "pixel_nrmse",
+      "latent": "gl:u_a",
+      "diag_px": 1509.4369811290564,
+      "projection": {
+       "canvas": {
+        "left": 240,
+        "top": 150,
+        "w": 800,
+        "h": 500
+       },
+       "camera": {
+        "dist": 6.2,
+        "height": 2.2,
+        "look": [
+         0,
+         0.3,
+         0
+        ],
+        "fovY_deg": 45
+       },
+       "world": [
+        -1.1,
+        0.6,
+        -1.3
+       ]
+      }
+     }
+    ],
+    "attribution": {
+     "gl:u_a": "scroll-linked"
+    }
+   }
+  },
+  "reversal": {
+   "R2": {
+    "schema": "reva.labtruth/0",
+    "route": "m14",
+    "params": {
+     "mode": "spring",
+     "zeta": 0.45,
+     "lag": 0.8,
+     "gain": 0.0012,
+     "capMs": 33.333333333333336,
+     "orbitRate": 0.0005,
+     "snapV": 0.0001,
+     "snapX": 0.00001
+    },
+    "regime": "R2",
+    "variant": "reversal",
+    "metrics": [
+     "class",
+     "pixel_nrmse",
+     "dom_not_applicable",
+     "attribution"
+    ],
+    "stagger": null,
+    "negative": null,
+    "items": [
+     {
+      "target": "gl:u_a",
+      "class": "spring",
+      "family": "discrete-spring",
+      "integrator": {
+       "id": "I7",
+       "description": "semi-implicit Euler, one step of min(dt, cap) per frame",
+       "cap_ms": 33.333333333333336
+      },
+      "params": {
+       "k_over_m": 13.140624999999996,
+       "c_over_m": 3.2624999999999997,
+       "omega0": 3.6249999999999996,
+       "zeta": 0.45,
+       "lag_s": 0.8,
+       "gain_rad_per_px": 0.0012,
+       "snap_v": 0.0001,
+       "snap_x": 0.00001
+      },
+      "derived": {
+       "overshoot_frac": 0.19983653632845222,
+       "time_to_peak_ms": 950,
+       "analytic_overshoot_frac": 0.20534602842208866
+      }
+     },
+     {
+      "target": "dom",
+      "class": "not_applicable",
+      "note": "content is drawn into a canvas; no DOM channel moves"
+     },
+     {
+      "target": "pix:m",
+      "class": "not_scored",
+      "metric": "pixel_nrmse",
+      "latent": "gl:u_a",
+      "diag_px": 1509.4369811290564,
+      "projection": {
+       "canvas": {
+        "left": 240,
+        "top": 150,
+        "w": 800,
+        "h": 500
+       },
+       "camera": {
+        "dist": 6.2,
+        "height": 2.2,
+        "look": [
+         0,
+         0.3,
+         0
+        ],
+        "fovY_deg": 45
+       },
+       "world": [
+        1.4,
+        0.9,
+        0.3
+       ]
+      }
+     },
+     {
+      "target": "pix:n",
+      "class": "not_scored",
+      "metric": "pixel_nrmse",
+      "latent": "gl:u_a",
+      "diag_px": 1509.4369811290564,
+      "projection": {
+       "canvas": {
+        "left": 240,
+        "top": 150,
+        "w": 800,
+        "h": 500
+       },
+       "camera": {
+        "dist": 6.2,
+        "height": 2.2,
+        "look": [
+         0,
+         0.3,
+         0
+        ],
+        "fovY_deg": 45
+       },
+       "world": [
+        -1.1,
+        0.6,
+        -1.3
+       ]
+      }
+     }
+    ],
+    "attribution": {
+     "gl:u_a": "scroll-linked"
+    }
+   },
+   "R3": {
+    "schema": "reva.labtruth/0",
+    "route": "m14",
+    "params": {
+     "mode": "spring",
+     "zeta": 0.45,
+     "lag": 0.8,
+     "gain": 0.0012,
+     "capMs": 33.333333333333336,
+     "orbitRate": 0.0005,
+     "snapV": 0.0001,
+     "snapX": 0.00001
+    },
+    "regime": "R3",
+    "variant": "reversal",
+    "metrics": [
+     "class",
+     "pixel_nrmse",
+     "dom_not_applicable",
+     "attribution"
+    ],
+    "stagger": null,
+    "negative": null,
+    "items": [
+     {
+      "target": "gl:u_a",
+      "class": "spring",
+      "family": "discrete-spring",
+      "integrator": {
+       "id": "I7",
+       "description": "semi-implicit Euler, one step of min(dt, cap) per frame",
+       "cap_ms": 33.333333333333336
+      },
+      "params": {
+       "k_over_m": 13.140624999999996,
+       "c_over_m": 3.2624999999999997,
+       "omega0": 3.6249999999999996,
+       "zeta": 0.45,
+       "lag_s": 0.8,
+       "gain_rad_per_px": 0.0012,
+       "snap_v": 0.0001,
+       "snap_x": 0.00001
+      },
+      "derived": {
+       "overshoot_frac": 0.20257311431802227,
+       "time_to_peak_ms": 958.333333,
+       "analytic_overshoot_frac": 0.20534602842208866
+      }
+     },
+     {
+      "target": "dom",
+      "class": "not_applicable",
+      "note": "content is drawn into a canvas; no DOM channel moves"
+     },
+     {
+      "target": "pix:m",
+      "class": "not_scored",
+      "metric": "pixel_nrmse",
+      "latent": "gl:u_a",
+      "diag_px": 1509.4369811290564,
+      "projection": {
+       "canvas": {
+        "left": 240,
+        "top": 150,
+        "w": 800,
+        "h": 500
+       },
+       "camera": {
+        "dist": 6.2,
+        "height": 2.2,
+        "look": [
+         0,
+         0.3,
+         0
+        ],
+        "fovY_deg": 45
+       },
+       "world": [
+        1.4,
+        0.9,
+        0.3
+       ]
+      }
+     },
+     {
+      "target": "pix:n",
+      "class": "not_scored",
+      "metric": "pixel_nrmse",
+      "latent": "gl:u_a",
+      "diag_px": 1509.4369811290564,
+      "projection": {
+       "canvas": {
+        "left": 240,
+        "top": 150,
+        "w": 800,
+        "h": 500
+       },
+       "camera": {
+        "dist": 6.2,
+        "height": 2.2,
+        "look": [
+         0,
+         0.3,
+         0
+        ],
+        "fovY_deg": 45
+       },
+       "world": [
+        -1.1,
+        0.6,
+        -1.3
+       ]
+      }
+     }
+    ],
+    "attribution": {
+     "gl:u_a": "scroll-linked"
+    }
+   },
+   "R4": {
+    "schema": "reva.labtruth/0",
+    "route": "m14",
+    "params": {
+     "mode": "spring",
+     "zeta": 0.45,
+     "lag": 0.8,
+     "gain": 0.0012,
+     "capMs": 33.333333333333336,
+     "orbitRate": 0.0005,
+     "snapV": 0.0001,
+     "snapX": 0.00001
+    },
+    "regime": "R4",
+    "variant": "reversal",
+    "metrics": [
+     "class",
+     "pixel_nrmse",
+     "dom_not_applicable",
+     "attribution"
+    ],
+    "stagger": null,
+    "negative": null,
+    "items": [
+     {
+      "target": "gl:u_a",
+      "class": "spring",
+      "family": "discrete-spring",
+      "integrator": {
+       "id": "I7",
+       "description": "semi-implicit Euler, one step of min(dt, cap) per frame",
+       "cap_ms": 33.333333333333336
+      },
+      "params": {
+       "k_over_m": 13.140624999999996,
+       "c_over_m": 3.2624999999999997,
+       "omega0": 3.6249999999999996,
+       "zeta": 0.45,
+       "lag_s": 0.8,
+       "gain_rad_per_px": 0.0012,
+       "snap_v": 0.0001,
+       "snap_x": 0.00001
+      },
+      "derived": {
+       "overshoot_frac": 0.19440209655415708,
+       "time_to_peak_ms": 933.333333,
+       "analytic_overshoot_frac": 0.20534602842208866
+      }
+     },
+     {
+      "target": "dom",
+      "class": "not_applicable",
+      "note": "content is drawn into a canvas; no DOM channel moves"
+     },
+     {
+      "target": "pix:m",
+      "class": "not_scored",
+      "metric": "pixel_nrmse",
+      "latent": "gl:u_a",
+      "diag_px": 1509.4369811290564,
+      "projection": {
+       "canvas": {
+        "left": 240,
+        "top": 150,
+        "w": 800,
+        "h": 500
+       },
+       "camera": {
+        "dist": 6.2,
+        "height": 2.2,
+        "look": [
+         0,
+         0.3,
+         0
+        ],
+        "fovY_deg": 45
+       },
+       "world": [
+        1.4,
+        0.9,
+        0.3
+       ]
+      }
+     },
+     {
+      "target": "pix:n",
+      "class": "not_scored",
+      "metric": "pixel_nrmse",
+      "latent": "gl:u_a",
+      "diag_px": 1509.4369811290564,
+      "projection": {
+       "canvas": {
+        "left": 240,
+        "top": 150,
+        "w": 800,
+        "h": 500
+       },
+       "camera": {
+        "dist": 6.2,
+        "height": 2.2,
+        "look": [
+         0,
+         0.3,
+         0
+        ],
+        "fovY_deg": 45
+       },
+       "world": [
+        -1.1,
+        0.6,
+        -1.3
+       ]
+      }
+     }
+    ],
+    "attribution": {
+     "gl:u_a": "scroll-linked"
+    }
+   },
+   "R5": {
+    "schema": "reva.labtruth/0",
+    "route": "m14",
+    "params": {
+     "mode": "spring",
+     "zeta": 0.45,
+     "lag": 0.8,
+     "gain": 0.0012,
+     "capMs": 33.333333333333336,
+     "orbitRate": 0.0005,
+     "snapV": 0.0001,
+     "snapX": 0.00001
+    },
+    "regime": "R5",
+    "variant": "reversal",
+    "metrics": [
+     "class",
+     "pixel_nrmse",
+     "dom_not_applicable",
+     "attribution"
+    ],
+    "stagger": null,
+    "negative": null,
+    "items": [
+     {
+      "target": "gl:u_a",
+      "class": "spring",
+      "family": "discrete-spring",
+      "integrator": {
+       "id": "I7",
+       "description": "semi-implicit Euler, one step of min(dt, cap) per frame",
+       "cap_ms": 33.333333333333336
+      },
+      "params": {
+       "k_over_m": 13.140624999999996,
+       "c_over_m": 3.2624999999999997,
+       "omega0": 3.6249999999999996,
+       "zeta": 0.45,
+       "lag_s": 0.8,
+       "gain_rad_per_px": 0.0012,
+       "snap_v": 0.0001,
+       "snap_x": 0.00001
+      },
+      "derived": {
+       "overshoot_frac": 0.19921659436495753,
+       "time_to_peak_ms": 1083.333333,
+       "analytic_overshoot_frac": 0.20534602842208866
+      }
+     },
+     {
+      "target": "dom",
+      "class": "not_applicable",
+      "note": "content is drawn into a canvas; no DOM channel moves"
+     },
+     {
+      "target": "pix:m",
+      "class": "not_scored",
+      "metric": "pixel_nrmse",
+      "latent": "gl:u_a",
+      "diag_px": 1509.4369811290564,
+      "projection": {
+       "canvas": {
+        "left": 240,
+        "top": 150,
+        "w": 800,
+        "h": 500
+       },
+       "camera": {
+        "dist": 6.2,
+        "height": 2.2,
+        "look": [
+         0,
+         0.3,
+         0
+        ],
+        "fovY_deg": 45
+       },
+       "world": [
+        1.4,
+        0.9,
+        0.3
+       ]
+      }
+     },
+     {
+      "target": "pix:n",
+      "class": "not_scored",
+      "metric": "pixel_nrmse",
+      "latent": "gl:u_a",
+      "diag_px": 1509.4369811290564,
+      "projection": {
+       "canvas": {
+        "left": 240,
+        "top": 150,
+        "w": 800,
+        "h": 500
+       },
+       "camera": {
+        "dist": 6.2,
+        "height": 2.2,
+        "look": [
+         0,
+         0.3,
+         0
+        ],
+        "fovY_deg": 45
+       },
+       "world": [
+        -1.1,
+        0.6,
+        -1.3
+       ]
+      }
+     }
+    ],
+    "attribution": {
+     "gl:u_a": "scroll-linked"
+    }
+   }
+  },
+  "gaps": {
+   "R2": {
+    "schema": "reva.labtruth/0",
+    "route": "m14",
+    "params": {
+     "mode": "spring",
+     "zeta": 0.45,
+     "lag": 0.8,
+     "gain": 0.0012,
+     "capMs": 33.333333333333336,
+     "orbitRate": 0.0005,
+     "snapV": 0.0001,
+     "snapX": 0.00001
+    },
+    "regime": "R2",
+    "variant": "gaps",
+    "metrics": [
+     "class",
+     "pixel_nrmse",
+     "dom_not_applicable",
+     "attribution"
+    ],
+    "stagger": null,
+    "negative": null,
+    "items": [
+     {
+      "target": "gl:u_a",
+      "class": "spring",
+      "family": "discrete-spring",
+      "integrator": {
+       "id": "I7",
+       "description": "semi-implicit Euler, one step of min(dt, cap) per frame",
+       "cap_ms": 33.333333333333336
+      },
+      "params": {
+       "k_over_m": 13.140624999999996,
+       "c_over_m": 3.2624999999999997,
+       "omega0": 3.6249999999999996,
+       "zeta": 0.45,
+       "lag_s": 0.8,
+       "gain_rad_per_px": 0.0012,
+       "snap_v": 0.0001,
+       "snap_x": 0.00001
+      },
+      "derived": {
+       "overshoot_frac": 0.19983653632845222,
+       "time_to_peak_ms": 950,
+       "analytic_overshoot_frac": 0.20534602842208866
+      }
+     },
+     {
+      "target": "dom",
+      "class": "not_applicable",
+      "note": "content is drawn into a canvas; no DOM channel moves"
+     },
+     {
+      "target": "pix:m",
+      "class": "not_scored",
+      "metric": "pixel_nrmse",
+      "latent": "gl:u_a",
+      "diag_px": 1509.4369811290564,
+      "projection": {
+       "canvas": {
+        "left": 240,
+        "top": 150,
+        "w": 800,
+        "h": 500
+       },
+       "camera": {
+        "dist": 6.2,
+        "height": 2.2,
+        "look": [
+         0,
+         0.3,
+         0
+        ],
+        "fovY_deg": 45
+       },
+       "world": [
+        1.4,
+        0.9,
+        0.3
+       ]
+      }
+     },
+     {
+      "target": "pix:n",
+      "class": "not_scored",
+      "metric": "pixel_nrmse",
+      "latent": "gl:u_a",
+      "diag_px": 1509.4369811290564,
+      "projection": {
+       "canvas": {
+        "left": 240,
+        "top": 150,
+        "w": 800,
+        "h": 500
+       },
+       "camera": {
+        "dist": 6.2,
+        "height": 2.2,
+        "look": [
+         0,
+         0.3,
+         0
+        ],
+        "fovY_deg": 45
+       },
+       "world": [
+        -1.1,
+        0.6,
+        -1.3
+       ]
+      }
+     }
+    ],
+    "attribution": {
+     "gl:u_a": "scroll-linked"
+    }
+   },
+   "R3": {
+    "schema": "reva.labtruth/0",
+    "route": "m14",
+    "params": {
+     "mode": "spring",
+     "zeta": 0.45,
+     "lag": 0.8,
+     "gain": 0.0012,
+     "capMs": 33.333333333333336,
+     "orbitRate": 0.0005,
+     "snapV": 0.0001,
+     "snapX": 0.00001
+    },
+    "regime": "R3",
+    "variant": "gaps",
+    "metrics": [
+     "class",
+     "pixel_nrmse",
+     "dom_not_applicable",
+     "attribution"
+    ],
+    "stagger": null,
+    "negative": null,
+    "items": [
+     {
+      "target": "gl:u_a",
+      "class": "spring",
+      "family": "discrete-spring",
+      "integrator": {
+       "id": "I7",
+       "description": "semi-implicit Euler, one step of min(dt, cap) per frame",
+       "cap_ms": 33.333333333333336
+      },
+      "params": {
+       "k_over_m": 13.140624999999996,
+       "c_over_m": 3.2624999999999997,
+       "omega0": 3.6249999999999996,
+       "zeta": 0.45,
+       "lag_s": 0.8,
+       "gain_rad_per_px": 0.0012,
+       "snap_v": 0.0001,
+       "snap_x": 0.00001
+      },
+      "derived": {
+       "overshoot_frac": 0.2025731143180216,
+       "time_to_peak_ms": 958.333333,
+       "analytic_overshoot_frac": 0.20534602842208866
+      }
+     },
+     {
+      "target": "dom",
+      "class": "not_applicable",
+      "note": "content is drawn into a canvas; no DOM channel moves"
+     },
+     {
+      "target": "pix:m",
+      "class": "not_scored",
+      "metric": "pixel_nrmse",
+      "latent": "gl:u_a",
+      "diag_px": 1509.4369811290564,
+      "projection": {
+       "canvas": {
+        "left": 240,
+        "top": 150,
+        "w": 800,
+        "h": 500
+       },
+       "camera": {
+        "dist": 6.2,
+        "height": 2.2,
+        "look": [
+         0,
+         0.3,
+         0
+        ],
+        "fovY_deg": 45
+       },
+       "world": [
+        1.4,
+        0.9,
+        0.3
+       ]
+      }
+     },
+     {
+      "target": "pix:n",
+      "class": "not_scored",
+      "metric": "pixel_nrmse",
+      "latent": "gl:u_a",
+      "diag_px": 1509.4369811290564,
+      "projection": {
+       "canvas": {
+        "left": 240,
+        "top": 150,
+        "w": 800,
+        "h": 500
+       },
+       "camera": {
+        "dist": 6.2,
+        "height": 2.2,
+        "look": [
+         0,
+         0.3,
+         0
+        ],
+        "fovY_deg": 45
+       },
+       "world": [
+        -1.1,
+        0.6,
+        -1.3
+       ]
+      }
+     }
+    ],
+    "attribution": {
+     "gl:u_a": "scroll-linked"
+    }
+   },
+   "R4": {
+    "schema": "reva.labtruth/0",
+    "route": "m14",
+    "params": {
+     "mode": "spring",
+     "zeta": 0.45,
+     "lag": 0.8,
+     "gain": 0.0012,
+     "capMs": 33.333333333333336,
+     "orbitRate": 0.0005,
+     "snapV": 0.0001,
+     "snapX": 0.00001
+    },
+    "regime": "R4",
+    "variant": "gaps",
+    "metrics": [
+     "class",
+     "pixel_nrmse",
+     "dom_not_applicable",
+     "attribution"
+    ],
+    "stagger": null,
+    "negative": null,
+    "items": [
+     {
+      "target": "gl:u_a",
+      "class": "spring",
+      "family": "discrete-spring",
+      "integrator": {
+       "id": "I7",
+       "description": "semi-implicit Euler, one step of min(dt, cap) per frame",
+       "cap_ms": 33.333333333333336
+      },
+      "params": {
+       "k_over_m": 13.140624999999996,
+       "c_over_m": 3.2624999999999997,
+       "omega0": 3.6249999999999996,
+       "zeta": 0.45,
+       "lag_s": 0.8,
+       "gain_rad_per_px": 0.0012,
+       "snap_v": 0.0001,
+       "snap_x": 0.00001
+      },
+      "derived": {
+       "overshoot_frac": 0.19440209655415663,
+       "time_to_peak_ms": 933.333333,
+       "analytic_overshoot_frac": 0.20534602842208866
+      }
+     },
+     {
+      "target": "dom",
+      "class": "not_applicable",
+      "note": "content is drawn into a canvas; no DOM channel moves"
+     },
+     {
+      "target": "pix:m",
+      "class": "not_scored",
+      "metric": "pixel_nrmse",
+      "latent": "gl:u_a",
+      "diag_px": 1509.4369811290564,
+      "projection": {
+       "canvas": {
+        "left": 240,
+        "top": 150,
+        "w": 800,
+        "h": 500
+       },
+       "camera": {
+        "dist": 6.2,
+        "height": 2.2,
+        "look": [
+         0,
+         0.3,
+         0
+        ],
+        "fovY_deg": 45
+       },
+       "world": [
+        1.4,
+        0.9,
+        0.3
+       ]
+      }
+     },
+     {
+      "target": "pix:n",
+      "class": "not_scored",
+      "metric": "pixel_nrmse",
+      "latent": "gl:u_a",
+      "diag_px": 1509.4369811290564,
+      "projection": {
+       "canvas": {
+        "left": 240,
+        "top": 150,
+        "w": 800,
+        "h": 500
+       },
+       "camera": {
+        "dist": 6.2,
+        "height": 2.2,
+        "look": [
+         0,
+         0.3,
+         0
+        ],
+        "fovY_deg": 45
+       },
+       "world": [
+        -1.1,
+        0.6,
+        -1.3
+       ]
+      }
+     }
+    ],
+    "attribution": {
+     "gl:u_a": "scroll-linked"
+    }
+   },
+   "R5": {
+    "schema": "reva.labtruth/0",
+    "route": "m14",
+    "params": {
+     "mode": "spring",
+     "zeta": 0.45,
+     "lag": 0.8,
+     "gain": 0.0012,
+     "capMs": 33.333333333333336,
+     "orbitRate": 0.0005,
+     "snapV": 0.0001,
+     "snapX": 0.00001
+    },
+    "regime": "R5",
+    "variant": "gaps",
+    "metrics": [
+     "class",
+     "pixel_nrmse",
+     "dom_not_applicable",
+     "attribution"
+    ],
+    "stagger": null,
+    "negative": null,
+    "items": [
+     {
+      "target": "gl:u_a",
+      "class": "spring",
+      "family": "discrete-spring",
+      "integrator": {
+       "id": "I7",
+       "description": "semi-implicit Euler, one step of min(dt, cap) per frame",
+       "cap_ms": 33.333333333333336
+      },
+      "params": {
+       "k_over_m": 13.140624999999996,
+       "c_over_m": 3.2624999999999997,
+       "omega0": 3.6249999999999996,
+       "zeta": 0.45,
+       "lag_s": 0.8,
+       "gain_rad_per_px": 0.0012,
+       "snap_v": 0.0001,
+       "snap_x": 0.00001
+      },
+      "derived": {
+       "overshoot_frac": 0.1992165943649573,
+       "time_to_peak_ms": 1083.333333,
+       "analytic_overshoot_frac": 0.20534602842208866
+      }
+     },
+     {
+      "target": "dom",
+      "class": "not_applicable",
+      "note": "content is drawn into a canvas; no DOM channel moves"
+     },
+     {
+      "target": "pix:m",
+      "class": "not_scored",
+      "metric": "pixel_nrmse",
+      "latent": "gl:u_a",
+      "diag_px": 1509.4369811290564,
+      "projection": {
+       "canvas": {
+        "left": 240,
+        "top": 150,
+        "w": 800,
+        "h": 500
+       },
+       "camera": {
+        "dist": 6.2,
+        "height": 2.2,
+        "look": [
+         0,
+         0.3,
+         0
+        ],
+        "fovY_deg": 45
+       },
+       "world": [
+        1.4,
+        0.9,
+        0.3
+       ]
+      }
+     },
+     {
+      "target": "pix:n",
+      "class": "not_scored",
+      "metric": "pixel_nrmse",
+      "latent": "gl:u_a",
+      "diag_px": 1509.4369811290564,
+      "projection": {
+       "canvas": {
+        "left": 240,
+        "top": 150,
+        "w": 800,
+        "h": 500
+       },
+       "camera": {
+        "dist": 6.2,
+        "height": 2.2,
+        "look": [
+         0,
+         0.3,
+         0
+        ],
+        "fovY_deg": 45
+       },
+       "world": [
+        -1.1,
+        0.6,
+        -1.3
+       ]
+      }
+     }
+    ],
+    "attribution": {
+     "gl:u_a": "scroll-linked"
+    }
+   }
+  }
+ },
+ "grid": [
+  {
+   "index": 0,
+   "params": {
+    "mode": "spring",
+    "zeta": 0.45,
+    "lag": 0.8
+   },
+   "R3": {
+    "schema": "reva.labtruth/0",
+    "route": "m14",
+    "params": {
+     "mode": "spring",
+     "zeta": 0.45,
+     "lag": 0.8,
+     "gain": 0.0012,
+     "capMs": 33.333333333333336,
+     "orbitRate": 0.0005,
+     "snapV": 0.0001,
+     "snapX": 0.00001
+    },
+    "regime": "R3",
+    "variant": "steps",
+    "metrics": [
+     "class",
+     "pixel_nrmse",
+     "dom_not_applicable",
+     "attribution"
+    ],
+    "stagger": null,
+    "negative": null,
+    "items": [
+     {
+      "target": "gl:u_a",
+      "class": "spring",
+      "family": "discrete-spring",
+      "integrator": {
+       "id": "I7",
+       "description": "semi-implicit Euler, one step of min(dt, cap) per frame",
+       "cap_ms": 33.333333333333336
+      },
+      "params": {
+       "k_over_m": 13.140624999999996,
+       "c_over_m": 3.2624999999999997,
+       "omega0": 3.6249999999999996,
+       "zeta": 0.45,
+       "lag_s": 0.8,
+       "gain_rad_per_px": 0.0012,
+       "snap_v": 0.0001,
+       "snap_x": 0.00001
+      },
+      "derived": {
+       "overshoot_frac": 0.20257311431802139,
+       "time_to_peak_ms": 958.333333,
+       "analytic_overshoot_frac": 0.20534602842208866
+      }
+     },
+     {
+      "target": "dom",
+      "class": "not_applicable",
+      "note": "content is drawn into a canvas; no DOM channel moves"
+     },
+     {
+      "target": "pix:m",
+      "class": "not_scored",
+      "metric": "pixel_nrmse",
+      "latent": "gl:u_a",
+      "diag_px": 1509.4369811290564,
+      "projection": {
+       "canvas": {
+        "left": 240,
+        "top": 150,
+        "w": 800,
+        "h": 500
+       },
+       "camera": {
+        "dist": 6.2,
+        "height": 2.2,
+        "look": [
+         0,
+         0.3,
+         0
+        ],
+        "fovY_deg": 45
+       },
+       "world": [
+        1.4,
+        0.9,
+        0.3
+       ]
+      }
+     },
+     {
+      "target": "pix:n",
+      "class": "not_scored",
+      "metric": "pixel_nrmse",
+      "latent": "gl:u_a",
+      "diag_px": 1509.4369811290564,
+      "projection": {
+       "canvas": {
+        "left": 240,
+        "top": 150,
+        "w": 800,
+        "h": 500
+       },
+       "camera": {
+        "dist": 6.2,
+        "height": 2.2,
+        "look": [
+         0,
+         0.3,
+         0
+        ],
+        "fovY_deg": 45
+       },
+       "world": [
+        -1.1,
+        0.6,
+        -1.3
+       ]
+      }
+     }
+    ],
+    "attribution": {
+     "gl:u_a": "scroll-linked"
+    }
+   }
+  },
+  {
+   "index": 1,
+   "params": {
+    "mode": "spring",
+    "zeta": 0.7,
+    "lag": 0.8
+   },
+   "R3": {
+    "schema": "reva.labtruth/0",
+    "route": "m14",
+    "params": {
+     "mode": "spring",
+     "zeta": 0.7,
+     "lag": 0.8,
+     "gain": 0.0012,
+     "capMs": 33.333333333333336,
+     "orbitRate": 0.0005,
+     "snapV": 0.0001,
+     "snapX": 0.00001
+    },
+    "regime": "R3",
+    "variant": "steps",
+    "metrics": [
+     "class",
+     "pixel_nrmse",
+     "dom_not_applicable",
+     "attribution"
+    ],
+    "stagger": null,
+    "negative": null,
+    "items": [
+     {
+      "target": "gl:u_a",
+      "class": "spring",
+      "family": "discrete-spring",
+      "integrator": {
+       "id": "I7",
+       "description": "semi-implicit Euler, one step of min(dt, cap) per frame",
+       "cap_ms": 33.333333333333336
+      },
+      "params": {
+       "k_over_m": 13.140624999999996,
+       "c_over_m": 5.074999999999999,
+       "omega0": 3.6249999999999996,
+       "zeta": 0.7,
+       "lag_s": 0.8,
+       "gain_rad_per_px": 0.0012,
+       "snap_v": 0.0001,
+       "snap_x": 0.00001
+      },
+      "derived": {
+       "overshoot_frac": 0.04304951606568208,
+       "time_to_peak_ms": 1208.333333,
+       "analytic_overshoot_frac": 0.045987910260267745
+      }
+     },
+     {
+      "target": "dom",
+      "class": "not_applicable",
+      "note": "content is drawn into a canvas; no DOM channel moves"
+     },
+     {
+      "target": "pix:m",
+      "class": "not_scored",
+      "metric": "pixel_nrmse",
+      "latent": "gl:u_a",
+      "diag_px": 1509.4369811290564,
+      "projection": {
+       "canvas": {
+        "left": 240,
+        "top": 150,
+        "w": 800,
+        "h": 500
+       },
+       "camera": {
+        "dist": 6.2,
+        "height": 2.2,
+        "look": [
+         0,
+         0.3,
+         0
+        ],
+        "fovY_deg": 45
+       },
+       "world": [
+        1.4,
+        0.9,
+        0.3
+       ]
+      }
+     },
+     {
+      "target": "pix:n",
+      "class": "not_scored",
+      "metric": "pixel_nrmse",
+      "latent": "gl:u_a",
+      "diag_px": 1509.4369811290564,
+      "projection": {
+       "canvas": {
+        "left": 240,
+        "top": 150,
+        "w": 800,
+        "h": 500
+       },
+       "camera": {
+        "dist": 6.2,
+        "height": 2.2,
+        "look": [
+         0,
+         0.3,
+         0
+        ],
+        "fovY_deg": 45
+       },
+       "world": [
+        -1.1,
+        0.6,
+        -1.3
+       ]
+      }
+     }
+    ],
+    "attribution": {
+     "gl:u_a": "scroll-linked"
+    }
+   }
+  },
+  {
+   "index": 2,
+   "params": {
+    "mode": "spring",
+    "zeta": 0.45,
+    "lag": 0.55
+   },
+   "R3": {
+    "schema": "reva.labtruth/0",
+    "route": "m14",
+    "params": {
+     "mode": "spring",
+     "zeta": 0.45,
+     "lag": 0.55,
+     "gain": 0.0012,
+     "capMs": 33.333333333333336,
+     "orbitRate": 0.0005,
+     "snapV": 0.0001,
+     "snapX": 0.00001
+    },
+    "regime": "R3",
+    "variant": "steps",
+    "metrics": [
+     "class",
+     "pixel_nrmse",
+     "dom_not_applicable",
+     "attribution"
+    ],
+    "stagger": null,
+    "negative": null,
+    "items": [
+     {
+      "target": "gl:u_a",
+      "class": "spring",
+      "family": "discrete-spring",
+      "integrator": {
+       "id": "I7",
+       "description": "semi-implicit Euler, one step of min(dt, cap) per frame",
+       "cap_ms": 33.333333333333336
+      },
+      "params": {
+       "k_over_m": 27.801652892561982,
+       "c_over_m": 4.745454545454545,
+       "omega0": 5.2727272727272725,
+       "zeta": 0.45,
+       "lag_s": 0.55,
+       "gain_rad_per_px": 0.0012,
+       "snap_v": 0.0001,
+       "snap_x": 0.00001
+      },
+      "derived": {
+       "overshoot_frac": 0.20133546095614663,
+       "time_to_peak_ms": 658.333333,
+       "analytic_overshoot_frac": 0.20534602842208866
+      }
+     },
+     {
+      "target": "dom",
+      "class": "not_applicable",
+      "note": "content is drawn into a canvas; no DOM channel moves"
+     },
+     {
+      "target": "pix:m",
+      "class": "not_scored",
+      "metric": "pixel_nrmse",
+      "latent": "gl:u_a",
+      "diag_px": 1509.4369811290564,
+      "projection": {
+       "canvas": {
+        "left": 240,
+        "top": 150,
+        "w": 800,
+        "h": 500
+       },
+       "camera": {
+        "dist": 6.2,
+        "height": 2.2,
+        "look": [
+         0,
+         0.3,
+         0
+        ],
+        "fovY_deg": 45
+       },
+       "world": [
+        1.4,
+        0.9,
+        0.3
+       ]
+      }
+     },
+     {
+      "target": "pix:n",
+      "class": "not_scored",
+      "metric": "pixel_nrmse",
+      "latent": "gl:u_a",
+      "diag_px": 1509.4369811290564,
+      "projection": {
+       "canvas": {
+        "left": 240,
+        "top": 150,
+        "w": 800,
+        "h": 500
+       },
+       "camera": {
+        "dist": 6.2,
+        "height": 2.2,
+        "look": [
+         0,
+         0.3,
+         0
+        ],
+        "fovY_deg": 45
+       },
+       "world": [
+        -1.1,
+        0.6,
+        -1.3
+       ]
+      }
+     }
+    ],
+    "attribution": {
+     "gl:u_a": "scroll-linked"
+    }
+   }
+  },
+  {
+   "index": 3,
+   "params": {
+    "mode": "spring",
+    "zeta": 0.7,
+    "lag": 1.1
+   },
+   "R3": {
+    "schema": "reva.labtruth/0",
+    "route": "m14",
+    "params": {
+     "mode": "spring",
+     "zeta": 0.7,
+     "lag": 1.1,
+     "gain": 0.0012,
+     "capMs": 33.333333333333336,
+     "orbitRate": 0.0005,
+     "snapV": 0.0001,
+     "snapX": 0.00001
+    },
+    "regime": "R3",
+    "variant": "steps",
+    "metrics": [
+     "class",
+     "pixel_nrmse",
+     "dom_not_applicable",
+     "attribution"
+    ],
+    "stagger": null,
+    "negative": null,
+    "items": [
+     {
+      "target": "gl:u_a",
+      "class": "spring",
+      "family": "discrete-spring",
+      "integrator": {
+       "id": "I7",
+       "description": "semi-implicit Euler, one step of min(dt, cap) per frame",
+       "cap_ms": 33.333333333333336
+      },
+      "params": {
+       "k_over_m": 6.950413223140496,
+       "c_over_m": 3.6909090909090905,
+       "omega0": 2.6363636363636362,
+       "zeta": 0.7,
+       "lag_s": 1.1,
+       "gain_rad_per_px": 0.0012,
+       "snap_v": 0.0001,
+       "snap_x": 0.00001
+      },
+      "derived": {
+       "overshoot_frac": 0.04385042625035429,
+       "time_to_peak_ms": 1666.666667,
+       "analytic_overshoot_frac": 0.045987910260267745
+      }
+     },
+     {
+      "target": "dom",
+      "class": "not_applicable",
+      "note": "content is drawn into a canvas; no DOM channel moves"
+     },
+     {
+      "target": "pix:m",
+      "class": "not_scored",
+      "metric": "pixel_nrmse",
+      "latent": "gl:u_a",
+      "diag_px": 1509.4369811290564,
+      "projection": {
+       "canvas": {
+        "left": 240,
+        "top": 150,
+        "w": 800,
+        "h": 500
+       },
+       "camera": {
+        "dist": 6.2,
+        "height": 2.2,
+        "look": [
+         0,
+         0.3,
+         0
+        ],
+        "fovY_deg": 45
+       },
+       "world": [
+        1.4,
+        0.9,
+        0.3
+       ]
+      }
+     },
+     {
+      "target": "pix:n",
+      "class": "not_scored",
+      "metric": "pixel_nrmse",
+      "latent": "gl:u_a",
+      "diag_px": 1509.4369811290564,
+      "projection": {
+       "canvas": {
+        "left": 240,
+        "top": 150,
+        "w": 800,
+        "h": 500
+       },
+       "camera": {
+        "dist": 6.2,
+        "height": 2.2,
+        "look": [
+         0,
+         0.3,
+         0
+        ],
+        "fovY_deg": 45
+       },
+       "world": [
+        -1.1,
+        0.6,
+        -1.3
+       ]
+      }
+     }
+    ],
+    "attribution": {
+     "gl:u_a": "scroll-linked"
+    }
+   }
+  },
+  {
+   "index": 4,
+   "params": {
+    "mode": "orbit",
+    "orbitRate": 0.0005
+   },
+   "R3": {
+    "schema": "reva.labtruth/0",
+    "route": "m14",
+    "params": {
+     "mode": "orbit",
+     "zeta": 0.45,
+     "lag": 0.8,
+     "gain": 0.0012,
+     "capMs": 33.333333333333336,
+     "orbitRate": 0.0005,
+     "snapV": 0.0001,
+     "snapX": 0.00001
+    },
+    "regime": "R3",
+    "variant": "steps",
+    "metrics": [
+     "class",
+     "pixel_nrmse",
+     "dom_not_applicable",
+     "attribution"
+    ],
+    "stagger": null,
+    "negative": null,
+    "items": [
+     {
+      "target": "gl:u_a",
+      "class": "ramp",
+      "family": "wall-clock",
+      "params": {
+       "rate_rad_per_s": 0.5
+      },
+      "derived": {}
+     },
+     {
+      "target": "dom",
+      "class": "not_applicable",
+      "note": "content is drawn into a canvas; no DOM channel moves"
+     },
+     {
+      "target": "pix:m",
+      "class": "not_scored",
+      "metric": "pixel_nrmse",
+      "latent": "gl:u_a",
+      "diag_px": 1509.4369811290564,
+      "projection": {
+       "canvas": {
+        "left": 240,
+        "top": 150,
+        "w": 800,
+        "h": 500
+       },
+       "camera": {
+        "dist": 6.2,
+        "height": 2.2,
+        "look": [
+         0,
+         0.3,
+         0
+        ],
+        "fovY_deg": 45
+       },
+       "world": [
+        1.4,
+        0.9,
+        0.3
+       ]
+      }
+     },
+     {
+      "target": "pix:n",
+      "class": "not_scored",
+      "metric": "pixel_nrmse",
+      "latent": "gl:u_a",
+      "diag_px": 1509.4369811290564,
+      "projection": {
+       "canvas": {
+        "left": 240,
+        "top": 150,
+        "w": 800,
+        "h": 500
+       },
+       "camera": {
+        "dist": 6.2,
+        "height": 2.2,
+        "look": [
+         0,
+         0.3,
+         0
+        ],
+        "fovY_deg": 45
+       },
+       "world": [
+        -1.1,
+        0.6,
+        -1.3
+       ]
+      }
+     }
+    ],
+    "attribution": {
+     "gl:u_a": "time-driven"
+    }
+   }
+  }
+ ]
+}

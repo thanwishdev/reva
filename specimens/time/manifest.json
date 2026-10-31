@@ -1,0 +1,878 @@
+{
+ "schema": "reva.specimen.time.manifest/0",
+ "generator": "src/specimens/time/gen.js lab",
+ "labRoot": "fixtures/lab",
+ "specimens": [
+  {
+   "id": "m06-go",
+   "route": "m06",
+   "variant": "go",
+   "regime": "R3",
+   "tracks": 18,
+   "impl": [
+    "css"
+   ],
+   "kinds": [
+    "keyframes"
+   ],
+   "durationMs": 2654,
+   "digest": "194e9dc6cc3ecc37"
+  },
+  {
+   "id": "m12-go",
+   "route": "m12",
+   "variant": "go",
+   "regime": "R3",
+   "tracks": 14,
+   "impl": [
+    "css",
+    "js"
+   ],
+   "kinds": [
+    "tween"
+   ],
+   "durationMs": 1967,
+   "digest": "e09af065015a4fba"
+  },
+  {
+   "id": "m15-go",
+   "route": "m15",
+   "variant": "go",
+   "regime": "R3",
+   "tracks": 1,
+   "impl": [
+    "js"
+   ],
+   "kinds": [
+    "keyframes"
+   ],
+   "durationMs": 6992,
+   "digest": "24cb7d870784128f"
+  },
+  {
+   "id": "m16e-go",
+   "route": "m16e",
+   "variant": "go",
+   "regime": "R3",
+   "tracks": 1,
+   "impl": [
+    "js"
+   ],
+   "kinds": [
+    "tween"
+   ],
+   "durationMs": 2409,
+   "digest": "a7d220c7712fc172"
+  },
+  {
+   "id": "m16f-go",
+   "route": "m16f",
+   "variant": "go",
+   "regime": "R3",
+   "tracks": 1,
+   "impl": [
+    "js"
+   ],
+   "kinds": [
+    "tween"
+   ],
+   "durationMs": 1889,
+   "digest": "bd47e78ce1f0e0db"
+  },
+  {
+   "id": "m18-single",
+   "route": "m18",
+   "variant": "single",
+   "regime": "R3",
+   "tracks": 4,
+   "impl": [
+    "waapi"
+   ],
+   "kinds": [
+    "tween"
+   ],
+   "durationMs": 1601,
+   "digest": "f1517cde4e4f9183"
+  },
+  {
+   "id": "m18-interrupted",
+   "route": "m18",
+   "variant": "interrupted",
+   "regime": "R3",
+   "tracks": 4,
+   "impl": [
+    "js"
+   ],
+   "kinds": [
+    "chain"
+   ],
+   "durationMs": 1901,
+   "digest": "971ada6be24d1608"
+  },
+  {
+   "id": "m19-timer",
+   "route": "m19",
+   "variant": "timer",
+   "regime": "R3",
+   "tracks": 1,
+   "impl": [
+    "js"
+   ],
+   "kinds": [
+    "tween"
+   ],
+   "durationMs": 1704,
+   "digest": "1337657df925c753"
+  },
+  {
+   "id": "m19-click",
+   "route": "m19",
+   "variant": "click",
+   "regime": "R3",
+   "tracks": 1,
+   "impl": [
+    "js"
+   ],
+   "kinds": [
+    "tween"
+   ],
+   "durationMs": 1709,
+   "digest": "11fabcd6157e87a1"
+  },
+  {
+   "id": "m19-retarget",
+   "route": "m19",
+   "variant": "retarget",
+   "regime": "R3",
+   "tracks": 1,
+   "impl": [
+    "js"
+   ],
+   "kinds": [
+    "chain"
+   ],
+   "durationMs": 1809,
+   "digest": "0c87822048547fa9"
+  },
+  {
+   "id": "m07-i1h16-p1000",
+   "route": "m07",
+   "variant": "p1000",
+   "regime": "R3",
+   "tracks": 1,
+   "impl": [
+    "js"
+   ],
+   "kinds": [
+    "spring"
+   ],
+   "durationMs": 4159,
+   "digest": "177d82b405f005e0"
+  },
+  {
+   "id": "m07-i1h2-p1000",
+   "route": "m07",
+   "variant": "p1000",
+   "regime": "R3",
+   "tracks": 1,
+   "impl": [
+    "js"
+   ],
+   "kinds": [
+    "spring"
+   ],
+   "durationMs": 4309,
+   "digest": "b47e58c11510001b"
+  },
+  {
+   "id": "m07-i1h1-p1000",
+   "route": "m07",
+   "variant": "p1000",
+   "regime": "R3",
+   "tracks": 1,
+   "impl": [
+    "js"
+   ],
+   "kinds": [
+    "spring"
+   ],
+   "durationMs": 4325,
+   "digest": "6f0c99779eef98e6"
+  },
+  {
+   "id": "m07-i4-p1000",
+   "route": "m07",
+   "variant": "p1000",
+   "regime": "R3",
+   "tracks": 1,
+   "impl": [
+    "js"
+   ],
+   "kinds": [
+    "spring"
+   ],
+   "durationMs": 3692,
+   "digest": "9fafb4e337886760"
+  },
+  {
+   "id": "m07-i5-p1000",
+   "route": "m07",
+   "variant": "p1000",
+   "regime": "R3",
+   "tracks": 1,
+   "impl": [
+    "js"
+   ],
+   "kinds": [
+    "spring"
+   ],
+   "durationMs": 4334,
+   "digest": "f40367baba11ca84"
+  },
+  {
+   "id": "m07-i6-p1000",
+   "route": "m07",
+   "variant": "p1000",
+   "regime": "R3",
+   "tracks": 1,
+   "impl": [
+    "js"
+   ],
+   "kinds": [
+    "spring"
+   ],
+   "durationMs": 4342,
+   "digest": "d6cac6afd482414e"
+  },
+  {
+   "id": "m07-i7-p1000",
+   "route": "m07",
+   "variant": "p1000",
+   "regime": "R3",
+   "tracks": 1,
+   "impl": [
+    "js"
+   ],
+   "kinds": [
+    "spring"
+   ],
+   "durationMs": 4159,
+   "digest": "9c2ad264d9f54465"
+  },
+  {
+   "id": "m07-i1h16-p400",
+   "route": "m07",
+   "variant": "p400",
+   "regime": "R3",
+   "tracks": 1,
+   "impl": [
+    "js"
+   ],
+   "kinds": [
+    "spring"
+   ],
+   "durationMs": 4709,
+   "digest": "e2f175138183afd9"
+  },
+  {
+   "id": "m07-i1h2-p400",
+   "route": "m07",
+   "variant": "p400",
+   "regime": "R3",
+   "tracks": 1,
+   "impl": [
+    "js"
+   ],
+   "kinds": [
+    "spring"
+   ],
+   "durationMs": 4842,
+   "digest": "e627bb31a04e838f"
+  },
+  {
+   "id": "m07-i1h1-p400",
+   "route": "m07",
+   "variant": "p400",
+   "regime": "R3",
+   "tracks": 1,
+   "impl": [
+    "js"
+   ],
+   "kinds": [
+    "spring"
+   ],
+   "durationMs": 4850,
+   "digest": "25c327d42e105de5"
+  },
+  {
+   "id": "m07-i4-p400",
+   "route": "m07",
+   "variant": "p400",
+   "regime": "R3",
+   "tracks": 1,
+   "impl": [
+    "js"
+   ],
+   "kinds": [
+    "spring"
+   ],
+   "durationMs": 3917,
+   "digest": "1d2c20fa2279bcc8"
+  },
+  {
+   "id": "m07-i5-p400",
+   "route": "m07",
+   "variant": "p400",
+   "regime": "R3",
+   "tracks": 1,
+   "impl": [
+    "js"
+   ],
+   "kinds": [
+    "spring"
+   ],
+   "durationMs": 4859,
+   "digest": "994d237fb555efdd"
+  },
+  {
+   "id": "m07-i6-p400",
+   "route": "m07",
+   "variant": "p400",
+   "regime": "R3",
+   "tracks": 1,
+   "impl": [
+    "js"
+   ],
+   "kinds": [
+    "spring"
+   ],
+   "durationMs": 5150,
+   "digest": "bcafca9d811432da"
+  },
+  {
+   "id": "m07-i7-p400",
+   "route": "m07",
+   "variant": "p400",
+   "regime": "R3",
+   "tracks": 1,
+   "impl": [
+    "js"
+   ],
+   "kinds": [
+    "spring"
+   ],
+   "durationMs": 4709,
+   "digest": "ca40468897396729"
+  },
+  {
+   "id": "m07x-verlet-p1000",
+   "route": "m07x",
+   "variant": "p1000",
+   "regime": "R3",
+   "tracks": 1,
+   "impl": [
+    "js"
+   ],
+   "kinds": [
+    "spring"
+   ],
+   "durationMs": 4334,
+   "digest": "d6ea16118715069d"
+  },
+  {
+   "id": "m07x-i1h5-p1000",
+   "route": "m07x",
+   "variant": "p1000",
+   "regime": "R3",
+   "tracks": 1,
+   "impl": [
+    "js"
+   ],
+   "kinds": [
+    "spring"
+   ],
+   "durationMs": 4175,
+   "digest": "ffc2b86f8018a0ae"
+  },
+  {
+   "id": "m08-z0.25-rest",
+   "route": "m08",
+   "variant": "rest",
+   "regime": "R3",
+   "tracks": 1,
+   "impl": [
+    "js"
+   ],
+   "kinds": [
+    "spring"
+   ],
+   "durationMs": 3242,
+   "digest": "7e2dded7a8344685"
+  },
+  {
+   "id": "m08-z0.42-rest",
+   "route": "m08",
+   "variant": "rest",
+   "regime": "R3",
+   "tracks": 1,
+   "impl": [
+    "js"
+   ],
+   "kinds": [
+    "spring"
+   ],
+   "durationMs": 2459,
+   "digest": "e0cca2aafcde393f"
+  },
+  {
+   "id": "m08-z0.6-rest",
+   "route": "m08",
+   "variant": "rest",
+   "regime": "R3",
+   "tracks": 1,
+   "impl": [
+    "js"
+   ],
+   "kinds": [
+    "spring"
+   ],
+   "durationMs": 1867,
+   "digest": "7cfec87621632fa5"
+  },
+  {
+   "id": "m08-z1-rest",
+   "route": "m08",
+   "variant": "rest",
+   "regime": "R3",
+   "tracks": 1,
+   "impl": [
+    "js"
+   ],
+   "kinds": [
+    "spring"
+   ],
+   "durationMs": 1842,
+   "digest": "bec16fb11b94427a"
+  },
+  {
+   "id": "m08-z1.5-rest",
+   "route": "m08",
+   "variant": "rest",
+   "regime": "R3",
+   "tracks": 1,
+   "impl": [
+    "js"
+   ],
+   "kinds": [
+    "spring"
+   ],
+   "durationMs": 2851,
+   "digest": "87f10ffaebade577"
+  },
+  {
+   "id": "m08-z0.25-retarget",
+   "route": "m08",
+   "variant": "retarget",
+   "regime": "R3",
+   "tracks": 1,
+   "impl": [
+    "js"
+   ],
+   "kinds": [
+    "spring"
+   ],
+   "durationMs": 3959,
+   "digest": "291e027555d0dcee"
+  },
+  {
+   "id": "m08-z0.42-retarget",
+   "route": "m08",
+   "variant": "retarget",
+   "regime": "R3",
+   "tracks": 1,
+   "impl": [
+    "js"
+   ],
+   "kinds": [
+    "spring"
+   ],
+   "durationMs": 3034,
+   "digest": "cb31ea4928cc43f2"
+  },
+  {
+   "id": "m08-z0.6-retarget",
+   "route": "m08",
+   "variant": "retarget",
+   "regime": "R3",
+   "tracks": 1,
+   "impl": [
+    "js"
+   ],
+   "kinds": [
+    "spring"
+   ],
+   "durationMs": 2425,
+   "digest": "4dd6b02327aeb338"
+  },
+  {
+   "id": "m08-z1-retarget",
+   "route": "m08",
+   "variant": "retarget",
+   "regime": "R3",
+   "tracks": 1,
+   "impl": [
+    "js"
+   ],
+   "kinds": [
+    "spring"
+   ],
+   "durationMs": 2425,
+   "digest": "9a180247939e6abc"
+  },
+  {
+   "id": "m08-z1.5-retarget",
+   "route": "m08",
+   "variant": "retarget",
+   "regime": "R3",
+   "tracks": 1,
+   "impl": [
+    "js"
+   ],
+   "kinds": [
+    "spring"
+   ],
+   "durationMs": 3517,
+   "digest": "b434d1f80cfdaa08"
+  },
+  {
+   "id": "m08-z0.25-v0",
+   "route": "m08",
+   "variant": "v0",
+   "regime": "R3",
+   "tracks": 1,
+   "impl": [
+    "js"
+   ],
+   "kinds": [
+    "spring"
+   ],
+   "durationMs": 3259,
+   "digest": "dd67a9bbeb58233e"
+  },
+  {
+   "id": "m08-z0.42-v0",
+   "route": "m08",
+   "variant": "v0",
+   "regime": "R3",
+   "tracks": 1,
+   "impl": [
+    "js"
+   ],
+   "kinds": [
+    "spring"
+   ],
+   "durationMs": 2475,
+   "digest": "ba351ee282a47353"
+  },
+  {
+   "id": "m08-z0.6-v0",
+   "route": "m08",
+   "variant": "v0",
+   "regime": "R3",
+   "tracks": 1,
+   "impl": [
+    "js"
+   ],
+   "kinds": [
+    "spring"
+   ],
+   "durationMs": 1875,
+   "digest": "ee7a7288672ad03b"
+  },
+  {
+   "id": "m08-z1-v0",
+   "route": "m08",
+   "variant": "v0",
+   "regime": "R3",
+   "tracks": 1,
+   "impl": [
+    "js"
+   ],
+   "kinds": [
+    "spring"
+   ],
+   "durationMs": 1859,
+   "digest": "54681448a911b49f"
+  },
+  {
+   "id": "m08-z1.5-v0",
+   "route": "m08",
+   "variant": "v0",
+   "regime": "R3",
+   "tracks": 1,
+   "impl": [
+    "js"
+   ],
+   "kinds": [
+    "spring"
+   ],
+   "durationMs": 2876,
+   "digest": "eb06ecb47e83d7cf"
+  },
+  {
+   "id": "m10-frame-fast",
+   "route": "m10",
+   "variant": "fast",
+   "regime": "R3",
+   "tracks": 1,
+   "impl": [
+    "js"
+   ],
+   "kinds": [
+    "friction"
+   ],
+   "durationMs": 1426,
+   "digest": "a213395a3a057640"
+  },
+  {
+   "id": "m10-dt-fast",
+   "route": "m10",
+   "variant": "fast",
+   "regime": "R3",
+   "tracks": 1,
+   "impl": [
+    "js"
+   ],
+   "kinds": [
+    "friction"
+   ],
+   "durationMs": 2067,
+   "digest": "ce13f631ed8bcca0"
+  },
+  {
+   "id": "m10-frame-slow",
+   "route": "m10",
+   "variant": "slow",
+   "regime": "R3",
+   "tracks": 1,
+   "impl": [
+    "js"
+   ],
+   "kinds": [
+    "friction"
+   ],
+   "durationMs": 1350,
+   "digest": "9798238714923a18"
+  },
+  {
+   "id": "m10-dt-slow",
+   "route": "m10",
+   "variant": "slow",
+   "regime": "R3",
+   "tracks": 1,
+   "impl": [
+    "js"
+   ],
+   "kinds": [
+    "friction"
+   ],
+   "durationMs": 1892,
+   "digest": "09871c9e4b4589d7"
+  }
+ ],
+ "skipped": [
+  {
+   "file": "lab-easing/m06.go",
+   "case": "m06-go",
+   "channel": "--e",
+   "reason": "redundant: variable channel shadowed by a directly renderable channel of the same motion",
+   "tier": "truth"
+  },
+  {
+   "file": "lab-easing/m06.go",
+   "case": "m06-go",
+   "channel": "--e",
+   "reason": "redundant: variable channel shadowed by a directly renderable channel of the same motion",
+   "tier": "truth"
+  },
+  {
+   "file": "lab-easing/m06.go",
+   "case": "m06-go",
+   "channel": "--e",
+   "reason": "redundant: variable channel shadowed by a directly renderable channel of the same motion",
+   "tier": "truth"
+  },
+  {
+   "file": "lab-easing/m06.go",
+   "case": "m06-go",
+   "channel": "--e",
+   "reason": "redundant: variable channel shadowed by a directly renderable channel of the same motion",
+   "tier": "truth"
+  },
+  {
+   "file": "lab-easing/m06.go",
+   "case": "m06-go",
+   "channel": "--e",
+   "reason": "redundant: variable channel shadowed by a directly renderable channel of the same motion",
+   "tier": "truth"
+  },
+  {
+   "file": "lab-easing/m06.go",
+   "case": "m06-go",
+   "channel": "--e",
+   "reason": "redundant: variable channel shadowed by a directly renderable channel of the same motion",
+   "tier": "truth"
+  },
+  {
+   "file": "lab-easing/m12.go",
+   "case": "m12-go",
+   "channel": "--c",
+   "reason": "redundant: mirrors the driver channel of the same element and motion",
+   "tier": "truth"
+  },
+  {
+   "file": "lab-easing/m12.go",
+   "case": "m12-go",
+   "channel": "--n",
+   "reason": "redundant: mirrors the driver channel of the same element and motion",
+   "tier": "truth"
+  },
+  {
+   "file": "lab-easing/m16e.go",
+   "case": "m16e-go",
+   "channel": "--v",
+   "reason": "redundant: mirrors the driver channel of the same element and motion",
+   "tier": "truth"
+  },
+  {
+   "file": "lab-easing/m16e.go",
+   "case": "m16e-go",
+   "reason": "redundant: mirrors the driver channel of the same element and motion",
+   "tier": "truth"
+  },
+  {
+   "file": "lab-easing/m16f.go",
+   "case": "m16f-go",
+   "channel": "--v",
+   "reason": "redundant: mirrors the driver channel of the same element and motion",
+   "tier": "truth"
+  },
+  {
+   "file": "lab-easing/m16f.go",
+   "case": "m16f-go",
+   "reason": "redundant: mirrors the driver channel of the same element and motion",
+   "tier": "truth"
+  },
+  {
+   "file": "lab-easing/m19.timer",
+   "case": "m19-timer",
+   "channel": "--v",
+   "reason": "redundant: mirrors the driver channel of the same element and motion",
+   "tier": "truth"
+  },
+  {
+   "file": "lab-easing/m19.timer",
+   "case": "m19-timer",
+   "reason": "redundant: mirrors the driver channel of the same element and motion",
+   "tier": "truth"
+  },
+  {
+   "file": "lab-easing/m19.click",
+   "case": "m19-click",
+   "channel": "--v",
+   "reason": "redundant: mirrors the driver channel of the same element and motion",
+   "tier": "truth"
+  },
+  {
+   "file": "lab-easing/m19.click",
+   "case": "m19-click",
+   "reason": "redundant: mirrors the driver channel of the same element and motion",
+   "tier": "truth"
+  },
+  {
+   "file": "lab-easing/m19.retarget",
+   "case": "m19-retarget",
+   "channel": "--v",
+   "reason": "redundant: mirrors the driver channel of the same element and motion",
+   "tier": "truth"
+  },
+  {
+   "file": "lab-easing/m19.retarget",
+   "case": "m19-retarget",
+   "reason": "redundant: mirrors the driver channel of the same element and motion",
+   "tier": "truth"
+  },
+  {
+   "file": "lab-springs/m10",
+   "case": "m10-frame-fast",
+   "target": ".b0|--x",
+   "class": "ramp",
+   "reason": "pointer-driven drag leg (not a time motion)"
+  },
+  {
+   "file": "lab-springs/m10",
+   "case": "m10-dt-fast",
+   "target": ".b0|--x",
+   "class": "ramp",
+   "reason": "pointer-driven drag leg (not a time motion)"
+  },
+  {
+   "file": "lab-springs/m10",
+   "case": "m10-frame-slow",
+   "target": ".b0|--x",
+   "class": "ramp",
+   "reason": "pointer-driven drag leg (not a time motion)"
+  },
+  {
+   "file": "lab-springs/m10",
+   "case": "m10-dt-slow",
+   "target": ".b0|--x",
+   "class": "ramp",
+   "reason": "pointer-driven drag leg (not a time motion)"
+  },
+  {
+   "file": "lab-springs/m10",
+   "case": "m10-frame-still",
+   "target": ".b0|--x",
+   "class": "ramp",
+   "reason": "pointer-driven drag leg (not a time motion)"
+  },
+  {
+   "file": "lab-springs/m10",
+   "case": "m10-frame-still",
+   "target": ".b0|--x",
+   "class": "static",
+   "family": "no-momentum",
+   "reason": "static: nothing moves"
+  },
+  {
+   "file": "lab-springs/m10",
+   "case": "m10-frame-still",
+   "reason": "no seekable time mechanism in this case"
+  },
+  {
+   "file": "lab-springs/m10",
+   "case": "m10-dt-still",
+   "target": ".b0|--x",
+   "class": "ramp",
+   "reason": "pointer-driven drag leg (not a time motion)"
+  },
+  {
+   "file": "lab-springs/m10",
+   "case": "m10-dt-still",
+   "target": ".b0|--x",
+   "class": "static",
+   "family": "no-momentum",
+   "reason": "static: nothing moves"
+  },
+  {
+   "file": "lab-springs/m10",
+   "case": "m10-dt-still",
+   "reason": "no seekable time mechanism in this case"
+  }
+ ],
+ "notTimeBased": {
+  "lab-easing/m11": "scroll-driven (view timeline): belongs to the scroll specimens",
+  "lab-easing/m17": "View Transitions: pseudo-element snapshots, not seekable by the kernel"
+ }
+}

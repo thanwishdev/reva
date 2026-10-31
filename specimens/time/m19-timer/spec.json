@@ -1,0 +1,85 @@
+{
+ "schema": "reva.specimen.time/0",
+ "id": "m19-timer",
+ "origin": "lab",
+ "source": {
+  "kind": "labtruth",
+  "schema": "reva.labtruth/0",
+  "route": "m19",
+  "variant": "timer",
+  "regime": "R3",
+  "params": {
+   "from": 0,
+   "to": 360,
+   "D": 700,
+   "ease": "easeOutCubic",
+   "delay": 403.7,
+   "to2": 90,
+   "D2": 500,
+   "write": "full"
+  }
+ },
+ "timeline": {
+  "frameMs": 8.333333,
+  "refreshHz": 120,
+  "leadMs": 500,
+  "sourceShiftMs": -333.333333,
+  "durationMs": 1704,
+  "hasLoop": false
+ },
+ "viewport": {
+  "width": 1280,
+  "height": 800
+ },
+ "elements": [
+  {
+   "id": "e0",
+   "key": "#b0",
+   "x": 40,
+   "y": 60,
+   "w": 56,
+   "h": 56,
+   "tf": {
+    "tx": true,
+    "ty": false,
+    "rz": false,
+    "sx": false,
+    "sy": false
+   }
+  }
+ ],
+ "tracks": [
+  {
+   "id": "t0",
+   "el": 0,
+   "channel": "var",
+   "name": "--v",
+   "mapTo": "tx",
+   "impl": "js",
+   "label": "tween",
+   "provenance": {
+    "tier": "truth",
+    "route": "m19"
+   },
+   "assumptions": [
+    {
+     "field": "channel",
+     "reason": "custom property --v: how the page maps it to a visual property is not in the record; mapped to translateX(px) so the box moves"
+    }
+   ],
+   "motion": {
+    "kind": "tween",
+    "from": 0,
+    "to": 360,
+    "startMs": 503.6999996666666,
+    "durationMs": 700,
+    "ease": {
+     "kind": "named",
+     "name": "easeOutCubic"
+    }
+   }
+  }
+ ],
+ "notes": [],
+ "digest": "1337657df925c753"
+}

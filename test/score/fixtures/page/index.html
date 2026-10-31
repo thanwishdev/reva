@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>scorer fixture</title>
+<style>
+html{scroll-behavior:auto}
+html,body{margin:0;background:#fff}
+body{height:3200px}
+#stage{position:fixed;left:0;top:0;width:1000px;height:700px;overflow:hidden}
+.b{position:absolute;width:40px;height:40px;background:#3a6f8c}
+#cs{left:20px;top:20px}
+#wa{left:20px;top:80px}
+#sp{left:20px;top:140px}
+#lg{left:20px;top:200px}
+#hd{left:20px;top:260px}
+#em{left:20px;top:320px}
+#mp{left:600px;top:60px;width:160px;height:160px;transform:scale(calc(1 - 0.18 * var(--m, 0)))}
+#mk{left:600px;top:300px;width:200px;height:200px;background:#8c5a3a}
+#fd{left:600px;top:300px;width:200px;height:200px;background:#fff;opacity:0}
+</style></head>
+<body><div id="stage">
+<div class="b" id="cs"></div><div class="b" id="wa"></div><div class="b" id="sp"></div><div class="b" id="lg"></div>
+<div class="b" id="hd"></div><div class="b" id="em"></div><div id="mp"></div><div id="mk"></div><div id="fd"></div>
+</div>
+<script src="./page.js"></script></body></html>

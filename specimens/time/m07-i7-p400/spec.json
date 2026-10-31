@@ -1,0 +1,114 @@
+{
+ "schema": "reva.specimen.time/0",
+ "id": "m07-i7-p400",
+ "origin": "lab",
+ "source": {
+  "kind": "labtruth",
+  "schema": "reva.labtruth/0",
+  "route": "m07",
+  "variant": "p400",
+  "regime": "R3",
+  "params": {
+   "integrator": "i7",
+   "k": 200,
+   "c": 12,
+   "m": 1,
+   "A": 200,
+   "write": "full",
+   "sched": "p400"
+  }
+ },
+ "timeline": {
+  "frameMs": 8.333333,
+  "refreshHz": 120,
+  "leadMs": 500,
+  "sourceShiftMs": 0,
+  "durationMs": 4709,
+  "hasLoop": false
+ },
+ "viewport": {
+  "width": 1280,
+  "height": 800
+ },
+ "elements": [
+  {
+   "id": "e0",
+   "key": ".b0",
+   "x": 40,
+   "y": 60,
+   "w": 56,
+   "h": 56,
+   "tf": {
+    "tx": true,
+    "ty": false,
+    "rz": false,
+    "sx": false,
+    "sy": false
+   }
+  }
+ ],
+ "tracks": [
+  {
+   "id": "t0",
+   "el": 0,
+   "channel": "var",
+   "name": "--x",
+   "mapTo": "tx",
+   "impl": "js",
+   "label": "spring i7",
+   "provenance": {
+    "tier": "truth",
+    "route": "m07",
+    "integrator": "i7"
+   },
+   "motion": {
+    "kind": "spring",
+    "integrator": {
+     "id": "i7"
+    },
+    "start": {
+     "t": 0,
+     "x": 0,
+     "v": 0
+    },
+    "g0": 0,
+    "events": [
+     {
+      "t": 500,
+      "g": 200
+     },
+     {
+      "t": 900,
+      "g": 0
+     },
+     {
+      "t": 1300,
+      "g": 200
+     },
+     {
+      "t": 1700,
+      "g": 0
+     },
+     {
+      "t": 2100,
+      "g": 200
+     },
+     {
+      "t": 2500,
+      "g": 0
+     }
+    ],
+    "onsetMs": 500,
+    "k": 200,
+    "c": 12,
+    "cap": 33.3333,
+    "snap": {
+     "x": 0.004,
+     "v": 0.04
+    }
+   }
+  }
+ ],
+ "notes": [],
+ "digest": "ca40468897396729"
+}

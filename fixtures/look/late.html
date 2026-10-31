@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>look fixture: late listeners</title>
+<!-- Own fixture for `reva look` readiness (no site content). Known by construction:
+  #late  its pointerenter listener is attached by late.js, which the page fetches after "load" and the test server
+         answers 1200 ms late (?delay=1200): a hover sent right after readyState "complete" goes unseen. On enter:
+         rAF tween easeOutCubic 300 ms on translateY 0 -> -24 px.
+  #dead  never reacts to anything.
+-->
+<style>
+  html, body { margin: 0; }
+  body { height: 1200px; }
+  #late { position: absolute; left: 80px; top: 120px; width: 240px; height: 80px; background: #345; }
+  #dead { position: absolute; left: 400px; top: 120px; width: 240px; height: 80px; background: #543; }
+</style>
+</head>
+<body>
+<div id="late"></div>
+<div id="dead"></div>
+<script>
+  addEventListener('load', () => setTimeout(() => { const s = document.createElement('script'); s.src = 'late.js?delay=1200'; document.head.appendChild(s); }, 50));
+</script>
+</body>
+</html>

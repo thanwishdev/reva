@@ -1,0 +1,12 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>look fixture: unclassed siblings</title>
+<!-- Own fixture (no site content). Known by construction: three unclassed sibling divs in main; only the 2nd one moves
+  (JS sets transform at 400 ms; CSS transition translateX 200 px, 600 ms ease-in-out). No class or id names it, so
+  the only unique selector is a DOM path with :nth-of-type.
+-->
+<style>
+body{margin:0;height:150vh}
+main > div{position:absolute;top:120px;width:100px;height:100px;background:#36c}
+main > div:nth-of-type(1){left:40px} main > div:nth-of-type(2){left:200px;transition:transform 600ms ease-in-out} main > div:nth-of-type(3){left:360px}
+</style></head><body><main><div></div><div></div><div></div></main>
+<script>setTimeout(() => { document.querySelectorAll('main > div')[1].style.transform = 'translateX(200px)'; }, 400);</script>
+</body></html>

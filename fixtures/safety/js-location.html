@@ -1,0 +1,8 @@
+<!doctype html>
+<!-- Like meta-refresh.html, but a script moves the browser once the page is up (test/safety/nav-guard.test.js). -->
+<html><head><meta charset="utf-8"><title>js location</title></head>
+<body style="margin:0;font:16px/1.5 system-ui">
+<div style="width:200px;height:200px;background:#f90;animation:a 600ms ease-out both">box</div>
+<style>@keyframes a{from{transform:translateY(40px)}to{transform:none}}</style>
+<script>setTimeout(function () { location.href = '/private/js.html'; }, 300);</script>
+</body></html>

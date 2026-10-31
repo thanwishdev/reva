@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>look libraries fixture</title>
+<!-- Own fixture for the library check of `reva look` (no site content). Stand-in script files that carry the signature
+  strings the detector reads: a tween-engine bundle (banner, plugin banner, a version global) and an inline smooth-scroll
+  snippet that sets the html classes at run time. The motion is a plain CSS transition on load, so the look has one row:
+  #card  CSS transition on load: transform 500 ms ease-out, translateX(120px) -> 0, class set at 200 ms (box 200 x 100 at x 80, y 120)
+-->
+<style>
+  html, body { margin: 0; background: #eee; font: 16px/1.4 system-ui, sans-serif; }
+  #card { position: absolute; left: 80px; top: 120px; width: 200px; height: 100px; background: #335; transform: translateX(120px); transition: transform 500ms ease-out; }
+  #card.in { transform: translateX(0); }
+</style>
+<script src="/libs-engine.js"></script>
+</head>
+<body>
+<div id="card"></div>
+<script>
+  window.lenisVersion = '1.0.42';
+  /* smooth-scroll stand-in: the html classes and option names a smooth-scroll library writes / reads */
+  document.documentElement.classList.add('lenis', 'lenis-smooth');
+  const smooth = { smoothWheel: true, wheelMultiplier: 1, touchMultiplier: 2, stopped: 'lenis-stopped', on: 'lenis-smooth' };
+  setTimeout(() => document.getElementById('card').classList.add('in'), 200);
+</script>
+</body>
+</html>

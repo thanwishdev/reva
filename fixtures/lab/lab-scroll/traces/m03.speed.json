@@ -1,0 +1,45 @@
+{
+ "schema": "reva.labtrace/0",
+ "route": "m03",
+ "variant": "speed",
+ "note": "Dense sweeps through the exit range and the enter range, down and up.",
+ "actions": [
+  {
+   "hold": 500
+  },
+  {
+   "scrollTo": 600
+  },
+  {
+   "hold": 100
+  },
+  {
+   "denseSweep": {
+    "from": 600,
+    "to": 1000,
+    "px": 10,
+    "framesPerPos": 1
+   }
+  },
+  {
+   "hold": 600
+  },
+  {
+   "scrollTo": 2050
+  },
+  {
+   "hold": 100
+  },
+  {
+   "denseSweep": {
+    "from": 2050,
+    "to": 2470,
+    "px": 10,
+    "framesPerPos": 1
+   }
+  },
+  {
+   "hold": 1000
+  }
+ ]
+}

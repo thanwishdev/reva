@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>look click fixture</title>
+<!-- Own fixture for the click tests of `reva look` (no site content). Known motions, by construction:
+  #go     hover:  CSS transition transform 200 ms ease, scale 1 -> 1.05
+          press:  :active sets scale 0.9 with transition-duration 100 ms (same ease)
+          release: back to the hover state over 200 ms
+          click:  the page scrolls from 0 to 1200 px with a script tween, easeInOutCubic, 900 ms (rAF timestamps)
+  #open   click builds #panel (absent before the click): translateY 40 -> 0 px on an analytic spring, omega 9 rad/s, zeta 0.7,
+          and #pbtn inside it (the second step: --after '#open')
+  #pbtn   click: translateX 0 -> 200 px on an analytic spring, omega 12 rad/s, zeta 0.4
+-->
+<style>
+  html, body { margin: 0; font: 16px/1.4 system-ui, sans-serif; }
+  body { height: 3000px; }
+  button { border: 0; color: #fff; font: inherit; cursor: pointer; }
+  #go { position: fixed; left: 40px; top: 40px; width: 160px; height: 48px; background: #263; transition: transform 200ms ease; }
+  #go:hover { transform: scale(1.05); }
+  #go:active { transform: scale(0.9); transition-duration: 100ms; }
+  #open { position: fixed; left: 260px; top: 40px; width: 120px; height: 48px; background: #335; }
+  #host { position: fixed; left: 40px; top: 160px; width: 400px; }
+  #panel { width: 360px; height: 120px; background: #a63; transform: translateY(40px); }
+  #pbtn { display: block; width: 100px; height: 60px; margin-top: 16px; background: #622; }
+</style>
+</head>
+<body>
+<button id="go" type="button">go</button>
+<button id="open" type="button">open</button>
+<div id="host"></div>
+<script>
+  const spring = (el, prop, from, to, W, Z) => {
+    const WD = W * Math.sqrt(1 - Z * Z); let s = null;
+    const tick = (now) => {
+      if (s == null) s = now; const t = (now - s) / 1000;
+      const x = to - (to - from) * Math.exp(-Z * W * t) * (Math.cos(WD * t) + (Z * W / WD) * Math.sin(WD * t));
+      el.style.transform = `${prop}(${x}px)`;
+      if (t < 3) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  };
+  const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+  document.getElementById('go').addEventListener('click', () => {
+    const y0 = scrollY, t0 = performance.now();
+    const tick = (now) => { const p = Math.min(1, (now - t0) / 900); scrollTo(0, y0 + 1200 * ease(p)); if (p < 1) requestAnimationFrame(tick); };
+    requestAnimationFrame(tick);
+  });
+  document.getElementById('open').addEventListener('click', () => {
+    if (document.getElementById('panel')) return;
+    const host = document.getElementById('host');
+    const panel = document.createElement('div'); panel.id = 'panel'; host.appendChild(panel);
+    const b = document.createElement('button'); b.id = 'pbtn'; b.type = 'button'; b.textContent = 'x'; host.appendChild(b);
+    b.addEventListener('click', () => spring(b, 'translateX', 0, 200, 12, 0.4));
+    spring(panel, 'translateY', 40, 0, 9, 0.7);
+  });
+</script>
+</body>
+</html>

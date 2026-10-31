@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>look fixture: moving set cap</title>
+<!-- Own fixture for the recorder's moving-set cap (look top-N, capPolicy "viewport"; no site content). By construction:
+  .far x6   off screen (top 2000 px), style writes every frame from the start (they fill a 5-element cap first)
+  .near x3  on screen, still until 400 ms, then a rAF tween translateX 0 -> 120 px over 600 ms (each one should take
+            the slot of an off-screen element)
+  With maxElements 5: 5 .far watched, 1 left out; then 3 .near evict 3 .far, which are left out from then on:
+  4 distinct elements not sampled, 3 evictions.
+-->
+<style>
+  html, body { margin: 0; }
+  body { height: 3200px; }
+  .far { position: absolute; top: 2000px; width: 40px; height: 40px; background: #555; }
+  .near { position: absolute; top: 100px; width: 200px; height: 120px; background: #364; }
+</style>
+</head>
+<body>
+<div class="far" style="left:0"></div><div class="far" style="left:50px"></div><div class="far" style="left:100px"></div>
+<div class="far" style="left:150px"></div><div class="far" style="left:200px"></div><div class="far" style="left:250px"></div>
+<div class="near" style="left:40px"></div><div class="near" style="left:300px"></div><div class="near" style="left:560px"></div>
+<script>
+  const far = [...document.querySelectorAll('.far')], near = [...document.querySelectorAll('.near')];
+  const t0 = performance.now();
+  const tick = (now) => {
+    const t = now - t0;
+    far.forEach((e, i) => { e.style.transform = `translateX(${10 * Math.sin(t / 200 + i)}px)`; });
+    if (t >= 400) { const p = Math.min(1, (t - 400) / 600); near.forEach((e) => { e.style.transform = `translateX(${120 * p}px)`; }); }
+    if (t < 3000) requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+</script>
+</body>
+</html>

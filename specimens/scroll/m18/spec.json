@@ -1,0 +1,178 @@
+{
+ "schema": "reva.specimen.scroll/0",
+ "id": "lab-m18",
+ "family": "scroll",
+ "contract": "window.seek(t) / window.specimen (see README.md)",
+ "viewport": {
+  "width": 1280,
+  "height": 800
+ },
+ "frameMs": 8.333333333333334,
+ "docHeight": 800,
+ "subjects": [
+  {
+   "id": "b0",
+   "source": "#b0",
+   "x": 40,
+   "y": 40,
+   "w": 180,
+   "h": 100,
+   "hue": 200,
+   "fixedBox": {
+    "x": 100,
+    "y": 120,
+    "w": 160,
+    "h": 100
+   },
+   "layoutSwitch": true,
+   "origin": "0 0"
+  }
+ ],
+ "mechanisms": [
+  {
+   "id": "m0",
+   "kind": "flip",
+   "subject": "b0",
+   "impl": "waapi",
+   "D": 600,
+   "ease": [
+    0.2,
+    0.9,
+    0.1,
+    1
+   ],
+   "A": {
+    "x": 100,
+    "y": 120,
+    "w": 160,
+    "h": 100
+   },
+   "B": {
+    "x": 540,
+    "y": 300,
+    "w": 320,
+    "h": 180
+   },
+   "triggers": [
+    433.333333,
+    733.333333
+   ],
+   "subjectBox": {
+    "x": 100,
+    "y": 120,
+    "w": 160,
+    "h": 100
+   },
+   "channels": [
+    {
+     "name": "ren:tx",
+     "kind": "ren",
+     "prop": "tx",
+     "of": "tx",
+     "k0": 0,
+     "k1": 1,
+     "role": "rendered",
+     "source": "#b0|ren:tx",
+     "compare": true
+    },
+    {
+     "name": "ren:ty",
+     "kind": "ren",
+     "prop": "ty",
+     "of": "ty",
+     "k0": 0,
+     "k1": 1,
+     "role": "rendered",
+     "source": "#b0|ren:ty",
+     "compare": true
+    },
+    {
+     "name": "ren:sx",
+     "kind": "ren",
+     "prop": "sx",
+     "of": "sx",
+     "k0": 0,
+     "k1": 1,
+     "role": "rendered",
+     "source": "#b0|ren:sx",
+     "compare": true
+    },
+    {
+     "name": "ren:sy",
+     "kind": "ren",
+     "prop": "sy",
+     "of": "sy",
+     "k0": 0,
+     "k1": 1,
+     "role": "rendered",
+     "source": "#b0|ren:sy",
+     "compare": true
+    }
+   ],
+   "sources": [
+    "#b0|ren:tx",
+    "#b0|ren:tx"
+   ],
+   "tier": "declared"
+  }
+ ],
+ "pins": [],
+ "input": {
+  "pointer": [],
+  "triggers": [
+   {
+    "T": 433.333333
+   },
+   {
+    "T": 733.333333
+   }
+  ]
+ },
+ "channelMap": [
+  {
+   "source": "#b0|ren:tx",
+   "specimen": "b0|ren:tx",
+   "compare": true
+  },
+  {
+   "source": "#b0|ren:ty",
+   "specimen": "b0|ren:ty",
+   "compare": true
+  },
+  {
+   "source": "#b0|ren:sx",
+   "specimen": "b0|ren:sx",
+   "compare": true
+  },
+  {
+   "source": "#b0|ren:sy",
+   "specimen": "b0|ren:sy",
+   "compare": true
+  }
+ ],
+ "declared": [],
+ "skipped": [],
+ "unknowns": [],
+ "assumptions": [
+  {
+   "id": "flip_box:b0",
+   "note": "the absolute box size is not identifiable from a record (tx, ty, sx, sy depend only on the offsets and ratios of the two layout states); 160 x 100 is used"
+  }
+ ],
+ "placeholders": [],
+ "boot": {
+  "until": "window.specimen && window.specimen.ready === true"
+ },
+ "scene": {
+  "selectors": [
+   "#b0"
+  ]
+ },
+ "source": {
+  "kind": "labtruth",
+  "file": "lab-easing/truth/m18.interrupted.json",
+  "variant": "interrupted",
+  "digest": "fa4af49c63331dea",
+  "note": "Fixture Lab truth record (own fixture, public-safe)"
+ }
+}

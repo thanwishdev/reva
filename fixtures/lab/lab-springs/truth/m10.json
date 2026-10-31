@@ -1,0 +1,3236 @@
+{
+ "schema": "reva.labtruth/0",
+ "route": "m10",
+ "cells": [
+  {
+   "trace": "fast",
+   "params": {
+    "law": "frame",
+    "friction": 0.9,
+    "write": "full",
+    "path": "fast"
+   },
+   "attribution": {
+    ".b0|--x": "pointer"
+   },
+   "metrics": [
+    "M10/friction-rel-error",
+    "M10/stopping-distance",
+    "M09/law-class",
+    "M16/no-momentum",
+    "class"
+   ],
+   "regimes": {
+    "R2": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "segment": "drag",
+       "class": "ramp",
+       "scored": false,
+       "note": "the box follows the pointer; velocity constant, writes quantised by the 10 ms pointer ticks; not a fitted model",
+       "derived": {
+        "from_ms": 510,
+        "to_ms": 900,
+        "speed_px_ms": 0.6
+       }
+      },
+      {
+       "target": ".b0|--x",
+       "segment": "post-release",
+       "class": "friction",
+       "family": "friction",
+       "law": "per-frame",
+       "scored": true,
+       "params": {
+        "friction": 0.9,
+        "law": "per-frame",
+        "stop_eps_px_per_frame": 0.05,
+        "release_velocity_px_per_frame_60hz": 10,
+        "release_velocity_px_ms": 0.6,
+        "unit": "v *= f per rendered frame: the stopping TIME scales with the frame period, the distance does not (release velocity converted at a nominal 60 Hz)"
+       },
+       "derived": {
+        "release_ms": 905,
+        "x_at_release_px": 360,
+        "stopping_distance_px": 89.5362,
+        "stop_ms_after_release": 828.333,
+        "frames_with_motion": 51
+       },
+       "closed_form": {
+        "note": "recurrence iterated on a constant frame period (regime dt), independent of Inertia",
+        "stopping_distance_px": 89.5362,
+        "moving_frames": 50
+       },
+       "expect": {
+        "releaseVelocityFromInputLog": 0.6,
+        "law": "per-frame"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 432,
+      "dtMs": 16.6667,
+      "durationMs": 7200,
+      "source": "refsim on the regime grid"
+     }
+    },
+    "R3": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "segment": "drag",
+       "class": "ramp",
+       "scored": false,
+       "note": "the box follows the pointer; velocity constant, writes quantised by the 10 ms pointer ticks; not a fitted model",
+       "derived": {
+        "from_ms": 510,
+        "to_ms": 900,
+        "speed_px_ms": 0.6
+       }
+      },
+      {
+       "target": ".b0|--x",
+       "segment": "post-release",
+       "class": "friction",
+       "family": "friction",
+       "law": "per-frame",
+       "scored": true,
+       "params": {
+        "friction": 0.9,
+        "law": "per-frame",
+        "stop_eps_px_per_frame": 0.05,
+        "release_velocity_px_per_frame_60hz": 10,
+        "release_velocity_px_ms": 0.6,
+        "unit": "v *= f per rendered frame: the stopping TIME scales with the frame period, the distance does not (release velocity converted at a nominal 60 Hz)"
+       },
+       "derived": {
+        "release_ms": 905,
+        "x_at_release_px": 360,
+        "stopping_distance_px": 89.5362,
+        "stop_ms_after_release": 411.667,
+        "frames_with_motion": 51
+       },
+       "closed_form": {
+        "note": "recurrence iterated on a constant frame period (regime dt), independent of Inertia",
+        "stopping_distance_px": 89.5362,
+        "moving_frames": 50
+       },
+       "expect": {
+        "releaseVelocityFromInputLog": 0.6,
+        "law": "per-frame"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 865,
+      "dtMs": 8.3333,
+      "durationMs": 7200,
+      "source": "refsim on the regime grid"
+     }
+    },
+    "R4": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "segment": "drag",
+       "class": "ramp",
+       "scored": false,
+       "note": "the box follows the pointer; velocity constant, writes quantised by the 10 ms pointer ticks; not a fitted model",
+       "derived": {
+        "from_ms": 510,
+        "to_ms": 900,
+        "speed_px_ms": 0.6
+       }
+      },
+      {
+       "target": ".b0|--x",
+       "segment": "post-release",
+       "class": "friction",
+       "family": "friction",
+       "law": "per-frame",
+       "scored": true,
+       "params": {
+        "friction": 0.9,
+        "law": "per-frame",
+        "stop_eps_px_per_frame": 0.05,
+        "release_velocity_px_per_frame_60hz": 10,
+        "release_velocity_px_ms": 0.6,
+        "unit": "v *= f per rendered frame: the stopping TIME scales with the frame period, the distance does not (release velocity converted at a nominal 60 Hz)"
+       },
+       "derived": {
+        "release_ms": 905,
+        "x_at_release_px": 360,
+        "stopping_distance_px": 89.5362,
+        "stop_ms_after_release": 1661.667,
+        "frames_with_motion": 51
+       },
+       "closed_form": {
+        "note": "recurrence iterated on a constant frame period (regime dt), independent of Inertia",
+        "stopping_distance_px": 89.5362,
+        "moving_frames": 50
+       },
+       "expect": {
+        "releaseVelocityFromInputLog": 0.6,
+        "law": "per-frame"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 217,
+      "dtMs": 33.3333,
+      "durationMs": 7200,
+      "source": "refsim on the regime grid"
+     }
+    },
+    "R5": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "segment": "drag",
+       "class": "ramp",
+       "scored": false,
+       "note": "the box follows the pointer; velocity constant, writes quantised by the 10 ms pointer ticks; not a fitted model",
+       "derived": {
+        "from_ms": 510,
+        "to_ms": 900,
+        "speed_px_ms": 0.6
+       }
+      },
+      {
+       "target": ".b0|--x",
+       "segment": "post-release",
+       "class": "friction",
+       "family": "friction",
+       "law": "per-frame",
+       "scored": true,
+       "params": {
+        "friction": 0.9,
+        "law": "per-frame",
+        "stop_eps_px_per_frame": 0.05,
+        "release_velocity_px_per_frame_60hz": 10,
+        "release_velocity_px_ms": 0.6,
+        "unit": "v *= f per rendered frame: the stopping TIME scales with the frame period, the distance does not (release velocity converted at a nominal 60 Hz)"
+       },
+       "derived": {
+        "release_ms": 905,
+        "x_at_release_px": 360,
+        "stopping_distance_px": 89.5362,
+        "stop_ms_after_release": 995,
+        "frames_with_motion": 51
+       },
+       "closed_form": {
+        "note": "recurrence iterated on a constant frame period (regime dt), independent of Inertia",
+        "stopping_distance_px": 89.5362,
+        "moving_frames": 50
+       },
+       "expect": {
+        "releaseVelocityFromInputLog": 0.6,
+        "law": "per-frame"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 372,
+      "dtMs": 16.6667,
+      "durationMs": 7200,
+      "source": "refsim on the regime grid"
+     }
+    }
+   },
+   "r6": "same as R2"
+  },
+  {
+   "trace": "fast",
+   "params": {
+    "law": "frame",
+    "friction": 0.94,
+    "write": "full",
+    "path": "fast"
+   },
+   "attribution": {
+    ".b0|--x": "pointer"
+   },
+   "metrics": [
+    "M10/friction-rel-error",
+    "M10/stopping-distance",
+    "M09/law-class",
+    "M16/no-momentum",
+    "class"
+   ],
+   "regimes": {
+    "R2": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "segment": "drag",
+       "class": "ramp",
+       "scored": false,
+       "note": "the box follows the pointer; velocity constant, writes quantised by the 10 ms pointer ticks; not a fitted model",
+       "derived": {
+        "from_ms": 510,
+        "to_ms": 900,
+        "speed_px_ms": 0.6
+       }
+      },
+      {
+       "target": ".b0|--x",
+       "segment": "post-release",
+       "class": "friction",
+       "family": "friction",
+       "law": "per-frame",
+       "scored": true,
+       "params": {
+        "friction": 0.94,
+        "law": "per-frame",
+        "stop_eps_px_per_frame": 0.05,
+        "release_velocity_px_per_frame_60hz": 10,
+        "release_velocity_px_ms": 0.6,
+        "unit": "v *= f per rendered frame: the stopping TIME scales with the frame period, the distance does not (release velocity converted at a nominal 60 Hz)"
+       },
+       "derived": {
+        "release_ms": 905,
+        "x_at_release_px": 360,
+        "stopping_distance_px": 155.8523,
+        "stop_ms_after_release": 1411.667,
+        "frames_with_motion": 86
+       },
+       "closed_form": {
+        "note": "recurrence iterated on a constant frame period (regime dt), independent of Inertia",
+        "stopping_distance_px": 155.8523,
+        "moving_frames": 85
+       },
+       "expect": {
+        "releaseVelocityFromInputLog": 0.6,
+        "law": "per-frame"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 432,
+      "dtMs": 16.6667,
+      "durationMs": 7200,
+      "source": "refsim on the regime grid"
+     }
+    },
+    "R3": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "segment": "drag",
+       "class": "ramp",
+       "scored": false,
+       "note": "the box follows the pointer; velocity constant, writes quantised by the 10 ms pointer ticks; not a fitted model",
+       "derived": {
+        "from_ms": 510,
+        "to_ms": 900,
+        "speed_px_ms": 0.6
+       }
+      },
+      {
+       "target": ".b0|--x",
+       "segment": "post-release",
+       "class": "friction",
+       "family": "friction",
+       "law": "per-frame",
+       "scored": true,
+       "params": {
+        "friction": 0.94,
+        "law": "per-frame",
+        "stop_eps_px_per_frame": 0.05,
+        "release_velocity_px_per_frame_60hz": 10,
+        "release_velocity_px_ms": 0.6,
+        "unit": "v *= f per rendered frame: the stopping TIME scales with the frame period, the distance does not (release velocity converted at a nominal 60 Hz)"
+       },
+       "derived": {
+        "release_ms": 905,
+        "x_at_release_px": 360,
+        "stopping_distance_px": 155.8523,
+        "stop_ms_after_release": 703.333,
+        "frames_with_motion": 86
+       },
+       "closed_form": {
+        "note": "recurrence iterated on a constant frame period (regime dt), independent of Inertia",
+        "stopping_distance_px": 155.8523,
+        "moving_frames": 85
+       },
+       "expect": {
+        "releaseVelocityFromInputLog": 0.6,
+        "law": "per-frame"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 865,
+      "dtMs": 8.3333,
+      "durationMs": 7200,
+      "source": "refsim on the regime grid"
+     }
+    },
+    "R4": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "segment": "drag",
+       "class": "ramp",
+       "scored": false,
+       "note": "the box follows the pointer; velocity constant, writes quantised by the 10 ms pointer ticks; not a fitted model",
+       "derived": {
+        "from_ms": 510,
+        "to_ms": 900,
+        "speed_px_ms": 0.6
+       }
+      },
+      {
+       "target": ".b0|--x",
+       "segment": "post-release",
+       "class": "friction",
+       "family": "friction",
+       "law": "per-frame",
+       "scored": true,
+       "params": {
+        "friction": 0.94,
+        "law": "per-frame",
+        "stop_eps_px_per_frame": 0.05,
+        "release_velocity_px_per_frame_60hz": 10,
+        "release_velocity_px_ms": 0.6,
+        "unit": "v *= f per rendered frame: the stopping TIME scales with the frame period, the distance does not (release velocity converted at a nominal 60 Hz)"
+       },
+       "derived": {
+        "release_ms": 905,
+        "x_at_release_px": 360,
+        "stopping_distance_px": 155.8523,
+        "stop_ms_after_release": 2828.333,
+        "frames_with_motion": 86
+       },
+       "closed_form": {
+        "note": "recurrence iterated on a constant frame period (regime dt), independent of Inertia",
+        "stopping_distance_px": 155.8523,
+        "moving_frames": 85
+       },
+       "expect": {
+        "releaseVelocityFromInputLog": 0.6,
+        "law": "per-frame"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 217,
+      "dtMs": 33.3333,
+      "durationMs": 7200,
+      "source": "refsim on the regime grid"
+     }
+    },
+    "R5": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "segment": "drag",
+       "class": "ramp",
+       "scored": false,
+       "note": "the box follows the pointer; velocity constant, writes quantised by the 10 ms pointer ticks; not a fitted model",
+       "derived": {
+        "from_ms": 510,
+        "to_ms": 900,
+        "speed_px_ms": 0.6
+       }
+      },
+      {
+       "target": ".b0|--x",
+       "segment": "post-release",
+       "class": "friction",
+       "family": "friction",
+       "law": "per-frame",
+       "scored": true,
+       "params": {
+        "friction": 0.94,
+        "law": "per-frame",
+        "stop_eps_px_per_frame": 0.05,
+        "release_velocity_px_per_frame_60hz": 10,
+        "release_velocity_px_ms": 0.6,
+        "unit": "v *= f per rendered frame: the stopping TIME scales with the frame period, the distance does not (release velocity converted at a nominal 60 Hz)"
+       },
+       "derived": {
+        "release_ms": 905,
+        "x_at_release_px": 360,
+        "stopping_distance_px": 155.8523,
+        "stop_ms_after_release": 1661.667,
+        "frames_with_motion": 86
+       },
+       "closed_form": {
+        "note": "recurrence iterated on a constant frame period (regime dt), independent of Inertia",
+        "stopping_distance_px": 155.8523,
+        "moving_frames": 85
+       },
+       "expect": {
+        "releaseVelocityFromInputLog": 0.6,
+        "law": "per-frame"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 372,
+      "dtMs": 16.6667,
+      "durationMs": 7200,
+      "source": "refsim on the regime grid"
+     }
+    }
+   },
+   "r6": "same as R2"
+  },
+  {
+   "trace": "fast",
+   "params": {
+    "law": "frame",
+    "friction": 0.97,
+    "write": "full",
+    "path": "fast"
+   },
+   "attribution": {
+    ".b0|--x": "pointer"
+   },
+   "metrics": [
+    "M10/friction-rel-error",
+    "M10/stopping-distance",
+    "M09/law-class",
+    "M16/no-momentum",
+    "class"
+   ],
+   "regimes": {
+    "R2": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "segment": "drag",
+       "class": "ramp",
+       "scored": false,
+       "note": "the box follows the pointer; velocity constant, writes quantised by the 10 ms pointer ticks; not a fitted model",
+       "derived": {
+        "from_ms": 510,
+        "to_ms": 900,
+        "speed_px_ms": 0.6
+       }
+      },
+      {
+       "target": ".b0|--x",
+       "segment": "post-release",
+       "class": "friction",
+       "family": "friction",
+       "law": "per-frame",
+       "scored": true,
+       "params": {
+        "friction": 0.97,
+        "law": "per-frame",
+        "stop_eps_px_per_frame": 0.05,
+        "release_velocity_px_per_frame_60hz": 10,
+        "release_velocity_px_ms": 0.6,
+        "unit": "v *= f per rendered frame: the stopping TIME scales with the frame period, the distance does not (release velocity converted at a nominal 60 Hz)"
+       },
+       "derived": {
+        "release_ms": 905,
+        "x_at_release_px": 360,
+        "stopping_distance_px": 321.6693,
+        "stop_ms_after_release": 2878.333,
+        "frames_with_motion": 174
+       },
+       "closed_form": {
+        "note": "recurrence iterated on a constant frame period (regime dt), independent of Inertia",
+        "stopping_distance_px": 321.6693,
+        "moving_frames": 173
+       },
+       "expect": {
+        "releaseVelocityFromInputLog": 0.6,
+        "law": "per-frame"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 432,
+      "dtMs": 16.6667,
+      "durationMs": 7200,
+      "source": "refsim on the regime grid"
+     }
+    },
+    "R3": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "segment": "drag",
+       "class": "ramp",
+       "scored": false,
+       "note": "the box follows the pointer; velocity constant, writes quantised by the 10 ms pointer ticks; not a fitted model",
+       "derived": {
+        "from_ms": 510,
+        "to_ms": 900,
+        "speed_px_ms": 0.6
+       }
+      },
+      {
+       "target": ".b0|--x",
+       "segment": "post-release",
+       "class": "friction",
+       "family": "friction",
+       "law": "per-frame",
+       "scored": true,
+       "params": {
+        "friction": 0.97,
+        "law": "per-frame",
+        "stop_eps_px_per_frame": 0.05,
+        "release_velocity_px_per_frame_60hz": 10,
+        "release_velocity_px_ms": 0.6,
+        "unit": "v *= f per rendered frame: the stopping TIME scales with the frame period, the distance does not (release velocity converted at a nominal 60 Hz)"
+       },
+       "derived": {
+        "release_ms": 905,
+        "x_at_release_px": 360,
+        "stopping_distance_px": 321.6693,
+        "stop_ms_after_release": 1436.667,
+        "frames_with_motion": 174
+       },
+       "closed_form": {
+        "note": "recurrence iterated on a constant frame period (regime dt), independent of Inertia",
+        "stopping_distance_px": 321.6693,
+        "moving_frames": 173
+       },
+       "expect": {
+        "releaseVelocityFromInputLog": 0.6,
+        "law": "per-frame"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 865,
+      "dtMs": 8.3333,
+      "durationMs": 7200,
+      "source": "refsim on the regime grid"
+     }
+    },
+    "R4": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "segment": "drag",
+       "class": "ramp",
+       "scored": false,
+       "note": "the box follows the pointer; velocity constant, writes quantised by the 10 ms pointer ticks; not a fitted model",
+       "derived": {
+        "from_ms": 510,
+        "to_ms": 900,
+        "speed_px_ms": 0.6
+       }
+      },
+      {
+       "target": ".b0|--x",
+       "segment": "post-release",
+       "class": "friction",
+       "family": "friction",
+       "law": "per-frame",
+       "scored": true,
+       "params": {
+        "friction": 0.97,
+        "law": "per-frame",
+        "stop_eps_px_per_frame": 0.05,
+        "release_velocity_px_per_frame_60hz": 10,
+        "release_velocity_px_ms": 0.6,
+        "unit": "v *= f per rendered frame: the stopping TIME scales with the frame period, the distance does not (release velocity converted at a nominal 60 Hz)"
+       },
+       "derived": {
+        "release_ms": 905,
+        "x_at_release_px": 360,
+        "stopping_distance_px": 321.6693,
+        "stop_ms_after_release": 5761.667,
+        "frames_with_motion": 174
+       },
+       "closed_form": {
+        "note": "recurrence iterated on a constant frame period (regime dt), independent of Inertia",
+        "stopping_distance_px": 321.6693,
+        "moving_frames": 173
+       },
+       "expect": {
+        "releaseVelocityFromInputLog": 0.6,
+        "law": "per-frame"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 217,
+      "dtMs": 33.3333,
+      "durationMs": 7200,
+      "source": "refsim on the regime grid"
+     }
+    },
+    "R5": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "segment": "drag",
+       "class": "ramp",
+       "scored": false,
+       "note": "the box follows the pointer; velocity constant, writes quantised by the 10 ms pointer ticks; not a fitted model",
+       "derived": {
+        "from_ms": 510,
+        "to_ms": 900,
+        "speed_px_ms": 0.6
+       }
+      },
+      {
+       "target": ".b0|--x",
+       "segment": "post-release",
+       "class": "friction",
+       "family": "friction",
+       "law": "per-frame",
+       "scored": true,
+       "params": {
+        "friction": 0.97,
+        "law": "per-frame",
+        "stop_eps_px_per_frame": 0.05,
+        "release_velocity_px_per_frame_60hz": 10,
+        "release_velocity_px_ms": 0.6,
+        "unit": "v *= f per rendered frame: the stopping TIME scales with the frame period, the distance does not (release velocity converted at a nominal 60 Hz)"
+       },
+       "derived": {
+        "release_ms": 905,
+        "x_at_release_px": 360,
+        "stopping_distance_px": 321.6693,
+        "stop_ms_after_release": 3378.333,
+        "frames_with_motion": 174
+       },
+       "closed_form": {
+        "note": "recurrence iterated on a constant frame period (regime dt), independent of Inertia",
+        "stopping_distance_px": 321.6693,
+        "moving_frames": 173
+       },
+       "expect": {
+        "releaseVelocityFromInputLog": 0.6,
+        "law": "per-frame"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 372,
+      "dtMs": 16.6667,
+      "durationMs": 7200,
+      "source": "refsim on the regime grid"
+     }
+    }
+   },
+   "r6": "same as R2"
+  },
+  {
+   "trace": "fast",
+   "params": {
+    "law": "dt",
+    "friction": 0.92,
+    "write": "full",
+    "path": "fast"
+   },
+   "attribution": {
+    ".b0|--x": "pointer"
+   },
+   "metrics": [
+    "M10/friction-rel-error",
+    "M10/stopping-distance",
+    "M09/law-class",
+    "M16/no-momentum",
+    "class"
+   ],
+   "regimes": {
+    "R2": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "segment": "drag",
+       "class": "ramp",
+       "scored": false,
+       "note": "the box follows the pointer; velocity constant, writes quantised by the 10 ms pointer ticks; not a fitted model",
+       "derived": {
+        "from_ms": 510,
+        "to_ms": 900,
+        "speed_px_ms": 0.6
+       }
+      },
+      {
+       "target": ".b0|--x",
+       "segment": "post-release",
+       "class": "friction",
+       "family": "friction",
+       "law": "dt-aware",
+       "scored": true,
+       "params": {
+        "friction": 0.92,
+        "law": "dt-aware",
+        "stop_eps_px_per_frame": 0.05,
+        "release_velocity_px_per_frame_60hz": 10,
+        "release_velocity_px_ms": 0.6,
+        "unit": "v *= f^(60 dt): time and distance are frame-rate independent up to the Euler step"
+       },
+       "derived": {
+        "release_ms": 905,
+        "x_at_release_px": 360,
+        "stopping_distance_px": 114.3984,
+        "stop_ms_after_release": 1045,
+        "frames_with_motion": 64
+       },
+       "closed_form": {
+        "note": "recurrence iterated on a constant frame period (regime dt), independent of Inertia",
+        "stopping_distance_px": 114.3984,
+        "moving_frames": 63
+       },
+       "expect": {
+        "releaseVelocityFromInputLog": 0.6,
+        "law": "dt-aware"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 432,
+      "dtMs": 16.6667,
+      "durationMs": 7200,
+      "source": "refsim on the regime grid"
+     }
+    },
+    "R3": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "segment": "drag",
+       "class": "ramp",
+       "scored": false,
+       "note": "the box follows the pointer; velocity constant, writes quantised by the 10 ms pointer ticks; not a fitted model",
+       "derived": {
+        "from_ms": 510,
+        "to_ms": 900,
+        "speed_px_ms": 0.6
+       }
+      },
+      {
+       "target": ".b0|--x",
+       "segment": "post-release",
+       "class": "friction",
+       "family": "friction",
+       "law": "dt-aware",
+       "scored": true,
+       "params": {
+        "friction": 0.92,
+        "law": "dt-aware",
+        "stop_eps_px_per_frame": 0.05,
+        "release_velocity_px_per_frame_60hz": 10,
+        "release_velocity_px_ms": 0.6,
+        "unit": "v *= f^(60 dt): time and distance are frame-rate independent up to the Euler step"
+       },
+       "derived": {
+        "release_ms": 905,
+        "x_at_release_px": 360,
+        "stopping_distance_px": 116.8585,
+        "stop_ms_after_release": 1053.333,
+        "frames_with_motion": 128
+       },
+       "closed_form": {
+        "note": "recurrence iterated on a constant frame period (regime dt), independent of Inertia",
+        "stopping_distance_px": 116.8585,
+        "moving_frames": 127
+       },
+       "expect": {
+        "releaseVelocityFromInputLog": 0.6,
+        "law": "dt-aware"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 865,
+      "dtMs": 8.3333,
+      "durationMs": 7200,
+      "source": "refsim on the regime grid"
+     }
+    },
+    "R4": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "segment": "drag",
+       "class": "ramp",
+       "scored": false,
+       "note": "the box follows the pointer; velocity constant, writes quantised by the 10 ms pointer ticks; not a fitted model",
+       "derived": {
+        "from_ms": 510,
+        "to_ms": 900,
+        "speed_px_ms": 0.6
+       }
+      },
+      {
+       "target": ".b0|--x",
+       "segment": "post-release",
+       "class": "friction",
+       "family": "friction",
+       "law": "dt-aware",
+       "scored": true,
+       "params": {
+        "friction": 0.92,
+        "law": "dt-aware",
+        "stop_eps_px_per_frame": 0.05,
+        "release_velocity_px_per_frame_60hz": 10,
+        "release_velocity_px_ms": 0.6,
+        "unit": "v *= f^(60 dt): time and distance are frame-rate independent up to the Euler step"
+       },
+       "derived": {
+        "release_ms": 905,
+        "x_at_release_px": 360,
+        "stopping_distance_px": 109.5816,
+        "stop_ms_after_release": 1028.333,
+        "frames_with_motion": 32
+       },
+       "closed_form": {
+        "note": "recurrence iterated on a constant frame period (regime dt), independent of Inertia",
+        "stopping_distance_px": 109.5816,
+        "moving_frames": 31
+       },
+       "expect": {
+        "releaseVelocityFromInputLog": 0.6,
+        "law": "dt-aware"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 217,
+      "dtMs": 33.3333,
+      "durationMs": 7200,
+      "source": "refsim on the regime grid"
+     }
+    },
+    "R5": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "segment": "drag",
+       "class": "ramp",
+       "scored": false,
+       "note": "the box follows the pointer; velocity constant, writes quantised by the 10 ms pointer ticks; not a fitted model",
+       "derived": {
+        "from_ms": 510,
+        "to_ms": 900,
+        "speed_px_ms": 0.6
+       }
+      },
+      {
+       "target": ".b0|--x",
+       "segment": "post-release",
+       "class": "friction",
+       "family": "friction",
+       "law": "dt-aware",
+       "scored": true,
+       "params": {
+        "friction": 0.92,
+        "law": "dt-aware",
+        "stop_eps_px_per_frame": 0.05,
+        "release_velocity_px_per_frame_60hz": 10,
+        "release_velocity_px_ms": 0.6,
+        "unit": "v *= f^(60 dt): time and distance are frame-rate independent up to the Euler step"
+       },
+       "derived": {
+        "release_ms": 905,
+        "x_at_release_px": 360,
+        "stopping_distance_px": 109.9752,
+        "stop_ms_after_release": 1045,
+        "frames_with_motion": 64
+       },
+       "closed_form": {
+        "note": "recurrence iterated on a constant frame period (regime dt), independent of Inertia",
+        "stopping_distance_px": 114.3984,
+        "moving_frames": 63
+       },
+       "expect": {
+        "releaseVelocityFromInputLog": 0.6,
+        "law": "dt-aware"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 372,
+      "dtMs": 16.6667,
+      "durationMs": 7200,
+      "source": "refsim on the regime grid"
+     }
+    }
+   },
+   "r6": "same as R2"
+  },
+  {
+   "trace": "fast",
+   "params": {
+    "law": "dt",
+    "friction": 0.95,
+    "write": "full",
+    "path": "fast"
+   },
+   "attribution": {
+    ".b0|--x": "pointer"
+   },
+   "metrics": [
+    "M10/friction-rel-error",
+    "M10/stopping-distance",
+    "M09/law-class",
+    "M16/no-momentum",
+    "class"
+   ],
+   "regimes": {
+    "R2": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "segment": "drag",
+       "class": "ramp",
+       "scored": false,
+       "note": "the box follows the pointer; velocity constant, writes quantised by the 10 ms pointer ticks; not a fitted model",
+       "derived": {
+        "from_ms": 510,
+        "to_ms": 900,
+        "speed_px_ms": 0.6
+       }
+      },
+      {
+       "target": ".b0|--x",
+       "segment": "post-release",
+       "class": "friction",
+       "family": "friction",
+       "law": "dt-aware",
+       "scored": true,
+       "params": {
+        "friction": 0.95,
+        "law": "dt-aware",
+        "stop_eps_px_per_frame": 0.05,
+        "release_velocity_px_per_frame_60hz": 10,
+        "release_velocity_px_ms": 0.6,
+        "unit": "v *= f^(60 dt): time and distance are frame-rate independent up to the Euler step"
+       },
+       "derived": {
+        "release_ms": 905,
+        "x_at_release_px": 360,
+        "stopping_distance_px": 189.0355,
+        "stop_ms_after_release": 1711.667,
+        "frames_with_motion": 104
+       },
+       "closed_form": {
+        "note": "recurrence iterated on a constant frame period (regime dt), independent of Inertia",
+        "stopping_distance_px": 189.0355,
+        "moving_frames": 103
+       },
+       "expect": {
+        "releaseVelocityFromInputLog": 0.6,
+        "law": "dt-aware"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 432,
+      "dtMs": 16.6667,
+      "durationMs": 7200,
+      "source": "refsim on the regime grid"
+     }
+    },
+    "R3": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "segment": "drag",
+       "class": "ramp",
+       "scored": false,
+       "note": "the box follows the pointer; velocity constant, writes quantised by the 10 ms pointer ticks; not a fitted model",
+       "derived": {
+        "from_ms": 510,
+        "to_ms": 900,
+        "speed_px_ms": 0.6
+       }
+      },
+      {
+       "target": ".b0|--x",
+       "segment": "post-release",
+       "class": "friction",
+       "family": "friction",
+       "law": "dt-aware",
+       "scored": true,
+       "params": {
+        "friction": 0.95,
+        "law": "dt-aware",
+        "stop_eps_px_per_frame": 0.05,
+        "release_velocity_px_per_frame_60hz": 10,
+        "release_velocity_px_ms": 0.6,
+        "unit": "v *= f^(60 dt): time and distance are frame-rate independent up to the Euler step"
+       },
+       "derived": {
+        "release_ms": 905,
+        "x_at_release_px": 360,
+        "stopping_distance_px": 191.491,
+        "stop_ms_after_release": 1711.667,
+        "frames_with_motion": 207
+       },
+       "closed_form": {
+        "note": "recurrence iterated on a constant frame period (regime dt), independent of Inertia",
+        "stopping_distance_px": 191.491,
+        "moving_frames": 206
+       },
+       "expect": {
+        "releaseVelocityFromInputLog": 0.6,
+        "law": "dt-aware"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 865,
+      "dtMs": 8.3333,
+      "durationMs": 7200,
+      "source": "refsim on the regime grid"
+     }
+    },
+    "R4": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "segment": "drag",
+       "class": "ramp",
+       "scored": false,
+       "note": "the box follows the pointer; velocity constant, writes quantised by the 10 ms pointer ticks; not a fitted model",
+       "derived": {
+        "from_ms": 510,
+        "to_ms": 900,
+        "speed_px_ms": 0.6
+       }
+      },
+      {
+       "target": ".b0|--x",
+       "segment": "post-release",
+       "class": "friction",
+       "family": "friction",
+       "law": "dt-aware",
+       "scored": true,
+       "params": {
+        "friction": 0.95,
+        "law": "dt-aware",
+        "stop_eps_px_per_frame": 0.05,
+        "release_velocity_px_per_frame_60hz": 10,
+        "release_velocity_px_ms": 0.6,
+        "unit": "v *= f^(60 dt): time and distance are frame-rate independent up to the Euler step"
+       },
+       "derived": {
+        "release_ms": 905,
+        "x_at_release_px": 360,
+        "stopping_distance_px": 184.139,
+        "stop_ms_after_release": 1695,
+        "frames_with_motion": 52
+       },
+       "closed_form": {
+        "note": "recurrence iterated on a constant frame period (regime dt), independent of Inertia",
+        "stopping_distance_px": 184.139,
+        "moving_frames": 51
+       },
+       "expect": {
+        "releaseVelocityFromInputLog": 0.6,
+        "law": "dt-aware"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 217,
+      "dtMs": 33.3333,
+      "durationMs": 7200,
+      "source": "refsim on the regime grid"
+     }
+    },
+    "R5": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "segment": "drag",
+       "class": "ramp",
+       "scored": false,
+       "note": "the box follows the pointer; velocity constant, writes quantised by the 10 ms pointer ticks; not a fitted model",
+       "derived": {
+        "from_ms": 510,
+        "to_ms": 900,
+        "speed_px_ms": 0.6
+       }
+      },
+      {
+       "target": ".b0|--x",
+       "segment": "post-release",
+       "class": "friction",
+       "family": "friction",
+       "law": "dt-aware",
+       "scored": true,
+       "params": {
+        "friction": 0.95,
+        "law": "dt-aware",
+        "stop_eps_px_per_frame": 0.05,
+        "release_velocity_px_per_frame_60hz": 10,
+        "release_velocity_px_ms": 0.6,
+        "unit": "v *= f^(60 dt): time and distance are frame-rate independent up to the Euler step"
+       },
+       "derived": {
+        "release_ms": 905,
+        "x_at_release_px": 360,
+        "stopping_distance_px": 184.3509,
+        "stop_ms_after_release": 1711.667,
+        "frames_with_motion": 104
+       },
+       "closed_form": {
+        "note": "recurrence iterated on a constant frame period (regime dt), independent of Inertia",
+        "stopping_distance_px": 189.0355,
+        "moving_frames": 103
+       },
+       "expect": {
+        "releaseVelocityFromInputLog": 0.6,
+        "law": "dt-aware"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 372,
+      "dtMs": 16.6667,
+      "durationMs": 7200,
+      "source": "refsim on the regime grid"
+     }
+    }
+   },
+   "r6": "same as R2"
+  },
+  {
+   "trace": "slow",
+   "params": {
+    "law": "frame",
+    "friction": 0.9,
+    "write": "full",
+    "path": "slow"
+   },
+   "attribution": {
+    ".b0|--x": "pointer"
+   },
+   "metrics": [
+    "M10/friction-rel-error",
+    "M10/stopping-distance",
+    "M09/law-class",
+    "M16/no-momentum",
+    "class"
+   ],
+   "regimes": {
+    "R2": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "segment": "drag",
+       "class": "ramp",
+       "scored": false,
+       "note": "the box follows the pointer; velocity constant, writes quantised by the 10 ms pointer ticks; not a fitted model",
+       "derived": {
+        "from_ms": 510,
+        "to_ms": 900,
+        "speed_px_ms": 0.25
+       }
+      },
+      {
+       "target": ".b0|--x",
+       "segment": "post-release",
+       "class": "friction",
+       "family": "friction",
+       "law": "per-frame",
+       "scored": true,
+       "params": {
+        "friction": 0.9,
+        "law": "per-frame",
+        "stop_eps_px_per_frame": 0.05,
+        "release_velocity_px_per_frame_60hz": 4.166667,
+        "release_velocity_px_ms": 0.25,
+        "unit": "v *= f per rendered frame: the stopping TIME scales with the frame period, the distance does not (release velocity converted at a nominal 60 Hz)"
+       },
+       "derived": {
+        "release_ms": 905,
+        "x_at_release_px": 220,
+        "stopping_distance_px": 37.0011,
+        "stop_ms_after_release": 678.333,
+        "frames_with_motion": 42
+       },
+       "closed_form": {
+        "note": "recurrence iterated on a constant frame period (regime dt), independent of Inertia",
+        "stopping_distance_px": 37.0011,
+        "moving_frames": 41
+       },
+       "expect": {
+        "releaseVelocityFromInputLog": 0.25,
+        "law": "per-frame"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 372,
+      "dtMs": 16.6667,
+      "durationMs": 6200,
+      "source": "refsim on the regime grid"
+     }
+    },
+    "R3": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "segment": "drag",
+       "class": "ramp",
+       "scored": false,
+       "note": "the box follows the pointer; velocity constant, writes quantised by the 10 ms pointer ticks; not a fitted model",
+       "derived": {
+        "from_ms": 510,
+        "to_ms": 900,
+        "speed_px_ms": 0.25
+       }
+      },
+      {
+       "target": ".b0|--x",
+       "segment": "post-release",
+       "class": "friction",
+       "family": "friction",
+       "law": "per-frame",
+       "scored": true,
+       "params": {
+        "friction": 0.9,
+        "law": "per-frame",
+        "stop_eps_px_per_frame": 0.05,
+        "release_velocity_px_per_frame_60hz": 4.166667,
+        "release_velocity_px_ms": 0.25,
+        "unit": "v *= f per rendered frame: the stopping TIME scales with the frame period, the distance does not (release velocity converted at a nominal 60 Hz)"
+       },
+       "derived": {
+        "release_ms": 905,
+        "x_at_release_px": 220,
+        "stopping_distance_px": 37.0011,
+        "stop_ms_after_release": 336.667,
+        "frames_with_motion": 42
+       },
+       "closed_form": {
+        "note": "recurrence iterated on a constant frame period (regime dt), independent of Inertia",
+        "stopping_distance_px": 37.0011,
+        "moving_frames": 41
+       },
+       "expect": {
+        "releaseVelocityFromInputLog": 0.25,
+        "law": "per-frame"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 745,
+      "dtMs": 8.3333,
+      "durationMs": 6200,
+      "source": "refsim on the regime grid"
+     }
+    },
+    "R4": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "segment": "drag",
+       "class": "ramp",
+       "scored": false,
+       "note": "the box follows the pointer; velocity constant, writes quantised by the 10 ms pointer ticks; not a fitted model",
+       "derived": {
+        "from_ms": 510,
+        "to_ms": 900,
+        "speed_px_ms": 0.25
+       }
+      },
+      {
+       "target": ".b0|--x",
+       "segment": "post-release",
+       "class": "friction",
+       "family": "friction",
+       "law": "per-frame",
+       "scored": true,
+       "params": {
+        "friction": 0.9,
+        "law": "per-frame",
+        "stop_eps_px_per_frame": 0.05,
+        "release_velocity_px_per_frame_60hz": 4.166667,
+        "release_velocity_px_ms": 0.25,
+        "unit": "v *= f per rendered frame: the stopping TIME scales with the frame period, the distance does not (release velocity converted at a nominal 60 Hz)"
+       },
+       "derived": {
+        "release_ms": 905,
+        "x_at_release_px": 220,
+        "stopping_distance_px": 37.0011,
+        "stop_ms_after_release": 1361.667,
+        "frames_with_motion": 42
+       },
+       "closed_form": {
+        "note": "recurrence iterated on a constant frame period (regime dt), independent of Inertia",
+        "stopping_distance_px": 37.0011,
+        "moving_frames": 41
+       },
+       "expect": {
+        "releaseVelocityFromInputLog": 0.25,
+        "law": "per-frame"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 187,
+      "dtMs": 33.3333,
+      "durationMs": 6200,
+      "source": "refsim on the regime grid"
+     }
+    },
+    "R5": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "segment": "drag",
+       "class": "ramp",
+       "scored": false,
+       "note": "the box follows the pointer; velocity constant, writes quantised by the 10 ms pointer ticks; not a fitted model",
+       "derived": {
+        "from_ms": 510,
+        "to_ms": 900,
+        "speed_px_ms": 0.25
+       }
+      },
+      {
+       "target": ".b0|--x",
+       "segment": "post-release",
+       "class": "friction",
+       "family": "friction",
+       "law": "per-frame",
+       "scored": true,
+       "params": {
+        "friction": 0.9,
+        "law": "per-frame",
+        "stop_eps_px_per_frame": 0.05,
+        "release_velocity_px_per_frame_60hz": 4.166667,
+        "release_velocity_px_ms": 0.25,
+        "unit": "v *= f per rendered frame: the stopping TIME scales with the frame period, the distance does not (release velocity converted at a nominal 60 Hz)"
+       },
+       "derived": {
+        "release_ms": 905,
+        "x_at_release_px": 220,
+        "stopping_distance_px": 37.0011,
+        "stop_ms_after_release": 845,
+        "frames_with_motion": 42
+       },
+       "closed_form": {
+        "note": "recurrence iterated on a constant frame period (regime dt), independent of Inertia",
+        "stopping_distance_px": 37.0011,
+        "moving_frames": 41
+       },
+       "expect": {
+        "releaseVelocityFromInputLog": 0.25,
+        "law": "per-frame"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 322,
+      "dtMs": 16.6667,
+      "durationMs": 6200,
+      "source": "refsim on the regime grid"
+     }
+    }
+   },
+   "r6": "same as R2"
+  },
+  {
+   "trace": "slow",
+   "params": {
+    "law": "frame",
+    "friction": 0.94,
+    "write": "full",
+    "path": "slow"
+   },
+   "attribution": {
+    ".b0|--x": "pointer"
+   },
+   "metrics": [
+    "M10/friction-rel-error",
+    "M10/stopping-distance",
+    "M09/law-class",
+    "M16/no-momentum",
+    "class"
+   ],
+   "regimes": {
+    "R2": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "segment": "drag",
+       "class": "ramp",
+       "scored": false,
+       "note": "the box follows the pointer; velocity constant, writes quantised by the 10 ms pointer ticks; not a fitted model",
+       "derived": {
+        "from_ms": 510,
+        "to_ms": 900,
+        "speed_px_ms": 0.25
+       }
+      },
+      {
+       "target": ".b0|--x",
+       "segment": "post-release",
+       "class": "friction",
+       "family": "friction",
+       "law": "per-frame",
+       "scored": true,
+       "params": {
+        "friction": 0.94,
+        "law": "per-frame",
+        "stop_eps_px_per_frame": 0.05,
+        "release_velocity_px_per_frame_60hz": 4.166667,
+        "release_velocity_px_ms": 0.25,
+        "unit": "v *= f per rendered frame: the stopping TIME scales with the frame period, the distance does not (release velocity converted at a nominal 60 Hz)"
+       },
+       "derived": {
+        "release_ms": 905,
+        "x_at_release_px": 220,
+        "stopping_distance_px": 64.4708,
+        "stop_ms_after_release": 1178.333,
+        "frames_with_motion": 72
+       },
+       "closed_form": {
+        "note": "recurrence iterated on a constant frame period (regime dt), independent of Inertia",
+        "stopping_distance_px": 64.4708,
+        "moving_frames": 71
+       },
+       "expect": {
+        "releaseVelocityFromInputLog": 0.25,
+        "law": "per-frame"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 372,
+      "dtMs": 16.6667,
+      "durationMs": 6200,
+      "source": "refsim on the regime grid"
+     }
+    },
+    "R3": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "segment": "drag",
+       "class": "ramp",
+       "scored": false,
+       "note": "the box follows the pointer; velocity constant, writes quantised by the 10 ms pointer ticks; not a fitted model",
+       "derived": {
+        "from_ms": 510,
+        "to_ms": 900,
+        "speed_px_ms": 0.25
+       }
+      },
+      {
+       "target": ".b0|--x",
+       "segment": "post-release",
+       "class": "friction",
+       "family": "friction",
+       "law": "per-frame",
+       "scored": true,
+       "params": {
+        "friction": 0.94,
+        "law": "per-frame",
+        "stop_eps_px_per_frame": 0.05,
+        "release_velocity_px_per_frame_60hz": 4.166667,
+        "release_velocity_px_ms": 0.25,
+        "unit": "v *= f per rendered frame: the stopping TIME scales with the frame period, the distance does not (release velocity converted at a nominal 60 Hz)"
+       },
+       "derived": {
+        "release_ms": 905,
+        "x_at_release_px": 220,
+        "stopping_distance_px": 64.4708,
+        "stop_ms_after_release": 586.667,
+        "frames_with_motion": 72
+       },
+       "closed_form": {
+        "note": "recurrence iterated on a constant frame period (regime dt), independent of Inertia",
+        "stopping_distance_px": 64.4708,
+        "moving_frames": 71
+       },
+       "expect": {
+        "releaseVelocityFromInputLog": 0.25,
+        "law": "per-frame"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 745,
+      "dtMs": 8.3333,
+      "durationMs": 6200,
+      "source": "refsim on the regime grid"
+     }
+    },
+    "R4": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "segment": "drag",
+       "class": "ramp",
+       "scored": false,
+       "note": "the box follows the pointer; velocity constant, writes quantised by the 10 ms pointer ticks; not a fitted model",
+       "derived": {
+        "from_ms": 510,
+        "to_ms": 900,
+        "speed_px_ms": 0.25
+       }
+      },
+      {
+       "target": ".b0|--x",
+       "segment": "post-release",
+       "class": "friction",
+       "family": "friction",
+       "law": "per-frame",
+       "scored": true,
+       "params": {
+        "friction": 0.94,
+        "law": "per-frame",
+        "stop_eps_px_per_frame": 0.05,
+        "release_velocity_px_per_frame_60hz": 4.166667,
+        "release_velocity_px_ms": 0.25,
+        "unit": "v *= f per rendered frame: the stopping TIME scales with the frame period, the distance does not (release velocity converted at a nominal 60 Hz)"
+       },
+       "derived": {
+        "release_ms": 905,
+        "x_at_release_px": 220,
+        "stopping_distance_px": 64.4708,
+        "stop_ms_after_release": 2361.667,
+        "frames_with_motion": 72
+       },
+       "closed_form": {
+        "note": "recurrence iterated on a constant frame period (regime dt), independent of Inertia",
+        "stopping_distance_px": 64.4708,
+        "moving_frames": 71
+       },
+       "expect": {
+        "releaseVelocityFromInputLog": 0.25,
+        "law": "per-frame"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 187,
+      "dtMs": 33.3333,
+      "durationMs": 6200,
+      "source": "refsim on the regime grid"
+     }
+    },
+    "R5": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "segment": "drag",
+       "class": "ramp",
+       "scored": false,
+       "note": "the box follows the pointer; velocity constant, writes quantised by the 10 ms pointer ticks; not a fitted model",
+       "derived": {
+        "from_ms": 510,
+        "to_ms": 900,
+        "speed_px_ms": 0.25
+       }
+      },
+      {
+       "target": ".b0|--x",
+       "segment": "post-release",
+       "class": "friction",
+       "family": "friction",
+       "law": "per-frame",
+       "scored": true,
+       "params": {
+        "friction": 0.94,
+        "law": "per-frame",
+        "stop_eps_px_per_frame": 0.05,
+        "release_velocity_px_per_frame_60hz": 4.166667,
+        "release_velocity_px_ms": 0.25,
+        "unit": "v *= f per rendered frame: the stopping TIME scales with the frame period, the distance does not (release velocity converted at a nominal 60 Hz)"
+       },
+       "derived": {
+        "release_ms": 905,
+        "x_at_release_px": 220,
+        "stopping_distance_px": 64.4708,
+        "stop_ms_after_release": 1428.333,
+        "frames_with_motion": 72
+       },
+       "closed_form": {
+        "note": "recurrence iterated on a constant frame period (regime dt), independent of Inertia",
+        "stopping_distance_px": 64.4708,
+        "moving_frames": 71
+       },
+       "expect": {
+        "releaseVelocityFromInputLog": 0.25,
+        "law": "per-frame"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 322,
+      "dtMs": 16.6667,
+      "durationMs": 6200,
+      "source": "refsim on the regime grid"
+     }
+    }
+   },
+   "r6": "same as R2"
+  },
+  {
+   "trace": "slow",
+   "params": {
+    "law": "frame",
+    "friction": 0.97,
+    "write": "full",
+    "path": "slow"
+   },
+   "attribution": {
+    ".b0|--x": "pointer"
+   },
+   "metrics": [
+    "M10/friction-rel-error",
+    "M10/stopping-distance",
+    "M09/law-class",
+    "M16/no-momentum",
+    "class"
+   ],
+   "regimes": {
+    "R2": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "segment": "drag",
+       "class": "ramp",
+       "scored": false,
+       "note": "the box follows the pointer; velocity constant, writes quantised by the 10 ms pointer ticks; not a fitted model",
+       "derived": {
+        "from_ms": 510,
+        "to_ms": 900,
+        "speed_px_ms": 0.25
+       }
+      },
+      {
+       "target": ".b0|--x",
+       "segment": "post-release",
+       "class": "friction",
+       "family": "friction",
+       "law": "per-frame",
+       "scored": true,
+       "params": {
+        "friction": 0.97,
+        "law": "per-frame",
+        "stop_eps_px_per_frame": 0.05,
+        "release_velocity_px_per_frame_60hz": 4.166667,
+        "release_velocity_px_ms": 0.25,
+        "unit": "v *= f per rendered frame: the stopping TIME scales with the frame period, the distance does not (release velocity converted at a nominal 60 Hz)"
+       },
+       "derived": {
+        "release_ms": 905,
+        "x_at_release_px": 220,
+        "stopping_distance_px": 133.0954,
+        "stop_ms_after_release": 2411.667,
+        "frames_with_motion": 146
+       },
+       "closed_form": {
+        "note": "recurrence iterated on a constant frame period (regime dt), independent of Inertia",
+        "stopping_distance_px": 133.0954,
+        "moving_frames": 145
+       },
+       "expect": {
+        "releaseVelocityFromInputLog": 0.25,
+        "law": "per-frame"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 372,
+      "dtMs": 16.6667,
+      "durationMs": 6200,
+      "source": "refsim on the regime grid"
+     }
+    },
+    "R3": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "segment": "drag",
+       "class": "ramp",
+       "scored": false,
+       "note": "the box follows the pointer; velocity constant, writes quantised by the 10 ms pointer ticks; not a fitted model",
+       "derived": {
+        "from_ms": 510,
+        "to_ms": 900,
+        "speed_px_ms": 0.25
+       }
+      },
+      {
+       "target": ".b0|--x",
+       "segment": "post-release",
+       "class": "friction",
+       "family": "friction",
+       "law": "per-frame",
+       "scored": true,
+       "params": {
+        "friction": 0.97,
+        "law": "per-frame",
+        "stop_eps_px_per_frame": 0.05,
+        "release_velocity_px_per_frame_60hz": 4.166667,
+        "release_velocity_px_ms": 0.25,
+        "unit": "v *= f per rendered frame: the stopping TIME scales with the frame period, the distance does not (release velocity converted at a nominal 60 Hz)"
+       },
+       "derived": {
+        "release_ms": 905,
+        "x_at_release_px": 220,
+        "stopping_distance_px": 133.0954,
+        "stop_ms_after_release": 1203.333,
+        "frames_with_motion": 146
+       },
+       "closed_form": {
+        "note": "recurrence iterated on a constant frame period (regime dt), independent of Inertia",
+        "stopping_distance_px": 133.0954,
+        "moving_frames": 145
+       },
+       "expect": {
+        "releaseVelocityFromInputLog": 0.25,
+        "law": "per-frame"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 745,
+      "dtMs": 8.3333,
+      "durationMs": 6200,
+      "source": "refsim on the regime grid"
+     }
+    },
+    "R4": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "segment": "drag",
+       "class": "ramp",
+       "scored": false,
+       "note": "the box follows the pointer; velocity constant, writes quantised by the 10 ms pointer ticks; not a fitted model",
+       "derived": {
+        "from_ms": 510,
+        "to_ms": 900,
+        "speed_px_ms": 0.25
+       }
+      },
+      {
+       "target": ".b0|--x",
+       "segment": "post-release",
+       "class": "friction",
+       "family": "friction",
+       "law": "per-frame",
+       "scored": true,
+       "params": {
+        "friction": 0.97,
+        "law": "per-frame",
+        "stop_eps_px_per_frame": 0.05,
+        "release_velocity_px_per_frame_60hz": 4.166667,
+        "release_velocity_px_ms": 0.25,
+        "unit": "v *= f per rendered frame: the stopping TIME scales with the frame period, the distance does not (release velocity converted at a nominal 60 Hz)"
+       },
+       "derived": {
+        "release_ms": 905,
+        "x_at_release_px": 220,
+        "stopping_distance_px": 133.0954,
+        "stop_ms_after_release": 4828.333,
+        "frames_with_motion": 146
+       },
+       "closed_form": {
+        "note": "recurrence iterated on a constant frame period (regime dt), independent of Inertia",
+        "stopping_distance_px": 133.0954,
+        "moving_frames": 145
+       },
+       "expect": {
+        "releaseVelocityFromInputLog": 0.25,
+        "law": "per-frame"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 187,
+      "dtMs": 33.3333,
+      "durationMs": 6200,
+      "source": "refsim on the regime grid"
+     }
+    },
+    "R5": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "segment": "drag",
+       "class": "ramp",
+       "scored": false,
+       "note": "the box follows the pointer; velocity constant, writes quantised by the 10 ms pointer ticks; not a fitted model",
+       "derived": {
+        "from_ms": 510,
+        "to_ms": 900,
+        "speed_px_ms": 0.25
+       }
+      },
+      {
+       "target": ".b0|--x",
+       "segment": "post-release",
+       "class": "friction",
+       "family": "friction",
+       "law": "per-frame",
+       "scored": true,
+       "params": {
+        "friction": 0.97,
+        "law": "per-frame",
+        "stop_eps_px_per_frame": 0.05,
+        "release_velocity_px_per_frame_60hz": 4.166667,
+        "release_velocity_px_ms": 0.25,
+        "unit": "v *= f per rendered frame: the stopping TIME scales with the frame period, the distance does not (release velocity converted at a nominal 60 Hz)"
+       },
+       "derived": {
+        "release_ms": 905,
+        "x_at_release_px": 220,
+        "stopping_distance_px": 133.0954,
+        "stop_ms_after_release": 2828.333,
+        "frames_with_motion": 146
+       },
+       "closed_form": {
+        "note": "recurrence iterated on a constant frame period (regime dt), independent of Inertia",
+        "stopping_distance_px": 133.0954,
+        "moving_frames": 145
+       },
+       "expect": {
+        "releaseVelocityFromInputLog": 0.25,
+        "law": "per-frame"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 322,
+      "dtMs": 16.6667,
+      "durationMs": 6200,
+      "source": "refsim on the regime grid"
+     }
+    }
+   },
+   "r6": "same as R2"
+  },
+  {
+   "trace": "slow",
+   "params": {
+    "law": "dt",
+    "friction": 0.92,
+    "write": "full",
+    "path": "slow"
+   },
+   "attribution": {
+    ".b0|--x": "pointer"
+   },
+   "metrics": [
+    "M10/friction-rel-error",
+    "M10/stopping-distance",
+    "M09/law-class",
+    "M16/no-momentum",
+    "class"
+   ],
+   "regimes": {
+    "R2": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "segment": "drag",
+       "class": "ramp",
+       "scored": false,
+       "note": "the box follows the pointer; velocity constant, writes quantised by the 10 ms pointer ticks; not a fitted model",
+       "derived": {
+        "from_ms": 510,
+        "to_ms": 900,
+        "speed_px_ms": 0.25
+       }
+      },
+      {
+       "target": ".b0|--x",
+       "segment": "post-release",
+       "class": "friction",
+       "family": "friction",
+       "law": "dt-aware",
+       "scored": true,
+       "params": {
+        "friction": 0.92,
+        "law": "dt-aware",
+        "stop_eps_px_per_frame": 0.05,
+        "release_velocity_px_per_frame_60hz": 4.166667,
+        "release_velocity_px_ms": 0.25,
+        "unit": "v *= f^(60 dt): time and distance are frame-rate independent up to the Euler step"
+       },
+       "derived": {
+        "release_ms": 905,
+        "x_at_release_px": 220,
+        "stopping_distance_px": 47.3396,
+        "stop_ms_after_release": 878.333,
+        "frames_with_motion": 54
+       },
+       "closed_form": {
+        "note": "recurrence iterated on a constant frame period (regime dt), independent of Inertia",
+        "stopping_distance_px": 47.3396,
+        "moving_frames": 53
+       },
+       "expect": {
+        "releaseVelocityFromInputLog": 0.25,
+        "law": "dt-aware"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 372,
+      "dtMs": 16.6667,
+      "durationMs": 6200,
+      "source": "refsim on the regime grid"
+     }
+    },
+    "R3": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "segment": "drag",
+       "class": "ramp",
+       "scored": false,
+       "note": "the box follows the pointer; velocity constant, writes quantised by the 10 ms pointer ticks; not a fitted model",
+       "derived": {
+        "from_ms": 510,
+        "to_ms": 900,
+        "speed_px_ms": 0.25
+       }
+      },
+      {
+       "target": ".b0|--x",
+       "segment": "post-release",
+       "class": "friction",
+       "family": "friction",
+       "law": "dt-aware",
+       "scored": true,
+       "params": {
+        "friction": 0.92,
+        "law": "dt-aware",
+        "stop_eps_px_per_frame": 0.05,
+        "release_velocity_px_per_frame_60hz": 4.166667,
+        "release_velocity_px_ms": 0.25,
+        "unit": "v *= f^(60 dt): time and distance are frame-rate independent up to the Euler step"
+       },
+       "derived": {
+        "release_ms": 905,
+        "x_at_release_px": 220,
+        "stopping_distance_px": 48.3473,
+        "stop_ms_after_release": 878.333,
+        "frames_with_motion": 107
+       },
+       "closed_form": {
+        "note": "recurrence iterated on a constant frame period (regime dt), independent of Inertia",
+        "stopping_distance_px": 48.3473,
+        "moving_frames": 106
+       },
+       "expect": {
+        "releaseVelocityFromInputLog": 0.25,
+        "law": "dt-aware"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 745,
+      "dtMs": 8.3333,
+      "durationMs": 6200,
+      "source": "refsim on the regime grid"
+     }
+    },
+    "R4": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "segment": "drag",
+       "class": "ramp",
+       "scored": false,
+       "note": "the box follows the pointer; velocity constant, writes quantised by the 10 ms pointer ticks; not a fitted model",
+       "derived": {
+        "from_ms": 510,
+        "to_ms": 900,
+        "speed_px_ms": 0.25
+       }
+      },
+      {
+       "target": ".b0|--x",
+       "segment": "post-release",
+       "class": "friction",
+       "family": "friction",
+       "law": "dt-aware",
+       "scored": true,
+       "params": {
+        "friction": 0.92,
+        "law": "dt-aware",
+        "stop_eps_px_per_frame": 0.05,
+        "release_velocity_px_per_frame_60hz": 4.166667,
+        "release_velocity_px_ms": 0.25,
+        "unit": "v *= f^(60 dt): time and distance are frame-rate independent up to the Euler step"
+       },
+       "derived": {
+        "release_ms": 905,
+        "x_at_release_px": 220,
+        "stopping_distance_px": 45.319,
+        "stop_ms_after_release": 861.667,
+        "frames_with_motion": 27
+       },
+       "closed_form": {
+        "note": "recurrence iterated on a constant frame period (regime dt), independent of Inertia",
+        "stopping_distance_px": 45.319,
+        "moving_frames": 26
+       },
+       "expect": {
+        "releaseVelocityFromInputLog": 0.25,
+        "law": "dt-aware"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 187,
+      "dtMs": 33.3333,
+      "durationMs": 6200,
+      "source": "refsim on the regime grid"
+     }
+    },
+    "R5": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "segment": "drag",
+       "class": "ramp",
+       "scored": false,
+       "note": "the box follows the pointer; velocity constant, writes quantised by the 10 ms pointer ticks; not a fitted model",
+       "derived": {
+        "from_ms": 510,
+        "to_ms": 900,
+        "speed_px_ms": 0.25
+       }
+      },
+      {
+       "target": ".b0|--x",
+       "segment": "post-release",
+       "class": "friction",
+       "family": "friction",
+       "law": "dt-aware",
+       "scored": true,
+       "params": {
+        "friction": 0.92,
+        "law": "dt-aware",
+        "stop_eps_px_per_frame": 0.05,
+        "release_velocity_px_per_frame_60hz": 4.166667,
+        "release_velocity_px_ms": 0.25,
+        "unit": "v *= f^(60 dt): time and distance are frame-rate independent up to the Euler step"
+       },
+       "derived": {
+        "release_ms": 905,
+        "x_at_release_px": 220,
+        "stopping_distance_px": 45.4966,
+        "stop_ms_after_release": 878.333,
+        "frames_with_motion": 54
+       },
+       "closed_form": {
+        "note": "recurrence iterated on a constant frame period (regime dt), independent of Inertia",
+        "stopping_distance_px": 47.3396,
+        "moving_frames": 53
+       },
+       "expect": {
+        "releaseVelocityFromInputLog": 0.25,
+        "law": "dt-aware"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 322,
+      "dtMs": 16.6667,
+      "durationMs": 6200,
+      "source": "refsim on the regime grid"
+     }
+    }
+   },
+   "r6": "same as R2"
+  },
+  {
+   "trace": "slow",
+   "params": {
+    "law": "dt",
+    "friction": 0.95,
+    "write": "full",
+    "path": "slow"
+   },
+   "attribution": {
+    ".b0|--x": "pointer"
+   },
+   "metrics": [
+    "M10/friction-rel-error",
+    "M10/stopping-distance",
+    "M09/law-class",
+    "M16/no-momentum",
+    "class"
+   ],
+   "regimes": {
+    "R2": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "segment": "drag",
+       "class": "ramp",
+       "scored": false,
+       "note": "the box follows the pointer; velocity constant, writes quantised by the 10 ms pointer ticks; not a fitted model",
+       "derived": {
+        "from_ms": 510,
+        "to_ms": 900,
+        "speed_px_ms": 0.25
+       }
+      },
+      {
+       "target": ".b0|--x",
+       "segment": "post-release",
+       "class": "friction",
+       "family": "friction",
+       "law": "dt-aware",
+       "scored": true,
+       "params": {
+        "friction": 0.95,
+        "law": "dt-aware",
+        "stop_eps_px_per_frame": 0.05,
+        "release_velocity_px_per_frame_60hz": 4.166667,
+        "release_velocity_px_ms": 0.25,
+        "unit": "v *= f^(60 dt): time and distance are frame-rate independent up to the Euler step"
+       },
+       "derived": {
+        "release_ms": 905,
+        "x_at_release_px": 220,
+        "stopping_distance_px": 78.2056,
+        "stop_ms_after_release": 1428.333,
+        "frames_with_motion": 87
+       },
+       "closed_form": {
+        "note": "recurrence iterated on a constant frame period (regime dt), independent of Inertia",
+        "stopping_distance_px": 78.2056,
+        "moving_frames": 86
+       },
+       "expect": {
+        "releaseVelocityFromInputLog": 0.25,
+        "law": "dt-aware"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 372,
+      "dtMs": 16.6667,
+      "durationMs": 6200,
+      "source": "refsim on the regime grid"
+     }
+    },
+    "R3": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "segment": "drag",
+       "class": "ramp",
+       "scored": false,
+       "note": "the box follows the pointer; velocity constant, writes quantised by the 10 ms pointer ticks; not a fitted model",
+       "derived": {
+        "from_ms": 510,
+        "to_ms": 900,
+        "speed_px_ms": 0.25
+       }
+      },
+      {
+       "target": ".b0|--x",
+       "segment": "post-release",
+       "class": "friction",
+       "family": "friction",
+       "law": "dt-aware",
+       "scored": true,
+       "params": {
+        "friction": 0.95,
+        "law": "dt-aware",
+        "stop_eps_px_per_frame": 0.05,
+        "release_velocity_px_per_frame_60hz": 4.166667,
+        "release_velocity_px_ms": 0.25,
+        "unit": "v *= f^(60 dt): time and distance are frame-rate independent up to the Euler step"
+       },
+       "derived": {
+        "release_ms": 905,
+        "x_at_release_px": 220,
+        "stopping_distance_px": 79.2214,
+        "stop_ms_after_release": 1428.333,
+        "frames_with_motion": 173
+       },
+       "closed_form": {
+        "note": "recurrence iterated on a constant frame period (regime dt), independent of Inertia",
+        "stopping_distance_px": 79.2214,
+        "moving_frames": 172
+       },
+       "expect": {
+        "releaseVelocityFromInputLog": 0.25,
+        "law": "dt-aware"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 745,
+      "dtMs": 8.3333,
+      "durationMs": 6200,
+      "source": "refsim on the regime grid"
+     }
+    },
+    "R4": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "segment": "drag",
+       "class": "ramp",
+       "scored": false,
+       "note": "the box follows the pointer; velocity constant, writes quantised by the 10 ms pointer ticks; not a fitted model",
+       "derived": {
+        "from_ms": 510,
+        "to_ms": 900,
+        "speed_px_ms": 0.25
+       }
+      },
+      {
+       "target": ".b0|--x",
+       "segment": "post-release",
+       "class": "friction",
+       "family": "friction",
+       "law": "dt-aware",
+       "scored": true,
+       "params": {
+        "friction": 0.95,
+        "law": "dt-aware",
+        "stop_eps_px_per_frame": 0.05,
+        "release_velocity_px_per_frame_60hz": 4.166667,
+        "release_velocity_px_ms": 0.25,
+        "unit": "v *= f^(60 dt): time and distance are frame-rate independent up to the Euler step"
+       },
+       "derived": {
+        "release_ms": 905,
+        "x_at_release_px": 220,
+        "stopping_distance_px": 76.2003,
+        "stop_ms_after_release": 1428.333,
+        "frames_with_motion": 44
+       },
+       "closed_form": {
+        "note": "recurrence iterated on a constant frame period (regime dt), independent of Inertia",
+        "stopping_distance_px": 76.2003,
+        "moving_frames": 43
+       },
+       "expect": {
+        "releaseVelocityFromInputLog": 0.25,
+        "law": "dt-aware"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 187,
+      "dtMs": 33.3333,
+      "durationMs": 6200,
+      "source": "refsim on the regime grid"
+     }
+    },
+    "R5": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "segment": "drag",
+       "class": "ramp",
+       "scored": false,
+       "note": "the box follows the pointer; velocity constant, writes quantised by the 10 ms pointer ticks; not a fitted model",
+       "derived": {
+        "from_ms": 510,
+        "to_ms": 900,
+        "speed_px_ms": 0.25
+       }
+      },
+      {
+       "target": ".b0|--x",
+       "segment": "post-release",
+       "class": "friction",
+       "family": "friction",
+       "law": "dt-aware",
+       "scored": true,
+       "params": {
+        "friction": 0.95,
+        "law": "dt-aware",
+        "stop_eps_px_per_frame": 0.05,
+        "release_velocity_px_per_frame_60hz": 4.166667,
+        "release_velocity_px_ms": 0.25,
+        "unit": "v *= f^(60 dt): time and distance are frame-rate independent up to the Euler step"
+       },
+       "derived": {
+        "release_ms": 905,
+        "x_at_release_px": 220,
+        "stopping_distance_px": 76.2536,
+        "stop_ms_after_release": 1428.333,
+        "frames_with_motion": 87
+       },
+       "closed_form": {
+        "note": "recurrence iterated on a constant frame period (regime dt), independent of Inertia",
+        "stopping_distance_px": 78.2056,
+        "moving_frames": 86
+       },
+       "expect": {
+        "releaseVelocityFromInputLog": 0.25,
+        "law": "dt-aware"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 322,
+      "dtMs": 16.6667,
+      "durationMs": 6200,
+      "source": "refsim on the regime grid"
+     }
+    }
+   },
+   "r6": "same as R2"
+  },
+  {
+   "trace": "still",
+   "params": {
+    "law": "frame",
+    "friction": 0.9,
+    "write": "full",
+    "path": "still"
+   },
+   "attribution": {
+    ".b0|--x": "pointer"
+   },
+   "metrics": [
+    "M10/friction-rel-error",
+    "M10/stopping-distance",
+    "M09/law-class",
+    "M16/no-momentum",
+    "class"
+   ],
+   "regimes": {
+    "R2": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "segment": "drag",
+       "class": "ramp",
+       "scored": false,
+       "note": "the box follows the pointer; velocity constant, writes quantised by the 10 ms pointer ticks; not a fitted model",
+       "derived": {
+        "from_ms": 510,
+        "to_ms": 800,
+        "speed_px_ms": 0.5
+       }
+      },
+      {
+       "target": ".b0|--x",
+       "segment": "post-release",
+       "class": "static",
+       "family": "no-momentum",
+       "scored": true,
+       "derived": {
+        "release_ms": 1100,
+        "release_velocity_px_ms": 0
+       },
+       "expect": {
+        "momentumRecord": false,
+        "note": "a release with zero input velocity must yield no momentum; a decay record here is a fabrication (design 4.4)"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 120,
+      "dtMs": 16.6667,
+      "durationMs": 2000,
+      "source": "refsim on the regime grid"
+     }
+    },
+    "R3": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "segment": "drag",
+       "class": "ramp",
+       "scored": false,
+       "note": "the box follows the pointer; velocity constant, writes quantised by the 10 ms pointer ticks; not a fitted model",
+       "derived": {
+        "from_ms": 510,
+        "to_ms": 800,
+        "speed_px_ms": 0.5
+       }
+      },
+      {
+       "target": ".b0|--x",
+       "segment": "post-release",
+       "class": "static",
+       "family": "no-momentum",
+       "scored": true,
+       "derived": {
+        "release_ms": 1100,
+        "release_velocity_px_ms": 0
+       },
+       "expect": {
+        "momentumRecord": false,
+        "note": "a release with zero input velocity must yield no momentum; a decay record here is a fabrication (design 4.4)"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 241,
+      "dtMs": 8.3333,
+      "durationMs": 2000,
+      "source": "refsim on the regime grid"
+     }
+    },
+    "R4": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "segment": "drag",
+       "class": "ramp",
+       "scored": false,
+       "note": "the box follows the pointer; velocity constant, writes quantised by the 10 ms pointer ticks; not a fitted model",
+       "derived": {
+        "from_ms": 510,
+        "to_ms": 800,
+        "speed_px_ms": 0.5
+       }
+      },
+      {
+       "target": ".b0|--x",
+       "segment": "post-release",
+       "class": "static",
+       "family": "no-momentum",
+       "scored": true,
+       "derived": {
+        "release_ms": 1100,
+        "release_velocity_px_ms": 0
+       },
+       "expect": {
+        "momentumRecord": false,
+        "note": "a release with zero input velocity must yield no momentum; a decay record here is a fabrication (design 4.4)"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 61,
+      "dtMs": 33.3333,
+      "durationMs": 2000,
+      "source": "refsim on the regime grid"
+     }
+    },
+    "R5": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "segment": "drag",
+       "class": "ramp",
+       "scored": false,
+       "note": "the box follows the pointer; velocity constant, writes quantised by the 10 ms pointer ticks; not a fitted model",
+       "derived": {
+        "from_ms": 510,
+        "to_ms": 800,
+        "speed_px_ms": 0.5
+       }
+      },
+      {
+       "target": ".b0|--x",
+       "segment": "post-release",
+       "class": "static",
+       "family": "no-momentum",
+       "scored": true,
+       "derived": {
+        "release_ms": 1100,
+        "release_velocity_px_ms": 0
+       },
+       "expect": {
+        "momentumRecord": false,
+        "note": "a release with zero input velocity must yield no momentum; a decay record here is a fabrication (design 4.4)"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 105,
+      "dtMs": 16.6667,
+      "durationMs": 2000,
+      "source": "refsim on the regime grid"
+     }
+    }
+   },
+   "r6": "same as R2"
+  },
+  {
+   "trace": "still",
+   "params": {
+    "law": "frame",
+    "friction": 0.94,
+    "write": "full",
+    "path": "still"
+   },
+   "attribution": {
+    ".b0|--x": "pointer"
+   },
+   "metrics": [
+    "M10/friction-rel-error",
+    "M10/stopping-distance",
+    "M09/law-class",
+    "M16/no-momentum",
+    "class"
+   ],
+   "regimes": {
+    "R2": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "segment": "drag",
+       "class": "ramp",
+       "scored": false,
+       "note": "the box follows the pointer; velocity constant, writes quantised by the 10 ms pointer ticks; not a fitted model",
+       "derived": {
+        "from_ms": 510,
+        "to_ms": 800,
+        "speed_px_ms": 0.5
+       }
+      },
+      {
+       "target": ".b0|--x",
+       "segment": "post-release",
+       "class": "static",
+       "family": "no-momentum",
+       "scored": true,
+       "derived": {
+        "release_ms": 1100,
+        "release_velocity_px_ms": 0
+       },
+       "expect": {
+        "momentumRecord": false,
+        "note": "a release with zero input velocity must yield no momentum; a decay record here is a fabrication (design 4.4)"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 120,
+      "dtMs": 16.6667,
+      "durationMs": 2000,
+      "source": "refsim on the regime grid"
+     }
+    },
+    "R3": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "segment": "drag",
+       "class": "ramp",
+       "scored": false,
+       "note": "the box follows the pointer; velocity constant, writes quantised by the 10 ms pointer ticks; not a fitted model",
+       "derived": {
+        "from_ms": 510,
+        "to_ms": 800,
+        "speed_px_ms": 0.5
+       }
+      },
+      {
+       "target": ".b0|--x",
+       "segment": "post-release",
+       "class": "static",
+       "family": "no-momentum",
+       "scored": true,
+       "derived": {
+        "release_ms": 1100,
+        "release_velocity_px_ms": 0
+       },
+       "expect": {
+        "momentumRecord": false,
+        "note": "a release with zero input velocity must yield no momentum; a decay record here is a fabrication (design 4.4)"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 241,
+      "dtMs": 8.3333,
+      "durationMs": 2000,
+      "source": "refsim on the regime grid"
+     }
+    },
+    "R4": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "segment": "drag",
+       "class": "ramp",
+       "scored": false,
+       "note": "the box follows the pointer; velocity constant, writes quantised by the 10 ms pointer ticks; not a fitted model",
+       "derived": {
+        "from_ms": 510,
+        "to_ms": 800,
+        "speed_px_ms": 0.5
+       }
+      },
+      {
+       "target": ".b0|--x",
+       "segment": "post-release",
+       "class": "static",
+       "family": "no-momentum",
+       "scored": true,
+       "derived": {
+        "release_ms": 1100,
+        "release_velocity_px_ms": 0
+       },
+       "expect": {
+        "momentumRecord": false,
+        "note": "a release with zero input velocity must yield no momentum; a decay record here is a fabrication (design 4.4)"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 61,
+      "dtMs": 33.3333,
+      "durationMs": 2000,
+      "source": "refsim on the regime grid"
+     }
+    },
+    "R5": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "segment": "drag",
+       "class": "ramp",
+       "scored": false,
+       "note": "the box follows the pointer; velocity constant, writes quantised by the 10 ms pointer ticks; not a fitted model",
+       "derived": {
+        "from_ms": 510,
+        "to_ms": 800,
+        "speed_px_ms": 0.5
+       }
+      },
+      {
+       "target": ".b0|--x",
+       "segment": "post-release",
+       "class": "static",
+       "family": "no-momentum",
+       "scored": true,
+       "derived": {
+        "release_ms": 1100,
+        "release_velocity_px_ms": 0
+       },
+       "expect": {
+        "momentumRecord": false,
+        "note": "a release with zero input velocity must yield no momentum; a decay record here is a fabrication (design 4.4)"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 105,
+      "dtMs": 16.6667,
+      "durationMs": 2000,
+      "source": "refsim on the regime grid"
+     }
+    }
+   },
+   "r6": "same as R2"
+  },
+  {
+   "trace": "still",
+   "params": {
+    "law": "frame",
+    "friction": 0.97,
+    "write": "full",
+    "path": "still"
+   },
+   "attribution": {
+    ".b0|--x": "pointer"
+   },
+   "metrics": [
+    "M10/friction-rel-error",
+    "M10/stopping-distance",
+    "M09/law-class",
+    "M16/no-momentum",
+    "class"
+   ],
+   "regimes": {
+    "R2": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "segment": "drag",
+       "class": "ramp",
+       "scored": false,
+       "note": "the box follows the pointer; velocity constant, writes quantised by the 10 ms pointer ticks; not a fitted model",
+       "derived": {
+        "from_ms": 510,
+        "to_ms": 800,
+        "speed_px_ms": 0.5
+       }
+      },
+      {
+       "target": ".b0|--x",
+       "segment": "post-release",
+       "class": "static",
+       "family": "no-momentum",
+       "scored": true,
+       "derived": {
+        "release_ms": 1100,
+        "release_velocity_px_ms": 0
+       },
+       "expect": {
+        "momentumRecord": false,
+        "note": "a release with zero input velocity must yield no momentum; a decay record here is a fabrication (design 4.4)"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 120,
+      "dtMs": 16.6667,
+      "durationMs": 2000,
+      "source": "refsim on the regime grid"
+     }
+    },
+    "R3": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "segment": "drag",
+       "class": "ramp",
+       "scored": false,
+       "note": "the box follows the pointer; velocity constant, writes quantised by the 10 ms pointer ticks; not a fitted model",
+       "derived": {
+        "from_ms": 510,
+        "to_ms": 800,
+        "speed_px_ms": 0.5
+       }
+      },
+      {
+       "target": ".b0|--x",
+       "segment": "post-release",
+       "class": "static",
+       "family": "no-momentum",
+       "scored": true,
+       "derived": {
+        "release_ms": 1100,
+        "release_velocity_px_ms": 0
+       },
+       "expect": {
+        "momentumRecord": false,
+        "note": "a release with zero input velocity must yield no momentum; a decay record here is a fabrication (design 4.4)"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 241,
+      "dtMs": 8.3333,
+      "durationMs": 2000,
+      "source": "refsim on the regime grid"
+     }
+    },
+    "R4": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "segment": "drag",
+       "class": "ramp",
+       "scored": false,
+       "note": "the box follows the pointer; velocity constant, writes quantised by the 10 ms pointer ticks; not a fitted model",
+       "derived": {
+        "from_ms": 510,
+        "to_ms": 800,
+        "speed_px_ms": 0.5
+       }
+      },
+      {
+       "target": ".b0|--x",
+       "segment": "post-release",
+       "class": "static",
+       "family": "no-momentum",
+       "scored": true,
+       "derived": {
+        "release_ms": 1100,
+        "release_velocity_px_ms": 0
+       },
+       "expect": {
+        "momentumRecord": false,
+        "note": "a release with zero input velocity must yield no momentum; a decay record here is a fabrication (design 4.4)"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 61,
+      "dtMs": 33.3333,
+      "durationMs": 2000,
+      "source": "refsim on the regime grid"
+     }
+    },
+    "R5": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "segment": "drag",
+       "class": "ramp",
+       "scored": false,
+       "note": "the box follows the pointer; velocity constant, writes quantised by the 10 ms pointer ticks; not a fitted model",
+       "derived": {
+        "from_ms": 510,
+        "to_ms": 800,
+        "speed_px_ms": 0.5
+       }
+      },
+      {
+       "target": ".b0|--x",
+       "segment": "post-release",
+       "class": "static",
+       "family": "no-momentum",
+       "scored": true,
+       "derived": {
+        "release_ms": 1100,
+        "release_velocity_px_ms": 0
+       },
+       "expect": {
+        "momentumRecord": false,
+        "note": "a release with zero input velocity must yield no momentum; a decay record here is a fabrication (design 4.4)"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 105,
+      "dtMs": 16.6667,
+      "durationMs": 2000,
+      "source": "refsim on the regime grid"
+     }
+    }
+   },
+   "r6": "same as R2"
+  },
+  {
+   "trace": "still",
+   "params": {
+    "law": "dt",
+    "friction": 0.92,
+    "write": "full",
+    "path": "still"
+   },
+   "attribution": {
+    ".b0|--x": "pointer"
+   },
+   "metrics": [
+    "M10/friction-rel-error",
+    "M10/stopping-distance",
+    "M09/law-class",
+    "M16/no-momentum",
+    "class"
+   ],
+   "regimes": {
+    "R2": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "segment": "drag",
+       "class": "ramp",
+       "scored": false,
+       "note": "the box follows the pointer; velocity constant, writes quantised by the 10 ms pointer ticks; not a fitted model",
+       "derived": {
+        "from_ms": 510,
+        "to_ms": 800,
+        "speed_px_ms": 0.5
+       }
+      },
+      {
+       "target": ".b0|--x",
+       "segment": "post-release",
+       "class": "static",
+       "family": "no-momentum",
+       "scored": true,
+       "derived": {
+        "release_ms": 1100,
+        "release_velocity_px_ms": 0
+       },
+       "expect": {
+        "momentumRecord": false,
+        "note": "a release with zero input velocity must yield no momentum; a decay record here is a fabrication (design 4.4)"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 120,
+      "dtMs": 16.6667,
+      "durationMs": 2000,
+      "source": "refsim on the regime grid"
+     }
+    },
+    "R3": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "segment": "drag",
+       "class": "ramp",
+       "scored": false,
+       "note": "the box follows the pointer; velocity constant, writes quantised by the 10 ms pointer ticks; not a fitted model",
+       "derived": {
+        "from_ms": 510,
+        "to_ms": 800,
+        "speed_px_ms": 0.5
+       }
+      },
+      {
+       "target": ".b0|--x",
+       "segment": "post-release",
+       "class": "static",
+       "family": "no-momentum",
+       "scored": true,
+       "derived": {
+        "release_ms": 1100,
+        "release_velocity_px_ms": 0
+       },
+       "expect": {
+        "momentumRecord": false,
+        "note": "a release with zero input velocity must yield no momentum; a decay record here is a fabrication (design 4.4)"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 241,
+      "dtMs": 8.3333,
+      "durationMs": 2000,
+      "source": "refsim on the regime grid"
+     }
+    },
+    "R4": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "segment": "drag",
+       "class": "ramp",
+       "scored": false,
+       "note": "the box follows the pointer; velocity constant, writes quantised by the 10 ms pointer ticks; not a fitted model",
+       "derived": {
+        "from_ms": 510,
+        "to_ms": 800,
+        "speed_px_ms": 0.5
+       }
+      },
+      {
+       "target": ".b0|--x",
+       "segment": "post-release",
+       "class": "static",
+       "family": "no-momentum",
+       "scored": true,
+       "derived": {
+        "release_ms": 1100,
+        "release_velocity_px_ms": 0
+       },
+       "expect": {
+        "momentumRecord": false,
+        "note": "a release with zero input velocity must yield no momentum; a decay record here is a fabrication (design 4.4)"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 61,
+      "dtMs": 33.3333,
+      "durationMs": 2000,
+      "source": "refsim on the regime grid"
+     }
+    },
+    "R5": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "segment": "drag",
+       "class": "ramp",
+       "scored": false,
+       "note": "the box follows the pointer; velocity constant, writes quantised by the 10 ms pointer ticks; not a fitted model",
+       "derived": {
+        "from_ms": 510,
+        "to_ms": 800,
+        "speed_px_ms": 0.5
+       }
+      },
+      {
+       "target": ".b0|--x",
+       "segment": "post-release",
+       "class": "static",
+       "family": "no-momentum",
+       "scored": true,
+       "derived": {
+        "release_ms": 1100,
+        "release_velocity_px_ms": 0
+       },
+       "expect": {
+        "momentumRecord": false,
+        "note": "a release with zero input velocity must yield no momentum; a decay record here is a fabrication (design 4.4)"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 105,
+      "dtMs": 16.6667,
+      "durationMs": 2000,
+      "source": "refsim on the regime grid"
+     }
+    }
+   },
+   "r6": "same as R2"
+  },
+  {
+   "trace": "still",
+   "params": {
+    "law": "dt",
+    "friction": 0.95,
+    "write": "full",
+    "path": "still"
+   },
+   "attribution": {
+    ".b0|--x": "pointer"
+   },
+   "metrics": [
+    "M10/friction-rel-error",
+    "M10/stopping-distance",
+    "M09/law-class",
+    "M16/no-momentum",
+    "class"
+   ],
+   "regimes": {
+    "R2": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "segment": "drag",
+       "class": "ramp",
+       "scored": false,
+       "note": "the box follows the pointer; velocity constant, writes quantised by the 10 ms pointer ticks; not a fitted model",
+       "derived": {
+        "from_ms": 510,
+        "to_ms": 800,
+        "speed_px_ms": 0.5
+       }
+      },
+      {
+       "target": ".b0|--x",
+       "segment": "post-release",
+       "class": "static",
+       "family": "no-momentum",
+       "scored": true,
+       "derived": {
+        "release_ms": 1100,
+        "release_velocity_px_ms": 0
+       },
+       "expect": {
+        "momentumRecord": false,
+        "note": "a release with zero input velocity must yield no momentum; a decay record here is a fabrication (design 4.4)"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 120,
+      "dtMs": 16.6667,
+      "durationMs": 2000,
+      "source": "refsim on the regime grid"
+     }
+    },
+    "R3": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "segment": "drag",
+       "class": "ramp",
+       "scored": false,
+       "note": "the box follows the pointer; velocity constant, writes quantised by the 10 ms pointer ticks; not a fitted model",
+       "derived": {
+        "from_ms": 510,
+        "to_ms": 800,
+        "speed_px_ms": 0.5
+       }
+      },
+      {
+       "target": ".b0|--x",
+       "segment": "post-release",
+       "class": "static",
+       "family": "no-momentum",
+       "scored": true,
+       "derived": {
+        "release_ms": 1100,
+        "release_velocity_px_ms": 0
+       },
+       "expect": {
+        "momentumRecord": false,
+        "note": "a release with zero input velocity must yield no momentum; a decay record here is a fabrication (design 4.4)"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 241,
+      "dtMs": 8.3333,
+      "durationMs": 2000,
+      "source": "refsim on the regime grid"
+     }
+    },
+    "R4": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "segment": "drag",
+       "class": "ramp",
+       "scored": false,
+       "note": "the box follows the pointer; velocity constant, writes quantised by the 10 ms pointer ticks; not a fitted model",
+       "derived": {
+        "from_ms": 510,
+        "to_ms": 800,
+        "speed_px_ms": 0.5
+       }
+      },
+      {
+       "target": ".b0|--x",
+       "segment": "post-release",
+       "class": "static",
+       "family": "no-momentum",
+       "scored": true,
+       "derived": {
+        "release_ms": 1100,
+        "release_velocity_px_ms": 0
+       },
+       "expect": {
+        "momentumRecord": false,
+        "note": "a release with zero input velocity must yield no momentum; a decay record here is a fabrication (design 4.4)"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 61,
+      "dtMs": 33.3333,
+      "durationMs": 2000,
+      "source": "refsim on the regime grid"
+     }
+    },
+    "R5": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "segment": "drag",
+       "class": "ramp",
+       "scored": false,
+       "note": "the box follows the pointer; velocity constant, writes quantised by the 10 ms pointer ticks; not a fitted model",
+       "derived": {
+        "from_ms": 510,
+        "to_ms": 800,
+        "speed_px_ms": 0.5
+       }
+      },
+      {
+       "target": ".b0|--x",
+       "segment": "post-release",
+       "class": "static",
+       "family": "no-momentum",
+       "scored": true,
+       "derived": {
+        "release_ms": 1100,
+        "release_velocity_px_ms": 0
+       },
+       "expect": {
+        "momentumRecord": false,
+        "note": "a release with zero input velocity must yield no momentum; a decay record here is a fabrication (design 4.4)"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 105,
+      "dtMs": 16.6667,
+      "durationMs": 2000,
+      "source": "refsim on the regime grid"
+     }
+    }
+   },
+   "r6": "same as R2"
+  }
+ ]
+}

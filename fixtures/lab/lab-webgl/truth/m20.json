@@ -1,0 +1,1241 @@
+{
+ "note": "Generated for review by tools/gen-truth.mjs. Planned-trace values (start signal at k = 0); the scorer calls truth(route, params, regime, {variant, ctx}) with the actual take.",
+ "route": "m20",
+ "default": {
+  "steps": {
+   "R2": {
+    "schema": "reva.labtruth/0",
+    "route": "m20",
+    "params": {
+     "alpha": 0.14,
+     "snap": 0.01,
+     "scrollGain": 0.25,
+     "scrollMax": 1200,
+     "k": 210,
+     "c": 11,
+     "hMs": 16,
+     "amp1": 160,
+     "tickOffsetMs": 350,
+     "tweenMs": 700,
+     "tweenAmp": 200,
+     "write": "full"
+    },
+    "regime": "R2",
+    "variant": "steps",
+    "metrics": [
+     "class",
+     "attribution"
+    ],
+    "stagger": null,
+    "negative": null,
+    "items": [
+     {
+      "target": ".e0|ren:tx",
+      "driver": ".e0|drv:--q",
+      "class": "first-order smoothing",
+      "family": "lerp",
+      "law": "per-frame",
+      "params": {
+       "alpha_per_frame": 0.14,
+       "snap_px": 0.01,
+       "target_gain": 0.25,
+       "target_max_px": 300
+      },
+      "derived": {
+       "tau_ms_at_T_60hz": 110.50488885338605
+      }
+     },
+     {
+      "target": ".e1|ren:tx",
+      "driver": ".e1|drv:--s",
+      "class": "spring",
+      "family": "discrete-spring",
+      "integrator": {
+       "id": "I1",
+       "h_ms": 16,
+       "description": "semi-implicit Euler, fixed substeps with remainder"
+      },
+      "params": {
+       "k_over_m": 210,
+       "c_over_m": 11,
+       "omega0": 14.491376746189438,
+       "zeta": 0.37953605763829484,
+       "retarget_every_ms": 1000,
+       "amp_px": 160
+      },
+      "derived": {}
+     },
+     {
+      "target": ".e2|ren:opacity",
+      "driver": ".e2|drv:--w",
+      "class": "periodic",
+      "family": "tick",
+      "params": {
+       "period_ms": 1000,
+       "first_ms_after_start": 1350,
+       "levels": [
+        0.35,
+        1
+       ]
+      },
+      "derived": {}
+     },
+     {
+      "target": ".e3|ren:tx",
+      "driver": ".e3|drv:--z",
+      "class": "tween",
+      "family": "time-based",
+      "params": {
+       "dur_ms": 700,
+       "ease": "easeOutQuart",
+       "amp_px": 200,
+       "trigger": "observer enters/leaves a block at document y 1500..1700",
+       "retarget": "from-current"
+      },
+      "derived": {}
+     }
+    ],
+    "attribution": {
+     ".e0|ren:tx": "scroll-linked",
+     ".e1|ren:tx": "time-driven",
+     ".e2|ren:opacity": "time-driven",
+     ".e3|ren:tx": "scroll-triggered time-based"
+    }
+   },
+   "R3": {
+    "schema": "reva.labtruth/0",
+    "route": "m20",
+    "params": {
+     "alpha": 0.14,
+     "snap": 0.01,
+     "scrollGain": 0.25,
+     "scrollMax": 1200,
+     "k": 210,
+     "c": 11,
+     "hMs": 16,
+     "amp1": 160,
+     "tickOffsetMs": 350,
+     "tweenMs": 700,
+     "tweenAmp": 200,
+     "write": "full"
+    },
+    "regime": "R3",
+    "variant": "steps",
+    "metrics": [
+     "class",
+     "attribution"
+    ],
+    "stagger": null,
+    "negative": null,
+    "items": [
+     {
+      "target": ".e0|ren:tx",
+      "driver": ".e0|drv:--q",
+      "class": "first-order smoothing",
+      "family": "lerp",
+      "law": "per-frame",
+      "params": {
+       "alpha_per_frame": 0.14,
+       "snap_px": 0.01,
+       "target_gain": 0.25,
+       "target_max_px": 300
+      },
+      "derived": {
+       "tau_ms_at_T_60hz": 110.50488885338605
+      }
+     },
+     {
+      "target": ".e1|ren:tx",
+      "driver": ".e1|drv:--s",
+      "class": "spring",
+      "family": "discrete-spring",
+      "integrator": {
+       "id": "I1",
+       "h_ms": 16,
+       "description": "semi-implicit Euler, fixed substeps with remainder"
+      },
+      "params": {
+       "k_over_m": 210,
+       "c_over_m": 11,
+       "omega0": 14.491376746189438,
+       "zeta": 0.37953605763829484,
+       "retarget_every_ms": 1000,
+       "amp_px": 160
+      },
+      "derived": {}
+     },
+     {
+      "target": ".e2|ren:opacity",
+      "driver": ".e2|drv:--w",
+      "class": "periodic",
+      "family": "tick",
+      "params": {
+       "period_ms": 1000,
+       "first_ms_after_start": 1350,
+       "levels": [
+        0.35,
+        1
+       ]
+      },
+      "derived": {}
+     },
+     {
+      "target": ".e3|ren:tx",
+      "driver": ".e3|drv:--z",
+      "class": "tween",
+      "family": "time-based",
+      "params": {
+       "dur_ms": 700,
+       "ease": "easeOutQuart",
+       "amp_px": 200,
+       "trigger": "observer enters/leaves a block at document y 1500..1700",
+       "retarget": "from-current"
+      },
+      "derived": {}
+     }
+    ],
+    "attribution": {
+     ".e0|ren:tx": "scroll-linked",
+     ".e1|ren:tx": "time-driven",
+     ".e2|ren:opacity": "time-driven",
+     ".e3|ren:tx": "scroll-triggered time-based"
+    }
+   },
+   "R4": {
+    "schema": "reva.labtruth/0",
+    "route": "m20",
+    "params": {
+     "alpha": 0.14,
+     "snap": 0.01,
+     "scrollGain": 0.25,
+     "scrollMax": 1200,
+     "k": 210,
+     "c": 11,
+     "hMs": 16,
+     "amp1": 160,
+     "tickOffsetMs": 350,
+     "tweenMs": 700,
+     "tweenAmp": 200,
+     "write": "full"
+    },
+    "regime": "R4",
+    "variant": "steps",
+    "metrics": [
+     "class",
+     "attribution"
+    ],
+    "stagger": null,
+    "negative": null,
+    "items": [
+     {
+      "target": ".e0|ren:tx",
+      "driver": ".e0|drv:--q",
+      "class": "first-order smoothing",
+      "family": "lerp",
+      "law": "per-frame",
+      "params": {
+       "alpha_per_frame": 0.14,
+       "snap_px": 0.01,
+       "target_gain": 0.25,
+       "target_max_px": 300
+      },
+      "derived": {
+       "tau_ms_at_T_60hz": 110.50488885338605
+      }
+     },
+     {
+      "target": ".e1|ren:tx",
+      "driver": ".e1|drv:--s",
+      "class": "spring",
+      "family": "discrete-spring",
+      "integrator": {
+       "id": "I1",
+       "h_ms": 16,
+       "description": "semi-implicit Euler, fixed substeps with remainder"
+      },
+      "params": {
+       "k_over_m": 210,
+       "c_over_m": 11,
+       "omega0": 14.491376746189438,
+       "zeta": 0.37953605763829484,
+       "retarget_every_ms": 1000,
+       "amp_px": 160
+      },
+      "derived": {}
+     },
+     {
+      "target": ".e2|ren:opacity",
+      "driver": ".e2|drv:--w",
+      "class": "periodic",
+      "family": "tick",
+      "params": {
+       "period_ms": 1000,
+       "first_ms_after_start": 1350,
+       "levels": [
+        0.35,
+        1
+       ]
+      },
+      "derived": {}
+     },
+     {
+      "target": ".e3|ren:tx",
+      "driver": ".e3|drv:--z",
+      "class": "tween",
+      "family": "time-based",
+      "params": {
+       "dur_ms": 700,
+       "ease": "easeOutQuart",
+       "amp_px": 200,
+       "trigger": "observer enters/leaves a block at document y 1500..1700",
+       "retarget": "from-current"
+      },
+      "derived": {}
+     }
+    ],
+    "attribution": {
+     ".e0|ren:tx": "scroll-linked",
+     ".e1|ren:tx": "time-driven",
+     ".e2|ren:opacity": "time-driven",
+     ".e3|ren:tx": "scroll-triggered time-based"
+    }
+   },
+   "R5": {
+    "schema": "reva.labtruth/0",
+    "route": "m20",
+    "params": {
+     "alpha": 0.14,
+     "snap": 0.01,
+     "scrollGain": 0.25,
+     "scrollMax": 1200,
+     "k": 210,
+     "c": 11,
+     "hMs": 16,
+     "amp1": 160,
+     "tickOffsetMs": 350,
+     "tweenMs": 700,
+     "tweenAmp": 200,
+     "write": "full"
+    },
+    "regime": "R5",
+    "variant": "steps",
+    "metrics": [
+     "class",
+     "attribution"
+    ],
+    "stagger": null,
+    "negative": null,
+    "items": [
+     {
+      "target": ".e0|ren:tx",
+      "driver": ".e0|drv:--q",
+      "class": "first-order smoothing",
+      "family": "lerp",
+      "law": "per-frame",
+      "params": {
+       "alpha_per_frame": 0.14,
+       "snap_px": 0.01,
+       "target_gain": 0.25,
+       "target_max_px": 300
+      },
+      "derived": {
+       "tau_ms_at_T_60hz": 110.50488885338605
+      }
+     },
+     {
+      "target": ".e1|ren:tx",
+      "driver": ".e1|drv:--s",
+      "class": "spring",
+      "family": "discrete-spring",
+      "integrator": {
+       "id": "I1",
+       "h_ms": 16,
+       "description": "semi-implicit Euler, fixed substeps with remainder"
+      },
+      "params": {
+       "k_over_m": 210,
+       "c_over_m": 11,
+       "omega0": 14.491376746189438,
+       "zeta": 0.37953605763829484,
+       "retarget_every_ms": 1000,
+       "amp_px": 160
+      },
+      "derived": {}
+     },
+     {
+      "target": ".e2|ren:opacity",
+      "driver": ".e2|drv:--w",
+      "class": "periodic",
+      "family": "tick",
+      "params": {
+       "period_ms": 1000,
+       "first_ms_after_start": 1350,
+       "levels": [
+        0.35,
+        1
+       ]
+      },
+      "derived": {}
+     },
+     {
+      "target": ".e3|ren:tx",
+      "driver": ".e3|drv:--z",
+      "class": "tween",
+      "family": "time-based",
+      "params": {
+       "dur_ms": 700,
+       "ease": "easeOutQuart",
+       "amp_px": 200,
+       "trigger": "observer enters/leaves a block at document y 1500..1700",
+       "retarget": "from-current"
+      },
+      "derived": {}
+     }
+    ],
+    "attribution": {
+     ".e0|ren:tx": "scroll-linked",
+     ".e1|ren:tx": "time-driven",
+     ".e2|ren:opacity": "time-driven",
+     ".e3|ren:tx": "scroll-triggered time-based"
+    }
+   }
+  },
+  "holds": {
+   "R2": {
+    "schema": "reva.labtruth/0",
+    "route": "m20",
+    "params": {
+     "alpha": 0.14,
+     "snap": 0.01,
+     "scrollGain": 0.25,
+     "scrollMax": 1200,
+     "k": 210,
+     "c": 11,
+     "hMs": 16,
+     "amp1": 160,
+     "tickOffsetMs": 350,
+     "tweenMs": 700,
+     "tweenAmp": 200,
+     "write": "full"
+    },
+    "regime": "R2",
+    "variant": "holds",
+    "metrics": [
+     "class",
+     "attribution"
+    ],
+    "stagger": null,
+    "negative": null,
+    "items": [
+     {
+      "target": ".e0|ren:tx",
+      "driver": ".e0|drv:--q",
+      "class": "first-order smoothing",
+      "family": "lerp",
+      "law": "per-frame",
+      "params": {
+       "alpha_per_frame": 0.14,
+       "snap_px": 0.01,
+       "target_gain": 0.25,
+       "target_max_px": 300
+      },
+      "derived": {
+       "tau_ms_at_T_60hz": 110.50488885338605
+      }
+     },
+     {
+      "target": ".e1|ren:tx",
+      "driver": ".e1|drv:--s",
+      "class": "spring",
+      "family": "discrete-spring",
+      "integrator": {
+       "id": "I1",
+       "h_ms": 16,
+       "description": "semi-implicit Euler, fixed substeps with remainder"
+      },
+      "params": {
+       "k_over_m": 210,
+       "c_over_m": 11,
+       "omega0": 14.491376746189438,
+       "zeta": 0.37953605763829484,
+       "retarget_every_ms": 1000,
+       "amp_px": 160
+      },
+      "derived": {}
+     },
+     {
+      "target": ".e2|ren:opacity",
+      "driver": ".e2|drv:--w",
+      "class": "periodic",
+      "family": "tick",
+      "params": {
+       "period_ms": 1000,
+       "first_ms_after_start": 1350,
+       "levels": [
+        0.35,
+        1
+       ]
+      },
+      "derived": {}
+     },
+     {
+      "target": ".e3|ren:tx",
+      "driver": ".e3|drv:--z",
+      "class": "tween",
+      "family": "time-based",
+      "params": {
+       "dur_ms": 700,
+       "ease": "easeOutQuart",
+       "amp_px": 200,
+       "trigger": "observer enters/leaves a block at document y 1500..1700",
+       "retarget": "from-current"
+      },
+      "derived": {}
+     }
+    ],
+    "attribution": {
+     ".e0|ren:tx": "scroll-linked",
+     ".e1|ren:tx": "time-driven",
+     ".e2|ren:opacity": "time-driven",
+     ".e3|ren:tx": "scroll-triggered time-based"
+    }
+   },
+   "R3": {
+    "schema": "reva.labtruth/0",
+    "route": "m20",
+    "params": {
+     "alpha": 0.14,
+     "snap": 0.01,
+     "scrollGain": 0.25,
+     "scrollMax": 1200,
+     "k": 210,
+     "c": 11,
+     "hMs": 16,
+     "amp1": 160,
+     "tickOffsetMs": 350,
+     "tweenMs": 700,
+     "tweenAmp": 200,
+     "write": "full"
+    },
+    "regime": "R3",
+    "variant": "holds",
+    "metrics": [
+     "class",
+     "attribution"
+    ],
+    "stagger": null,
+    "negative": null,
+    "items": [
+     {
+      "target": ".e0|ren:tx",
+      "driver": ".e0|drv:--q",
+      "class": "first-order smoothing",
+      "family": "lerp",
+      "law": "per-frame",
+      "params": {
+       "alpha_per_frame": 0.14,
+       "snap_px": 0.01,
+       "target_gain": 0.25,
+       "target_max_px": 300
+      },
+      "derived": {
+       "tau_ms_at_T_60hz": 110.50488885338605
+      }
+     },
+     {
+      "target": ".e1|ren:tx",
+      "driver": ".e1|drv:--s",
+      "class": "spring",
+      "family": "discrete-spring",
+      "integrator": {
+       "id": "I1",
+       "h_ms": 16,
+       "description": "semi-implicit Euler, fixed substeps with remainder"
+      },
+      "params": {
+       "k_over_m": 210,
+       "c_over_m": 11,
+       "omega0": 14.491376746189438,
+       "zeta": 0.37953605763829484,
+       "retarget_every_ms": 1000,
+       "amp_px": 160
+      },
+      "derived": {}
+     },
+     {
+      "target": ".e2|ren:opacity",
+      "driver": ".e2|drv:--w",
+      "class": "periodic",
+      "family": "tick",
+      "params": {
+       "period_ms": 1000,
+       "first_ms_after_start": 1350,
+       "levels": [
+        0.35,
+        1
+       ]
+      },
+      "derived": {}
+     },
+     {
+      "target": ".e3|ren:tx",
+      "driver": ".e3|drv:--z",
+      "class": "tween",
+      "family": "time-based",
+      "params": {
+       "dur_ms": 700,
+       "ease": "easeOutQuart",
+       "amp_px": 200,
+       "trigger": "observer enters/leaves a block at document y 1500..1700",
+       "retarget": "from-current"
+      },
+      "derived": {}
+     }
+    ],
+    "attribution": {
+     ".e0|ren:tx": "scroll-linked",
+     ".e1|ren:tx": "time-driven",
+     ".e2|ren:opacity": "time-driven",
+     ".e3|ren:tx": "scroll-triggered time-based"
+    }
+   },
+   "R4": {
+    "schema": "reva.labtruth/0",
+    "route": "m20",
+    "params": {
+     "alpha": 0.14,
+     "snap": 0.01,
+     "scrollGain": 0.25,
+     "scrollMax": 1200,
+     "k": 210,
+     "c": 11,
+     "hMs": 16,
+     "amp1": 160,
+     "tickOffsetMs": 350,
+     "tweenMs": 700,
+     "tweenAmp": 200,
+     "write": "full"
+    },
+    "regime": "R4",
+    "variant": "holds",
+    "metrics": [
+     "class",
+     "attribution"
+    ],
+    "stagger": null,
+    "negative": null,
+    "items": [
+     {
+      "target": ".e0|ren:tx",
+      "driver": ".e0|drv:--q",
+      "class": "first-order smoothing",
+      "family": "lerp",
+      "law": "per-frame",
+      "params": {
+       "alpha_per_frame": 0.14,
+       "snap_px": 0.01,
+       "target_gain": 0.25,
+       "target_max_px": 300
+      },
+      "derived": {
+       "tau_ms_at_T_60hz": 110.50488885338605
+      }
+     },
+     {
+      "target": ".e1|ren:tx",
+      "driver": ".e1|drv:--s",
+      "class": "spring",
+      "family": "discrete-spring",
+      "integrator": {
+       "id": "I1",
+       "h_ms": 16,
+       "description": "semi-implicit Euler, fixed substeps with remainder"
+      },
+      "params": {
+       "k_over_m": 210,
+       "c_over_m": 11,
+       "omega0": 14.491376746189438,
+       "zeta": 0.37953605763829484,
+       "retarget_every_ms": 1000,
+       "amp_px": 160
+      },
+      "derived": {}
+     },
+     {
+      "target": ".e2|ren:opacity",
+      "driver": ".e2|drv:--w",
+      "class": "periodic",
+      "family": "tick",
+      "params": {
+       "period_ms": 1000,
+       "first_ms_after_start": 1350,
+       "levels": [
+        0.35,
+        1
+       ]
+      },
+      "derived": {}
+     },
+     {
+      "target": ".e3|ren:tx",
+      "driver": ".e3|drv:--z",
+      "class": "tween",
+      "family": "time-based",
+      "params": {
+       "dur_ms": 700,
+       "ease": "easeOutQuart",
+       "amp_px": 200,
+       "trigger": "observer enters/leaves a block at document y 1500..1700",
+       "retarget": "from-current"
+      },
+      "derived": {}
+     }
+    ],
+    "attribution": {
+     ".e0|ren:tx": "scroll-linked",
+     ".e1|ren:tx": "time-driven",
+     ".e2|ren:opacity": "time-driven",
+     ".e3|ren:tx": "scroll-triggered time-based"
+    }
+   },
+   "R5": {
+    "schema": "reva.labtruth/0",
+    "route": "m20",
+    "params": {
+     "alpha": 0.14,
+     "snap": 0.01,
+     "scrollGain": 0.25,
+     "scrollMax": 1200,
+     "k": 210,
+     "c": 11,
+     "hMs": 16,
+     "amp1": 160,
+     "tickOffsetMs": 350,
+     "tweenMs": 700,
+     "tweenAmp": 200,
+     "write": "full"
+    },
+    "regime": "R5",
+    "variant": "holds",
+    "metrics": [
+     "class",
+     "attribution"
+    ],
+    "stagger": null,
+    "negative": null,
+    "items": [
+     {
+      "target": ".e0|ren:tx",
+      "driver": ".e0|drv:--q",
+      "class": "first-order smoothing",
+      "family": "lerp",
+      "law": "per-frame",
+      "params": {
+       "alpha_per_frame": 0.14,
+       "snap_px": 0.01,
+       "target_gain": 0.25,
+       "target_max_px": 300
+      },
+      "derived": {
+       "tau_ms_at_T_60hz": 110.50488885338605
+      }
+     },
+     {
+      "target": ".e1|ren:tx",
+      "driver": ".e1|drv:--s",
+      "class": "spring",
+      "family": "discrete-spring",
+      "integrator": {
+       "id": "I1",
+       "h_ms": 16,
+       "description": "semi-implicit Euler, fixed substeps with remainder"
+      },
+      "params": {
+       "k_over_m": 210,
+       "c_over_m": 11,
+       "omega0": 14.491376746189438,
+       "zeta": 0.37953605763829484,
+       "retarget_every_ms": 1000,
+       "amp_px": 160
+      },
+      "derived": {}
+     },
+     {
+      "target": ".e2|ren:opacity",
+      "driver": ".e2|drv:--w",
+      "class": "periodic",
+      "family": "tick",
+      "params": {
+       "period_ms": 1000,
+       "first_ms_after_start": 1350,
+       "levels": [
+        0.35,
+        1
+       ]
+      },
+      "derived": {}
+     },
+     {
+      "target": ".e3|ren:tx",
+      "driver": ".e3|drv:--z",
+      "class": "tween",
+      "family": "time-based",
+      "params": {
+       "dur_ms": 700,
+       "ease": "easeOutQuart",
+       "amp_px": 200,
+       "trigger": "observer enters/leaves a block at document y 1500..1700",
+       "retarget": "from-current"
+      },
+      "derived": {}
+     }
+    ],
+    "attribution": {
+     ".e0|ren:tx": "scroll-linked",
+     ".e1|ren:tx": "time-driven",
+     ".e2|ren:opacity": "time-driven",
+     ".e3|ren:tx": "scroll-triggered time-based"
+    }
+   }
+  },
+  "idle": {
+   "R2": {
+    "schema": "reva.labtruth/0",
+    "route": "m20",
+    "params": {
+     "alpha": 0.14,
+     "snap": 0.01,
+     "scrollGain": 0.25,
+     "scrollMax": 1200,
+     "k": 210,
+     "c": 11,
+     "hMs": 16,
+     "amp1": 160,
+     "tickOffsetMs": 350,
+     "tweenMs": 700,
+     "tweenAmp": 200,
+     "write": "full"
+    },
+    "regime": "R2",
+    "variant": "idle",
+    "metrics": [
+     "class",
+     "attribution"
+    ],
+    "stagger": null,
+    "negative": null,
+    "items": [
+     {
+      "target": ".e0|ren:tx",
+      "driver": ".e0|drv:--q",
+      "class": "static",
+      "params": {},
+      "derived": {}
+     },
+     {
+      "target": ".e1|ren:tx",
+      "driver": ".e1|drv:--s",
+      "class": "spring",
+      "family": "discrete-spring",
+      "integrator": {
+       "id": "I1",
+       "h_ms": 16,
+       "description": "semi-implicit Euler, fixed substeps with remainder"
+      },
+      "params": {
+       "k_over_m": 210,
+       "c_over_m": 11,
+       "omega0": 14.491376746189438,
+       "zeta": 0.37953605763829484,
+       "retarget_every_ms": 1000,
+       "amp_px": 160
+      },
+      "derived": {}
+     },
+     {
+      "target": ".e2|ren:opacity",
+      "driver": ".e2|drv:--w",
+      "class": "periodic",
+      "family": "tick",
+      "params": {
+       "period_ms": 1000,
+       "first_ms_after_start": 1350,
+       "levels": [
+        0.35,
+        1
+       ]
+      },
+      "derived": {}
+     },
+     {
+      "target": ".e3|ren:tx",
+      "driver": ".e3|drv:--z",
+      "class": "static",
+      "params": {},
+      "derived": {}
+     }
+    ],
+    "attribution": {
+     ".e0|ren:tx": "static",
+     ".e1|ren:tx": "time-driven",
+     ".e2|ren:opacity": "time-driven",
+     ".e3|ren:tx": "static"
+    }
+   },
+   "R3": {
+    "schema": "reva.labtruth/0",
+    "route": "m20",
+    "params": {
+     "alpha": 0.14,
+     "snap": 0.01,
+     "scrollGain": 0.25,
+     "scrollMax": 1200,
+     "k": 210,
+     "c": 11,
+     "hMs": 16,
+     "amp1": 160,
+     "tickOffsetMs": 350,
+     "tweenMs": 700,
+     "tweenAmp": 200,
+     "write": "full"
+    },
+    "regime": "R3",
+    "variant": "idle",
+    "metrics": [
+     "class",
+     "attribution"
+    ],
+    "stagger": null,
+    "negative": null,
+    "items": [
+     {
+      "target": ".e0|ren:tx",
+      "driver": ".e0|drv:--q",
+      "class": "static",
+      "params": {},
+      "derived": {}
+     },
+     {
+      "target": ".e1|ren:tx",
+      "driver": ".e1|drv:--s",
+      "class": "spring",
+      "family": "discrete-spring",
+      "integrator": {
+       "id": "I1",
+       "h_ms": 16,
+       "description": "semi-implicit Euler, fixed substeps with remainder"
+      },
+      "params": {
+       "k_over_m": 210,
+       "c_over_m": 11,
+       "omega0": 14.491376746189438,
+       "zeta": 0.37953605763829484,
+       "retarget_every_ms": 1000,
+       "amp_px": 160
+      },
+      "derived": {}
+     },
+     {
+      "target": ".e2|ren:opacity",
+      "driver": ".e2|drv:--w",
+      "class": "periodic",
+      "family": "tick",
+      "params": {
+       "period_ms": 1000,
+       "first_ms_after_start": 1350,
+       "levels": [
+        0.35,
+        1
+       ]
+      },
+      "derived": {}
+     },
+     {
+      "target": ".e3|ren:tx",
+      "driver": ".e3|drv:--z",
+      "class": "static",
+      "params": {},
+      "derived": {}
+     }
+    ],
+    "attribution": {
+     ".e0|ren:tx": "static",
+     ".e1|ren:tx": "time-driven",
+     ".e2|ren:opacity": "time-driven",
+     ".e3|ren:tx": "static"
+    }
+   },
+   "R4": {
+    "schema": "reva.labtruth/0",
+    "route": "m20",
+    "params": {
+     "alpha": 0.14,
+     "snap": 0.01,
+     "scrollGain": 0.25,
+     "scrollMax": 1200,
+     "k": 210,
+     "c": 11,
+     "hMs": 16,
+     "amp1": 160,
+     "tickOffsetMs": 350,
+     "tweenMs": 700,
+     "tweenAmp": 200,
+     "write": "full"
+    },
+    "regime": "R4",
+    "variant": "idle",
+    "metrics": [
+     "class",
+     "attribution"
+    ],
+    "stagger": null,
+    "negative": null,
+    "items": [
+     {
+      "target": ".e0|ren:tx",
+      "driver": ".e0|drv:--q",
+      "class": "static",
+      "params": {},
+      "derived": {}
+     },
+     {
+      "target": ".e1|ren:tx",
+      "driver": ".e1|drv:--s",
+      "class": "spring",
+      "family": "discrete-spring",
+      "integrator": {
+       "id": "I1",
+       "h_ms": 16,
+       "description": "semi-implicit Euler, fixed substeps with remainder"
+      },
+      "params": {
+       "k_over_m": 210,
+       "c_over_m": 11,
+       "omega0": 14.491376746189438,
+       "zeta": 0.37953605763829484,
+       "retarget_every_ms": 1000,
+       "amp_px": 160
+      },
+      "derived": {}
+     },
+     {
+      "target": ".e2|ren:opacity",
+      "driver": ".e2|drv:--w",
+      "class": "periodic",
+      "family": "tick",
+      "params": {
+       "period_ms": 1000,
+       "first_ms_after_start": 1350,
+       "levels": [
+        0.35,
+        1
+       ]
+      },
+      "derived": {}
+     },
+     {
+      "target": ".e3|ren:tx",
+      "driver": ".e3|drv:--z",
+      "class": "static",
+      "params": {},
+      "derived": {}
+     }
+    ],
+    "attribution": {
+     ".e0|ren:tx": "static",
+     ".e1|ren:tx": "time-driven",
+     ".e2|ren:opacity": "time-driven",
+     ".e3|ren:tx": "static"
+    }
+   },
+   "R5": {
+    "schema": "reva.labtruth/0",
+    "route": "m20",
+    "params": {
+     "alpha": 0.14,
+     "snap": 0.01,
+     "scrollGain": 0.25,
+     "scrollMax": 1200,
+     "k": 210,
+     "c": 11,
+     "hMs": 16,
+     "amp1": 160,
+     "tickOffsetMs": 350,
+     "tweenMs": 700,
+     "tweenAmp": 200,
+     "write": "full"
+    },
+    "regime": "R5",
+    "variant": "idle",
+    "metrics": [
+     "class",
+     "attribution"
+    ],
+    "stagger": null,
+    "negative": null,
+    "items": [
+     {
+      "target": ".e0|ren:tx",
+      "driver": ".e0|drv:--q",
+      "class": "static",
+      "params": {},
+      "derived": {}
+     },
+     {
+      "target": ".e1|ren:tx",
+      "driver": ".e1|drv:--s",
+      "class": "spring",
+      "family": "discrete-spring",
+      "integrator": {
+       "id": "I1",
+       "h_ms": 16,
+       "description": "semi-implicit Euler, fixed substeps with remainder"
+      },
+      "params": {
+       "k_over_m": 210,
+       "c_over_m": 11,
+       "omega0": 14.491376746189438,
+       "zeta": 0.37953605763829484,
+       "retarget_every_ms": 1000,
+       "amp_px": 160
+      },
+      "derived": {}
+     },
+     {
+      "target": ".e2|ren:opacity",
+      "driver": ".e2|drv:--w",
+      "class": "periodic",
+      "family": "tick",
+      "params": {
+       "period_ms": 1000,
+       "first_ms_after_start": 1350,
+       "levels": [
+        0.35,
+        1
+       ]
+      },
+      "derived": {}
+     },
+     {
+      "target": ".e3|ren:tx",
+      "driver": ".e3|drv:--z",
+      "class": "static",
+      "params": {},
+      "derived": {}
+     }
+    ],
+    "attribution": {
+     ".e0|ren:tx": "static",
+     ".e1|ren:tx": "time-driven",
+     ".e2|ren:opacity": "time-driven",
+     ".e3|ren:tx": "static"
+    }
+   }
+  }
+ },
+ "grid": [
+  {
+   "index": 0,
+   "params": {},
+   "R3": {
+    "schema": "reva.labtruth/0",
+    "route": "m20",
+    "params": {
+     "alpha": 0.14,
+     "snap": 0.01,
+     "scrollGain": 0.25,
+     "scrollMax": 1200,
+     "k": 210,
+     "c": 11,
+     "hMs": 16,
+     "amp1": 160,
+     "tickOffsetMs": 350,
+     "tweenMs": 700,
+     "tweenAmp": 200,
+     "write": "full"
+    },
+    "regime": "R3",
+    "variant": "steps",
+    "metrics": [
+     "class",
+     "attribution"
+    ],
+    "stagger": null,
+    "negative": null,
+    "items": [
+     {
+      "target": ".e0|ren:tx",
+      "driver": ".e0|drv:--q",
+      "class": "first-order smoothing",
+      "family": "lerp",
+      "law": "per-frame",
+      "params": {
+       "alpha_per_frame": 0.14,
+       "snap_px": 0.01,
+       "target_gain": 0.25,
+       "target_max_px": 300
+      },
+      "derived": {
+       "tau_ms_at_T_60hz": 110.50488885338605
+      }
+     },
+     {
+      "target": ".e1|ren:tx",
+      "driver": ".e1|drv:--s",
+      "class": "spring",
+      "family": "discrete-spring",
+      "integrator": {
+       "id": "I1",
+       "h_ms": 16,
+       "description": "semi-implicit Euler, fixed substeps with remainder"
+      },
+      "params": {
+       "k_over_m": 210,
+       "c_over_m": 11,
+       "omega0": 14.491376746189438,
+       "zeta": 0.37953605763829484,
+       "retarget_every_ms": 1000,
+       "amp_px": 160
+      },
+      "derived": {}
+     },
+     {
+      "target": ".e2|ren:opacity",
+      "driver": ".e2|drv:--w",
+      "class": "periodic",
+      "family": "tick",
+      "params": {
+       "period_ms": 1000,
+       "first_ms_after_start": 1350,
+       "levels": [
+        0.35,
+        1
+       ]
+      },
+      "derived": {}
+     },
+     {
+      "target": ".e3|ren:tx",
+      "driver": ".e3|drv:--z",
+      "class": "tween",
+      "family": "time-based",
+      "params": {
+       "dur_ms": 700,
+       "ease": "easeOutQuart",
+       "amp_px": 200,
+       "trigger": "observer enters/leaves a block at document y 1500..1700",
+       "retarget": "from-current"
+      },
+      "derived": {}
+     }
+    ],
+    "attribution": {
+     ".e0|ren:tx": "scroll-linked",
+     ".e1|ren:tx": "time-driven",
+     ".e2|ren:opacity": "time-driven",
+     ".e3|ren:tx": "scroll-triggered time-based"
+    }
+   }
+  }
+ ]
+}

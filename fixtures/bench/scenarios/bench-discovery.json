@@ -1,0 +1,7 @@
+{
+  "note": "Own fixture scenario: a CDP Animation-domain discovery pass around the bench motions.",
+  "viewport": { "width": 800, "height": 600 },
+  "seed": 1,
+  "boot": { "until": "document.readyState === 'complete'" },
+  "actions": [ { "cdpDiscovery": [ { "eval": "__go()" }, { "hold": 1200 } ] }, { "snapshot": "after" } ]
+}

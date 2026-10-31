@@ -1,0 +1,17 @@
+<!doctype html>
+<!-- Known by construction (test/look/look-trigger.test.js): .t moves on .card:hover, translateY -30px, CSS transition 600ms
+  cubic-bezier(.2,.7,.3,1). A transparent .scrim covers .t, so .t is shown but cannot be hit; the hover still reaches .card.
+  button.burger opens a full-screen menu that would cover the card (a probe that clicks it leaves the page dirty).
+  .badge sits under the scrim too and nothing ever changes it. -->
+<html><head><meta charset="utf-8"><title>covered card</title>
+<style>body{margin:0;background:#111;color:#eee;font:16px system-ui}
+.bar{padding:12px}.menu{position:fixed;inset:0;background:#000;display:none;z-index:9}.menu.on{display:block}
+.card{position:relative;width:400px;height:300px;margin:80px;background:#333}
+.t{position:absolute;left:40px;top:40px;width:200px;height:120px;background:#c84;transition:transform 600ms cubic-bezier(.2,.7,.3,1)}
+.card:hover .t{transform:translateY(-30px)}
+.badge{position:absolute;right:20px;bottom:20px;width:60px;height:30px;background:#4a8}
+.scrim{position:absolute;inset:0;background:linear-gradient(transparent,rgba(0,0,0,.3))}</style></head>
+<body><div class="bar"><button class="burger" type="button">Menu</button></div><div class="menu"><button class="x" type="button">Close</button></div>
+<div class="card"><div class="t"></div><div class="badge"></div><div class="scrim"></div></div>
+<script>document.querySelector('.burger').onclick=()=>document.querySelector('.menu').classList.add('on');document.querySelector('.x').onclick=()=>document.querySelector('.menu').classList.remove('on');</script>
+</body></html>

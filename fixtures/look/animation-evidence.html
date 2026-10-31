@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>look fixture: animation evidence</title>
+<!-- Own fixture (no site content). Known by construction:
+  #mag    magnetic button: transform transition 600 ms whose easing variable (--ease) a script replaces at load with a
+          linear() curve; :hover sets --s 1.04; a script follows the pointer (8 px right of it) and writes --mx / --my every frame, which
+          restarts the transition each frame
+  .spark  four SVG sparkles share one @keyframes rule (2000 ms, sine in-out per keyframe, infinite), delays 0/250/500/750 ms
+  #typed  a typing reveal: Web Animation on clip-path, 620 ms steps(12), from 300 ms (a step length off the frame grid)
+  .line   three reveals built paused at load and played 600 ms later (as an IntersectionObserver would): 700 ms
+          cubic-bezier(0.16, 1, 0.3, 1), translateY(40px) -> 0, delays 0/90/180 ms -->
+<style>
+  html, body { margin: 0; background: #111; color: #eee; font: 16px/1.4 sans-serif; }
+  :root { --ease: ease; --dur: 600ms; }
+  #mag { --mx: 0px; --my: 0px; --s: 1; position: absolute; left: 100px; top: 100px; width: 180px; height: 56px; border: 0; background: #fd5;
+    transform: translate(var(--mx), var(--my)) scale(var(--s)); transition: transform var(--dur) var(--ease); }
+  #mag:hover { --s: 1.04; }
+  .sparks { position: absolute; left: 400px; top: 80px; }
+  .spark { width: 24px; height: 24px; fill: #fff; opacity: 0; animation: spark 2000ms cubic-bezier(0.37, 0, 0.63, 1) var(--d) infinite; }
+  @keyframes spark { 0%, 100% { opacity: 0; transform: scale(.2) rotate(0deg); } 45% { opacity: 1; transform: scale(1) rotate(45deg); } 70% { opacity: .2; transform: scale(.5) rotate(70deg); } }
+  #typed { position: absolute; left: 100px; top: 260px; white-space: pre; font-family: monospace; clip-path: inset(0 100% 0 0); }
+  .lines { position: absolute; left: 100px; top: 340px; }
+  .line { display: block; }
+</style>
+</head>
+<body>
+<button id="mag">Pick this one</button>
+<div class="sparks">
+  <svg class="spark" viewBox="0 0 24 24" style="--d:0ms"><path d="M12 0l3 9 9 3-9 3-3 9-3-9-9-3 9-3z"/></svg>
+  <svg class="spark" viewBox="0 0 24 24" style="--d:250ms"><path d="M12 0l3 9 9 3-9 3-3 9-3-9-9-3 9-3z"/></svg>
+  <svg class="spark" viewBox="0 0 24 24" style="--d:500ms"><path d="M12 0l3 9 9 3-9 3-3 9-3-9-9-3 9-3z"/></svg>
+  <svg class="spark" viewBox="0 0 24 24" style="--d:750ms"><path d="M12 0l3 9 9 3-9 3-3 9-3-9-9-3 9-3z"/></svg>
+</div>
+<span id="typed">npm i your-tool</span>
+<div class="lines"><span class="line">First line</span><span class="line">Second line</span><span class="line">Third line</span></div>
+<script>
+  // the easing variable is replaced at runtime: a spring sampled into linear()
+  document.documentElement.style.setProperty('--ease', 'linear(0, 0.2 8%, 0.6 20%, 0.9 40%, 1.02 60%, 1)');
+  // pointer follow: a per-frame lerp of the pointer offset, written as --mx / --my
+  const mag = document.getElementById('mag');
+  let tx = 0, ty = 0, x = 0, y = 0, on = false;
+  mag.addEventListener('pointermove', (e) => { const r = mag.getBoundingClientRect(); tx = (e.clientX - r.left - r.width / 2) * 0.2 + 8; ty = (e.clientY - r.top - r.height / 2) * 0.3; on = true; });
+  mag.addEventListener('pointerleave', () => { tx = 0; ty = 0; });
+  const tick = () => { if (on) { x += (tx - x) * 0.12; y += (ty - y) * 0.12; mag.style.setProperty('--mx', `${x.toFixed(2)}px`); mag.style.setProperty('--my', `${y.toFixed(2)}px`); } requestAnimationFrame(tick); };
+  requestAnimationFrame(tick);
+  document.getElementById('typed').animate([{ clipPath: 'inset(0 100% 0 0)' }, { clipPath: 'inset(0 0% 0 0)' }], { duration: 620, delay: 300, easing: 'steps(12)', fill: 'forwards' });
+  const reveals = [...document.querySelectorAll('.line')].map((el, i) => {
+    const a = el.animate([{ transform: 'translateY(40px)' }, { transform: 'none' }], { duration: 700, delay: i * 90, easing: 'cubic-bezier(0.16, 1, 0.3, 1)', fill: 'both' });
+    a.pause(); return a;
+  });
+  setTimeout(() => reveals.forEach((a) => a.play()), 600);
+</script>
+</body>
+</html>

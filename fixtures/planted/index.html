@@ -1,0 +1,35 @@
+<!doctype html><html><head><meta charset="utf-8"><title>REVA planted-value fixture</title>
+<style>
+@property --q { syntax: '<number>'; inherits: false; initial-value: 0; }
+body{margin:0;height:4000px;font:12px sans-serif}
+.p{position:absolute;top:40px;width:40px;height:40px;background:#345}
+#a{left:0} #b{left:200px} #c{left:400px;--q:0}
+</style></head><body>
+<div class="p" id="a"></div><div class="p" id="b"></div><div class="p" id="c"></div>
+<script>
+// Own fixture (public-safe). Every frame k (counted by this page's own rAF loop) writes known values through every
+// channel the recorder samples; PLANT[k] keeps what was written, so a sampler can be checked value by value.
+window.PLANT = []; window.K = 0;
+const a = document.getElementById('a'), b = document.getElementById('b'), c = document.getElementById('c');
+window.planted = (k) => ({
+  tx: k, ty: 2 * k, sx: 1 + k / 1000, rz: (k % 90) / 2,
+  opacity: k % 4 === 0 ? 0 : (k % 100) / 100, radius: k % 50, inset: k % 40, blur: k % 10,
+  translate: k / 2, scale: 1 + (k % 30) / 100, rotate: k % 45, p: k * 0.5, q: k / 4, left: 400 + (k % 200),
+});
+const loop = () => {
+  const k = ++window.K; const v = window.planted(k); window.PLANT[k] = v;
+  a.style.transform = `translate(${v.tx}px, ${v.ty}px) scale(${v.sx}) rotate(${v.rz}deg)`;
+  a.style.opacity = String(v.opacity);
+  a.style.borderRadius = v.radius + 'px';
+  a.style.clipPath = `inset(${v.inset}%)`;
+  a.style.filter = `blur(${v.blur}px)`;
+  b.style.translate = `${v.translate}px`; b.style.scale = String(v.scale); b.style.rotate = `${v.rotate}deg`;
+  b.style.setProperty('--p', String(v.p));
+  c.style.setProperty('--q', String(v.q));
+  c.style.left = v.left + 'px';
+  window.__WR_FRAME_OF_K = window.__WR ? window.__WR.frameKey() : null;
+  (window.KMAP || (window.KMAP = {}))[window.__WR ? window.__WR.frameKey() : k] = k;
+  requestAnimationFrame(loop);
+};
+requestAnimationFrame(loop);
+</script></body></html>

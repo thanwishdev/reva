@@ -1,0 +1,22 @@
+<!doctype html>
+<!-- REVA test fixture: a cookie banner whose "Reject all" button removes it (test/design/design-consent.test.js). -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>consent fixture</title>
+<style>
+  body { margin: 0; font: 16px/1.5 system-ui, sans-serif; background: #ffffff; color: #111111; }
+  main { padding: 48px; }
+  #cookie-banner { position: fixed; inset: auto 0 0 0; height: 60vh; background: #c0ffee; color: #102030; padding: 24px; }
+  #cookie-banner button { background: #ff00aa; color: #ffffff; border: 0; padding: 8px 16px; }
+</style>
+</head>
+<body>
+<main><h1>Page</h1><p>Body text.</p></main>
+<div id="cookie-banner" role="dialog">
+  <p>We use cookies for consent purposes.</p>
+  <button type="button" onclick="document.getElementById('cookie-banner').remove()">Reject all</button>
+</div>
+</body>
+</html>

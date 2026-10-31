@@ -1,0 +1,1470 @@
+{
+ "schema": "reva.labtruth/0",
+ "route": "m07x",
+ "cells": [
+  {
+   "trace": "p1000",
+   "params": {
+    "integrator": "verlet",
+    "k": 200,
+    "c": 12,
+    "m": 1,
+    "A": 200,
+    "write": "full",
+    "sched": "p1000"
+   },
+   "attribution": {
+    ".b0|--x": "time-driven"
+   },
+   "metrics": [
+    "M07/wrong-confident",
+    "confident-wrong"
+   ],
+   "regimes": {
+    "R2": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "channels": [
+        "drv:--x",
+        "ren:--x",
+        "ren:tx"
+       ],
+       "class": "spring",
+       "family": "spring-discrete",
+       "integrator": "verlet",
+       "integratorLabel": "velocity Verlet, one step per frame (out of the fitter set)",
+       "params": {
+        "k_over_m": 200,
+        "c_over_m": 12,
+        "omega0": 14.142136,
+        "zeta": 0.424264,
+        "native": null,
+        "amplitude_px": 200,
+        "snap": {
+         "x_px": 0.004,
+         "v_px_s": 0.04,
+         "provenance": "inferred bounds"
+        },
+        "substep_ms": null,
+        "dt_cap_ms": null
+       },
+       "retargets": [
+        {
+         "t_ms": 500,
+         "target_px": 200,
+         "v0_px_s": null,
+         "x_start_px": 5.5556,
+         "overshoot_px": 44.9879,
+         "overshoot_frac_of_segment": 0.23137,
+         "t_peak_ms": 733.333
+        },
+        {
+         "t_ms": 1500,
+         "target_px": 0,
+         "v0_px_s": null,
+         "x_start_px": 193.9771,
+         "overshoot_px": 44.876,
+         "overshoot_frac_of_segment": 0.23135,
+         "t_peak_ms": 1733.333
+        },
+        {
+         "t_ms": 2500,
+         "target_px": 200,
+         "v0_px_s": null,
+         "x_start_px": 6.0219,
+         "overshoot_px": 44.8762,
+         "overshoot_frac_of_segment": 0.23135,
+         "t_peak_ms": 2733.333
+        }
+       ],
+       "derived": {
+        "first_segment_overshoot_px": 44.9879,
+        "settle_2pct_after_last_event_ms": 566.667,
+        "settle_1pct_after_last_event_ms": 750,
+        "final_px": 200,
+        "amplitude_ref_px": 200
+       },
+       "closed_form": {
+        "note": "continuous-time chain of the analytic spring with the same (omega0, zeta) and retargets, 1 ms grid; for discrete integrators this is the limit h -> 0, not the page",
+        "overshoot_frac_from_rest": 0.229488,
+        "settle_2pct_after_last_event_ms": 593,
+        "first_event_ms": 500
+       },
+       "expect": {
+        "integratorIdentified": "verlet",
+        "analyticFlagRequired": true,
+        "inFitterSet": false,
+        "driver": "time",
+        "unitMass": "m is unobservable; compare k/m and c/m (A1.6 c); i4 compares native (kf, cf)"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 384,
+      "dtMs": 16.6667,
+      "durationMs": 6400,
+      "source": "refsim on the regime grid"
+     }
+    },
+    "R3": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "channels": [
+        "drv:--x",
+        "ren:--x",
+        "ren:tx"
+       ],
+       "class": "spring",
+       "family": "spring-discrete",
+       "integrator": "verlet",
+       "integratorLabel": "velocity Verlet, one step per frame (out of the fitter set)",
+       "params": {
+        "k_over_m": 200,
+        "c_over_m": 12,
+        "omega0": 14.142136,
+        "zeta": 0.424264,
+        "native": null,
+        "amplitude_px": 200,
+        "snap": {
+         "x_px": 0.004,
+         "v_px_s": 0.04,
+         "provenance": "inferred bounds"
+        },
+        "substep_ms": null,
+        "dt_cap_ms": null
+       },
+       "retargets": [
+        {
+         "t_ms": 500,
+         "target_px": 200,
+         "v0_px_s": null,
+         "x_start_px": 1.3889,
+         "overshoot_px": 45.6485,
+         "overshoot_frac_of_segment": 0.22984,
+         "t_peak_ms": 733.333
+        },
+        {
+         "t_ms": 1500,
+         "target_px": 0,
+         "v0_px_s": null,
+         "x_start_px": 198.0995,
+         "overshoot_px": 45.5261,
+         "overshoot_frac_of_segment": 0.22981,
+         "t_peak_ms": 1733.333
+        },
+        {
+         "t_ms": 2500,
+         "target_px": 200,
+         "v0_px_s": null,
+         "x_start_px": 1.8992,
+         "overshoot_px": 45.5264,
+         "overshoot_frac_of_segment": 0.22981,
+         "t_peak_ms": 2733.333
+        }
+       ],
+       "derived": {
+        "first_segment_overshoot_px": 45.6485,
+        "settle_2pct_after_last_event_ms": 583.333,
+        "settle_1pct_after_last_event_ms": 766.667,
+        "final_px": 200,
+        "amplitude_ref_px": 200
+       },
+       "closed_form": {
+        "note": "continuous-time chain of the analytic spring with the same (omega0, zeta) and retargets, 1 ms grid; for discrete integrators this is the limit h -> 0, not the page",
+        "overshoot_frac_from_rest": 0.229488,
+        "settle_2pct_after_last_event_ms": 593,
+        "first_event_ms": 500
+       },
+       "expect": {
+        "integratorIdentified": "verlet",
+        "analyticFlagRequired": true,
+        "inFitterSet": false,
+        "driver": "time",
+        "unitMass": "m is unobservable; compare k/m and c/m (A1.6 c); i4 compares native (kf, cf)"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 769,
+      "dtMs": 8.3333,
+      "durationMs": 6400,
+      "source": "refsim on the regime grid"
+     }
+    },
+    "R4": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "channels": [
+        "drv:--x",
+        "ren:--x",
+        "ren:tx"
+       ],
+       "class": "spring",
+       "family": "spring-discrete",
+       "integrator": "verlet",
+       "integratorLabel": "velocity Verlet, one step per frame (out of the fitter set)",
+       "params": {
+        "k_over_m": 200,
+        "c_over_m": 12,
+        "omega0": 14.142136,
+        "zeta": 0.424264,
+        "native": null,
+        "amplitude_px": 200,
+        "snap": {
+         "x_px": 0.004,
+         "v_px_s": 0.04,
+         "provenance": "inferred bounds"
+        },
+        "substep_ms": null,
+        "dt_cap_ms": null
+       },
+       "retargets": [
+        {
+         "t_ms": 500,
+         "target_px": 200,
+         "v0_px_s": null,
+         "x_start_px": 22.2222,
+         "overshoot_px": 41.4219,
+         "overshoot_frac_of_segment": 0.233,
+         "t_peak_ms": 700
+        },
+        {
+         "t_ms": 1500,
+         "target_px": 0,
+         "v0_px_s": null,
+         "x_start_px": 177.447,
+         "overshoot_px": 41.3403,
+         "overshoot_frac_of_segment": 0.23297,
+         "t_peak_ms": 1700
+        },
+        {
+         "t_ms": 2500,
+         "target_px": 200,
+         "v0_px_s": null,
+         "x_start_px": 22.5524,
+         "overshoot_px": 41.3405,
+         "overshoot_frac_of_segment": 0.23297,
+         "t_peak_ms": 2700
+        }
+       ],
+       "derived": {
+        "first_segment_overshoot_px": 41.4219,
+        "settle_2pct_after_last_event_ms": 533.333,
+        "settle_1pct_after_last_event_ms": 566.667,
+        "final_px": 200,
+        "amplitude_ref_px": 200
+       },
+       "closed_form": {
+        "note": "continuous-time chain of the analytic spring with the same (omega0, zeta) and retargets, 1 ms grid; for discrete integrators this is the limit h -> 0, not the page",
+        "overshoot_frac_from_rest": 0.229488,
+        "settle_2pct_after_last_event_ms": 593,
+        "first_event_ms": 500
+       },
+       "expect": {
+        "integratorIdentified": "verlet",
+        "analyticFlagRequired": true,
+        "inFitterSet": false,
+        "driver": "time",
+        "unitMass": "m is unobservable; compare k/m and c/m (A1.6 c); i4 compares native (kf, cf)"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 193,
+      "dtMs": 33.3333,
+      "durationMs": 6400,
+      "source": "refsim on the regime grid"
+     }
+    },
+    "R5": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "channels": [
+        "drv:--x",
+        "ren:--x",
+        "ren:tx"
+       ],
+       "class": "spring",
+       "family": "spring-discrete",
+       "integrator": "verlet",
+       "integratorLabel": "velocity Verlet, one step per frame (out of the fitter set)",
+       "params": {
+        "k_over_m": 200,
+        "c_over_m": 12,
+        "omega0": 14.142136,
+        "zeta": 0.424264,
+        "native": null,
+        "amplitude_px": 200,
+        "snap": {
+         "x_px": 0.004,
+         "v_px_s": 0.04,
+         "provenance": "inferred bounds"
+        },
+        "substep_ms": null,
+        "dt_cap_ms": null
+       },
+       "retargets": [
+        {
+         "t_ms": 500,
+         "target_px": 200,
+         "v0_px_s": null,
+         "x_start_px": 0,
+         "overshoot_px": 3.7481,
+         "overshoot_frac_of_segment": 0.01874,
+         "t_peak_ms": 900
+        },
+        {
+         "t_ms": 1500,
+         "target_px": 0,
+         "v0_px_s": null,
+         "x_start_px": 194.5401,
+         "overshoot_px": 47.5497,
+         "overshoot_frac_of_segment": 0.24442,
+         "t_peak_ms": 1750
+        },
+        {
+         "t_ms": 2500,
+         "target_px": 200,
+         "v0_px_s": null,
+         "x_start_px": 5.4986,
+         "overshoot_px": 45.0119,
+         "overshoot_frac_of_segment": 0.23142,
+         "t_peak_ms": 2733.333
+        }
+       ],
+       "derived": {
+        "first_segment_overshoot_px": 3.7481,
+        "settle_2pct_after_last_event_ms": 500,
+        "settle_1pct_after_last_event_ms": 700,
+        "final_px": 200,
+        "amplitude_ref_px": 200
+       },
+       "closed_form": {
+        "note": "continuous-time chain of the analytic spring with the same (omega0, zeta) and retargets, 1 ms grid; for discrete integrators this is the limit h -> 0, not the page",
+        "overshoot_frac_from_rest": 0.229488,
+        "settle_2pct_after_last_event_ms": 593,
+        "first_event_ms": 500
+       },
+       "expect": {
+        "integratorIdentified": "verlet",
+        "analyticFlagRequired": true,
+        "inFitterSet": false,
+        "driver": "time",
+        "unitMass": "m is unobservable; compare k/m and c/m (A1.6 c); i4 compares native (kf, cf)"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 329,
+      "dtMs": 16.6667,
+      "durationMs": 6400,
+      "source": "refsim on the regime grid"
+     }
+    }
+   },
+   "r6": "same as R2"
+  },
+  {
+   "trace": "p1000",
+   "params": {
+    "integrator": "verlet",
+    "k": 240,
+    "c": 16,
+    "m": 0.35,
+    "A": 200,
+    "write": "full",
+    "sched": "p1000"
+   },
+   "attribution": {
+    ".b0|--x": "time-driven"
+   },
+   "metrics": [
+    "M07/wrong-confident",
+    "confident-wrong"
+   ],
+   "regimes": {
+    "R2": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "channels": [
+        "drv:--x",
+        "ren:--x",
+        "ren:tx"
+       ],
+       "class": "spring",
+       "family": "spring-discrete",
+       "integrator": "verlet",
+       "integratorLabel": "velocity Verlet, one step per frame (out of the fitter set)",
+       "params": {
+        "k_over_m": 685.714286,
+        "c_over_m": 45.714286,
+        "omega0": 26.186147,
+        "zeta": 0.872872,
+        "native": null,
+        "amplitude_px": 200,
+        "snap": {
+         "x_px": 0.004,
+         "v_px_s": 0.04,
+         "provenance": "inferred bounds"
+        },
+        "substep_ms": null,
+        "dt_cap_ms": null
+       },
+       "retargets": [
+        {
+         "t_ms": 500,
+         "target_px": 200,
+         "v0_px_s": null,
+         "x_start_px": 19.0476,
+         "overshoot_px": 0.8288,
+         "overshoot_frac_of_segment": 0.00458,
+         "t_peak_ms": 733.333
+        },
+        {
+         "t_ms": 1500,
+         "target_px": 0,
+         "v0_px_s": null,
+         "x_start_px": 180.9524,
+         "overshoot_px": 0.8288,
+         "overshoot_frac_of_segment": 0.00458,
+         "t_peak_ms": 1733.333
+        },
+        {
+         "t_ms": 2500,
+         "target_px": 200,
+         "v0_px_s": null,
+         "x_start_px": 19.0476,
+         "overshoot_px": 0.8288,
+         "overshoot_frac_of_segment": 0.00458,
+         "t_peak_ms": 2733.333
+        }
+       ],
+       "derived": {
+        "first_segment_overshoot_px": 0.8288,
+        "settle_2pct_after_last_event_ms": 150,
+        "settle_1pct_after_last_event_ms": 166.667,
+        "final_px": 200,
+        "amplitude_ref_px": 200
+       },
+       "closed_form": {
+        "note": "continuous-time chain of the analytic spring with the same (omega0, zeta) and retargets, 1 ms grid; for discrete integrators this is the limit h -> 0, not the page",
+        "overshoot_frac_from_rest": 0.003625,
+        "settle_2pct_after_last_event_ms": 168,
+        "first_event_ms": 500
+       },
+       "expect": {
+        "integratorIdentified": "verlet",
+        "analyticFlagRequired": true,
+        "inFitterSet": false,
+        "driver": "time",
+        "unitMass": "m is unobservable; compare k/m and c/m (A1.6 c); i4 compares native (kf, cf)"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 384,
+      "dtMs": 16.6667,
+      "durationMs": 6400,
+      "source": "refsim on the regime grid"
+     }
+    },
+    "R3": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "channels": [
+        "drv:--x",
+        "ren:--x",
+        "ren:tx"
+       ],
+       "class": "spring",
+       "family": "spring-discrete",
+       "integrator": "verlet",
+       "integratorLabel": "velocity Verlet, one step per frame (out of the fitter set)",
+       "params": {
+        "k_over_m": 685.714286,
+        "c_over_m": 45.714286,
+        "omega0": 26.186147,
+        "zeta": 0.872872,
+        "native": null,
+        "amplitude_px": 200,
+        "snap": {
+         "x_px": 0.004,
+         "v_px_s": 0.04,
+         "provenance": "inferred bounds"
+        },
+        "substep_ms": null,
+        "dt_cap_ms": null
+       },
+       "retargets": [
+        {
+         "t_ms": 500,
+         "target_px": 200,
+         "v0_px_s": null,
+         "x_start_px": 4.7619,
+         "overshoot_px": 0.7587,
+         "overshoot_frac_of_segment": 0.00389,
+         "t_peak_ms": 741.667
+        },
+        {
+         "t_ms": 1500,
+         "target_px": 0,
+         "v0_px_s": null,
+         "x_start_px": 195.2381,
+         "overshoot_px": 0.7587,
+         "overshoot_frac_of_segment": 0.00389,
+         "t_peak_ms": 1741.667
+        },
+        {
+         "t_ms": 2500,
+         "target_px": 200,
+         "v0_px_s": null,
+         "x_start_px": 4.7619,
+         "overshoot_px": 0.7587,
+         "overshoot_frac_of_segment": 0.00389,
+         "t_peak_ms": 2741.667
+        }
+       ],
+       "derived": {
+        "first_segment_overshoot_px": 0.7587,
+        "settle_2pct_after_last_event_ms": 158.333,
+        "settle_1pct_after_last_event_ms": 166.667,
+        "final_px": 200,
+        "amplitude_ref_px": 200
+       },
+       "closed_form": {
+        "note": "continuous-time chain of the analytic spring with the same (omega0, zeta) and retargets, 1 ms grid; for discrete integrators this is the limit h -> 0, not the page",
+        "overshoot_frac_from_rest": 0.003625,
+        "settle_2pct_after_last_event_ms": 168,
+        "first_event_ms": 500
+       },
+       "expect": {
+        "integratorIdentified": "verlet",
+        "analyticFlagRequired": true,
+        "inFitterSet": false,
+        "driver": "time",
+        "unitMass": "m is unobservable; compare k/m and c/m (A1.6 c); i4 compares native (kf, cf)"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 769,
+      "dtMs": 8.3333,
+      "durationMs": 6400,
+      "source": "refsim on the regime grid"
+     }
+    },
+    "R4": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "channels": [
+        "drv:--x",
+        "ren:--x",
+        "ren:tx"
+       ],
+       "class": "spring",
+       "family": "spring-discrete",
+       "integrator": "verlet",
+       "integratorLabel": "velocity Verlet, one step per frame (out of the fitter set)",
+       "params": {
+        "k_over_m": 685.714286,
+        "c_over_m": 45.714286,
+        "omega0": 26.186147,
+        "zeta": 0.872872,
+        "native": null,
+        "amplitude_px": 200,
+        "snap": {
+         "x_px": 0.004,
+         "v_px_s": 0.04,
+         "provenance": "inferred bounds"
+        },
+        "substep_ms": null,
+        "dt_cap_ms": null
+       },
+       "retargets": [
+        {
+         "t_ms": 500,
+         "target_px": 200,
+         "v0_px_s": null,
+         "x_start_px": 76.1905,
+         "overshoot_px": 0.0165,
+         "overshoot_frac_of_segment": 0.00013,
+         "t_peak_ms": 966.667
+        },
+        {
+         "t_ms": 1500,
+         "target_px": 0,
+         "v0_px_s": null,
+         "x_start_px": 123.8095,
+         "overshoot_px": 0.0165,
+         "overshoot_frac_of_segment": 0.00013,
+         "t_peak_ms": 1966.667
+        },
+        {
+         "t_ms": 2500,
+         "target_px": 200,
+         "v0_px_s": null,
+         "x_start_px": 76.1905,
+         "overshoot_px": 0.0165,
+         "overshoot_frac_of_segment": 0.00013,
+         "t_peak_ms": 2966.667
+        }
+       ],
+       "derived": {
+        "first_segment_overshoot_px": 0.0165,
+        "settle_2pct_after_last_event_ms": 200,
+        "settle_1pct_after_last_event_ms": 233.333,
+        "final_px": 200,
+        "amplitude_ref_px": 200
+       },
+       "closed_form": {
+        "note": "continuous-time chain of the analytic spring with the same (omega0, zeta) and retargets, 1 ms grid; for discrete integrators this is the limit h -> 0, not the page",
+        "overshoot_frac_from_rest": 0.003625,
+        "settle_2pct_after_last_event_ms": 168,
+        "first_event_ms": 500
+       },
+       "expect": {
+        "integratorIdentified": "verlet",
+        "analyticFlagRequired": true,
+        "inFitterSet": false,
+        "driver": "time",
+        "unitMass": "m is unobservable; compare k/m and c/m (A1.6 c); i4 compares native (kf, cf)"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 193,
+      "dtMs": 33.3333,
+      "durationMs": 6400,
+      "source": "refsim on the regime grid"
+     }
+    },
+    "R5": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "channels": [
+        "drv:--x",
+        "ren:--x",
+        "ren:tx"
+       ],
+       "class": "spring",
+       "family": "spring-discrete",
+       "integrator": "verlet",
+       "integratorLabel": "velocity Verlet, one step per frame (out of the fitter set)",
+       "params": {
+        "k_over_m": 685.714286,
+        "c_over_m": 45.714286,
+        "omega0": 26.186147,
+        "zeta": 0.872872,
+        "native": null,
+        "amplitude_px": 200,
+        "snap": {
+         "x_px": 0.004,
+         "v_px_s": 0.04,
+         "provenance": "inferred bounds"
+        },
+        "substep_ms": null,
+        "dt_cap_ms": null
+       },
+       "retargets": [
+        {
+         "t_ms": 500,
+         "target_px": 200,
+         "v0_px_s": null,
+         "x_start_px": 0,
+         "overshoot_px": 485.7143,
+         "overshoot_frac_of_segment": 2.42857,
+         "t_peak_ms": 566.667
+        },
+        {
+         "t_ms": 1500,
+         "target_px": 0,
+         "v0_px_s": null,
+         "x_start_px": 180.9524,
+         "overshoot_px": 16.4934,
+         "overshoot_frac_of_segment": 0.09115,
+         "t_peak_ms": 1800
+        },
+        {
+         "t_ms": 2500,
+         "target_px": 200,
+         "v0_px_s": null,
+         "x_start_px": 19.0476,
+         "overshoot_px": 0.8288,
+         "overshoot_frac_of_segment": 0.00458,
+         "t_peak_ms": 2733.333
+        }
+       ],
+       "derived": {
+        "first_segment_overshoot_px": 485.7143,
+        "settle_2pct_after_last_event_ms": 150,
+        "settle_1pct_after_last_event_ms": 166.667,
+        "final_px": 200,
+        "amplitude_ref_px": 200
+       },
+       "closed_form": {
+        "note": "continuous-time chain of the analytic spring with the same (omega0, zeta) and retargets, 1 ms grid; for discrete integrators this is the limit h -> 0, not the page",
+        "overshoot_frac_from_rest": 0.003625,
+        "settle_2pct_after_last_event_ms": 168,
+        "first_event_ms": 500
+       },
+       "expect": {
+        "integratorIdentified": "verlet",
+        "analyticFlagRequired": true,
+        "inFitterSet": false,
+        "driver": "time",
+        "unitMass": "m is unobservable; compare k/m and c/m (A1.6 c); i4 compares native (kf, cf)"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 329,
+      "dtMs": 16.6667,
+      "durationMs": 6400,
+      "source": "refsim on the regime grid"
+     }
+    }
+   },
+   "r6": "same as R2"
+  },
+  {
+   "trace": "p1000",
+   "params": {
+    "integrator": "i1h5",
+    "k": 200,
+    "c": 12,
+    "m": 1,
+    "A": 200,
+    "write": "full",
+    "sched": "p1000"
+   },
+   "attribution": {
+    ".b0|--x": "time-driven"
+   },
+   "metrics": [
+    "M07/wrong-confident",
+    "confident-wrong"
+   ],
+   "regimes": {
+    "R2": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "channels": [
+        "drv:--x",
+        "ren:--x",
+        "ren:tx"
+       ],
+       "class": "spring",
+       "family": "spring-discrete",
+       "integrator": "i1h5",
+       "integratorLabel": "semi-implicit Euler, 5 ms substeps with remainder (out of the fitter set)",
+       "params": {
+        "k_over_m": 200,
+        "c_over_m": 12,
+        "omega0": 14.142136,
+        "zeta": 0.424264,
+        "native": null,
+        "amplitude_px": 200,
+        "snap": {
+         "x_px": 0.004,
+         "v_px_s": 0.04,
+         "provenance": "inferred bounds"
+        },
+        "substep_ms": 5,
+        "dt_cap_ms": null
+       },
+       "retargets": [
+        {
+         "t_ms": 500,
+         "target_px": 200,
+         "v0_px_s": null,
+         "x_start_px": 6.7632,
+         "overshoot_px": 44.5394,
+         "overshoot_frac_of_segment": 0.23049,
+         "t_peak_ms": 716.667
+        },
+        {
+         "t_ms": 1500,
+         "target_px": 0,
+         "v0_px_s": null,
+         "x_start_px": 192.8339,
+         "overshoot_px": 44.4329,
+         "overshoot_frac_of_segment": 0.23042,
+         "t_peak_ms": 1716.667
+        },
+        {
+         "t_ms": 2500,
+         "target_px": 200,
+         "v0_px_s": null,
+         "x_start_px": 7.1653,
+         "overshoot_px": 44.4332,
+         "overshoot_frac_of_segment": 0.23042,
+         "t_peak_ms": 2716.667
+        }
+       ],
+       "derived": {
+        "first_segment_overshoot_px": 44.5394,
+        "settle_2pct_after_last_event_ms": 550,
+        "settle_1pct_after_last_event_ms": 733.333,
+        "final_px": 200,
+        "amplitude_ref_px": 200
+       },
+       "closed_form": {
+        "note": "continuous-time chain of the analytic spring with the same (omega0, zeta) and retargets, 1 ms grid; for discrete integrators this is the limit h -> 0, not the page",
+        "overshoot_frac_from_rest": 0.229488,
+        "settle_2pct_after_last_event_ms": 593,
+        "first_event_ms": 500
+       },
+       "expect": {
+        "integratorIdentified": "i1h5",
+        "analyticFlagRequired": true,
+        "inFitterSet": false,
+        "driver": "time",
+        "unitMass": "m is unobservable; compare k/m and c/m (A1.6 c); i4 compares native (kf, cf)"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 384,
+      "dtMs": 16.6667,
+      "durationMs": 6400,
+      "source": "refsim on the regime grid"
+     }
+    },
+    "R3": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "channels": [
+        "drv:--x",
+        "ren:--x",
+        "ren:tx"
+       ],
+       "class": "spring",
+       "family": "spring-discrete",
+       "integrator": "i1h5",
+       "integratorLabel": "semi-implicit Euler, 5 ms substeps with remainder (out of the fitter set)",
+       "params": {
+        "k_over_m": 200,
+        "c_over_m": 12,
+        "omega0": 14.142136,
+        "zeta": 0.424264,
+        "native": null,
+        "amplitude_px": 200,
+        "snap": {
+         "x_px": 0.004,
+         "v_px_s": 0.04,
+         "provenance": "inferred bounds"
+        },
+        "substep_ms": 5,
+        "dt_cap_ms": null
+       },
+       "retargets": [
+        {
+         "t_ms": 500,
+         "target_px": 200,
+         "v0_px_s": null,
+         "x_start_px": 2.0822,
+         "overshoot_px": 44.8337,
+         "overshoot_frac_of_segment": 0.22653,
+         "t_peak_ms": 733.333
+        },
+        {
+         "t_ms": 1500,
+         "target_px": 0,
+         "v0_px_s": null,
+         "x_start_px": 197.4809,
+         "overshoot_px": 44.7299,
+         "overshoot_frac_of_segment": 0.2265,
+         "t_peak_ms": 1733.333
+        },
+        {
+         "t_ms": 2500,
+         "target_px": 200,
+         "v0_px_s": null,
+         "x_start_px": 2.5183,
+         "overshoot_px": 44.7301,
+         "overshoot_frac_of_segment": 0.2265,
+         "t_peak_ms": 2733.333
+        }
+       ],
+       "derived": {
+        "first_segment_overshoot_px": 44.8337,
+        "settle_2pct_after_last_event_ms": 566.667,
+        "settle_1pct_after_last_event_ms": 750,
+        "final_px": 200,
+        "amplitude_ref_px": 200
+       },
+       "closed_form": {
+        "note": "continuous-time chain of the analytic spring with the same (omega0, zeta) and retargets, 1 ms grid; for discrete integrators this is the limit h -> 0, not the page",
+        "overshoot_frac_from_rest": 0.229488,
+        "settle_2pct_after_last_event_ms": 593,
+        "first_event_ms": 500
+       },
+       "expect": {
+        "integratorIdentified": "i1h5",
+        "analyticFlagRequired": true,
+        "inFitterSet": false,
+        "driver": "time",
+        "unitMass": "m is unobservable; compare k/m and c/m (A1.6 c); i4 compares native (kf, cf)"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 769,
+      "dtMs": 8.3333,
+      "durationMs": 6400,
+      "source": "refsim on the regime grid"
+     }
+    },
+    "R4": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "channels": [
+        "drv:--x",
+        "ren:--x",
+        "ren:tx"
+       ],
+       "class": "spring",
+       "family": "spring-discrete",
+       "integrator": "i1h5",
+       "integratorLabel": "semi-implicit Euler, 5 ms substeps with remainder (out of the fitter set)",
+       "params": {
+        "k_over_m": 200,
+        "c_over_m": 12,
+        "omega0": 14.142136,
+        "zeta": 0.424264,
+        "native": null,
+        "amplitude_px": 200,
+        "snap": {
+         "x_px": 0.004,
+         "v_px_s": 0.04,
+         "provenance": "inferred bounds"
+        },
+        "substep_ms": 5,
+        "dt_cap_ms": null
+       },
+       "retargets": [
+        {
+         "t_ms": 500,
+         "target_px": 200,
+         "v0_px_s": null,
+         "x_start_px": 22.3181,
+         "overshoot_px": 44.51,
+         "overshoot_frac_of_segment": 0.2505,
+         "t_peak_ms": 700
+        },
+        {
+         "t_ms": 1500,
+         "target_px": 0,
+         "v0_px_s": null,
+         "x_start_px": 177.3449,
+         "overshoot_px": 44.4043,
+         "overshoot_frac_of_segment": 0.25038,
+         "t_peak_ms": 1700
+        },
+        {
+         "t_ms": 2500,
+         "target_px": 200,
+         "v0_px_s": null,
+         "x_start_px": 22.6545,
+         "overshoot_px": 44.4045,
+         "overshoot_frac_of_segment": 0.25038,
+         "t_peak_ms": 2700
+        }
+       ],
+       "derived": {
+        "first_segment_overshoot_px": 44.51,
+        "settle_2pct_after_last_event_ms": 533.333,
+        "settle_1pct_after_last_event_ms": 700,
+        "final_px": 200,
+        "amplitude_ref_px": 200
+       },
+       "closed_form": {
+        "note": "continuous-time chain of the analytic spring with the same (omega0, zeta) and retargets, 1 ms grid; for discrete integrators this is the limit h -> 0, not the page",
+        "overshoot_frac_from_rest": 0.229488,
+        "settle_2pct_after_last_event_ms": 593,
+        "first_event_ms": 500
+       },
+       "expect": {
+        "integratorIdentified": "i1h5",
+        "analyticFlagRequired": true,
+        "inFitterSet": false,
+        "driver": "time",
+        "unitMass": "m is unobservable; compare k/m and c/m (A1.6 c); i4 compares native (kf, cf)"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 193,
+      "dtMs": 33.3333,
+      "durationMs": 6400,
+      "source": "refsim on the regime grid"
+     }
+    },
+    "R5": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "channels": [
+        "drv:--x",
+        "ren:--x",
+        "ren:tx"
+       ],
+       "class": "spring",
+       "family": "spring-discrete",
+       "integrator": "i1h5",
+       "integratorLabel": "semi-implicit Euler, 5 ms substeps with remainder (out of the fitter set)",
+       "params": {
+        "k_over_m": 200,
+        "c_over_m": 12,
+        "omega0": 14.142136,
+        "zeta": 0.424264,
+        "native": null,
+        "amplitude_px": 200,
+        "snap": {
+         "x_px": 0.004,
+         "v_px_s": 0.04,
+         "provenance": "inferred bounds"
+        },
+        "substep_ms": 5,
+        "dt_cap_ms": null
+       },
+       "retargets": [
+        {
+         "t_ms": 500,
+         "target_px": 200,
+         "v0_px_s": null,
+         "x_start_px": 0,
+         "overshoot_px": 44.6272,
+         "overshoot_frac_of_segment": 0.22314,
+         "t_peak_ms": 700
+        },
+        {
+         "t_ms": 1500,
+         "target_px": 0,
+         "v0_px_s": null,
+         "x_start_px": 192.8972,
+         "overshoot_px": 44.0745,
+         "overshoot_frac_of_segment": 0.22849,
+         "t_peak_ms": 1733.333
+        },
+        {
+         "t_ms": 2500,
+         "target_px": 200,
+         "v0_px_s": null,
+         "x_start_px": 7.1638,
+         "overshoot_px": 44.4335,
+         "overshoot_frac_of_segment": 0.23042,
+         "t_peak_ms": 2716.667
+        }
+       ],
+       "derived": {
+        "first_segment_overshoot_px": 44.6272,
+        "settle_2pct_after_last_event_ms": 550,
+        "settle_1pct_after_last_event_ms": 733.333,
+        "final_px": 200,
+        "amplitude_ref_px": 200
+       },
+       "closed_form": {
+        "note": "continuous-time chain of the analytic spring with the same (omega0, zeta) and retargets, 1 ms grid; for discrete integrators this is the limit h -> 0, not the page",
+        "overshoot_frac_from_rest": 0.229488,
+        "settle_2pct_after_last_event_ms": 593,
+        "first_event_ms": 500
+       },
+       "expect": {
+        "integratorIdentified": "i1h5",
+        "analyticFlagRequired": true,
+        "inFitterSet": false,
+        "driver": "time",
+        "unitMass": "m is unobservable; compare k/m and c/m (A1.6 c); i4 compares native (kf, cf)"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 329,
+      "dtMs": 16.6667,
+      "durationMs": 6400,
+      "source": "refsim on the regime grid"
+     }
+    }
+   },
+   "r6": "same as R2"
+  },
+  {
+   "trace": "p1000",
+   "params": {
+    "integrator": "i1h5",
+    "k": 240,
+    "c": 16,
+    "m": 0.35,
+    "A": 200,
+    "write": "full",
+    "sched": "p1000"
+   },
+   "attribution": {
+    ".b0|--x": "time-driven"
+   },
+   "metrics": [
+    "M07/wrong-confident",
+    "confident-wrong"
+   ],
+   "regimes": {
+    "R2": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "channels": [
+        "drv:--x",
+        "ren:--x",
+        "ren:tx"
+       ],
+       "class": "spring",
+       "family": "spring-discrete",
+       "integrator": "i1h5",
+       "integratorLabel": "semi-implicit Euler, 5 ms substeps with remainder (out of the fitter set)",
+       "params": {
+        "k_over_m": 685.714286,
+        "c_over_m": 45.714286,
+        "omega0": 26.186147,
+        "zeta": 0.872872,
+        "native": null,
+        "amplitude_px": 200,
+        "snap": {
+         "x_px": 0.004,
+         "v_px_s": 0.04,
+         "provenance": "inferred bounds"
+        },
+        "substep_ms": 5,
+        "dt_cap_ms": null
+       },
+       "retargets": [
+        {
+         "t_ms": 500,
+         "target_px": 200,
+         "v0_px_s": null,
+         "x_start_px": 20.1325,
+         "overshoot_px": 0.0929,
+         "overshoot_frac_of_segment": 0.00052,
+         "t_peak_ms": 783.333
+        },
+        {
+         "t_ms": 1500,
+         "target_px": 0,
+         "v0_px_s": null,
+         "x_start_px": 179.8675,
+         "overshoot_px": 0.0929,
+         "overshoot_frac_of_segment": 0.00052,
+         "t_peak_ms": 1783.333
+        },
+        {
+         "t_ms": 2500,
+         "target_px": 200,
+         "v0_px_s": null,
+         "x_start_px": 20.1325,
+         "overshoot_px": 0.0929,
+         "overshoot_frac_of_segment": 0.00052,
+         "t_peak_ms": 2783.333
+        }
+       ],
+       "derived": {
+        "first_segment_overshoot_px": 0.0929,
+        "settle_2pct_after_last_event_ms": 150,
+        "settle_1pct_after_last_event_ms": 166.667,
+        "final_px": 200,
+        "amplitude_ref_px": 200
+       },
+       "closed_form": {
+        "note": "continuous-time chain of the analytic spring with the same (omega0, zeta) and retargets, 1 ms grid; for discrete integrators this is the limit h -> 0, not the page",
+        "overshoot_frac_from_rest": 0.003625,
+        "settle_2pct_after_last_event_ms": 168,
+        "first_event_ms": 500
+       },
+       "expect": {
+        "integratorIdentified": "i1h5",
+        "analyticFlagRequired": true,
+        "inFitterSet": false,
+        "driver": "time",
+        "unitMass": "m is unobservable; compare k/m and c/m (A1.6 c); i4 compares native (kf, cf)"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 384,
+      "dtMs": 16.6667,
+      "durationMs": 6400,
+      "source": "refsim on the regime grid"
+     }
+    },
+    "R3": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "channels": [
+        "drv:--x",
+        "ren:--x",
+        "ren:tx"
+       ],
+       "class": "spring",
+       "family": "spring-discrete",
+       "integrator": "i1h5",
+       "integratorLabel": "semi-implicit Euler, 5 ms substeps with remainder (out of the fitter set)",
+       "params": {
+        "k_over_m": 685.714286,
+        "c_over_m": 45.714286,
+        "omega0": 26.186147,
+        "zeta": 0.872872,
+        "native": null,
+        "amplitude_px": 200,
+        "snap": {
+         "x_px": 0.004,
+         "v_px_s": 0.04,
+         "provenance": "inferred bounds"
+        },
+        "substep_ms": 5,
+        "dt_cap_ms": null
+       },
+       "retargets": [
+        {
+         "t_ms": 500,
+         "target_px": 200,
+         "v0_px_s": null,
+         "x_start_px": 6.8637,
+         "overshoot_px": 0.1181,
+         "overshoot_frac_of_segment": 0.00061,
+         "t_peak_ms": 783.333
+        },
+        {
+         "t_ms": 1500,
+         "target_px": 0,
+         "v0_px_s": null,
+         "x_start_px": 193.1363,
+         "overshoot_px": 0.1181,
+         "overshoot_frac_of_segment": 0.00061,
+         "t_peak_ms": 1783.333
+        },
+        {
+         "t_ms": 2500,
+         "target_px": 200,
+         "v0_px_s": null,
+         "x_start_px": 6.8637,
+         "overshoot_px": 0.1181,
+         "overshoot_frac_of_segment": 0.00061,
+         "t_peak_ms": 2783.333
+        }
+       ],
+       "derived": {
+        "first_segment_overshoot_px": 0.1181,
+        "settle_2pct_after_last_event_ms": 166.667,
+        "settle_1pct_after_last_event_ms": 183.333,
+        "final_px": 200,
+        "amplitude_ref_px": 200
+       },
+       "closed_form": {
+        "note": "continuous-time chain of the analytic spring with the same (omega0, zeta) and retargets, 1 ms grid; for discrete integrators this is the limit h -> 0, not the page",
+        "overshoot_frac_from_rest": 0.003625,
+        "settle_2pct_after_last_event_ms": 168,
+        "first_event_ms": 500
+       },
+       "expect": {
+        "integratorIdentified": "i1h5",
+        "analyticFlagRequired": true,
+        "inFitterSet": false,
+        "driver": "time",
+        "unitMass": "m is unobservable; compare k/m and c/m (A1.6 c); i4 compares native (kf, cf)"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 769,
+      "dtMs": 8.3333,
+      "durationMs": 6400,
+      "source": "refsim on the regime grid"
+     }
+    },
+    "R4": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "channels": [
+        "drv:--x",
+        "ren:--x",
+        "ren:tx"
+       ],
+       "class": "spring",
+       "family": "spring-discrete",
+       "integrator": "i1h5",
+       "integratorLabel": "semi-implicit Euler, 5 ms substeps with remainder (out of the fitter set)",
+       "params": {
+        "k_over_m": 685.714286,
+        "c_over_m": 45.714286,
+        "omega0": 26.186147,
+        "zeta": 0.872872,
+        "native": null,
+        "amplitude_px": 200,
+        "snap": {
+         "x_px": 0.004,
+         "v_px_s": 0.04,
+         "provenance": "inferred bounds"
+        },
+        "substep_ms": 5,
+        "dt_cap_ms": null
+       },
+       "retargets": [
+        {
+         "t_ms": 500,
+         "target_px": 200,
+         "v0_px_s": null,
+         "x_start_px": 54.4062,
+         "overshoot_px": 0.0837,
+         "overshoot_frac_of_segment": 0.00057,
+         "t_peak_ms": 766.667
+        },
+        {
+         "t_ms": 1500,
+         "target_px": 0,
+         "v0_px_s": null,
+         "x_start_px": 145.5938,
+         "overshoot_px": 0.0837,
+         "overshoot_frac_of_segment": 0.00057,
+         "t_peak_ms": 1766.667
+        },
+        {
+         "t_ms": 2500,
+         "target_px": 200,
+         "v0_px_s": null,
+         "x_start_px": 54.4062,
+         "overshoot_px": 0.0837,
+         "overshoot_frac_of_segment": 0.00057,
+         "t_peak_ms": 2766.667
+        }
+       ],
+       "derived": {
+        "first_segment_overshoot_px": 0.0837,
+        "settle_2pct_after_last_event_ms": 133.333,
+        "settle_1pct_after_last_event_ms": 133.333,
+        "final_px": 200,
+        "amplitude_ref_px": 200
+       },
+       "closed_form": {
+        "note": "continuous-time chain of the analytic spring with the same (omega0, zeta) and retargets, 1 ms grid; for discrete integrators this is the limit h -> 0, not the page",
+        "overshoot_frac_from_rest": 0.003625,
+        "settle_2pct_after_last_event_ms": 168,
+        "first_event_ms": 500
+       },
+       "expect": {
+        "integratorIdentified": "i1h5",
+        "analyticFlagRequired": true,
+        "inFitterSet": false,
+        "driver": "time",
+        "unitMass": "m is unobservable; compare k/m and c/m (A1.6 c); i4 compares native (kf, cf)"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 193,
+      "dtMs": 33.3333,
+      "durationMs": 6400,
+      "source": "refsim on the regime grid"
+     }
+    },
+    "R5": {
+     "items": [
+      {
+       "target": ".b0|--x",
+       "channels": [
+        "drv:--x",
+        "ren:--x",
+        "ren:tx"
+       ],
+       "class": "spring",
+       "family": "spring-discrete",
+       "integrator": "i1h5",
+       "integratorLabel": "semi-implicit Euler, 5 ms substeps with remainder (out of the fitter set)",
+       "params": {
+        "k_over_m": 685.714286,
+        "c_over_m": 45.714286,
+        "omega0": 26.186147,
+        "zeta": 0.872872,
+        "native": null,
+        "amplitude_px": 200,
+        "snap": {
+         "x_px": 0.004,
+         "v_px_s": 0.04,
+         "provenance": "inferred bounds"
+        },
+        "substep_ms": 5,
+        "dt_cap_ms": null
+       },
+       "retargets": [
+        {
+         "t_ms": 500,
+         "target_px": 200,
+         "v0_px_s": null,
+         "x_start_px": 0,
+         "overshoot_px": 0.092,
+         "overshoot_frac_of_segment": 0.00046,
+         "t_peak_ms": 766.667
+        },
+        {
+         "t_ms": 1500,
+         "target_px": 0,
+         "v0_px_s": null,
+         "x_start_px": 179.8675,
+         "overshoot_px": 0.081,
+         "overshoot_frac_of_segment": 0.00045,
+         "t_peak_ms": 1783.333
+        },
+        {
+         "t_ms": 2500,
+         "target_px": 200,
+         "v0_px_s": null,
+         "x_start_px": 20.1325,
+         "overshoot_px": 0.0929,
+         "overshoot_frac_of_segment": 0.00052,
+         "t_peak_ms": 2783.333
+        }
+       ],
+       "derived": {
+        "first_segment_overshoot_px": 0.092,
+        "settle_2pct_after_last_event_ms": 150,
+        "settle_1pct_after_last_event_ms": 166.667,
+        "final_px": 200,
+        "amplitude_ref_px": 200
+       },
+       "closed_form": {
+        "note": "continuous-time chain of the analytic spring with the same (omega0, zeta) and retargets, 1 ms grid; for discrete integrators this is the limit h -> 0, not the page",
+        "overshoot_frac_from_rest": 0.003625,
+        "settle_2pct_after_last_event_ms": 168,
+        "first_event_ms": 500
+       },
+       "expect": {
+        "integratorIdentified": "i1h5",
+        "analyticFlagRequired": true,
+        "inFitterSet": false,
+        "driver": "time",
+        "unitMass": "m is unobservable; compare k/m and c/m (A1.6 c); i4 compares native (kf, cf)"
+       }
+      }
+     ],
+     "planned": {
+      "frames": 329,
+      "dtMs": 16.6667,
+      "durationMs": 6400,
+      "source": "refsim on the regime grid"
+     }
+    }
+   },
+   "r6": "same as R2"
+  }
+ ]
+}

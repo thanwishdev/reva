@@ -1,0 +1,11 @@
+:root { color-scheme: light dark; }
+body { margin: 0; font: 16px/1.5 system-ui, sans-serif; }
+header { padding: 24px; background: #20304a; color: #fff; }
+/* CSS-literal URL that only a wide viewport requests: the freeze must still collect it for every class. */
+@media (min-width: 900px) { header { background: #20304a url(/img/hero-wide.svg) right / contain no-repeat; } }
+.spacer { height: 900px; padding: 24px; }
+#gallery { display: flex; flex-wrap: wrap; gap: 8px; padding: 24px; min-height: 200px; }
+#gallery img { max-width: 160px; height: auto; }
+#clock { display: inline-block; animation: pulse 1.2s ease-in-out infinite alternate; }
+@keyframes pulse { from { opacity: .35; transform: translateX(0); } to { opacity: 1; transform: translateX(24px); } }
+#tabs-wrap { padding: 24px; }

@@ -1,0 +1,38 @@
+{
+ "schema": "reva.labtrace/0",
+ "route": "m09b",
+ "variant": "gap",
+ "note": "Three deltas with gaps, then idle.",
+ "actions": [
+  {
+   "hold": 500
+  },
+  {
+   "wheel": {
+    "dy": 120,
+    "n": 1
+   }
+  },
+  {
+   "hold": 300
+  },
+  {
+   "wheel": {
+    "dy": 120,
+    "n": 1
+   }
+  },
+  {
+   "hold": 300
+  },
+  {
+   "wheel": {
+    "dy": 120,
+    "n": 1
+   }
+  },
+  {
+   "hold": 1800
+  }
+ ]
+}

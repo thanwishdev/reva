@@ -1,0 +1,93 @@
+{
+ "schema": "reva.specimen.time/0",
+ "id": "m15-go",
+ "origin": "lab",
+ "source": {
+  "kind": "labtruth",
+  "schema": "reva.labtruth/0",
+  "route": "m15",
+  "variant": "go",
+  "regime": "R3",
+  "params": {
+   "dur": 1997,
+   "from": 0,
+   "to": 420,
+   "delay": 1000.3,
+   "spline": null
+  }
+ },
+ "timeline": {
+  "frameMs": 8.333333,
+  "refreshHz": 120,
+  "leadMs": 500,
+  "sourceShiftMs": -933.333333,
+  "durationMs": 6992,
+  "hasLoop": true
+ },
+ "viewport": {
+  "width": 1280,
+  "height": 800
+ },
+ "elements": [
+  {
+   "id": "e0",
+   "key": "#b0",
+   "x": 40,
+   "y": 60,
+   "w": 56,
+   "h": 56,
+   "tf": {
+    "tx": true,
+    "ty": false,
+    "rz": false,
+    "sx": false,
+    "sy": false
+   }
+  }
+ ],
+ "tracks": [
+  {
+   "id": "t0",
+   "el": 0,
+   "channel": "tx",
+   "impl": "js",
+   "label": "smil sawtooth",
+   "provenance": {
+    "tier": "truth",
+    "route": "m15",
+    "kind": "smil"
+   },
+   "assumptions": [
+    {
+     "field": "channel",
+     "reason": "bounding-box channel bx reproduced by the tx channel (base geometry is not in the record)"
+    }
+   ],
+   "motion": {
+    "kind": "keyframes",
+    "startMs": 500.2999996666666,
+    "durationMs": 1997,
+    "iterations": "Infinity",
+    "direction": "normal",
+    "fill": "both",
+    "easingScope": "segment",
+    "easing": null,
+    "frames": [
+     {
+      "offset": 0,
+      "value": -18,
+      "easing": {
+       "kind": "linear"
+      }
+     },
+     {
+      "offset": 1,
+      "value": 402
+     }
+    ]
+   }
+  }
+ ],
+ "notes": [],
+ "digest": "24cb7d870784128f"
+}

@@ -1,0 +1,1755 @@
+{
+"schema": "reva.fitresult/0",
+"takes": {
+"primary": "aa9fa4dafe221775",
+"probe": null,
+"idle": null
+},
+"env": {
+"lane": "hx",
+"dtMs": 16.666666666666668,
+"rateHz": 60,
+"stride": 1,
+"probeDtMs": null
+},
+"flags": [],
+"records": [
+{
+"schema": "reva.motion/0",
+"target": {
+"el": 0,
+"desc": "DIV#r",
+"channel": "ren:by",
+"untrusted_content": true
+},
+"attribution": {
+"label": "scroll-linked",
+"provenance": "inferred",
+"evidence": "10 bursts start \u2264 2 frames after a scroll change"
+},
+"tier": "fitted",
+"class": "scroll map",
+"model": {
+"family": "scroll map (linear)",
+"params": {},
+"integrator": null,
+"law": null,
+"valid_at": {
+"frame_ms": 16.666666666666668,
+"refresh_hz": 59.99999999999999
+},
+"map": {
+"shape": "linear",
+"a": 921.09375,
+"b": -3288.28125,
+"s0_px": -521.09375,
+"s1_px": 2767.1875,
+"s0_ci95": null,
+"s1_ci95": null,
+"s0_vh": -65.13671875,
+"s1_vh": 345.8984375,
+"driverLagFrames": 0,
+"s0_provenance": "unknown",
+"s1_provenance": "unknown"
+}
+},
+"derived": {},
+"fit": {
+"n": 190,
+"rms": 0,
+"nrmse": 0,
+"sigma_floor": 0.2886751345948129,
+"explain_bar": 1.1500000000000001,
+"quantum": 1,
+"bic": -472.13226345972,
+"holdout": {
+"method": "leave-one-segment-out",
+"rms": 0,
+"pass": true
+}
+},
+"runnerUp": {
+"family": "ema (targets from holds)",
+"cls": "first-order smoothing",
+"rms": 0,
+"bic": -466.88523938755947,
+"L": -472.13226345972,
+"params": {
+"alpha": 1
+}
+},
+"rejected": [
+{
+"family": "none (targets from holds)",
+"cls": "scroll map",
+"rms": 120.74331189933898,
+"reason": "rms 1.21e+2 > explain bar 1.15e+0"
+},
+{
+"family": "ema (targets from holds)",
+"cls": "first-order smoothing",
+"rms": 120.74331189933898,
+"reason": "rms 1.21e+2 > explain bar 1.15e+0"
+}
+],
+"ambiguity": null,
+"replay": null,
+"unknowns": [
+{
+"id": "unk_map_start",
+"reason": "no sample below the map start (-521.1 px): the corner is not identifiable",
+"probe": "scroll above the start of the range"
+},
+{
+"id": "unk_map_end",
+"reason": "no sample past the map end (2767.2 px): the corner is not identifiable",
+"probe": "scroll past the end of the range"
+}
+],
+"flags": [],
+"evidence": {
+"takes": [
+"aa9fa4dafe221775"
+],
+"location": {
+"kind": "scroll_range",
+"range": [
+0,
+2300
+]
+}
+},
+"downgrades": [],
+"hysteresis": {
+"bands": [
+{
+"between": [
+-1100,
+400
+],
+"downEdge_px": 1500,
+"upEdge_px": null,
+"width_px": null,
+"downEdge_interval": [
+0,
+1500
+],
+"upEdge_interval": null,
+"downEdge_sibling": null,
+"upEdge_sibling": null,
+"provenance": "measured"
+},
+{
+"between": [
+-1300,
+-1100
+],
+"downEdge_px": 1700,
+"upEdge_px": 1500,
+"width_px": 200,
+"downEdge_interval": [
+1500,
+1700
+],
+"upEdge_interval": [
+1500,
+1700
+],
+"downEdge_sibling": null,
+"upEdge_sibling": null,
+"provenance": "measured"
+}
+]
+}
+},
+{
+"schema": "reva.motion/0",
+"target": {
+"el": 1,
+"desc": "DIV#k",
+"channel": "drv:--s",
+"untrusted_content": true
+},
+"attribution": {
+"label": "unknown",
+"provenance": "unknown",
+"reason": "4 of 5 bursts have no preceding input",
+"probe": "record an idle-control take"
+},
+"tier": "fitted",
+"class": "first-order smoothing",
+"model": {
+"family": "ema",
+"params": {
+"alpha": {
+"value": 0.07006841798856438,
+"provenance": "fitted",
+"unit": null,
+"ci95": [
+0.06988688051201788,
+0.07024995546511087
+]
+},
+"mapA": {
+"value": 1.3411047822908557,
+"provenance": "fitted",
+"unit": null,
+"ci95": [
+-1506.7600594061084,
+1509.44226897069
+]
+},
+"mapB": {
+"value": -0.3411519993645039,
+"provenance": "fitted",
+"unit": null,
+"ci95": [
+-1508.4423314558069,
+1507.760027457078
+]
+},
+"mapS0": {
+"value": -292.3444613914925,
+"provenance": "fitted",
+"unit": "px",
+"ci95": [
+-2188353.3381666294,
+2187768.649243846
+]
+},
+"mapS1": {
+"value": 1687.5275563274233,
+"provenance": "fitted",
+"unit": "px",
+"ci95": [
+1058.9434470128267,
+2316.11166564202
+]
+},
+"alpha_per_frame": {
+"value": 0.07006841798856438,
+"provenance": "fitted",
+"ci95": [
+0.06988688051201788,
+0.07024995546511087
+]
+},
+"tau_ms": {
+"value": 229.42853181066016,
+"provenance": "fitted",
+"unit": "ms",
+"ci95": [
+228.8135841252134,
+230.04667279939792
+]
+}
+},
+"integrator": null,
+"law": "unknown",
+"valid_at": {
+"frame_ms": 16.666666666666668,
+"refresh_hz": 59.99999999999999
+},
+"map": {
+"shape": "easeOutQuart",
+"a": 1.3411047822908557,
+"b": -0.3411519993645039,
+"s0_px": -292.3444613914925,
+"s1_px": 1687.5275563274233,
+"s0_ci95": [
+-2188353.3381666294,
+2187768.649243846
+],
+"s1_ci95": [
+1058.9434470128267,
+2316.11166564202
+],
+"s0_vh": -36.54305767393656,
+"s1_vh": 210.94094454092792,
+"driverLagFrames": 0,
+"s0_provenance": "unknown",
+"s1_provenance": "fitted"
+}
+},
+"derived": {
+"t0": 583.333333,
+"settle_frames": 96,
+"tau_ms": 229.42853181066016,
+"settle_frames_ci95": [
+95,
+96
+]
+},
+"fit": {
+"n": 189,
+"rms": 0.00021364600211342343,
+"nrmse": 0.0011869222339634638,
+"sigma_floor": 0.0002886751345948129,
+"explain_bar": 0.0008660254037844387,
+"quantum": 0.001,
+"bic": -3054.570117189882,
+"holdout": {
+"method": "last-30%-of-[t0,t99]",
+"rms": 3.345617455821107e-05,
+"pass": true
+}
+},
+"runnerUp": {
+"family": "dtdamp",
+"cls": "first-order smoothing",
+"rms": 0.0002136460063818758,
+"bic": -3054.570117189882,
+"L": -3080.77885226518,
+"params": {
+"lambda": 4.358655807662411,
+"mapA": 1.341097141478411,
+"mapB": -0.3411443585617479,
+"mapS0": -292.3334550942066,
+"mapS1": 1687.5280152661228
+}
+},
+"rejected": [
+{
+"family": "none",
+"cls": "scroll map",
+"rms": 0.023961995528470965,
+"reason": "rms 2.40e-2 > explain bar 8.66e-4"
+},
+{
+"family": "none",
+"cls": "scroll map",
+"rms": 0.022271611171117686,
+"reason": "rms 2.23e-2 > explain bar 8.66e-4"
+}
+],
+"ambiguity": null,
+"replay": null,
+"unknowns": [
+{
+"id": "unk_map_start",
+"reason": "no sample below the map start (-292.3 px): the corner is not identifiable",
+"probe": "scroll above the start of the range"
+},
+{
+"id": "unk_smoothing_law",
+"reason": "one fixed-rate take and no stall: per-frame EMA and dt-damp are the same curve (U5)",
+"probe": "record a second rate \u2265 1.5\u00d7 apart or an R5 stall take"
+}
+],
+"flags": [],
+"evidence": {
+"takes": [
+"aa9fa4dafe221775"
+],
+"location": {
+"kind": "scroll_range",
+"range": [
+0,
+2300
+]
+}
+},
+"smoothing": {
+"type": "ema",
+"alpha": 0.07006841798856438,
+"lambda": 4.358655796242759,
+"snap_eps": null,
+"asymmetric": null,
+"law": "unknown",
+"measured_at_hz": 59.99999999999999,
+"settle_frames": 96,
+"tau_ms": 229.42853181066016
+},
+"downgrades": []
+},
+{
+"schema": "reva.motion/0",
+"target": {
+"el": 1,
+"desc": "DIV#k",
+"channel": "drv:--y",
+"untrusted_content": true
+},
+"attribution": {
+"label": "unknown",
+"provenance": "unknown",
+"reason": "4 of 5 bursts have no preceding input",
+"probe": "record an idle-control take"
+},
+"tier": "fitted",
+"class": "first-order smoothing",
+"model": {
+"family": "ema+snap",
+"params": {
+"alpha": {
+"value": 0.07000365618029872,
+"provenance": "fitted",
+"unit": null,
+"ci95": [
+0.06999956239982233,
+0.0700077499607751
+]
+},
+"mapA": {
+"value": 1971.1369639599834,
+"provenance": "fitted",
+"unit": null,
+"ci95": [
+-3308.6811777443227,
+7250.9551056642895
+]
+},
+"mapB": {
+"value": -1971.1367667283564,
+"provenance": "fitted",
+"unit": null,
+"ci95": [
+-7250.954906559451,
+3308.681373102738
+]
+},
+"mapS0": {
+"value": -573.6712838952711,
+"provenance": "fitted",
+"unit": "px",
+"ci95": [
+-669329.8795204352,
+668182.5369526447
+]
+},
+"mapS1": {
+"value": 18.010272237713973,
+"provenance": "fitted",
+"unit": "px",
+"ci95": [
+-20951.02247022651,
+20987.043014701936
+]
+},
+"eps": {
+"value": 0.05580123057220533,
+"provenance": "fitted",
+"unit": null,
+"ci95": [
+0.05080123057220533,
+0.06080123057220532
+]
+},
+"alpha_per_frame": {
+"value": 0.07000365618029872,
+"provenance": "fitted",
+"ci95": [
+0.06999956239982233,
+0.0700077499607751
+]
+},
+"tau_ms": {
+"value": 229.6486801822234,
+"provenance": "fitted",
+"unit": "ms",
+"ci95": [
+229.63475191526084,
+229.6626100775765
+]
+}
+},
+"integrator": null,
+"law": "unknown",
+"valid_at": {
+"frame_ms": 16.666666666666668,
+"refresh_hz": 59.99999999999999
+},
+"map": {
+"shape": "linear",
+"a": 1971.1369639599834,
+"b": -1971.1367667283564,
+"s0_px": -573.6712838952711,
+"s1_px": 18.010272237713973,
+"s0_ci95": [
+-669329.8795204352,
+668182.5369526447
+],
+"s1_ci95": [
+-20951.02247022651,
+20987.043014701936
+],
+"s0_vh": -71.70891048690889,
+"s1_vh": 2.2512840297142467,
+"driverLagFrames": 0,
+"s0_provenance": "unknown",
+"s1_provenance": "unknown"
+}
+},
+"derived": {
+"t0": 583.333333,
+"settle_frames": 96,
+"tau_ms": 229.6486801822234,
+"settle_frames_ci95": [
+96,
+96
+]
+},
+"fit": {
+"n": 189,
+"rms": 0.0019140942926594625,
+"nrmse": 3.190157154432437e-05,
+"sigma_floor": 0.002886751345948129,
+"explain_bar": 0.03,
+"quantum": 0.01,
+"bic": -2178.951205023073,
+"holdout": {
+"method": "last-30%-of-[t0,t99]",
+"rms": 0.00019723162699847308,
+"pass": true
+}
+},
+"runnerUp": {
+"family": "dtdamp+snap",
+"cls": "first-order smoothing",
+"rms": 0.0019140947308258199,
+"bic": -2178.951205023073,
+"L": -2210.401687113431,
+"params": {
+"lambda": 4.354477459430089,
+"mapA": 1971.136041133692,
+"mapB": -1971.1358438995344,
+"mapS0": -573.6460383329222,
+"mapS1": 18.00948835211392,
+"eps": 0.05580123060727116
+}
+},
+"rejected": [
+{
+"family": "none",
+"cls": "scroll map",
+"rms": 10.021086524368675,
+"reason": "rms 1.00e+1 > explain bar 3.00e-2"
+},
+{
+"family": "restarted",
+"cls": "restarted tween",
+"rms": 1.4611121051029368,
+"reason": "rms 1.46e+0 > explain bar 3.00e-2"
+}
+],
+"ambiguity": null,
+"replay": null,
+"unknowns": [
+{
+"id": "unk_map_range",
+"reason": "1 distinct offset(s) inside the fitted range: the corners are not identifiable",
+"probe": "scroll through the range (\u2265 2 offsets inside it)"
+},
+{
+"id": "unk_map_start",
+"reason": "no sample below the map start (-573.7 px): the corner is not identifiable",
+"probe": "scroll above the start of the range"
+},
+{
+"id": "unk_map_end",
+"reason": "no sample past the map end (18.0 px): the corner is not identifiable",
+"probe": "scroll past the end of the range"
+},
+{
+"id": "unk_smoothing_law",
+"reason": "one fixed-rate take and no stall: per-frame EMA and dt-damp are the same curve (U5)",
+"probe": "record a second rate \u2265 1.5\u00d7 apart or an R5 stall take"
+}
+],
+"flags": [],
+"evidence": {
+"takes": [
+"aa9fa4dafe221775"
+],
+"location": {
+"kind": "scroll_range",
+"range": [
+0,
+2300
+]
+}
+},
+"smoothing": {
+"type": "ema",
+"alpha": 0.07000365618029872,
+"lambda": 4.354477453153715,
+"snap_eps": 0.05580123057220533,
+"asymmetric": null,
+"law": "unknown",
+"measured_at_hz": 59.99999999999999,
+"settle_frames": 96,
+"tau_ms": 229.6486801822234
+},
+"downgrades": []
+},
+{
+"schema": "reva.motion/0",
+"target": {
+"el": 1,
+"desc": "DIV#k",
+"channel": "drv:--o",
+"untrusted_content": true
+},
+"attribution": {
+"label": "unknown",
+"provenance": "unknown",
+"reason": "4 of 5 bursts have no preceding input",
+"probe": "record an idle-control take"
+},
+"tier": "fitted",
+"class": "first-order smoothing",
+"model": {
+"family": "ema+snap",
+"params": {
+"alpha": {
+"value": 0.07000238321656813,
+"provenance": "fitted",
+"unit": null,
+"ci95": [
+0.06999095444666763,
+0.07001381198646862
+]
+},
+"mapA": {
+"value": 17.99998762067497,
+"provenance": "fitted",
+"unit": null,
+"ci95": [
+17.999019251945352,
+18.000955989404584
+]
+},
+"mapB": {
+"value": 32.00046655591276,
+"provenance": "fitted",
+"unit": null,
+"ci95": [
+31.999342325607966,
+32.00159078621755
+]
+},
+"mapS0": {
+"value": 14.647975916018753,
+"provenance": "fitted",
+"unit": "px",
+"ci95": [
+-108017.14119786034,
+108046.43714969237
+]
+},
+"mapS1": {
+"value": 1562.5722642028536,
+"provenance": "fitted",
+"unit": "px",
+"ci95": [
+-2992.369676555904,
+6117.5142049616115
+]
+},
+"eps": {
+"value": 0.02790018718489051,
+"provenance": "fitted",
+"unit": null,
+"ci95": [
+0.02290018718489051,
+0.03290018718489051
+]
+},
+"alpha_per_frame": {
+"value": 0.07000238321656813,
+"provenance": "fitted",
+"ci95": [
+0.06999095444666763,
+0.07001381198646862
+]
+},
+"tau_ms": {
+"value": 229.65301151787833,
+"provenance": "fitted",
+"unit": "ms",
+"ci95": [
+229.61413007908521,
+229.69190564873244
+]
+}
+},
+"integrator": null,
+"law": "unknown",
+"valid_at": {
+"frame_ms": 16.666666666666668,
+"refresh_hz": 59.99999999999999
+},
+"map": {
+"shape": "easeOutCubic",
+"a": 17.99998762067497,
+"b": 32.00046655591276,
+"s0_px": 14.647975916018753,
+"s1_px": 1562.5722642028536,
+"s0_ci95": [
+-108017.14119786034,
+108046.43714969237
+],
+"s1_ci95": [
+-2992.369676555904,
+6117.5142049616115
+],
+"s0_vh": 1.830996989502344,
+"s1_vh": 195.3215330253567,
+"driverLagFrames": 0,
+"s0_provenance": "unknown",
+"s1_provenance": "unknown"
+}
+},
+"derived": {
+"t0": 583.333333,
+"settle_frames": 96,
+"tau_ms": 229.65301151787833,
+"settle_frames_ci95": [
+96,
+96
+]
+},
+"fit": {
+"n": 189,
+"rms": 0.0028555234403728567,
+"nrmse": 8.923510751165177e-05,
+"sigma_floor": 0.002886751345948129,
+"explain_bar": 0.016,
+"quantum": 0.01,
+"bic": -2178.951205023073,
+"holdout": {
+"method": "last-30%-of-[t0,t99]",
+"rms": 0.0004541765877235095,
+"pass": true
+}
+},
+"runnerUp": {
+"family": "dtdamp+snap",
+"cls": "first-order smoothing",
+"rms": 0.0028555234455552893,
+"bic": -2178.951205023073,
+"L": -2210.401687113431,
+"params": {
+"lambda": 4.354395335868447,
+"mapA": 17.999987629259934,
+"mapB": 32.00046654738746,
+"mapS0": 369.15642314130844,
+"mapS1": 1547.638064883519,
+"eps": 0.027900187215301738
+}
+},
+"rejected": [
+{
+"family": "none",
+"cls": "scroll map",
+"rms": 4.07467818431288,
+"reason": "rms 4.07e+0 > explain bar 1.60e-2"
+},
+{
+"family": "restarted",
+"cls": "restarted tween",
+"rms": 0.15210234094241765,
+"reason": "rms 1.52e-1 > explain bar 1.60e-2"
+}
+],
+"ambiguity": null,
+"replay": null,
+"unknowns": [
+{
+"id": "unk_map_range",
+"reason": "1 distinct offset(s) inside the fitted range: the corners are not identifiable",
+"probe": "scroll through the range (\u2265 2 offsets inside it)"
+},
+{
+"id": "unk_map_start",
+"reason": "no sample below the map start (14.6 px): the corner is not identifiable",
+"probe": "scroll above the start of the range"
+},
+{
+"id": "unk_map_end",
+"reason": "no sample past the map end (1562.6 px): the corner is not identifiable",
+"probe": "scroll past the end of the range"
+},
+{
+"id": "unk_smoothing_law",
+"reason": "one fixed-rate take and no stall: per-frame EMA and dt-damp are the same curve (U5)",
+"probe": "record a second rate \u2265 1.5\u00d7 apart or an R5 stall take"
+}
+],
+"flags": [],
+"evidence": {
+"takes": [
+"aa9fa4dafe221775"
+],
+"location": {
+"kind": "scroll_range",
+"range": [
+0,
+2300
+]
+}
+},
+"smoothing": {
+"type": "ema",
+"alpha": 0.07000238321656813,
+"lambda": 4.354395326194757,
+"snap_eps": 0.02790018718489051,
+"asymmetric": null,
+"law": "unknown",
+"measured_at_hz": 59.99999999999999,
+"settle_frames": 96,
+"tau_ms": 229.65301151787833
+},
+"downgrades": []
+},
+{
+"schema": "reva.motion/0",
+"target": {
+"el": 1,
+"desc": "DIV#k",
+"channel": "ren:ty",
+"untrusted_content": true
+},
+"attribution": {
+"label": "unknown",
+"provenance": "unknown",
+"reason": "4 of 5 bursts have no preceding input",
+"probe": "record an idle-control take"
+},
+"tier": "fitted",
+"class": "first-order smoothing",
+"model": {
+"family": "ema+snap",
+"params": {
+"alpha": {
+"value": 0.07000365618029872,
+"provenance": "fitted",
+"unit": null,
+"ci95": [
+0.06999956239982233,
+0.0700077499607751
+]
+},
+"mapA": {
+"value": 1971.1369639599834,
+"provenance": "fitted",
+"unit": null,
+"ci95": [
+-3308.6811777443227,
+7250.9551056642895
+]
+},
+"mapB": {
+"value": -1971.1367667283564,
+"provenance": "fitted",
+"unit": null,
+"ci95": [
+-7250.954906559451,
+3308.681373102738
+]
+},
+"mapS0": {
+"value": -573.6712838952711,
+"provenance": "fitted",
+"unit": "px",
+"ci95": [
+-669329.8795204352,
+668182.5369526447
+]
+},
+"mapS1": {
+"value": 18.010272237713973,
+"provenance": "fitted",
+"unit": "px",
+"ci95": [
+-20951.02247022651,
+20987.043014701936
+]
+},
+"eps": {
+"value": 0.05580123057220533,
+"provenance": "fitted",
+"unit": null,
+"ci95": [
+0.05080123057220533,
+0.06080123057220532
+]
+},
+"alpha_per_frame": {
+"value": 0.07000365618029872,
+"provenance": "fitted",
+"ci95": [
+0.06999956239982233,
+0.0700077499607751
+]
+},
+"tau_ms": {
+"value": 229.6486801822234,
+"provenance": "fitted",
+"unit": "ms",
+"ci95": [
+229.63475191526084,
+229.6626100775765
+]
+}
+},
+"integrator": null,
+"law": "unknown",
+"valid_at": {
+"frame_ms": 16.666666666666668,
+"refresh_hz": 59.99999999999999
+},
+"map": {
+"shape": "linear",
+"a": 1971.1369639599834,
+"b": -1971.1367667283564,
+"s0_px": -573.6712838952711,
+"s1_px": 18.010272237713973,
+"s0_ci95": [
+-669329.8795204352,
+668182.5369526447
+],
+"s1_ci95": [
+-20951.02247022651,
+20987.043014701936
+],
+"s0_vh": -71.70891048690889,
+"s1_vh": 2.2512840297142467,
+"driverLagFrames": 0,
+"s0_provenance": "unknown",
+"s1_provenance": "unknown"
+}
+},
+"derived": {
+"t0": 583.333333,
+"settle_frames": 96,
+"tau_ms": 229.6486801822234,
+"settle_frames_ci95": [
+96,
+96
+]
+},
+"fit": {
+"n": 189,
+"rms": 0.0019140942926594625,
+"nrmse": 3.190157154432437e-05,
+"sigma_floor": 0.002886751345948129,
+"explain_bar": 0.03,
+"quantum": 0.01,
+"bic": -2178.951205023073,
+"holdout": {
+"method": "last-30%-of-[t0,t99]",
+"rms": 0.00019723162699847308,
+"pass": true
+}
+},
+"runnerUp": {
+"family": "dtdamp+snap",
+"cls": "first-order smoothing",
+"rms": 0.0019140947308258199,
+"bic": -2178.951205023073,
+"L": -2210.401687113431,
+"params": {
+"lambda": 4.354477459430089,
+"mapA": 1971.136041133692,
+"mapB": -1971.1358438995344,
+"mapS0": -573.6460383329222,
+"mapS1": 18.00948835211392,
+"eps": 0.05580123060727116
+}
+},
+"rejected": [
+{
+"family": "none",
+"cls": "scroll map",
+"rms": 10.021086524368675,
+"reason": "rms 1.00e+1 > explain bar 3.00e-2"
+},
+{
+"family": "restarted",
+"cls": "restarted tween",
+"rms": 1.4611121051029368,
+"reason": "rms 1.46e+0 > explain bar 3.00e-2"
+}
+],
+"ambiguity": null,
+"replay": null,
+"unknowns": [
+{
+"id": "unk_map_range",
+"reason": "1 distinct offset(s) inside the fitted range: the corners are not identifiable",
+"probe": "scroll through the range (\u2265 2 offsets inside it)"
+},
+{
+"id": "unk_map_start",
+"reason": "no sample below the map start (-573.7 px): the corner is not identifiable",
+"probe": "scroll above the start of the range"
+},
+{
+"id": "unk_map_end",
+"reason": "no sample past the map end (18.0 px): the corner is not identifiable",
+"probe": "scroll past the end of the range"
+},
+{
+"id": "unk_smoothing_law",
+"reason": "one fixed-rate take and no stall: per-frame EMA and dt-damp are the same curve (U5)",
+"probe": "record a second rate \u2265 1.5\u00d7 apart or an R5 stall take"
+}
+],
+"flags": [],
+"evidence": {
+"takes": [
+"aa9fa4dafe221775"
+],
+"location": {
+"kind": "scroll_range",
+"range": [
+0,
+2300
+]
+}
+},
+"smoothing": {
+"type": "ema",
+"alpha": 0.07000365618029872,
+"lambda": 4.354477453153715,
+"snap_eps": 0.05580123057220533,
+"asymmetric": null,
+"law": "unknown",
+"measured_at_hz": 59.99999999999999,
+"settle_frames": 96,
+"tau_ms": 229.6486801822234
+},
+"downgrades": []
+},
+{
+"schema": "reva.motion/0",
+"target": {
+"el": 1,
+"desc": "DIV#k",
+"channel": "ren:sx",
+"untrusted_content": true
+},
+"attribution": {
+"label": "unknown",
+"provenance": "unknown",
+"reason": "4 of 5 bursts have no preceding input",
+"probe": "record an idle-control take"
+},
+"tier": "fitted",
+"class": "first-order smoothing",
+"model": {
+"family": "ema",
+"params": {
+"alpha": {
+"value": 0.07006841798856438,
+"provenance": "fitted",
+"unit": null,
+"ci95": [
+0.06988688051201788,
+0.07024995546511087
+]
+},
+"mapA": {
+"value": 1.3411047822908557,
+"provenance": "fitted",
+"unit": null,
+"ci95": [
+-1506.7600594061084,
+1509.44226897069
+]
+},
+"mapB": {
+"value": -0.3411519993645039,
+"provenance": "fitted",
+"unit": null,
+"ci95": [
+-1508.4423314558069,
+1507.760027457078
+]
+},
+"mapS0": {
+"value": -292.3444613914925,
+"provenance": "fitted",
+"unit": "px",
+"ci95": [
+-2188353.3381666294,
+2187768.649243846
+]
+},
+"mapS1": {
+"value": 1687.5275563274233,
+"provenance": "fitted",
+"unit": "px",
+"ci95": [
+1058.9434470128267,
+2316.11166564202
+]
+},
+"alpha_per_frame": {
+"value": 0.07006841798856438,
+"provenance": "fitted",
+"ci95": [
+0.06988688051201788,
+0.07024995546511087
+]
+},
+"tau_ms": {
+"value": 229.42853181066016,
+"provenance": "fitted",
+"unit": "ms",
+"ci95": [
+228.8135841252134,
+230.04667279939792
+]
+}
+},
+"integrator": null,
+"law": "unknown",
+"valid_at": {
+"frame_ms": 16.666666666666668,
+"refresh_hz": 59.99999999999999
+},
+"map": {
+"shape": "easeOutQuart",
+"a": 1.3411047822908557,
+"b": -0.3411519993645039,
+"s0_px": -292.3444613914925,
+"s1_px": 1687.5275563274233,
+"s0_ci95": [
+-2188353.3381666294,
+2187768.649243846
+],
+"s1_ci95": [
+1058.9434470128267,
+2316.11166564202
+],
+"s0_vh": -36.54305767393656,
+"s1_vh": 210.94094454092792,
+"driverLagFrames": 0,
+"s0_provenance": "unknown",
+"s1_provenance": "fitted"
+}
+},
+"derived": {
+"t0": 583.333333,
+"settle_frames": 96,
+"tau_ms": 229.42853181066016,
+"settle_frames_ci95": [
+95,
+96
+]
+},
+"fit": {
+"n": 189,
+"rms": 0.00021364600211342343,
+"nrmse": 0.0011869222339634638,
+"sigma_floor": 0.0002886751345948129,
+"explain_bar": 0.0008660254037844387,
+"quantum": 0.001,
+"bic": -3054.570117189882,
+"holdout": {
+"method": "last-30%-of-[t0,t99]",
+"rms": 3.345617455821107e-05,
+"pass": true
+}
+},
+"runnerUp": {
+"family": "dtdamp",
+"cls": "first-order smoothing",
+"rms": 0.0002136460063818758,
+"bic": -3054.570117189882,
+"L": -3080.77885226518,
+"params": {
+"lambda": 4.358655807662411,
+"mapA": 1.341097141478411,
+"mapB": -0.3411443585617479,
+"mapS0": -292.3334550942066,
+"mapS1": 1687.5280152661228
+}
+},
+"rejected": [
+{
+"family": "none",
+"cls": "scroll map",
+"rms": 0.023961995528470965,
+"reason": "rms 2.40e-2 > explain bar 8.66e-4"
+},
+{
+"family": "none",
+"cls": "scroll map",
+"rms": 0.022271611171117686,
+"reason": "rms 2.23e-2 > explain bar 8.66e-4"
+}
+],
+"ambiguity": null,
+"replay": null,
+"unknowns": [
+{
+"id": "unk_map_start",
+"reason": "no sample below the map start (-292.3 px): the corner is not identifiable",
+"probe": "scroll above the start of the range"
+},
+{
+"id": "unk_smoothing_law",
+"reason": "one fixed-rate take and no stall: per-frame EMA and dt-damp are the same curve (U5)",
+"probe": "record a second rate \u2265 1.5\u00d7 apart or an R5 stall take"
+}
+],
+"flags": [],
+"evidence": {
+"takes": [
+"aa9fa4dafe221775"
+],
+"location": {
+"kind": "scroll_range",
+"range": [
+0,
+2300
+]
+}
+},
+"smoothing": {
+"type": "ema",
+"alpha": 0.07006841798856438,
+"lambda": 4.358655796242759,
+"snap_eps": null,
+"asymmetric": null,
+"law": "unknown",
+"measured_at_hz": 59.99999999999999,
+"settle_frames": 96,
+"tau_ms": 229.42853181066016
+},
+"downgrades": []
+},
+{
+"schema": "reva.motion/0",
+"target": {
+"el": 1,
+"desc": "DIV#k",
+"channel": "ren:bx",
+"untrusted_content": true
+},
+"attribution": {
+"label": "unknown",
+"provenance": "unknown",
+"reason": "4 of 5 bursts have no preceding input",
+"probe": "record an idle-control take"
+},
+"tier": "unexplained",
+"class": "unknown",
+"model": {
+"family": "unexplained",
+"params": {},
+"integrator": null,
+"law": null,
+"valid_at": {
+"frame_ms": 16.666666666666668,
+"refresh_hz": 59.99999999999999
+}
+},
+"derived": {},
+"fit": {
+"n": 63,
+"rms": null,
+"nrmse": null,
+"sigma_floor": 0.015625,
+"explain_bar": 0.046875,
+"quantum": null,
+"bic": null,
+"holdout": null
+},
+"runnerUp": {
+"family": "spring-analytic",
+"cls": "spring",
+"rms": 0.15000095301598598,
+"bic": -218.32064393277824,
+"L": -239.0363175647359,
+"params": {
+"t0": 566.7962533618493,
+"omega": 6.1790024830694446,
+"zeta": 1.0555881684974482,
+"v0": -140.64177943011612,
+"target": -0.1341195885279289
+}
+},
+"rejected": [
+{
+"family": "named:linear",
+"cls": "tween",
+"rms": 2.782916566740656,
+"reason": "rms 2.78e+0 > explain bar 4.69e-2"
+},
+{
+"family": "named:ease",
+"cls": "tween",
+"rms": 1.8367452665233663,
+"reason": "rms 1.84e+0 > explain bar 4.69e-2"
+}
+],
+"ambiguity": null,
+"replay": {
+"linear": [
+{
+"tol": 0.001,
+"stops": 36,
+"maxVerticalErrRel": 0.002092548342198991,
+"css": "linear(0.0000 0.00%, 0.0000 12.90%, -0.0460 14.52%, -0.0795 16.13%, -0.0913 17.74%, -0.0914 19.35%, -0.0748 20.97%, -0.0522 22.58%, -0.0004 25.81%, 0.0345 27.42%, 0.2443 35.48%, 0.2784 37.10%, 0.3290 38.71%, 0.3696 40.32%, 0.3993 41.94%, 0.4446 43.55%, 0.5500 48.39%, 0.5980 51.61%, 0.6380 53.23%, 0.6911 56.45%, 0.7035 58.06%, 0.7601 61.29%, 0.7877 64.52%, 0.8173 66.13%, 0.8915 74.19%, 0.8910 75.81%, 0.9218 79.03%, 0.9215 80.65%, 0.9529 83.87%, 0.9527 85.48%, 0.9685 87.10%, 0.9682 90.32%, 0.9842 91.94%, 0.9841 93.55%, 1.0002 95.16%, 1.0000 100.00%)",
+"durationMs": 1033.333334
+},
+{
+"tol": 0.01,
+"stops": 11,
+"maxVerticalErrRel": 0.016409955847704383,
+"css": "linear(0.0000 0.00%, 0.0000 12.90%, -0.0795 16.13%, -0.0914 19.35%, 0.0345 27.42%, 0.5500 48.39%, 0.7601 61.29%, 0.8915 74.19%, 0.9529 83.87%, 1.0002 95.16%, 1.0000 100.00%)",
+"durationMs": 1033.333334
+}
+]
+},
+"unknowns": [
+{
+"id": "unk_unexplained",
+"reason": "no family explains (best spring-analytic rms 1.50e-1)",
+"probe": "more takes / a probe rate; inspect the replay samples"
+}
+],
+"flags": [],
+"evidence": {
+"takes": [
+"aa9fa4dafe221775"
+],
+"location": {
+"kind": "time_range",
+"range": [
+433.333333,
+1466.666667
+]
+}
+}
+},
+{
+"schema": "reva.motion/0",
+"target": {
+"el": 1,
+"desc": "DIV#k",
+"channel": "ren:by",
+"untrusted_content": true
+},
+"attribution": {
+"label": "unknown",
+"provenance": "unknown",
+"reason": "4 of 5 bursts have no preceding input",
+"probe": "record an idle-control take"
+},
+"tier": "unknown",
+"class": "unknown",
+"model": {
+"family": "spring",
+"params": {
+"t0": {
+"value": null,
+"provenance": "unknown",
+"unit": "ms",
+"ci95": [
+-1181092.7565087203,
+1182259.4231449508
+],
+"reason": "ambiguous class",
+"withheld_value": 583.3333181152334
+},
+"omega": {
+"value": null,
+"provenance": "unknown",
+"unit": "rad/s",
+"ci95": [
+11.44001907168337,
+64.83710012006262
+],
+"valid_for_reproduction_only": true,
+"reason": "ambiguous class",
+"withheld_value": 40.192293482349115
+},
+"zeta": {
+"value": null,
+"provenance": "unknown",
+"unit": null,
+"ci95": [
+2.275034385973336,
+33.922725683881396
+],
+"valid_for_reproduction_only": true,
+"reason": "ambiguous class",
+"withheld_value": 4.535583764395341
+},
+"v0": {
+"value": null,
+"provenance": "unknown",
+"unit": "value/s",
+"ci95": [
+-24097648.96836171,
+24097545.21516264
+],
+"reason": "ambiguous class",
+"withheld_value": -51.8765995369549
+},
+"x0": {
+"value": null,
+"provenance": "unknown",
+"unit": null,
+"ci95": [
+-15653.385111780548,
+15631.384834943301
+],
+"reason": "ambiguous class",
+"withheld_value": -11.000138418622745
+},
+"target": {
+"value": null,
+"provenance": "unknown",
+"unit": null,
+"ci95": [
+-0.0821112631332532,
+0.012067065841885626
+],
+"reason": "ambiguous class",
+"withheld_value": -0.035022098645683786
+},
+"k": {
+"value": null,
+"provenance": "unknown",
+"reason": "identified set I1(16), I7, I1(1), I6, I1(2), I5, I1(4), I1(8), I4 disagrees on (k, c) by more than 2 %",
+"probe": "record a take at a third rate or with a stall (R5)"
+},
+"c": {
+"value": null,
+"provenance": "unknown",
+"reason": "identified set I1(16), I7, I1(1), I6, I1(2), I5, I1(4), I1(8), I4 disagrees on (k, c) by more than 2 %",
+"probe": "record a take at a third rate or with a stall (R5)"
+}
+},
+"integrator": {
+"set": [
+"I1(16)",
+"I7",
+"I1(1)",
+"I6",
+"I1(2)",
+"I5",
+"I1(4)",
+"I1(8)",
+"I4"
+],
+"identified": false,
+"takes": 1,
+"reason": "identified set I1(16), I7, I1(1), I6, I1(2), I5, I1(4), I1(8), I4 disagrees on (k, c) by more than 2 %"
+},
+"law": "unknown",
+"valid_at": {
+"frame_ms": 16.666666666666668,
+"refresh_hz": 59.99999999999999
+},
+"valid_for_reproduction_only": true,
+"startJump": {
+"from": 388.0000305175781,
+"to": -11.000030517578125,
+"at": 583.333333,
+"provenance": "measured"
+}
+},
+"derived": {
+"overshoot": 0,
+"settle2": 877.4022280769505,
+"settle99": 1031.883870367938,
+"k": 1615.4204553712832,
+"c": 364.59102754471064,
+"t0": 583.3333181152334,
+"omega": 40.192293482349115,
+"zeta": 4.535583764395341,
+"overshoot_ci95": [
+0,
+0
+]
+},
+"fit": {
+"n": 81,
+"rms": 0.11597186256670913,
+"nrmse": 0.0002906562526978931,
+"sigma_floor": 0.015625,
+"explain_bar": 0.19950003051757814,
+"quantum": null,
+"bic": -322.64734945541045,
+"holdout": {
+"method": "last-30%-of-[t0,t99]",
+"rms": 0.121058302480949,
+"pass": true
+}
+},
+"runnerUp": {
+"family": "ema-to-constant:per-frame",
+"cls": "first-order smoothing",
+"rms": 0.1266708619883525,
+"bic": -325.92953920251034,
+"L": -334.7184375118552,
+"params": {
+"friction": 0.9302059885462194,
+"v0": 0.7672794398329952
+}
+},
+"rejected": [
+{
+"family": "named:linear",
+"cls": "tween",
+"rms": 0.5394133293424861,
+"reason": "rms 5.39e-1 > explain bar 2.00e-1"
+},
+{
+"family": "named:ease",
+"cls": "tween",
+"rms": 0.3285177535934808,
+"reason": "rms 3.29e-1 > explain bar 2.00e-1"
+}
+],
+"ambiguity": {
+"candidates": [
+{
+"family": "spring:I1(16)",
+"cls": "spring",
+"rms": 0.11571937039445605,
+"dL": 0,
+"params": {}
+},
+{
+"family": "bezier",
+"cls": "tween",
+"rms": 0.11201821221377081,
+"dL": -5.266064696245678,
+"params": {
+"t0": 588.9466623727192,
+"D": 1452.2474325185908,
+"x1": 0.1438306823098575,
+"y1": 0.9351905880053707,
+"x2": 0.3228894700322295,
+"y2": 1.0552798538551504,
+"from": -11.000030514642093
+}
+}
+],
+"reason": "two classes explain within the noise (\u0394L < 10) and no decisive probe (G1-4 \u00a78.2: report both)"
+},
+"replay": {
+"samples": 81,
+"linear": null
+},
+"unknowns": [
+{
+"id": "unk_spring_integrator",
+"reason": "identified set I1(16), I7, I1(1), I6, I1(2), I5, I1(4), I1(8), I4 disagrees on (k, c) by more than 2 % (U4)",
+"probe": "record a take at a third rate or with a stall (R5)"
+},
+{
+"id": "unk_ambiguous_class",
+"reason": "two classes explain within the noise (\u0394L < 10) and no decisive probe (G1-4 \u00a78.2: report both)",
+"probe": "second rate, stall (R5) or an interruption"
+}
+],
+"flags": [],
+"evidence": {
+"takes": [
+"aa9fa4dafe221775"
+],
+"location": {
+"kind": "time_range",
+"range": [
+583.333333,
+1916.666667
+]
+}
+},
+"downgrades": [
+{
+"param": "t0",
+"reason": "ambiguous class"
+},
+{
+"param": "omega",
+"reason": "ambiguous class"
+},
+{
+"param": "zeta",
+"reason": "ambiguous class"
+},
+{
+"param": "v0",
+"reason": "ambiguous class"
+},
+{
+"param": "x0",
+"reason": "ambiguous class"
+},
+{
+"param": "target",
+"reason": "ambiguous class"
+}
+]
+}
+],
+"stagger": [],
+"pins": [
+{
+"el": 2,
+"desc": "DIV#c",
+"start_px": 400,
+"end_px": null,
+"start": {
+"value": 400,
+"ci95": [
+399.96875,
+400.03125
+],
+"provenance": "measured"
+},
+"end": {
+"value": null,
+"interval": [
+2300,
+null
+],
+"provenance": "unknown"
+},
+"screenY": 0,
+"heldFrom_px": 1500,
+"heldTo_px": 2300,
+"resolution_px": 1500,
+"provenance": "measured"
+}
+],
+"statics": {
+"count": 30,
+"sample": [
+{
+"key": "0|ren:tx",
+"desc": "DIV#r",
+"ch": "ren:tx",
+"coverage": "not observed moving in these takes"
+},
+{
+"key": "0|ren:ty",
+"desc": "DIV#r",
+"ch": "ren:ty",
+"coverage": "not observed moving in these takes"
+},
+{
+"key": "0|ren:tz",
+"desc": "DIV#r",
+"ch": "ren:tz",
+"coverage": "not observed moving in these takes"
+},
+{
+"key": "0|ren:sx",
+"desc": "DIV#r",
+"ch": "ren:sx",
+"coverage": "not observed moving in these takes"
+}
+]
+},
+"pruned": [
+{
+"key": "1|ren:--s",
+"desc": "DIV#k",
+"ch": "ren:--s",
+"redundant_with": "drv:--s"
+},
+{
+"key": "1|ren:--y",
+"desc": "DIV#k",
+"ch": "ren:--y",
+"redundant_with": "drv:--y"
+},
+{
+"key": "1|ren:--o",
+"desc": "DIV#k",
+"ch": "ren:--o",
+"redundant_with": "drv:--o"
+},
+{
+"key": "2|ren:--i",
+"desc": "DIV#c",
+"ch": "ren:--i",
+"redundant_with": "drv:--i"
+}
+],
+"unknowns": [
+{
+"id": "unk_map_start",
+"reason": "no sample below the map start (-521.1 px): the corner is not identifiable",
+"probe": "scroll above the start of the range",
+"target": "DIV#r|ren:by"
+},
+{
+"id": "unk_map_end",
+"reason": "no sample past the map end (2767.2 px): the corner is not identifiable",
+"probe": "scroll past the end of the range",
+"target": "DIV#r|ren:by"
+},
+{
+"id": "unk_map_start",
+"reason": "no sample below the map start (-292.3 px): the corner is not identifiable",
+"probe": "scroll above the start of the range",
+"target": "DIV#k|drv:--s"
+},
+{
+"id": "unk_smoothing_law",
+"reason": "one fixed-rate take and no stall: per-frame EMA and dt-damp are the same curve (U5)",
+"probe": "record a second rate \u2265 1.5\u00d7 apart or an R5 stall take",
+"target": "DIV#k|drv:--s"
+},
+{
+"id": "unk_map_range",
+"reason": "1 distinct offset(s) inside the fitted range: the corners are not identifiable",
+"probe": "scroll through the range (\u2265 2 offsets inside it)",
+"target": "DIV#k|drv:--y"
+},
+{
+"id": "unk_map_start",
+"reason": "no sample below the map start (-573.7 px): the corner is not identifiable",
+"probe": "scroll above the start of the range",
+"target": "DIV#k|drv:--y"
+},
+{
+"id": "unk_map_end",
+"reason": "no sample past the map end (18.0 px): the corner is not identifiable",
+"probe": "scroll past the end of the range",
+"target": "DIV#k|drv:--y"
+},
+{
+"id": "unk_smoothing_law",
+"reason": "one fixed-rate take and no stall: per-frame EMA and dt-damp are the same curve (U5)",
+"probe": "record a second rate \u2265 1.5\u00d7 apart or an R5 stall take",
+"target": "DIV#k|drv:--y"
+},
+{
+"id": "unk_map_range",
+"reason": "1 distinct offset(s) inside the fitted range: the corners are not identifiable",
+"probe": "scroll through the range (\u2265 2 offsets inside it)",
+"target": "DIV#k|drv:--o"
+},
+{
+"id": "unk_map_start",
+"reason": "no sample below the map start (14.6 px): the corner is not identifiable",
+"probe": "scroll above the start of the range",
+"target": "DIV#k|drv:--o"
+},
+{
+"id": "unk_map_end",
+"reason": "no sample past the map end (1562.6 px): the corner is not identifiable",
+"probe": "scroll past the end of the range",
+"target": "DIV#k|drv:--o"
+},
+{
+"id": "unk_smoothing_law",
+"reason": "one fixed-rate take and no stall: per-frame EMA and dt-damp are the same curve (U5)",
+"probe": "record a second rate \u2265 1.5\u00d7 apart or an R5 stall take",
+"target": "DIV#k|drv:--o"
+}
+]
+}

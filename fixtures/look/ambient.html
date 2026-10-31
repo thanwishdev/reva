@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>look fixture: an ambient loop only</title>
+<!-- Own fixture (no site content). #spin rotates forever (rAF, 360 deg per 2 s) from the first frame, whatever the user does;
+  nothing reacts to the pointer. A hover on empty space has nothing to report: the spinner was already moving. -->
+<style>
+  html, body { margin: 0; }
+  #spin { position: absolute; left: 600px; top: 300px; width: 120px; height: 120px; background: #36c; }
+</style>
+</head>
+<body>
+<div id="spin"></div>
+<script>
+  const el = document.getElementById('spin'); let t0 = null;
+  requestAnimationFrame(function f(t) { if (t0 == null) t0 = t; el.style.transform = `rotate(${((t - t0) / 2000) * 360}deg)`; requestAnimationFrame(f); });
+</script>
+</body>
+</html>

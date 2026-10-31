@@ -1,0 +1,997 @@
+{
+ "schema": "reva.labroutes/0",
+ "group": "lab-easing",
+ "viewport": {
+  "width": 1280,
+  "height": 800
+ },
+ "routes": [
+  {
+   "id": "m06",
+   "page": "routes/m06.html",
+   "driver": "time",
+   "engine": "chs",
+   "params": {
+    "default": {
+     "D": 1500,
+     "hold": 0.6,
+     "bz": [
+      0.25,
+      0.8,
+      0.25,
+      1
+     ],
+     "base": 12,
+     "step": 30,
+     "n": 6
+    },
+    "grid": [
+     {
+      "D": 1500,
+      "hold": 0.6,
+      "bz": [
+       0.25,
+       0.8,
+       0.25,
+       1
+      ],
+      "base": 12,
+      "step": 30,
+      "n": 6
+     },
+     {
+      "D": 1200,
+      "hold": 0.45,
+      "bz": [
+       0.3,
+       0.7,
+       0.2,
+       1
+      ],
+      "base": 12,
+      "step": 30,
+      "n": 6
+     },
+     {
+      "D": 1800,
+      "hold": 0.35,
+      "bz": [
+       0.2,
+       0.9,
+       0.3,
+       1
+      ],
+      "base": 12,
+      "step": 45,
+      "n": 6
+     },
+     {
+      "D": 1000,
+      "hold": 0.7,
+      "bz": [
+       0.35,
+       0.6,
+       0.15,
+       1
+      ],
+      "base": 12,
+      "step": 30,
+      "n": 6
+     },
+     {
+      "D": 1500,
+      "hold": 0,
+      "bz": [
+       0.25,
+       0.8,
+       0.25,
+       1
+      ],
+      "base": 12,
+      "step": 30,
+      "n": 6
+     }
+    ]
+   },
+   "box": {
+    "D": [
+     1000,
+     1800
+    ],
+    "hold": [
+     0.3,
+     0.7
+    ],
+    "step": [
+     30,
+     45
+    ]
+   },
+   "traces": {
+    "go": "traces/m06.go.json"
+   },
+   "regimes": [
+    "R2",
+    "R3",
+    "R4",
+    "R5"
+   ],
+   "watch": {
+    "selectors": [
+     "#b0",
+     "#b1",
+     "#b2",
+     "#b3",
+     "#b4",
+     "#b5"
+    ],
+    "computedVars": [
+     "--e"
+    ]
+   },
+   "truthClass": "declared",
+   "metrics": [
+    "m06.visible_onset",
+    "m06.declared_vs_visible",
+    "m06.segment_bezier",
+    "m06_m12.stagger",
+    "class"
+   ]
+  },
+  {
+   "id": "m11",
+   "page": "routes/m11.html",
+   "driver": "scroll",
+   "engine": "chs",
+   "params": {
+    "default": {
+     "r0": 10,
+     "r1": 70,
+     "ease": [
+      0.45,
+      0.05,
+      0.3,
+      1
+     ],
+     "amp": 300
+    },
+    "grid": [
+     {
+      "r0": 10,
+      "r1": 70,
+      "ease": [
+       0.45,
+       0.05,
+       0.3,
+       1
+      ],
+      "amp": 300
+     },
+     {
+      "r0": 20,
+      "r1": 80,
+      "ease": "linear",
+      "amp": 260
+     },
+     {
+      "r0": 0,
+      "r1": 60,
+      "ease": [
+       0.65,
+       0,
+       0.35,
+       1
+      ],
+      "amp": 340
+     },
+     {
+      "r0": 25,
+      "r1": 75,
+      "ease": [
+       0.1,
+       0.9,
+       0.35,
+       1
+      ],
+      "amp": 280
+     },
+     {
+      "r0": 5,
+      "r1": 55,
+      "ease": "linear",
+      "amp": 320
+     }
+    ]
+   },
+   "box": {
+    "r0": [
+     0,
+     25
+    ],
+    "r1": [
+     55,
+     80
+    ],
+    "amp": [
+     260,
+     340
+    ]
+   },
+   "traces": {
+    "sweep": "traces/m11.sweep.json",
+    "reversal": "traces/m11.reversal.json",
+    "gap": "traces/m11.gap.json"
+   },
+   "regimes": [
+    "R2",
+    "R3",
+    "R4",
+    "R5"
+   ],
+   "watch": {
+    "selectors": [
+     "#b0",
+     "#b1"
+    ]
+   },
+   "truthClass": "declared",
+   "metrics": [
+    "m11.declared_range",
+    "m11.measured_range",
+    "m11.css_waapi_parity",
+    "class"
+   ]
+  },
+  {
+   "id": "m12",
+   "page": "routes/m12.html",
+   "driver": "scroll",
+   "engine": "chs",
+   "params": {
+    "default": {
+     "step": 90,
+     "order": "dom",
+     "du": 500,
+     "bz": [
+      0.2,
+      0.9,
+      0.1,
+      1
+     ],
+     "N": 4800,
+     "cD": 950,
+     "char": 24,
+     "text": "Measure the motion, not the pixels."
+    },
+    "grid": [
+     {
+      "step": 90,
+      "order": "dom",
+      "du": 500,
+      "bz": [
+       0.2,
+       0.9,
+       0.1,
+       1
+      ],
+      "N": 4800,
+      "cD": 950,
+      "char": 24,
+      "text": "Measure the motion, not the pixels."
+     },
+     {
+      "step": 60,
+      "order": "reverse",
+      "du": 650,
+      "bz": [
+       0.3,
+       0.8,
+       0.2,
+       1
+      ],
+      "N": 3600,
+      "cD": 1100,
+      "char": 30,
+      "text": "Measure the motion, not the pixels."
+     },
+     {
+      "step": 120,
+      "order": "column",
+      "du": 400,
+      "bz": [
+       0.25,
+       1,
+       0.5,
+       1
+      ],
+      "N": 5200,
+      "cD": 750,
+      "char": 20,
+      "text": "Measure the motion, not the pixels."
+     },
+     {
+      "step": 45,
+      "order": "dom",
+      "du": 550,
+      "bz": [
+       0.2,
+       0.9,
+       0.1,
+       1
+      ],
+      "N": 2400,
+      "cD": 1000,
+      "char": 36,
+      "text": "Measure the motion, not the pixels."
+     },
+     {
+      "step": 75,
+      "order": "reverse",
+      "du": 450,
+      "bz": [
+       0.4,
+       0.9,
+       0.2,
+       1
+      ],
+      "N": 6400,
+      "cD": 800,
+      "char": 28,
+      "text": "Measure the motion, not the pixels."
+     }
+    ]
+   },
+   "box": {
+    "step": [
+     45,
+     120
+    ],
+    "du": [
+     400,
+     650
+    ],
+    "cD": [
+     750,
+     1100
+    ],
+    "char": [
+     20,
+     36
+    ]
+   },
+   "traces": {
+    "go": "traces/m12.go.json"
+   },
+   "regimes": [
+    "R2",
+    "R3",
+    "R4",
+    "R5"
+   ],
+   "watch": {
+    "selectors": [
+     "#b0",
+     "#b1",
+     "#b2",
+     "#b3",
+     "#b4",
+     "#b5",
+     "#n",
+     "#t"
+    ]
+   },
+   "truthClass": "declared",
+   "metrics": [
+    "m06_m12.stagger",
+    "m12.onset",
+    "m12.countup",
+    "class"
+   ]
+  },
+  {
+   "id": "m15",
+   "page": "routes/m15.html",
+   "driver": "time",
+   "engine": "chs",
+   "params": {
+    "default": {
+     "dur": 1997,
+     "from": 0,
+     "to": 420,
+     "delay": 1000.3,
+     "spline": null
+    },
+    "grid": [
+     {
+      "dur": 1997,
+      "from": 0,
+      "to": 420,
+      "delay": 1000.3,
+      "spline": null
+     },
+     {
+      "dur": 1403,
+      "from": 40,
+      "to": 380,
+      "delay": 700.7,
+      "spline": null
+     },
+     {
+      "dur": 2999,
+      "from": 0,
+      "to": 500,
+      "delay": 1200.1,
+      "spline": null
+     },
+     {
+      "dur": 1811,
+      "from": 0,
+      "to": 440,
+      "delay": 910.9,
+      "spline": [
+       0.45,
+       0.05,
+       0.3,
+       1
+      ]
+     },
+     {
+      "dur": 2399,
+      "from": 20,
+      "to": 460,
+      "delay": 800.5,
+      "spline": [
+       0.2,
+       0.8,
+       0.2,
+       1
+      ]
+     }
+    ]
+   },
+   "box": {
+    "dur": [
+     1400,
+     3000
+    ],
+    "delay": [
+     700,
+     1250
+    ]
+   },
+   "traces": {
+    "go": "traces/m15.go.json"
+   },
+   "regimes": [
+    "R2",
+    "R3",
+    "R4",
+    "R5"
+   ],
+   "watch": {
+    "selectors": [
+     "#b0"
+    ]
+   },
+   "truthClass": "declared",
+   "metrics": [
+    "m15.smil_duration_begin",
+    "class"
+   ]
+  },
+  {
+   "id": "m17",
+   "page": "routes/m17.html",
+   "driver": "time",
+   "engine": "chs",
+   "params": {
+    "default": {
+     "d0": 600,
+     "e0": [
+      0.2,
+      0.9,
+      0.1,
+      1
+     ],
+     "d1": 400,
+     "e1": "linear"
+    },
+    "grid": [
+     {
+      "d0": 600,
+      "e0": [
+       0.2,
+       0.9,
+       0.1,
+       1
+      ],
+      "d1": 400,
+      "e1": "linear"
+     },
+     {
+      "d0": 450,
+      "e0": [
+       0.45,
+       0.05,
+       0.3,
+       1
+      ],
+      "d1": 700,
+      "e1": [
+       0.3,
+       0.8,
+       0.2,
+       1
+      ]
+     },
+     {
+      "d0": 800,
+      "e0": [
+       0.65,
+       0,
+       0.35,
+       1
+      ],
+      "d1": 500,
+      "e1": [
+       0.2,
+       0.9,
+       0.1,
+       1
+      ]
+     },
+     {
+      "d0": 350,
+      "e0": "linear",
+      "d1": 550,
+      "e1": [
+       0.45,
+       0.05,
+       0.3,
+       1
+      ]
+     },
+     {
+      "d0": 700,
+      "e0": [
+       0.25,
+       1,
+       0.5,
+       1
+      ],
+      "d1": 300,
+      "e1": [
+       0.65,
+       0,
+       0.35,
+       1
+      ]
+     }
+    ]
+   },
+   "box": {
+    "d0": [
+     350,
+     800
+    ],
+    "d1": [
+     300,
+     700
+    ]
+   },
+   "traces": {
+    "go": "traces/m17.go.json"
+   },
+   "regimes": [
+    "R2",
+    "R3",
+    "R4",
+    "R5"
+   ],
+   "watch": {
+    "selectors": [
+     "#b0",
+     "#b1"
+    ]
+   },
+   "truthClass": "declared",
+   "metrics": [
+    "m17.detected",
+    "m17.declared_timing",
+    "m17.group_geometry",
+    "class"
+   ]
+  },
+  {
+   "id": "m18",
+   "page": "routes/m18.html",
+   "driver": "time",
+   "engine": "chs",
+   "params": {
+    "default": {
+     "impl": "waapi",
+     "D": 600,
+     "bz": [
+      0.2,
+      0.9,
+      0.1,
+      1
+     ]
+    },
+    "grid": [
+     {
+      "impl": "waapi",
+      "D": 600,
+      "bz": [
+       0.2,
+       0.9,
+       0.1,
+       1
+      ]
+     },
+     {
+      "impl": "waapi",
+      "D": 450,
+      "bz": [
+       0.45,
+       0.05,
+       0.3,
+       1
+      ]
+     },
+     {
+      "impl": "raf",
+      "D": 600,
+      "bz": [
+       0.2,
+       0.9,
+       0.1,
+       1
+      ]
+     },
+     {
+      "impl": "raf",
+      "D": 750,
+      "bz": [
+       0.3,
+       0.8,
+       0.2,
+       1
+      ]
+     },
+     {
+      "impl": "raf",
+      "D": 500,
+      "bz": [
+       0.65,
+       0,
+       0.35,
+       1
+      ]
+     }
+    ]
+   },
+   "box": {
+    "D": [
+     450,
+     750
+    ]
+   },
+   "traces": {
+    "single": "traces/m18.single.json",
+    "interrupted": "traces/m18.interrupted.json"
+   },
+   "regimes": [
+    "R2",
+    "R3",
+    "R4",
+    "R5"
+   ],
+   "watch": {
+    "selectors": [
+     "#b0"
+    ]
+   },
+   "truthClass": "declared",
+   "metrics": [
+    "m18.detected",
+    "m18.layout_delta",
+    "m18.timing",
+    "m18.retarget",
+    "class"
+   ]
+  },
+  {
+   "id": "m19",
+   "page": "routes/m19.html",
+   "driver": "time",
+   "engine": "chs",
+   "params": {
+    "default": {
+     "from": 0,
+     "to": 360,
+     "D": 700,
+     "ease": "easeOutCubic",
+     "delay": 403.7,
+     "to2": 90,
+     "D2": 500,
+     "write": "full"
+    },
+    "grid": [
+     {
+      "from": 0,
+      "to": 360,
+      "D": 700,
+      "ease": "easeOutCubic",
+      "delay": 403.7,
+      "to2": 90,
+      "D2": 500,
+      "write": "full"
+     },
+     {
+      "from": 40,
+      "to": 380,
+      "D": 950,
+      "ease": "easeInOutQuad",
+      "delay": 211.3,
+      "to2": 120,
+      "D2": 600,
+      "write": "full"
+     },
+     {
+      "from": 0,
+      "to": 300,
+      "D": 600,
+      "ease": "easeOutExpo",
+      "delay": 507.1,
+      "to2": 40,
+      "D2": 450,
+      "write": "full"
+     },
+     {
+      "from": 20,
+      "to": 400,
+      "D": 1100,
+      "ease": "easeInOutCubic",
+      "delay": 320.9,
+      "to2": 200,
+      "D2": 700,
+      "write": "full"
+     },
+     {
+      "from": 0,
+      "to": 340,
+      "D": 800,
+      "ease": "easeOutQuart",
+      "delay": 156.4,
+      "to2": 60,
+      "D2": 550,
+      "write": "full"
+     }
+    ]
+   },
+   "box": {
+    "D": [
+     600,
+     1100
+    ],
+    "delay": [
+     156,
+     508
+    ],
+    "D2": [
+     450,
+     700
+    ]
+   },
+   "traces": {
+    "timer": "traces/m19.timer.json",
+    "click": "traces/m19.click.json",
+    "retarget": "traces/m19.retarget.json"
+   },
+   "regimes": [
+    "R2",
+    "R3",
+    "R4",
+    "R5"
+   ],
+   "watch": {
+    "selectors": [
+     "#b0"
+    ]
+   },
+   "truthClass": "tween",
+   "metrics": [
+    "m19.onset",
+    "m19.duration",
+    "m19.easing",
+    "m19.retarget",
+    "class"
+   ]
+  },
+  {
+   "id": "m16e",
+   "page": "routes/m16e.html",
+   "driver": "time",
+   "engine": "chs",
+   "params": {
+    "default": {
+     "from": 0,
+     "to": 420,
+     "D": 1400,
+     "ease": "easeOutExpo",
+     "write": "full"
+    },
+    "grid": [
+     {
+      "from": 0,
+      "to": 420,
+      "D": 1400,
+      "ease": "easeOutExpo",
+      "write": "full"
+     },
+     {
+      "from": 0,
+      "to": 360,
+      "D": 1200,
+      "ease": "easeOutQuint",
+      "write": "full"
+     },
+     {
+      "from": 20,
+      "to": 400,
+      "D": 1600,
+      "ease": "easeOutQuart",
+      "write": "full"
+     },
+     {
+      "from": 0,
+      "to": 380,
+      "D": 1000,
+      "ease": "easeOutCubic",
+      "write": "full"
+     },
+     {
+      "from": 10,
+      "to": 440,
+      "D": 1800,
+      "ease": "easeOutExpo",
+      "write": "full"
+     }
+    ]
+   },
+   "box": {
+    "D": [
+     1000,
+     1800
+    ]
+   },
+   "traces": {
+    "go": "traces/m16e.go.json"
+   },
+   "regimes": [
+    "R2",
+    "R3",
+    "R4",
+    "R5"
+   ],
+   "watch": {
+    "selectors": [
+     "#b0"
+    ]
+   },
+   "truthClass": "tween",
+   "metrics": [
+    "m16.negative",
+    "class"
+   ]
+  },
+  {
+   "id": "m16f",
+   "page": "routes/m16f.html",
+   "driver": "time",
+   "engine": "chs",
+   "params": {
+    "default": {
+     "from": 0,
+     "to": 400,
+     "D": 880,
+     "bz": [
+      0.34,
+      1.517,
+      0.64,
+      1
+     ],
+     "write": "full"
+    },
+    "grid": [
+     {
+      "from": 0,
+      "to": 420,
+      "D": 800,
+      "bz": [
+       0.34,
+       1.408,
+       0.64,
+       1
+      ],
+      "write": "full"
+     },
+     {
+      "from": 0,
+      "to": 380,
+      "D": 700,
+      "bz": [
+       0.34,
+       1.465,
+       0.64,
+       1
+      ],
+      "write": "full"
+     },
+     {
+      "from": 0,
+      "to": 400,
+      "D": 880,
+      "bz": [
+       0.34,
+       1.517,
+       0.64,
+       1
+      ],
+      "write": "full"
+     },
+     {
+      "from": 20,
+      "to": 440,
+      "D": 750,
+      "bz": [
+       0.34,
+       1.567,
+       0.64,
+       1
+      ],
+      "write": "full"
+     },
+     {
+      "from": 0,
+      "to": 360,
+      "D": 850,
+      "bz": [
+       0.34,
+       1.615,
+       0.64,
+       1
+      ],
+      "write": "full"
+     }
+    ]
+   },
+   "box": {
+    "D": [
+     700,
+     880
+    ]
+   },
+   "traces": {
+    "go": "traces/m16f.go.json"
+   },
+   "regimes": [
+    "R2",
+    "R3",
+    "R4",
+    "R5"
+   ],
+   "watch": {
+    "selectors": [
+     "#b0"
+    ]
+   },
+   "truthClass": "tween",
+   "metrics": [
+    "m16.negative",
+    "class"
+   ]
+  }
+ ]
+}

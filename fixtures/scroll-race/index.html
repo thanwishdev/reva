@@ -1,0 +1,30 @@
+<!doctype html><html><head><meta charset="utf-8"><title>REVA scroll-event race fixture</title>
+<style>
+body{margin:0;height:4000px;font:12px sans-serif}
+.b{position:fixed;left:0;width:20px;height:20px;background:#000}
+#cls{transition:transform 300ms linear} #cls.on{transform:translateX(200px)}
+#io{position:absolute;top:1500px;left:40px;width:40px;height:40px;background:#333;transition:opacity 250ms linear;opacity:0}
+#io.seen{opacity:1}
+</style></head><body>
+<div class="b" id="raf" style="top:0"></div><div class="b" id="cls" style="top:25px"></div><div class="b" id="evt" style="top:50px"></div>
+<div id="io"></div>
+<script>
+// Own fixture (public-safe). Three reactions that real pages use, each started by a real-time event, not by a timer:
+//  1. a scroll listener that starts a rAF-driven tween (performance.now based)
+//  2. a scroll listener that toggles a class (CSS transition birth)
+//  3. an IntersectionObserver that toggles a class (CSS transition birth)
+// In the hx lane these events are dispatched by the browser's real rendering update; the recorder must make the
+// virtual frame they land in independent of real time (PLAN A2).
+const $ = id => document.getElementById(id);
+let tween = null, lastY = 0;
+addEventListener('scroll', () => {
+  const y = scrollY, from = lastY; lastY = y;
+  $('evt').style.transform = `translateX(${(performance.now() % 1000) / 10}px)`;
+  $('cls').classList.toggle('on', y > 300);
+  const t0 = performance.now();
+  if (tween) cancelAnimationFrame(tween);
+  const run = () => { const u = Math.min(1, (performance.now() - t0) / 400); $('raf').style.transform = `translateX(${(from + (y - from) * u) / 10}px)`; if (u < 1) tween = requestAnimationFrame(run); };
+  tween = requestAnimationFrame(run);
+});
+new IntersectionObserver((es) => { for (const e of es) e.target.classList.toggle('seen', e.isIntersecting); }).observe($('io'));
+</script></body></html>

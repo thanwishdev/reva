@@ -1,0 +1,38 @@
+{
+ "route": "m14",
+ "variant": "gaps",
+ "viewport": {
+  "width": 1280,
+  "height": 800
+ },
+ "boot": {},
+ "actions": [
+  {
+   "eval": "window.dispatchEvent(new Event('go'))"
+  },
+  {
+   "mark": "go"
+  },
+  {
+   "hold": 400
+  },
+  {
+   "scrollTo": 600
+  },
+  {
+   "hold": 2600
+  },
+  {
+   "scrollTo": 1000
+  },
+  {
+   "hold": 800
+  },
+  {
+   "scrollTo": 500
+  },
+  {
+   "hold": 2200
+  }
+ ]
+}

@@ -1,0 +1,1304 @@
+{
+"schema": "reva.fitresult/0",
+"takes": {
+"primary": "19a51e6b8fa6439d",
+"probe": null,
+"idle": null
+},
+"env": {
+"lane": "hx",
+"dtMs": 16.666666666666668,
+"rateHz": 60,
+"stride": 1,
+"probeDtMs": null
+},
+"flags": [],
+"records": [
+{
+"schema": "reva.motion/0",
+"target": {
+"el": 0,
+"desc": "CANVAS.cv",
+"channel": "*",
+"untrusted_content": true
+},
+"attribution": {
+"label": "unknown",
+"provenance": "unknown",
+"reason": "no motion",
+"probe": "n/a"
+},
+"tier": "not_applicable",
+"class": "not_applicable",
+"model": {
+"family": null,
+"params": {}
+},
+"derived": {},
+"fit": {},
+"unknowns": [
+{
+"id": "unk_canvas_content",
+"reason": "canvas/WebGL drawing is not visible to DOM channels (U7)",
+"probe": "record the pixel channel (X4) or an rt take"
+}
+],
+"flags": [],
+"evidence": {
+"takes": [
+"19a51e6b8fa6439d"
+],
+"location": null
+},
+"rejected": []
+},
+{
+"schema": "reva.motion/0",
+"target": {
+"el": null,
+"desc": "canvas",
+"channel": "pix:pix:m:n",
+"untrusted_content": true
+},
+"attribution": {
+"label": "time-driven",
+"provenance": "inferred",
+"evidence": "no input precedes any motion burst by \u2264 2 frames (no idle-control take)"
+},
+"tier": "unexplained",
+"class": "unknown",
+"model": {
+"family": "unexplained",
+"params": {},
+"integrator": null,
+"law": null,
+"valid_at": {
+"frame_ms": 16.666666666666668,
+"refresh_hz": 59.99999999999999
+}
+},
+"derived": {},
+"fit": {
+"n": 24,
+"rms": null,
+"nrmse": null,
+"sigma_floor": 0.5,
+"explain_bar": 1.5,
+"quantum": 1,
+"bic": null,
+"holdout": null
+},
+"runnerUp": {
+"family": "spring-analytic",
+"cls": "spring",
+"rms": 1.5351419888553488,
+"bic": 36.46416727866042,
+"L": 20.57389812692069,
+"params": {
+"t0": 1510.0317060746233,
+"omega": 34.04981398439293,
+"zeta": 0.005,
+"v0": 56.92625806408242,
+"target": 304.1753455249227
+}
+},
+"rejected": [
+{
+"family": "named:linear",
+"cls": "tween",
+"rms": 1.9039432764659772,
+"reason": "rms 1.90e+0 > explain bar 1.50e+0"
+},
+{
+"family": "named:ease",
+"cls": "tween",
+"rms": 1.9039432764659772,
+"reason": "rms 1.90e+0 > explain bar 1.50e+0"
+}
+],
+"ambiguity": null,
+"replay": {
+"linear": [
+{
+"tol": 0.001,
+"stops": 24,
+"maxVerticalErrRel": 5.551115123125783e-17,
+"css": "linear(0.0000 0.00%, -0.1429 4.35%, 0.1429 8.70%, -0.2857 13.04%, 0.4286 17.39%, 0.2857 21.74%, 0.2857 26.09%, -0.4286 30.43%, 0.0000 34.78%, -0.4286 39.13%, 0.2857 43.48%, -0.2857 47.83%, -0.2857 52.17%, 0.0000 56.52%, 0.1429 60.87%, 0.5714 65.22%, 0.1429 69.57%, 0.4286 73.91%, 0.0000 78.26%, 0.1429 82.61%, -0.2857 86.96%, -0.1429 91.30%, -0.1429 95.65%, 0.0000 100.00%)",
+"durationMs": 383.3333339999999
+},
+{
+"tol": 0.01,
+"stops": 24,
+"maxVerticalErrRel": 5.551115123125783e-17,
+"css": "linear(0.0000 0.00%, -0.1429 4.35%, 0.1429 8.70%, -0.2857 13.04%, 0.4286 17.39%, 0.2857 21.74%, 0.2857 26.09%, -0.4286 30.43%, 0.0000 34.78%, -0.4286 39.13%, 0.2857 43.48%, -0.2857 47.83%, -0.2857 52.17%, 0.0000 56.52%, 0.1429 60.87%, 0.5714 65.22%, 0.1429 69.57%, 0.4286 73.91%, 0.0000 78.26%, 0.1429 82.61%, -0.2857 86.96%, -0.1429 91.30%, -0.1429 95.65%, 0.0000 100.00%)",
+"durationMs": 383.3333339999999
+}
+]
+},
+"unknowns": [
+{
+"id": "unk_unexplained",
+"reason": "no family explains (best spring-analytic rms 1.54e+0)",
+"probe": "more takes / a probe rate; inspect the replay samples"
+}
+],
+"flags": [],
+"evidence": {
+"takes": [
+"19a51e6b8fa6439d"
+],
+"location": {
+"kind": "time_range",
+"range": [
+1483.333333,
+1866.666667
+]
+}
+}
+},
+{
+"schema": "reva.motion/0",
+"target": {
+"el": null,
+"desc": "canvas",
+"channel": "pix:pix:m:n",
+"untrusted_content": true
+},
+"attribution": {
+"label": "time-driven",
+"provenance": "inferred",
+"evidence": "no input precedes any motion burst by \u2264 2 frames (no idle-control take)"
+},
+"tier": "unknown",
+"class": "unknown",
+"model": {
+"family": null,
+"params": {},
+"integrator": null,
+"law": null,
+"valid_at": {
+"frame_ms": 16.666666666666668,
+"refresh_hz": 59.99999999999999
+}
+},
+"derived": {
+"t0": 483.333333
+},
+"fit": {
+"n": 3,
+"rms": null,
+"nrmse": null,
+"sigma_floor": 0.5,
+"explain_bar": 1.5,
+"quantum": 1,
+"bic": null,
+"holdout": null
+},
+"runnerUp": null,
+"rejected": [],
+"ambiguity": null,
+"replay": null,
+"unknowns": [
+{
+"id": "unk_too_few_samples",
+"reason": "3 moving frames (< 8, U1)",
+"probe": "longer take / denser input / a slower rate"
+}
+],
+"flags": [],
+"evidence": {
+"takes": [
+"19a51e6b8fa6439d"
+],
+"location": {
+"kind": "time_range",
+"range": [
+350,
+650
+]
+}
+},
+"hysteresis": {
+"bands": [
+{
+"between": [
+300,
+306
+],
+"downEdge_px": 800,
+"upEdge_px": 200,
+"width_px": 600,
+"downEdge_interval": [
+0,
+800
+],
+"upEdge_interval": [
+200,
+800
+],
+"downEdge_sibling": null,
+"upEdge_sibling": null,
+"provenance": "measured"
+},
+{
+"between": [
+303,
+306
+],
+"downEdge_px": 800,
+"upEdge_px": 200,
+"width_px": 600,
+"downEdge_interval": [
+0,
+800
+],
+"upEdge_interval": [
+200,
+800
+],
+"downEdge_sibling": null,
+"upEdge_sibling": null,
+"provenance": "measured"
+}
+]
+}
+},
+{
+"schema": "reva.motion/0",
+"target": {
+"el": null,
+"desc": "canvas",
+"channel": "pix:pix:m:n",
+"untrusted_content": true
+},
+"attribution": {
+"label": "time-driven",
+"provenance": "inferred",
+"evidence": "no input precedes any motion burst by \u2264 2 frames (no idle-control take)"
+},
+"tier": "unknown",
+"class": "unknown",
+"model": {
+"family": null,
+"params": {},
+"integrator": null,
+"law": null,
+"valid_at": {
+"frame_ms": 16.666666666666668,
+"refresh_hz": 59.99999999999999
+}
+},
+"derived": {
+"t0": 1866.666667
+},
+"fit": {
+"n": 6,
+"rms": null,
+"nrmse": null,
+"sigma_floor": 0.5,
+"explain_bar": 1.5,
+"quantum": 1,
+"bic": null,
+"holdout": null
+},
+"runnerUp": null,
+"rejected": [],
+"ambiguity": null,
+"replay": null,
+"unknowns": [
+{
+"id": "unk_too_few_samples",
+"reason": "6 moving frames (< 8, U1)",
+"probe": "longer take / denser input / a slower rate"
+}
+],
+"flags": [],
+"evidence": {
+"takes": [
+"19a51e6b8fa6439d"
+],
+"location": {
+"kind": "time_range",
+"range": [
+1850,
+2083.333333
+]
+}
+}
+},
+{
+"schema": "reva.motion/0",
+"target": {
+"el": null,
+"desc": "canvas",
+"channel": "pix:pix:m:x",
+"untrusted_content": true
+},
+"attribution": {
+"label": "time-driven",
+"provenance": "inferred",
+"evidence": "no input precedes any motion burst by \u2264 2 frames (no idle-control take)"
+},
+"tier": "fitted",
+"class": "spring",
+"model": {
+"family": "spring",
+"params": {
+"t0": {
+"value": 833.3333336666666,
+"provenance": "fitted",
+"unit": "ms",
+"ci95": [
+833.3333336666666,
+833.3333336666666
+]
+},
+"omega": {
+"value": 2.4050214397925243,
+"provenance": "inferred",
+"unit": "rad/s",
+"ci95": [
+2.2975645165582725,
+2.4992046310895173
+],
+"note": "analytic equivalent; source parameters are k, c with the identified integrator"
+},
+"zeta": {
+"value": 0.6088858921278061,
+"provenance": "inferred",
+"unit": null,
+"ci95": [
+0.5949158930466508,
+0.628805073692492
+],
+"note": "analytic equivalent; source parameters are k, c with the identified integrator"
+},
+"v0": {
+"value": -99.08643732568143,
+"provenance": "fitted",
+"unit": "value/s",
+"ci95": [
+-104.27503617885104,
+-93.89783847251182
+]
+},
+"target": {
+"value": 708.3942195981438,
+"provenance": "fitted",
+"unit": null,
+"ci95": [
+707.1211595798214,
+709.6672796164661
+]
+},
+"k": {
+"value": 5.886163457394387,
+"provenance": "fitted",
+"unit": "1/s\u00b2 (k/m)",
+"ci95": [
+5.19020072198025,
+6.582126192808524
+]
+},
+"c": {
+"value": 2.8796609705209746,
+"provenance": "fitted",
+"unit": "1/s (c/m)",
+"ci95": [
+2.6338308081318553,
+3.125491132910094
+]
+}
+},
+"integrator": {
+"set": [
+"I1(16)",
+"I1(8)",
+"I1(4)",
+"I1(2)",
+"I1(1)",
+"I5",
+"I6"
+],
+"identified": true,
+"takes": 1,
+"reason": null,
+"best": "I1(16)"
+},
+"law": "unknown",
+"valid_at": {
+"frame_ms": 16.666666666666668,
+"refresh_hz": 59.99999999999999
+},
+"replayModel": {
+"hyp": "I1(16)",
+"k": 5.886163457394387,
+"c": 2.8796609705209746,
+"t0": 816.666667,
+"x0": 780.3235294117648,
+"v0": -85.87344850682048,
+"targets": [
+708.235175531202
+],
+"tr": [],
+"units": "k/m 1/s\u00b2, c/m 1/s"
+},
+"valid_for_reproduction_only": false
+},
+"derived": {
+"overshoot": 8.17668192474326,
+"settle2": 2212.534983857465,
+"settle99": 3058.6247508325882,
+"k": 5.784128125861707,
+"c": 2.9287672499091437,
+"t0": 833.3333336666666,
+"omega": 2.4050214397925243,
+"zeta": 0.6088858921278061,
+"overshoot_ci95": [
+7.185990026596994,
+8.912715797684127
+]
+},
+"fit": {
+"n": 120,
+"rms": 0.7366511508624789,
+"nrmse": 0.009218300373614909,
+"sigma_floor": 0.5,
+"explain_bar": 1.5,
+"quantum": null,
+"bic": -49.416341815183245,
+"holdout": {
+"method": "single take",
+"rms": 0.7366511508624789,
+"pass": true
+}
+},
+"runnerUp": {
+"family": "spring-analytic",
+"cls": "spring",
+"rms": 0.7366511508624789,
+"bic": -49.416341815183245,
+"L": -73.35380052909348,
+"params": {
+"t0": 833.3333336666666,
+"omega": 2.4050214397925243,
+"zeta": 0.6088858921278061,
+"v0": -99.08643732568143,
+"target": 708.3942195981438
+}
+},
+"rejected": [
+{
+"family": "named:linear",
+"cls": "tween",
+"rms": 2.789110541073103,
+"reason": "rms 2.79e+0 > explain bar 1.50e+0"
+},
+{
+"family": "named:ease",
+"cls": "tween",
+"rms": 3.2796764640755036,
+"reason": "rms 3.28e+0 > explain bar 1.50e+0"
+}
+],
+"ambiguity": null,
+"replay": {
+"samples": 120,
+"linear": null
+},
+"unknowns": [],
+"flags": [],
+"evidence": {
+"takes": [
+"19a51e6b8fa6439d"
+],
+"location": {
+"kind": "time_range",
+"range": [
+866.666667,
+2850
+]
+}
+},
+"downgrades": []
+},
+{
+"schema": "reva.motion/0",
+"target": {
+"el": null,
+"desc": "canvas",
+"channel": "pix:pix:m:x",
+"untrusted_content": true
+},
+"attribution": {
+"label": "time-driven",
+"provenance": "inferred",
+"evidence": "no input precedes any motion burst by \u2264 2 frames (no idle-control take)"
+},
+"tier": "fitted",
+"class": "spring",
+"model": {
+"family": "spring",
+"params": {
+"t0": {
+"value": 3049.9999996666666,
+"provenance": "fitted",
+"unit": "ms",
+"ci95": [
+3049.9999996666666,
+3049.9999996666666
+]
+},
+"omega": {
+"value": 5.812614379010464,
+"provenance": "fitted",
+"unit": "rad/s",
+"ci95": [
+5.54716785636807,
+6.040812844574855
+],
+"valid_for_reproduction_only": true
+},
+"zeta": {
+"value": 1.2272754782821453,
+"provenance": "fitted",
+"unit": null,
+"ci95": [
+1.1487358168883917,
+1.2693447867447571
+],
+"valid_for_reproduction_only": true
+},
+"v0": {
+"value": -503.35465777725295,
+"provenance": "fitted",
+"unit": "value/s",
+"ci95": [
+-547.8349217607711,
+-458.8743937937348
+]
+},
+"target": {
+"value": 778.5098493750868,
+"provenance": "fitted",
+"unit": null,
+"ci95": [
+777.9719004225475,
+779.0477983276261
+]
+},
+"k": {
+"value": null,
+"provenance": "unknown",
+"reason": "identified set I1(8), I1(4), I1(2), I1(1), I6, I5, I1(16) disagrees on (k, c) by more than 2 %",
+"probe": "record a take at a third rate or with a stall (R5)"
+},
+"c": {
+"value": null,
+"provenance": "unknown",
+"reason": "identified set I1(8), I1(4), I1(2), I1(1), I6, I5, I1(16) disagrees on (k, c) by more than 2 %",
+"probe": "record a take at a third rate or with a stall (R5)"
+}
+},
+"integrator": {
+"set": [
+"I1(8)",
+"I1(4)",
+"I1(2)",
+"I1(1)",
+"I6",
+"I5",
+"I1(16)"
+],
+"identified": false,
+"takes": 1,
+"reason": "identified set I1(8), I1(4), I1(2), I1(1), I6, I5, I1(16) disagrees on (k, c) by more than 2 %"
+},
+"law": "unknown",
+"valid_at": {
+"frame_ms": 16.666666666666668,
+"refresh_hz": 59.99999999999999
+},
+"valid_for_reproduction_only": true
+},
+"derived": {
+"overshoot": 0,
+"settle2": 1617.0160974459359,
+"settle99": 1848.1613440486663,
+"k": 33.7864859190792,
+"c": 14.267358184139484,
+"t0": 3049.9999996666666,
+"omega": 5.812614379010464,
+"zeta": 1.2272754782821453,
+"overshoot_ci95": [
+0,
+0
+]
+},
+"fit": {
+"n": 119,
+"rms": 1.366196944643629,
+"nrmse": 0.01709630642739743,
+"sigma_floor": 0.5,
+"explain_bar": 1.5,
+"quantum": null,
+"bic": 98.15897807319664,
+"holdout": {
+"method": "last-30%-of-[t0,t99]",
+"rms": 0.6760715323259829,
+"pass": true
+}
+},
+"runnerUp": {
+"family": "spring-analytic",
+"cls": "spring",
+"rms": 1.366196944643629,
+"bic": 98.15897807319664,
+"L": 74.26336060763899,
+"params": {
+"t0": 3049.9999996666666,
+"omega": 5.812614379010464,
+"zeta": 1.2272754782821453,
+"v0": -503.35465777725295,
+"target": 778.5098493750868
+}
+},
+"rejected": [
+{
+"family": "named:linear",
+"cls": "tween",
+"rms": 5.877932248736267,
+"reason": "rms 5.88e+0 > explain bar 1.50e+0"
+},
+{
+"family": "named:ease",
+"cls": "tween",
+"rms": 5.4327236223050335,
+"reason": "rms 5.43e+0 > explain bar 1.50e+0"
+}
+],
+"ambiguity": null,
+"replay": {
+"samples": 119,
+"linear": null
+},
+"unknowns": [
+{
+"id": "unk_spring_integrator",
+"reason": "identified set I1(8), I1(4), I1(2), I1(1), I6, I5, I1(16) disagrees on (k, c) by more than 2 % (U4)",
+"probe": "record a take at a third rate or with a stall (R5)"
+}
+],
+"flags": [],
+"evidence": {
+"takes": [
+"19a51e6b8fa6439d"
+],
+"location": {
+"kind": "time_range",
+"range": [
+3083.333333,
+5050
+]
+}
+},
+"downgrades": []
+},
+{
+"schema": "reva.motion/0",
+"target": {
+"el": null,
+"desc": "canvas",
+"channel": "pix:pix:m:n",
+"untrusted_content": true
+},
+"attribution": {
+"label": "time-driven",
+"provenance": "inferred",
+"evidence": "no input precedes any motion burst by \u2264 2 frames (no idle-control take)"
+},
+"tier": "fitted",
+"class": "spring",
+"model": {
+"family": "spring",
+"params": {
+"t0": {
+"value": 682.8324238940596,
+"provenance": "fitted",
+"unit": "ms",
+"ci95": [
+654.6565224648098,
+711.0083253233095
+]
+},
+"omega": {
+"value": 147.616273977621,
+"provenance": "fitted",
+"unit": "rad/s",
+"ci95": [
+144.75844523162584,
+150.75832511127982
+],
+"valid_for_reproduction_only": true
+},
+"zeta": {
+"value": 0.008120970289083011,
+"provenance": "fitted",
+"unit": null,
+"ci95": [
+-0.006494859096089619,
+0.026624963900619532
+],
+"valid_for_reproduction_only": true
+},
+"v0": {
+"value": 118.89284768079757,
+"provenance": "fitted",
+"unit": "value/s",
+"ci95": [
+-1042.610090217053,
+1280.3957855786482
+]
+},
+"x0": {
+"value": 302.0000032192821,
+"provenance": "fitted",
+"unit": null,
+"ci95": [
+299.0466064935928,
+304.95339994497147
+]
+},
+"target": {
+"value": 303.8684819434266,
+"provenance": "fitted",
+"unit": null,
+"ci95": [
+303.3825052107279,
+304.3544586761253
+]
+},
+"k": {
+"value": null,
+"provenance": "unknown",
+"reason": "identified set I1(4), I1(8), I6, I1(1), I1(2), I4 disagrees on (k, c) by more than 2 %",
+"probe": "record a take at a third rate or with a stall (R5)"
+},
+"c": {
+"value": null,
+"provenance": "unknown",
+"reason": "identified set I1(4), I1(8), I6, I1(1), I1(2), I4 disagrees on (k, c) by more than 2 %",
+"probe": "record a take at a third rate or with a stall (R5)"
+}
+},
+"integrator": {
+"set": [
+"I1(4)",
+"I1(8)",
+"I6",
+"I1(1)",
+"I1(2)",
+"I4"
+],
+"identified": false,
+"takes": 1,
+"reason": "identified set I1(4), I1(8), I6, I1(1), I1(2), I4 disagrees on (k, c) by more than 2 %"
+},
+"law": "unknown",
+"valid_at": {
+"frame_ms": 16.666666666666668,
+"refresh_hz": 59.99999999999999
+},
+"valid_for_reproduction_only": true,
+"startJump": {
+"from": 306,
+"to": 302,
+"at": 666.666667,
+"provenance": "measured"
+}
+},
+"derived": {
+"overshoot": 1.9625544952264462,
+"settle2": 3318.3532646710587,
+"settle99": 3891.432372973979,
+"k": 21790.56434303607,
+"c": 2.3975747503147957,
+"t0": 682.8324238940596,
+"omega": 147.616273977621,
+"zeta": 0.008120970289083011,
+"overshoot_ci95": [
+1.8516666145859817,
+2.0132705932196298
+]
+},
+"fit": {
+"n": 38,
+"rms": 1.330541700226912,
+"nrmse": 0.166317712528364,
+"sigma_floor": 0.5,
+"explain_bar": 1.5,
+"quantum": 1,
+"bic": 43.53006456476764,
+"holdout": {
+"method": "last-30%-of-[t0,t99]",
+"rms": null,
+"pass": true,
+"note": "too few held-out frames"
+}
+},
+"runnerUp": {
+"family": "spring-analytic",
+"cls": "spring",
+"rms": 1.330541700226912,
+"bic": 43.53006456476764,
+"L": 21.704547606409324,
+"params": {
+"t0": 682.8324238940596,
+"omega": 147.616273977621,
+"zeta": 0.008120970289083011,
+"v0": 118.89284768079757,
+"x0": 302.0000032192821,
+"target": 303.8684819434266
+}
+},
+"rejected": [
+{
+"family": "named:linear",
+"cls": "tween",
+"rms": 1.7192568917391247,
+"reason": "rms 1.72e+0 > explain bar 1.50e+0"
+},
+{
+"family": "named:ease",
+"cls": "tween",
+"rms": 1.6975214129336988,
+"reason": "rms 1.70e+0 > explain bar 1.50e+0"
+}
+],
+"ambiguity": null,
+"replay": {
+"samples": 38,
+"linear": null
+},
+"unknowns": [
+{
+"id": "unk_spring_integrator",
+"reason": "identified set I1(4), I1(8), I6, I1(1), I1(2), I4 disagrees on (k, c) by more than 2 % (U4)",
+"probe": "record a take at a third rate or with a stall (R5)"
+}
+],
+"flags": [],
+"evidence": {
+"takes": [
+"19a51e6b8fa6439d"
+],
+"location": {
+"kind": "time_range",
+"range": [
+666.666667,
+1283.333333
+]
+}
+},
+"downgrades": []
+},
+{
+"schema": "reva.motion/0",
+"target": {
+"el": null,
+"desc": "canvas",
+"channel": "pix:pix:m:n",
+"untrusted_content": true
+},
+"attribution": {
+"label": "time-driven",
+"provenance": "inferred",
+"evidence": "no input precedes any motion burst by \u2264 2 frames (no idle-control take)"
+},
+"tier": "fitted",
+"class": "spring",
+"model": {
+"family": "spring",
+"params": {
+"t0": {
+"value": null,
+"provenance": "unknown",
+"unit": "ms",
+"ci95": [
+1276.6019376125023,
+1287.6722331467345
+],
+"reason": "holdout failed",
+"withheld_value": 1282.1370853796184
+},
+"omega": {
+"value": null,
+"provenance": "unknown",
+"unit": "rad/s",
+"ci95": [
+34.10501738383816,
+1082.2139829727246
+],
+"valid_for_reproduction_only": true,
+"reason": "holdout failed",
+"withheld_value": 85.308682902453
+},
+"zeta": {
+"value": null,
+"provenance": "unknown",
+"unit": null,
+"ci95": [
+0.05760282103430754,
+8.515167528695065
+],
+"valid_for_reproduction_only": true,
+"reason": "holdout failed",
+"withheld_value": 0.6000897195986307
+},
+"v0": {
+"value": null,
+"provenance": "unknown",
+"unit": "value/s",
+"ci95": [
+-1231.0516971650445,
+2992.707150344621
+],
+"reason": "holdout failed",
+"withheld_value": 880.8277265897883
+},
+"target": {
+"value": null,
+"provenance": "unknown",
+"unit": null,
+"ci95": [
+302.1891327049536,
+304.49243045820145
+],
+"reason": "holdout failed",
+"withheld_value": 303.3407815815775
+},
+"k": {
+"value": null,
+"provenance": "unknown",
+"reason": "identified set I1(16), I1(8), I1(4), I1(2), I6, I1(1), I7, I5, I4 disagrees on (k, c) by more than 2 %",
+"probe": "record a take at a third rate or with a stall (R5)"
+},
+"c": {
+"value": null,
+"provenance": "unknown",
+"reason": "identified set I1(16), I1(8), I1(4), I1(2), I6, I1(1), I7, I5, I4 disagrees on (k, c) by more than 2 %",
+"probe": "record a take at a third rate or with a stall (R5)"
+}
+},
+"integrator": {
+"set": [
+"I1(16)",
+"I1(8)",
+"I1(4)",
+"I1(2)",
+"I6",
+"I1(1)",
+"I7",
+"I5",
+"I4"
+],
+"identified": false,
+"takes": 1,
+"reason": "identified set I1(16), I1(8), I1(4), I1(2), I6, I1(1), I7, I5, I4 disagrees on (k, c) by more than 2 %"
+},
+"law": "unknown",
+"valid_at": {
+"frame_ms": 16.666666666666668,
+"refresh_hz": 59.99999999999999
+},
+"valid_for_reproduction_only": true
+},
+"derived": {
+"overshoot": 4.949025094958516,
+"settle2": 131.56130612905326,
+"settle99": 160.51065366925468,
+"k": 7277.571378551277,
+"c": 102.38572720452304,
+"t0": 1282.1370853796184,
+"omega": 85.308682902453,
+"zeta": 0.6000897195986307,
+"overshoot_ci95": [
+0,
+43.58312797184078
+]
+},
+"fit": {
+"n": 15,
+"rms": 1.3363983690627286,
+"nrmse": 0.16704979613284107,
+"sigma_floor": 0.5,
+"explain_bar": 1.5,
+"quantum": 1,
+"bic": 22.239597338621365,
+"holdout": {
+"method": "last-30%-of-[t0,t99]",
+"rms": 2.841703303707537,
+"pass": false
+}
+},
+"runnerUp": {
+"family": "step",
+"cls": "step",
+"rms": 1.697336849583011,
+"bic": 21.28791431190501,
+"L": 15.87181390970059,
+"params": {
+"before": 304.428571428576,
+"after": 303.249999999974
+}
+},
+"rejected": [
+{
+"family": "named:linear",
+"cls": "tween",
+"rms": 1.96638416050035,
+"reason": "rms 1.97e+0 > explain bar 1.50e+0"
+},
+{
+"family": "named:ease",
+"cls": "tween",
+"rms": 1.96638416050035,
+"reason": "rms 1.97e+0 > explain bar 1.50e+0"
+}
+],
+"ambiguity": null,
+"replay": {
+"samples": 15,
+"linear": null
+},
+"unknowns": [
+{
+"id": "unk_spring_integrator",
+"reason": "identified set I1(16), I1(8), I1(4), I1(2), I6, I1(1), I7, I5, I4 disagrees on (k, c) by more than 2 % (U4)",
+"probe": "record a take at a third rate or with a stall (R5)"
+}
+],
+"flags": [],
+"evidence": {
+"takes": [
+"19a51e6b8fa6439d"
+],
+"location": {
+"kind": "time_range",
+"range": [
+1266.666667,
+1500
+]
+}
+},
+"downgrades": [
+{
+"param": "t0",
+"reason": "holdout failed"
+},
+{
+"param": "omega",
+"reason": "holdout failed"
+},
+{
+"param": "zeta",
+"reason": "holdout failed"
+},
+{
+"param": "v0",
+"reason": "holdout failed"
+},
+{
+"param": "target",
+"reason": "holdout failed"
+}
+]
+},
+{
+"schema": "reva.motion/0",
+"target": {
+"el": null,
+"desc": "canvas",
+"channel": "pix:pix:m:n",
+"untrusted_content": true
+},
+"attribution": {
+"label": "time-driven",
+"provenance": "inferred",
+"evidence": "no input precedes any motion burst by \u2264 2 frames (no idle-control take)"
+},
+"tier": "fitted",
+"class": "step",
+"model": {
+"family": "step",
+"params": {
+"before": {
+"value": 300,
+"provenance": "measured"
+},
+"after": {
+"value": 302,
+"provenance": "measured"
+},
+"at": {
+"value": 2091.6666665000002,
+"provenance": "fitted",
+"unit": "ms",
+"ci95": [
+2083.333333,
+2100
+],
+"note": "the change happened between these two frames"
+}
+},
+"integrator": null,
+"law": null,
+"valid_at": {
+"frame_ms": 16.666666666666668,
+"refresh_hz": 59.99999999999999
+}
+},
+"derived": {
+"t0": 2083.333333
+},
+"fit": {
+"n": 2,
+"rms": 0,
+"nrmse": 0,
+"sigma_floor": 0.5,
+"explain_bar": 1.5,
+"quantum": 1,
+"bic": null,
+"holdout": {
+"method": "n/a (one-frame change)",
+"rms": 0,
+"pass": true
+}
+},
+"runnerUp": null,
+"rejected": [],
+"ambiguity": null,
+"replay": null,
+"unknowns": [],
+"flags": [],
+"evidence": {
+"takes": [
+"19a51e6b8fa6439d"
+],
+"location": {
+"kind": "frame_index",
+"range": [
+125,
+126
+]
+}
+}
+}
+],
+"stagger": [],
+"pins": [],
+"statics": {
+"count": 15,
+"sample": [
+{
+"key": "canvas|pix:pix:m:y",
+"desc": "canvas",
+"ch": "pix:pix:m:y",
+"coverage": "not observed moving in these takes"
+},
+{
+"key": "canvas|pix:pix:n:y",
+"desc": "canvas",
+"ch": "pix:pix:n:y",
+"coverage": "not observed moving in these takes"
+},
+{
+"key": "0|ren:tx",
+"desc": "CANVAS.cv",
+"ch": "ren:tx",
+"coverage": "not observed moving in these takes"
+},
+{
+"key": "0|ren:ty",
+"desc": "CANVAS.cv",
+"ch": "ren:ty",
+"coverage": "not observed moving in these takes"
+}
+]
+},
+"pruned": [],
+"unknowns": [
+{
+"id": "unk_spring_integrator",
+"reason": "identified set I1(8), I1(4), I1(2), I1(1), I6, I5, I1(16) disagrees on (k, c) by more than 2 % (U4)",
+"probe": "record a take at a third rate or with a stall (R5)",
+"target": "canvas|pix:pix:m:x"
+},
+{
+"id": "unk_too_few_samples",
+"reason": "3 moving frames (< 8, U1)",
+"probe": "longer take / denser input / a slower rate",
+"target": "canvas|pix:pix:m:n"
+},
+{
+"id": "unk_spring_integrator",
+"reason": "identified set I1(4), I1(8), I6, I1(1), I1(2), I4 disagrees on (k, c) by more than 2 % (U4)",
+"probe": "record a take at a third rate or with a stall (R5)",
+"target": "canvas|pix:pix:m:n"
+},
+{
+"id": "unk_spring_integrator",
+"reason": "identified set I1(16), I1(8), I1(4), I1(2), I6, I1(1), I7, I5, I4 disagrees on (k, c) by more than 2 % (U4)",
+"probe": "record a take at a third rate or with a stall (R5)",
+"target": "canvas|pix:pix:m:n"
+},
+{
+"id": "unk_unexplained",
+"reason": "no family explains (best spring-analytic rms 1.54e+0)",
+"probe": "more takes / a probe rate; inspect the replay samples",
+"target": "canvas|pix:pix:m:n"
+},
+{
+"id": "unk_too_few_samples",
+"reason": "6 moving frames (< 8, U1)",
+"probe": "longer take / denser input / a slower rate",
+"target": "canvas|pix:pix:m:n"
+},
+{
+"id": "unk_too_few_samples",
+"reason": "2 moving frames (< 8, U1)",
+"probe": "longer take / denser input / a slower rate",
+"target": "canvas|pix:pix:m:n"
+},
+{
+"id": "unk_too_few_samples",
+"reason": "5 moving frames (< 8, U1)",
+"probe": "longer take / denser input / a slower rate",
+"target": "canvas|pix:pix:m:n"
+},
+{
+"id": "unk_too_few_samples",
+"reason": "4 moving frames (< 8, U1)",
+"probe": "longer take / denser input / a slower rate",
+"target": "canvas|pix:pix:m:n"
+},
+{
+"id": "unk_too_few_samples",
+"reason": "2 moving frames (< 8, U1)",
+"probe": "longer take / denser input / a slower rate",
+"target": "canvas|pix:pix:m:n"
+},
+{
+"id": "unk_unexplained",
+"reason": "no family explains (best step rms 2.06e+0)",
+"probe": "more takes / a probe rate; inspect the replay samples",
+"target": "canvas|pix:pix:m:n"
+},
+{
+"id": "unk_too_few_samples",
+"reason": "4 moving frames (< 8, U1)",
+"probe": "longer take / denser input / a slower rate",
+"target": "canvas|pix:pix:m:n"
+}
+]
+}

@@ -1,0 +1,1051 @@
+{
+ "schema": "reva.specimen.time/0",
+ "id": "m06-go",
+ "origin": "lab",
+ "source": {
+  "kind": "labtruth",
+  "schema": "reva.labtruth/0",
+  "route": "m06",
+  "variant": "go",
+  "regime": "R3",
+  "params": {
+   "D": 1500,
+   "hold": 0.6,
+   "bz": [
+    0.25,
+    0.8,
+    0.25,
+    1
+   ],
+   "base": 12,
+   "step": 30,
+   "n": 6
+  }
+ },
+ "timeline": {
+  "frameMs": 8.333333,
+  "refreshHz": 120,
+  "leadMs": 500,
+  "sourceShiftMs": 50,
+  "durationMs": 2654,
+  "hasLoop": false
+ },
+ "viewport": {
+  "width": 1280,
+  "height": 800
+ },
+ "elements": [
+  {
+   "id": "e0",
+   "key": "#b0",
+   "x": 40,
+   "y": 60,
+   "w": 56,
+   "h": 56,
+   "tf": {
+    "tx": true,
+    "ty": false,
+    "rz": true,
+    "sx": false,
+    "sy": false
+   }
+  },
+  {
+   "id": "e1",
+   "key": "#b1",
+   "x": 136,
+   "y": 60,
+   "w": 56,
+   "h": 56,
+   "tf": {
+    "tx": true,
+    "ty": false,
+    "rz": true,
+    "sx": false,
+    "sy": false
+   }
+  },
+  {
+   "id": "e2",
+   "key": "#b2",
+   "x": 232,
+   "y": 60,
+   "w": 56,
+   "h": 56,
+   "tf": {
+    "tx": true,
+    "ty": false,
+    "rz": true,
+    "sx": false,
+    "sy": false
+   }
+  },
+  {
+   "id": "e3",
+   "key": "#b3",
+   "x": 328,
+   "y": 60,
+   "w": 56,
+   "h": 56,
+   "tf": {
+    "tx": true,
+    "ty": false,
+    "rz": true,
+    "sx": false,
+    "sy": false
+   }
+  },
+  {
+   "id": "e4",
+   "key": "#b4",
+   "x": 424,
+   "y": 60,
+   "w": 56,
+   "h": 56,
+   "tf": {
+    "tx": true,
+    "ty": false,
+    "rz": true,
+    "sx": false,
+    "sy": false
+   }
+  },
+  {
+   "id": "e5",
+   "key": "#b5",
+   "x": 520,
+   "y": 60,
+   "w": 56,
+   "h": 56,
+   "tf": {
+    "tx": true,
+    "ty": false,
+    "rz": true,
+    "sx": false,
+    "sy": false
+   }
+  }
+ ],
+ "tracks": [
+  {
+   "id": "t0",
+   "el": 0,
+   "channel": "tx",
+   "impl": "css",
+   "label": "declared keyframes",
+   "provenance": {
+    "tier": "truth",
+    "route": "m06",
+    "kind": "css"
+   },
+   "motion": {
+    "kind": "keyframes",
+    "startMs": 503.666667,
+    "durationMs": 1500,
+    "iterations": 1,
+    "direction": "normal",
+    "fill": "both",
+    "easingScope": "segment",
+    "easing": null,
+    "frames": [
+     {
+      "offset": 0,
+      "value": 0,
+      "easing": {
+       "kind": "linear"
+      }
+     },
+     {
+      "offset": 0.6,
+      "value": 0,
+      "easing": {
+       "kind": "bezier",
+       "p": [
+        0.25,
+        0.8,
+        0.25,
+        1
+       ]
+      }
+     },
+     {
+      "offset": 1,
+      "value": 240,
+      "easing": {
+       "kind": "linear"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "t1",
+   "el": 0,
+   "channel": "rz",
+   "impl": "css",
+   "label": "declared keyframes",
+   "provenance": {
+    "tier": "truth",
+    "route": "m06",
+    "kind": "css"
+   },
+   "motion": {
+    "kind": "keyframes",
+    "startMs": 503.666667,
+    "durationMs": 1500,
+    "iterations": 1,
+    "direction": "normal",
+    "fill": "both",
+    "easingScope": "segment",
+    "easing": null,
+    "frames": [
+     {
+      "offset": 0,
+      "value": 0,
+      "easing": {
+       "kind": "linear"
+      }
+     },
+     {
+      "offset": 0.6,
+      "value": 0,
+      "easing": {
+       "kind": "bezier",
+       "p": [
+        0.25,
+        0.8,
+        0.25,
+        1
+       ]
+      }
+     },
+     {
+      "offset": 1,
+      "value": 14,
+      "easing": {
+       "kind": "linear"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "t2",
+   "el": 0,
+   "channel": "opacity",
+   "impl": "css",
+   "label": "declared keyframes",
+   "provenance": {
+    "tier": "truth",
+    "route": "m06",
+    "kind": "css"
+   },
+   "motion": {
+    "kind": "keyframes",
+    "startMs": 503.666667,
+    "durationMs": 1500,
+    "iterations": 1,
+    "direction": "normal",
+    "fill": "both",
+    "easingScope": "segment",
+    "easing": null,
+    "frames": [
+     {
+      "offset": 0,
+      "value": 0.25,
+      "easing": {
+       "kind": "linear"
+      }
+     },
+     {
+      "offset": 0.6,
+      "value": 0.25,
+      "easing": {
+       "kind": "bezier",
+       "p": [
+        0.25,
+        0.8,
+        0.25,
+        1
+       ]
+      }
+     },
+     {
+      "offset": 1,
+      "value": 1,
+      "easing": {
+       "kind": "linear"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "t3",
+   "el": 1,
+   "channel": "tx",
+   "impl": "css",
+   "label": "declared keyframes",
+   "provenance": {
+    "tier": "truth",
+    "route": "m06",
+    "kind": "css"
+   },
+   "motion": {
+    "kind": "keyframes",
+    "startMs": 533.666667,
+    "durationMs": 1500,
+    "iterations": 1,
+    "direction": "normal",
+    "fill": "both",
+    "easingScope": "segment",
+    "easing": null,
+    "frames": [
+     {
+      "offset": 0,
+      "value": 0,
+      "easing": {
+       "kind": "linear"
+      }
+     },
+     {
+      "offset": 0.6,
+      "value": 0,
+      "easing": {
+       "kind": "bezier",
+       "p": [
+        0.25,
+        0.8,
+        0.25,
+        1
+       ]
+      }
+     },
+     {
+      "offset": 1,
+      "value": 240,
+      "easing": {
+       "kind": "linear"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "t4",
+   "el": 1,
+   "channel": "rz",
+   "impl": "css",
+   "label": "declared keyframes",
+   "provenance": {
+    "tier": "truth",
+    "route": "m06",
+    "kind": "css"
+   },
+   "motion": {
+    "kind": "keyframes",
+    "startMs": 533.666667,
+    "durationMs": 1500,
+    "iterations": 1,
+    "direction": "normal",
+    "fill": "both",
+    "easingScope": "segment",
+    "easing": null,
+    "frames": [
+     {
+      "offset": 0,
+      "value": 0,
+      "easing": {
+       "kind": "linear"
+      }
+     },
+     {
+      "offset": 0.6,
+      "value": 0,
+      "easing": {
+       "kind": "bezier",
+       "p": [
+        0.25,
+        0.8,
+        0.25,
+        1
+       ]
+      }
+     },
+     {
+      "offset": 1,
+      "value": 14,
+      "easing": {
+       "kind": "linear"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "t5",
+   "el": 1,
+   "channel": "opacity",
+   "impl": "css",
+   "label": "declared keyframes",
+   "provenance": {
+    "tier": "truth",
+    "route": "m06",
+    "kind": "css"
+   },
+   "motion": {
+    "kind": "keyframes",
+    "startMs": 533.666667,
+    "durationMs": 1500,
+    "iterations": 1,
+    "direction": "normal",
+    "fill": "both",
+    "easingScope": "segment",
+    "easing": null,
+    "frames": [
+     {
+      "offset": 0,
+      "value": 0.25,
+      "easing": {
+       "kind": "linear"
+      }
+     },
+     {
+      "offset": 0.6,
+      "value": 0.25,
+      "easing": {
+       "kind": "bezier",
+       "p": [
+        0.25,
+        0.8,
+        0.25,
+        1
+       ]
+      }
+     },
+     {
+      "offset": 1,
+      "value": 1,
+      "easing": {
+       "kind": "linear"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "t6",
+   "el": 2,
+   "channel": "tx",
+   "impl": "css",
+   "label": "declared keyframes",
+   "provenance": {
+    "tier": "truth",
+    "route": "m06",
+    "kind": "css"
+   },
+   "motion": {
+    "kind": "keyframes",
+    "startMs": 563.666667,
+    "durationMs": 1500,
+    "iterations": 1,
+    "direction": "normal",
+    "fill": "both",
+    "easingScope": "segment",
+    "easing": null,
+    "frames": [
+     {
+      "offset": 0,
+      "value": 0,
+      "easing": {
+       "kind": "linear"
+      }
+     },
+     {
+      "offset": 0.6,
+      "value": 0,
+      "easing": {
+       "kind": "bezier",
+       "p": [
+        0.25,
+        0.8,
+        0.25,
+        1
+       ]
+      }
+     },
+     {
+      "offset": 1,
+      "value": 240,
+      "easing": {
+       "kind": "linear"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "t7",
+   "el": 2,
+   "channel": "rz",
+   "impl": "css",
+   "label": "declared keyframes",
+   "provenance": {
+    "tier": "truth",
+    "route": "m06",
+    "kind": "css"
+   },
+   "motion": {
+    "kind": "keyframes",
+    "startMs": 563.666667,
+    "durationMs": 1500,
+    "iterations": 1,
+    "direction": "normal",
+    "fill": "both",
+    "easingScope": "segment",
+    "easing": null,
+    "frames": [
+     {
+      "offset": 0,
+      "value": 0,
+      "easing": {
+       "kind": "linear"
+      }
+     },
+     {
+      "offset": 0.6,
+      "value": 0,
+      "easing": {
+       "kind": "bezier",
+       "p": [
+        0.25,
+        0.8,
+        0.25,
+        1
+       ]
+      }
+     },
+     {
+      "offset": 1,
+      "value": 14,
+      "easing": {
+       "kind": "linear"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "t8",
+   "el": 2,
+   "channel": "opacity",
+   "impl": "css",
+   "label": "declared keyframes",
+   "provenance": {
+    "tier": "truth",
+    "route": "m06",
+    "kind": "css"
+   },
+   "motion": {
+    "kind": "keyframes",
+    "startMs": 563.666667,
+    "durationMs": 1500,
+    "iterations": 1,
+    "direction": "normal",
+    "fill": "both",
+    "easingScope": "segment",
+    "easing": null,
+    "frames": [
+     {
+      "offset": 0,
+      "value": 0.25,
+      "easing": {
+       "kind": "linear"
+      }
+     },
+     {
+      "offset": 0.6,
+      "value": 0.25,
+      "easing": {
+       "kind": "bezier",
+       "p": [
+        0.25,
+        0.8,
+        0.25,
+        1
+       ]
+      }
+     },
+     {
+      "offset": 1,
+      "value": 1,
+      "easing": {
+       "kind": "linear"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "t9",
+   "el": 3,
+   "channel": "tx",
+   "impl": "css",
+   "label": "declared keyframes",
+   "provenance": {
+    "tier": "truth",
+    "route": "m06",
+    "kind": "css"
+   },
+   "motion": {
+    "kind": "keyframes",
+    "startMs": 593.666667,
+    "durationMs": 1500,
+    "iterations": 1,
+    "direction": "normal",
+    "fill": "both",
+    "easingScope": "segment",
+    "easing": null,
+    "frames": [
+     {
+      "offset": 0,
+      "value": 0,
+      "easing": {
+       "kind": "linear"
+      }
+     },
+     {
+      "offset": 0.6,
+      "value": 0,
+      "easing": {
+       "kind": "bezier",
+       "p": [
+        0.25,
+        0.8,
+        0.25,
+        1
+       ]
+      }
+     },
+     {
+      "offset": 1,
+      "value": 240,
+      "easing": {
+       "kind": "linear"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "t10",
+   "el": 3,
+   "channel": "rz",
+   "impl": "css",
+   "label": "declared keyframes",
+   "provenance": {
+    "tier": "truth",
+    "route": "m06",
+    "kind": "css"
+   },
+   "motion": {
+    "kind": "keyframes",
+    "startMs": 593.666667,
+    "durationMs": 1500,
+    "iterations": 1,
+    "direction": "normal",
+    "fill": "both",
+    "easingScope": "segment",
+    "easing": null,
+    "frames": [
+     {
+      "offset": 0,
+      "value": 0,
+      "easing": {
+       "kind": "linear"
+      }
+     },
+     {
+      "offset": 0.6,
+      "value": 0,
+      "easing": {
+       "kind": "bezier",
+       "p": [
+        0.25,
+        0.8,
+        0.25,
+        1
+       ]
+      }
+     },
+     {
+      "offset": 1,
+      "value": 14,
+      "easing": {
+       "kind": "linear"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "t11",
+   "el": 3,
+   "channel": "opacity",
+   "impl": "css",
+   "label": "declared keyframes",
+   "provenance": {
+    "tier": "truth",
+    "route": "m06",
+    "kind": "css"
+   },
+   "motion": {
+    "kind": "keyframes",
+    "startMs": 593.666667,
+    "durationMs": 1500,
+    "iterations": 1,
+    "direction": "normal",
+    "fill": "both",
+    "easingScope": "segment",
+    "easing": null,
+    "frames": [
+     {
+      "offset": 0,
+      "value": 0.25,
+      "easing": {
+       "kind": "linear"
+      }
+     },
+     {
+      "offset": 0.6,
+      "value": 0.25,
+      "easing": {
+       "kind": "bezier",
+       "p": [
+        0.25,
+        0.8,
+        0.25,
+        1
+       ]
+      }
+     },
+     {
+      "offset": 1,
+      "value": 1,
+      "easing": {
+       "kind": "linear"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "t12",
+   "el": 4,
+   "channel": "tx",
+   "impl": "css",
+   "label": "declared keyframes",
+   "provenance": {
+    "tier": "truth",
+    "route": "m06",
+    "kind": "css"
+   },
+   "motion": {
+    "kind": "keyframes",
+    "startMs": 623.666667,
+    "durationMs": 1500,
+    "iterations": 1,
+    "direction": "normal",
+    "fill": "both",
+    "easingScope": "segment",
+    "easing": null,
+    "frames": [
+     {
+      "offset": 0,
+      "value": 0,
+      "easing": {
+       "kind": "linear"
+      }
+     },
+     {
+      "offset": 0.6,
+      "value": 0,
+      "easing": {
+       "kind": "bezier",
+       "p": [
+        0.25,
+        0.8,
+        0.25,
+        1
+       ]
+      }
+     },
+     {
+      "offset": 1,
+      "value": 240,
+      "easing": {
+       "kind": "linear"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "t13",
+   "el": 4,
+   "channel": "rz",
+   "impl": "css",
+   "label": "declared keyframes",
+   "provenance": {
+    "tier": "truth",
+    "route": "m06",
+    "kind": "css"
+   },
+   "motion": {
+    "kind": "keyframes",
+    "startMs": 623.666667,
+    "durationMs": 1500,
+    "iterations": 1,
+    "direction": "normal",
+    "fill": "both",
+    "easingScope": "segment",
+    "easing": null,
+    "frames": [
+     {
+      "offset": 0,
+      "value": 0,
+      "easing": {
+       "kind": "linear"
+      }
+     },
+     {
+      "offset": 0.6,
+      "value": 0,
+      "easing": {
+       "kind": "bezier",
+       "p": [
+        0.25,
+        0.8,
+        0.25,
+        1
+       ]
+      }
+     },
+     {
+      "offset": 1,
+      "value": 14,
+      "easing": {
+       "kind": "linear"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "t14",
+   "el": 4,
+   "channel": "opacity",
+   "impl": "css",
+   "label": "declared keyframes",
+   "provenance": {
+    "tier": "truth",
+    "route": "m06",
+    "kind": "css"
+   },
+   "motion": {
+    "kind": "keyframes",
+    "startMs": 623.666667,
+    "durationMs": 1500,
+    "iterations": 1,
+    "direction": "normal",
+    "fill": "both",
+    "easingScope": "segment",
+    "easing": null,
+    "frames": [
+     {
+      "offset": 0,
+      "value": 0.25,
+      "easing": {
+       "kind": "linear"
+      }
+     },
+     {
+      "offset": 0.6,
+      "value": 0.25,
+      "easing": {
+       "kind": "bezier",
+       "p": [
+        0.25,
+        0.8,
+        0.25,
+        1
+       ]
+      }
+     },
+     {
+      "offset": 1,
+      "value": 1,
+      "easing": {
+       "kind": "linear"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "t15",
+   "el": 5,
+   "channel": "tx",
+   "impl": "css",
+   "label": "declared keyframes",
+   "provenance": {
+    "tier": "truth",
+    "route": "m06",
+    "kind": "css"
+   },
+   "motion": {
+    "kind": "keyframes",
+    "startMs": 653.666667,
+    "durationMs": 1500,
+    "iterations": 1,
+    "direction": "normal",
+    "fill": "both",
+    "easingScope": "segment",
+    "easing": null,
+    "frames": [
+     {
+      "offset": 0,
+      "value": 0,
+      "easing": {
+       "kind": "linear"
+      }
+     },
+     {
+      "offset": 0.6,
+      "value": 0,
+      "easing": {
+       "kind": "bezier",
+       "p": [
+        0.25,
+        0.8,
+        0.25,
+        1
+       ]
+      }
+     },
+     {
+      "offset": 1,
+      "value": 240,
+      "easing": {
+       "kind": "linear"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "t16",
+   "el": 5,
+   "channel": "rz",
+   "impl": "css",
+   "label": "declared keyframes",
+   "provenance": {
+    "tier": "truth",
+    "route": "m06",
+    "kind": "css"
+   },
+   "motion": {
+    "kind": "keyframes",
+    "startMs": 653.666667,
+    "durationMs": 1500,
+    "iterations": 1,
+    "direction": "normal",
+    "fill": "both",
+    "easingScope": "segment",
+    "easing": null,
+    "frames": [
+     {
+      "offset": 0,
+      "value": 0,
+      "easing": {
+       "kind": "linear"
+      }
+     },
+     {
+      "offset": 0.6,
+      "value": 0,
+      "easing": {
+       "kind": "bezier",
+       "p": [
+        0.25,
+        0.8,
+        0.25,
+        1
+       ]
+      }
+     },
+     {
+      "offset": 1,
+      "value": 14,
+      "easing": {
+       "kind": "linear"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "t17",
+   "el": 5,
+   "channel": "opacity",
+   "impl": "css",
+   "label": "declared keyframes",
+   "provenance": {
+    "tier": "truth",
+    "route": "m06",
+    "kind": "css"
+   },
+   "motion": {
+    "kind": "keyframes",
+    "startMs": 653.666667,
+    "durationMs": 1500,
+    "iterations": 1,
+    "direction": "normal",
+    "fill": "both",
+    "easingScope": "segment",
+    "easing": null,
+    "frames": [
+     {
+      "offset": 0,
+      "value": 0.25,
+      "easing": {
+       "kind": "linear"
+      }
+     },
+     {
+      "offset": 0.6,
+      "value": 0.25,
+      "easing": {
+       "kind": "bezier",
+       "p": [
+        0.25,
+        0.8,
+        0.25,
+        1
+       ]
+      }
+     },
+     {
+      "offset": 1,
+      "value": 1,
+      "easing": {
+       "kind": "linear"
+      }
+     }
+    ]
+   }
+  }
+ ],
+ "notes": [],
+ "digest": "194e9dc6cc3ecc37"
+}

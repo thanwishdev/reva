@@ -1,0 +1,1003 @@
+{
+"schema": "reva.fitresult/0",
+"takes": {
+"primary": "51591acf1b3a4d7f",
+"probe": "e1c6c53c50ef44cb",
+"idle": null
+},
+"env": {
+"lane": "hx",
+"dtMs": 8.333333333333334,
+"rateHz": 120,
+"stride": 1,
+"probeDtMs": 33.333333333333336
+},
+"flags": [],
+"records": [
+{
+"schema": "reva.motion/0",
+"target": {
+"el": 0,
+"desc": "DIV.b0",
+"channel": "drv:--x",
+"untrusted_content": true
+},
+"attribution": {
+"label": "time-driven",
+"provenance": "inferred",
+"evidence": "no input precedes any motion burst by \u2264 2 frames (no idle-control take)"
+},
+"tier": "fitted",
+"class": "spring",
+"model": {
+"family": "spring",
+"params": {
+"t0": {
+"value": 506.6372668571384,
+"provenance": "fitted",
+"unit": "ms",
+"ci95": [
+506.53394470324577,
+506.74058901103103
+]
+},
+"omega": {
+"value": 14.226548796362547,
+"provenance": "inferred",
+"unit": "rad/s",
+"ci95": [
+14.226422853801129,
+14.226674740884693
+],
+"note": "analytic equivalent; source parameters are k, c with the identified integrator"
+},
+"zeta": {
+"value": 0.4267558799219822,
+"provenance": "inferred",
+"unit": null,
+"ci95": [
+0.42674995971241714,
+0.42676180003937747
+],
+"note": "analytic equivalent; source parameters are k, c with the identified integrator"
+},
+"v0": {
+"value": -29.823405561600108,
+"provenance": "fitted",
+"unit": "value/s",
+"ci95": [
+-33.990500712591675,
+-25.65631041060854
+]
+},
+"target": {
+"value": 200.00490293953374,
+"provenance": "fitted",
+"unit": null,
+"ci95": [
+200.00372411510102,
+200.00608176396645
+]
+},
+"target1": {
+"value": -0.006087837080118368,
+"provenance": "fitted",
+"unit": null,
+"ci95": [
+-0.0071837970139066905,
+-0.004991877146330046
+]
+},
+"target2": {
+"value": 200.005810675053,
+"provenance": "fitted",
+"unit": null,
+"ci95": [
+200.0047137292545,
+200.0069076208515
+]
+},
+"target3": {
+"value": -0.005691311287465621,
+"provenance": "fitted",
+"unit": null,
+"ci95": [
+-0.006779585605430669,
+-0.004603036969500573
+]
+},
+"target4": {
+"value": 200.006580315907,
+"provenance": "fitted",
+"unit": null,
+"ci95": [
+200.0054534681976,
+200.0077071636164
+]
+},
+"target5": {
+"value": -0.00109855808205371,
+"provenance": "fitted",
+"unit": null,
+"ci95": [
+-0.0016376072868440228,
+-0.0005595088772633974
+]
+},
+"tr1": {
+"value": 907.3718522959786,
+"provenance": "fitted",
+"unit": "ms",
+"ci95": [
+907.370446500531,
+907.3732580914261
+]
+},
+"tr2": {
+"value": 1307.3710241432368,
+"provenance": "fitted",
+"unit": "ms",
+"ci95": [
+1307.3696379499925,
+1307.3724103364812
+]
+},
+"tr3": {
+"value": 1707.3711122607745,
+"provenance": "fitted",
+"unit": "ms",
+"ci95": [
+1707.369724594056,
+1707.372499927493
+]
+},
+"tr4": {
+"value": 2107.3716044432513,
+"provenance": "fitted",
+"unit": "ms",
+"ci95": [
+2107.3702236741883,
+2107.3729852123142
+]
+},
+"tr5": {
+"value": 2507.3693910195548,
+"provenance": "fitted",
+"unit": "ms",
+"ci95": [
+2507.3679886812497,
+2507.37079335786
+]
+},
+"k": {
+"value": 199.99999999999994,
+"provenance": "fitted",
+"unit": "1/s\u00b2 (k/m)",
+"ci95": [
+199.9999997723644,
+200.0000002276355
+]
+},
+"c": {
+"value": 12,
+"provenance": "fitted",
+"unit": "1/s (c/m)",
+"ci95": [
+11.99999998104459,
+12.00000001895541
+]
+}
+},
+"integrator": {
+"set": [
+"I1(2)"
+],
+"identified": true,
+"takes": 2,
+"reason": null,
+"best": "I1(2)"
+},
+"law": "fixed-substep",
+"valid_at": {
+"frame_ms": 8.333333333333334,
+"refresh_hz": 119.99999999999999
+},
+"replayModel": {
+"hyp": "I1(2)",
+"k": 199.99999999999994,
+"c": 12,
+"t0": 506.5370487616956,
+"x0": 0,
+"v0": -73.43427551201758,
+"targets": [
+200,
+3.691062870552674e-16,
+200,
+1.7288154487562616e-14,
+199.99999999999997,
+2.0784990293450083e-15
+],
+"tr": [
+916.666666,
+1316.6666659999999,
+1716.6666659999999,
+2116.666666,
+2516.666666
+],
+"units": "k/m 1/s\u00b2, c/m 1/s"
+},
+"valid_for_reproduction_only": false
+},
+"derived": {
+"overshoot": 45.418990895665004,
+"settle2": 386.5085076557613,
+"settle99": 393.521362900941,
+"k": 202.39469065528462,
+"c": 12.142526699689432,
+"t0": 506.6372668571384,
+"omega": 14.226548796362547,
+"zeta": 0.4267558799219822,
+"overshoot_ci95": [
+45.41784885832178,
+45.42013296892194
+]
+},
+"fit": {
+"n": 399,
+"rms": 1.870077644925266e-14,
+"nrmse": 6.426461585883457e-17,
+"sigma_floor": 2.909964713759638e-07,
+"explain_bar": 0.1454982356879819,
+"quantum": null,
+"bic": -11949.974233003079,
+"holdout": {
+"method": "cross-rate (shared k, c)",
+"rms": 1.870077644925266e-14,
+"pass": true
+}
+},
+"runnerUp": {
+"family": "spring-analytic",
+"cls": "spring",
+"rms": 1.870077644925266e-14,
+"bic": -11949.974233003079,
+"L": -12009.863847171977,
+"params": {
+"t0": 506.6372668571384,
+"omega": 14.226548796362547,
+"zeta": 0.4267558799219822,
+"v0": -29.823405561600108,
+"target": 200.00490293953374,
+"target1": -0.006087837080118368,
+"target2": 200.005810675053,
+"target3": -0.005691311287465621,
+"target4": 200.006580315907,
+"target5": -0.00109855808205371,
+"tr1": 907.3718522959786,
+"tr2": 1307.3710241432368,
+"tr3": 1707.3711122607745,
+"tr4": 2107.3716044432513,
+"tr5": 2507.3693910195548
+}
+},
+"rejected": [
+{
+"family": "named:linear",
+"cls": "tween",
+"rms": 124.85441832182762,
+"reason": "rms 1.25e+2 > explain bar 1.45e-1"
+},
+{
+"family": "named:ease",
+"cls": "tween",
+"rms": 124.85407523335623,
+"reason": "rms 1.25e+2 > explain bar 1.45e-1"
+}
+],
+"ambiguity": null,
+"replay": {
+"samples": 399,
+"linear": null
+},
+"unknowns": [],
+"flags": [],
+"evidence": {
+"takes": [
+"51591acf1b3a4d7f"
+],
+"location": {
+"kind": "time_range",
+"range": [
+441.666667,
+3758.333333
+]
+}
+},
+"downgrades": []
+},
+{
+"schema": "reva.motion/0",
+"target": {
+"el": 0,
+"desc": "DIV.b0",
+"channel": "drv:--x",
+"untrusted_content": true
+},
+"attribution": {
+"label": "time-driven",
+"provenance": "inferred",
+"evidence": "no input precedes any motion burst by \u2264 2 frames (no idle-control take)"
+},
+"tier": "fitted",
+"class": "spring",
+"model": {
+"family": "spring",
+"params": {
+"t0": {
+"value": 3737.155796749852,
+"provenance": "fitted",
+"unit": "ms",
+"ci95": [
+3736.6109466158005,
+3737.7006468839036
+]
+},
+"omega": {
+"value": 14.225744303298642,
+"provenance": "fitted",
+"unit": "rad/s",
+"ci95": [
+14.20712178884688,
+14.244366817750404
+],
+"valid_for_reproduction_only": true
+},
+"zeta": {
+"value": 0.426742346199867,
+"provenance": "fitted",
+"unit": null,
+"ci95": [
+0.4260048848555862,
+0.4274811722588061
+],
+"valid_for_reproduction_only": true
+},
+"v0": {
+"value": 0.32836850688475516,
+"provenance": "fitted",
+"unit": "value/s",
+"ci95": [
+0.31246033298662507,
+0.34427668078288526
+]
+},
+"target": {
+"value": 3.230235328761472e-15,
+"provenance": "fitted",
+"unit": null,
+"ci95": [
+-3.8844404595701895e-05,
+3.884440460216237e-05
+]
+},
+"k": {
+"value": null,
+"provenance": "unknown",
+"reason": "no hypothesis explains every take with one (k, c)",
+"probe": "record a take at a third rate or with a stall (R5)"
+},
+"c": {
+"value": null,
+"provenance": "unknown",
+"reason": "no hypothesis explains every take with one (k, c)",
+"probe": "record a take at a third rate or with a stall (R5)"
+}
+},
+"integrator": {
+"set": [],
+"identified": false,
+"takes": 2,
+"reason": "no hypothesis explains every take with one (k, c)"
+},
+"law": "unknown",
+"valid_at": {
+"frame_ms": 8.333333333333334,
+"refresh_hz": 119.99999999999999
+},
+"valid_for_reproduction_only": true
+},
+"derived": {
+"overshoot": 0.027349315172506227,
+"settle2": 575.7135367635901,
+"settle99": 762.0174023085456,
+"k": 202.37180098283378,
+"c": 12.14145500085811,
+"t0": 3737.155796749852,
+"omega": 14.225744303298642,
+"zeta": 0.426742346199867,
+"overshoot_ci95": [
+0.027263578790339877,
+0.027435062771927237
+]
+},
+"fit": {
+"n": 75,
+"rms": 0.00012783784560876764,
+"nrmse": 4.393106383877856e-07,
+"sigma_floor": 2.909964713759638e-07,
+"explain_bar": 0.1454982356879819,
+"quantum": null,
+"bic": -1323.1247486825866,
+"holdout": {
+"method": "last-30%-of-[t0,t99]",
+"rms": 0.0007664747558445589,
+"pass": true
+}
+},
+"runnerUp": {
+"family": "bezier",
+"cls": "tween",
+"rms": 0.0023683357305819353,
+"bic": -1277.7498561180505,
+"L": -1305.842643480796,
+"params": {
+"t0": 3716.6666663333335,
+"D": 381.402623537927,
+"x1": 0.28014152839739664,
+"y1": -0.0375766841708745,
+"x2": 0.30967034034590196,
+"y2": 1.8715326975132356
+}
+},
+"rejected": [],
+"ambiguity": null,
+"replay": {
+"samples": 108,
+"linear": null
+},
+"unknowns": [
+{
+"id": "unk_spring_integrator",
+"reason": "no hypothesis explains every take with one (k, c) (U4)",
+"probe": "record a take at a third rate or with a stall (R5)"
+}
+],
+"flags": [],
+"evidence": {
+"takes": [
+"51591acf1b3a4d7f"
+],
+"location": {
+"kind": "time_range",
+"range": [
+3733.333333,
+4625
+]
+}
+},
+"downgrades": []
+},
+{
+"schema": "reva.motion/0",
+"target": {
+"el": 0,
+"desc": "DIV.b0",
+"channel": "ren:tx",
+"untrusted_content": true
+},
+"attribution": {
+"label": "time-driven",
+"provenance": "inferred",
+"evidence": "no input precedes any motion burst by \u2264 2 frames (no idle-control take)"
+},
+"tier": "fitted",
+"class": "spring",
+"model": {
+"family": "spring",
+"params": {
+"t0": {
+"value": 506.63787819829327,
+"provenance": "fitted",
+"unit": "ms",
+"ci95": [
+506.53404982125113,
+506.7417065753354
+]
+},
+"omega": {
+"value": 14.226546558540479,
+"provenance": "inferred",
+"unit": "rad/s",
+"ci95": [
+14.226420106434169,
+14.226673014584144
+],
+"note": "analytic equivalent; source parameters are k, c with the identified integrator"
+},
+"zeta": {
+"value": 0.42675605127616983,
+"provenance": "inferred",
+"unit": null,
+"ci95": [
+0.4267501071001685,
+0.4267619954521712
+],
+"note": "analytic equivalent; source parameters are k, c with the identified integrator"
+},
+"v0": {
+"value": -29.797777534468345,
+"provenance": "fitted",
+"unit": "value/s",
+"ci95": [
+-33.985302931307956,
+-25.610252137628734
+]
+},
+"target": {
+"value": 200.00496552341295,
+"provenance": "fitted",
+"unit": null,
+"ci95": [
+200.00378191999312,
+200.00614912683278
+]
+},
+"target1": {
+"value": -0.0060696066935652755,
+"provenance": "fitted",
+"unit": null,
+"ci95": [
+-0.007170011673046044,
+-0.004969201714084507
+]
+},
+"target2": {
+"value": 200.00582320598068,
+"provenance": "fitted",
+"unit": null,
+"ci95": [
+200.00472181130897,
+200.00692460065238
+]
+},
+"target3": {
+"value": -0.005695490442041726,
+"provenance": "fitted",
+"unit": null,
+"ci95": [
+-0.006788178118328256,
+-0.004602802765755197
+]
+},
+"target4": {
+"value": 200.00661421275944,
+"provenance": "fitted",
+"unit": null,
+"ci95": [
+200.0054827947805,
+200.00774563073838
+]
+},
+"target5": {
+"value": -0.001099950598395769,
+"provenance": "fitted",
+"unit": null,
+"ci95": [
+-0.0016411859927100382,
+-0.0005587152040814998
+]
+},
+"tr1": {
+"value": 907.371769172939,
+"provenance": "fitted",
+"unit": "ms",
+"ci95": [
+907.3703576765639,
+907.3731806693141
+]
+},
+"tr2": {
+"value": 1307.3710797278666,
+"provenance": "fitted",
+"unit": "ms",
+"ci95": [
+1307.3696879156491,
+1307.372471540084
+]
+},
+"tr3": {
+"value": 1707.3711087892705,
+"provenance": "fitted",
+"unit": "ms",
+"ci95": [
+1707.3697154996282,
+1707.3725020789127
+]
+},
+"tr4": {
+"value": 2107.371580817042,
+"provenance": "fitted",
+"unit": "ms",
+"ci95": [
+2107.3701944477953,
+2107.3729671862884
+]
+},
+"tr5": {
+"value": 2507.369376300199,
+"provenance": "fitted",
+"unit": "ms",
+"ci95": [
+2507.367968280442,
+2507.370784319956
+]
+},
+"k": {
+"value": 199.99995898075352,
+"provenance": "fitted",
+"unit": "1/s\u00b2 (k/m)",
+"ci95": [
+199.99972521131164,
+200.0001927501954
+]
+},
+"c": {
+"value": 12.000002508842162,
+"provenance": "fitted",
+"unit": "1/s (c/m)",
+"ci95": [
+11.999983063478625,
+12.000021954205698
+]
+}
+},
+"integrator": {
+"set": [
+"I1(2)"
+],
+"identified": true,
+"takes": 2,
+"reason": null,
+"best": "I1(2)"
+},
+"law": "fixed-substep",
+"valid_at": {
+"frame_ms": 8.333333333333334,
+"refresh_hz": 119.99999999999999
+},
+"replayModel": {
+"hyp": "I1(2)",
+"k": 199.99995898075352,
+"c": 12.000002508842162,
+"t0": 508.3339642914353,
+"x0": 0,
+"v0": 0.026323315119166035,
+"targets": [
+200.00003744358415,
+-1.0954447773386793e-05,
+199.99999634202018,
+-5.31600808278801e-07,
+200.00003457948097,
+-1.4737436250310253e-06
+],
+"tr": [
+916.666666,
+1316.6666659999999,
+1716.6666659999999,
+2116.666666,
+2516.666666
+],
+"units": "k/m 1/s\u00b2, c/m 1/s"
+},
+"valid_for_reproduction_only": false
+},
+"derived": {
+"overshoot": 45.41896775373127,
+"settle2": 386.50783784504574,
+"settle99": 393.52068093710204,
+"k": 202.39462698231995,
+"c": 12.142529665238635,
+"t0": 506.63787819829327,
+"omega": 14.226546558540479,
+"zeta": 0.42675605127616983,
+"overshoot_ci95": [
+45.417821075606845,
+45.42011445013638
+]
+},
+"fit": {
+"n": 399,
+"rms": 0.0001788543490287711,
+"nrmse": 6.146275709648923e-07,
+"sigma_floor": 0.00029833744265071716,
+"explain_bar": 0.14549815000000002,
+"quantum": null,
+"bic": -6417.704098486036,
+"holdout": {
+"method": "cross-rate (shared k, c)",
+"rms": 0.0001788543490287711,
+"pass": true
+}
+},
+"runnerUp": {
+"family": "spring-analytic",
+"cls": "spring",
+"rms": 0.0001788543490287711,
+"bic": -6417.704098486036,
+"L": -6477.593712654934,
+"params": {
+"t0": 506.63787819829327,
+"omega": 14.226546558540479,
+"zeta": 0.42675605127616983,
+"v0": -29.797777534468345,
+"target": 200.00496552341295,
+"target1": -0.0060696066935652755,
+"target2": 200.00582320598068,
+"target3": -0.005695490442041726,
+"target4": 200.00661421275944,
+"target5": -0.001099950598395769,
+"tr1": 907.371769172939,
+"tr2": 1307.3710797278666,
+"tr3": 1707.3711087892705,
+"tr4": 2107.371580817042,
+"tr5": 2507.369376300199
+}
+},
+"rejected": [
+{
+"family": "named:linear",
+"cls": "tween",
+"rms": 124.85442865663913,
+"reason": "rms 1.25e+2 > explain bar 1.45e-1"
+},
+{
+"family": "named:ease",
+"cls": "tween",
+"rms": 124.85408556923805,
+"reason": "rms 1.25e+2 > explain bar 1.45e-1"
+}
+],
+"ambiguity": null,
+"replay": {
+"samples": 399,
+"linear": null
+},
+"unknowns": [],
+"flags": [],
+"evidence": {
+"takes": [
+"51591acf1b3a4d7f"
+],
+"location": {
+"kind": "time_range",
+"range": [
+441.666667,
+3758.333333
+]
+}
+},
+"downgrades": []
+},
+{
+"schema": "reva.motion/0",
+"target": {
+"el": 0,
+"desc": "DIV.b0",
+"channel": "ren:tx",
+"untrusted_content": true
+},
+"attribution": {
+"label": "time-driven",
+"provenance": "inferred",
+"evidence": "no input precedes any motion burst by \u2264 2 frames (no idle-control take)"
+},
+"tier": "fitted",
+"class": "spring",
+"model": {
+"family": "spring",
+"params": {
+"t0": {
+"value": 3738.740380613227,
+"provenance": "fitted",
+"unit": "ms",
+"ci95": [
+3737.27011097732,
+3740.210650249134
+]
+},
+"omega": {
+"value": 14.157192353657113,
+"provenance": "fitted",
+"unit": "rad/s",
+"ci95": [
+14.096503442658703,
+14.218126386092782
+],
+"valid_for_reproduction_only": true
+},
+"zeta": {
+"value": 0.4280453580853072,
+"provenance": "fitted",
+"unit": null,
+"ci95": [
+0.4255373239231136,
+0.4305702662469041
+],
+"valid_for_reproduction_only": true
+},
+"v0": {
+"value": 0.3824406927959331,
+"provenance": "fitted",
+"unit": "value/s",
+"ci95": [
+0.3391287570400173,
+0.4257526285518489
+]
+},
+"target": {
+"value": -0.0002962975506834492,
+"provenance": "fitted",
+"unit": null,
+"ci95": [
+-0.0003983205468468872,
+-0.00019427455452001124
+]
+},
+"k": {
+"value": null,
+"provenance": "unknown",
+"reason": "no hypothesis explains every take with one (k, c)",
+"probe": "record a take at a third rate or with a stall (R5)"
+},
+"c": {
+"value": null,
+"provenance": "unknown",
+"reason": "no hypothesis explains every take with one (k, c)",
+"probe": "record a take at a third rate or with a stall (R5)"
+}
+},
+"integrator": {
+"set": [],
+"identified": false,
+"takes": 2,
+"reason": "no hypothesis explains every take with one (k, c)"
+},
+"law": "unknown",
+"valid_at": {
+"frame_ms": 8.333333333333334,
+"refresh_hz": 119.99999999999999
+},
+"valid_for_reproduction_only": true
+},
+"derived": {
+"overshoot": 0.02735778375364272,
+"settle2": 576.2451862193711,
+"settle99": 762.3862429362807,
+"k": 200.42609533844742,
+"c": 12.119840941007464,
+"t0": 3738.740380613227,
+"omega": 14.157192353657113,
+"zeta": 0.4280453580853072,
+"overshoot_ci95": [
+0.027064795808745302,
+0.027650785791352033
+]
+},
+"fit": {
+"n": 108,
+"rms": 0.00044095590392752136,
+"nrmse": 1.515331651734133e-06,
+"sigma_floor": 0.00029833744265071716,
+"explain_bar": 0.14549815000000002,
+"quantum": null,
+"bic": -1645.527530444339,
+"holdout": {
+"method": "last-30%-of-[t0,t99]",
+"rms": 0.0007664811611751703,
+"pass": true
+}
+},
+"runnerUp": {
+"family": "bezier",
+"cls": "tween",
+"rms": 0.0023683505089628475,
+"bic": -1277.748508285361,
+"L": -1305.8412956481063,
+"params": {
+"t0": 3716.6666663333335,
+"D": 381.38479157253823,
+"x1": 0.2798698968374506,
+"y1": -0.03838484397832265,
+"x2": 0.3097911316987159,
+"y2": 1.871778157399353
+}
+},
+"rejected": [],
+"ambiguity": null,
+"replay": {
+"samples": 108,
+"linear": null
+},
+"unknowns": [
+{
+"id": "unk_spring_integrator",
+"reason": "no hypothesis explains every take with one (k, c) (U4)",
+"probe": "record a take at a third rate or with a stall (R5)"
+}
+],
+"flags": [],
+"evidence": {
+"takes": [
+"51591acf1b3a4d7f"
+],
+"location": {
+"kind": "time_range",
+"range": [
+3733.333333,
+4625
+]
+}
+},
+"downgrades": []
+}
+],
+"stagger": [],
+"pins": [],
+"statics": {
+"count": 11,
+"sample": [
+{
+"key": "0|ren:ty",
+"desc": "DIV.b0",
+"ch": "ren:ty",
+"coverage": "not observed moving in these takes"
+},
+{
+"key": "0|ren:tz",
+"desc": "DIV.b0",
+"ch": "ren:tz",
+"coverage": "not observed moving in these takes"
+},
+{
+"key": "0|ren:sx",
+"desc": "DIV.b0",
+"ch": "ren:sx",
+"coverage": "not observed moving in these takes"
+},
+{
+"key": "0|ren:sy",
+"desc": "DIV.b0",
+"ch": "ren:sy",
+"coverage": "not observed moving in these takes"
+}
+]
+},
+"pruned": [
+{
+"key": "0|ren:--x",
+"desc": "DIV.b0",
+"ch": "ren:--x",
+"redundant_with": "drv:--x"
+},
+{
+"key": "0|ren:bx",
+"desc": "DIV.b0",
+"ch": "ren:bx",
+"redundant_with": "ren:tx"
+}
+],
+"unknowns": [
+{
+"id": "unk_spring_integrator",
+"reason": "no hypothesis explains every take with one (k, c) (U4)",
+"probe": "record a take at a third rate or with a stall (R5)",
+"target": "DIV.b0|drv:--x"
+},
+{
+"id": "unk_spring_integrator",
+"reason": "no hypothesis explains every take with one (k, c) (U4)",
+"probe": "record a take at a third rate or with a stall (R5)",
+"target": "DIV.b0|ren:tx"
+}
+]
+}

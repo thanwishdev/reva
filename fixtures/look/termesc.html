@@ -1,0 +1,12 @@
+<!doctype html>
+<meta charset="utf-8">
+<!-- Hostile element names: id and class carry terminal escapes (OSC 0 title, OSC 8 link, CSI colour, BEL) and a bidi
+     override (U+202E). The recorder must drop them from descriptors; output and code comments must carry none. -->
+<title>termesc</title>
+<div id="b" style="width:300px;height:200px;background:#c33;transition:transform 600ms cubic-bezier(.2,.8,.2,1)">x</div>
+<script>
+const el = document.getElementById('b');
+el.className = 'box \u001b]0;REVA-TITLE\u0007 \u001b[31mRED\u001b[0m\u202e';
+el.id = 'x\u001b]8;;https://example.invalid/\u0007click\u001b]8;;\u0007\u202egnp';
+requestAnimationFrame(() => requestAnimationFrame(() => { el.style.transform = 'translateX(400px)'; }));
+</script>

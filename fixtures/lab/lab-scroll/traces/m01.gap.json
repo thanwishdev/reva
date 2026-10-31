@@ -1,0 +1,41 @@
+{
+ "schema": "reva.labtrace/0",
+ "route": "m01",
+ "variant": "gap",
+ "note": "Jumps with idle gaps of 800 ms.",
+ "actions": [
+  {
+   "hold": 500
+  },
+  {
+   "scrollTo": 200
+  },
+  {
+   "hold": 800
+  },
+  {
+   "scrollTo": 450
+  },
+  {
+   "hold": 800
+  },
+  {
+   "scrollTo": 800
+  },
+  {
+   "hold": 800
+  },
+  {
+   "scrollTo": 1000
+  },
+  {
+   "hold": 800
+  },
+  {
+   "scrollTo": 60
+  },
+  {
+   "hold": 800
+  }
+ ]
+}

@@ -1,0 +1,35 @@
+{
+ "id": "still",
+ "route": "m10",
+ "note": "drag then stop at 800 ms, release at 1100 ms: zero release velocity, no momentum expected",
+ "page": {
+  "path": "still"
+ },
+ "viewport": {
+  "width": 1280,
+  "height": 800
+ },
+ "seed": 1,
+ "scene": {
+  "selectors": [
+   ".b0"
+  ]
+ },
+ "boot": {
+  "until": "document.readyState === 'complete'"
+ },
+ "actions": [
+  {
+   "eval": "window.dispatchEvent(new Event('go'))"
+  },
+  {
+   "mark": "go"
+  },
+  {
+   "hold": 1800
+  },
+  {
+   "mark": "end"
+  }
+ ]
+}
