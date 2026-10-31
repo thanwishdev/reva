@@ -813,7 +813,7 @@ function fitSeriesCore(s, nf, ctx) {
         // an output that only ever takes two values is a switch the pointer input triggers (a hover state), not a value
         // linked to the pointer coordinate: no 'pointer-linked … linear' map and no inverted ramp for it (open item of
         // 20 Oct: an instant change coinciding with the pointer entering was worded as a pointer-linked map)
-        if (drv.class === 'scroll map' && new Set(s.y).size === 2) {
+        if (drv.class === 'scroll map' && isSwitchSeries(s.y)) {
           drv.class = 'step'; drv.model.family = 'step (two-level, on pointer input)';
           drv.model.params = { ...drv.model.params, before: { value: s.y[0], provenance: 'measured' }, after: { value: s.y[s.y.length - 1], provenance: 'measured' } };
         }
@@ -1109,6 +1109,23 @@ function scrollAtFrame(PP) {
     if (best >= 0 && rows[best].k >= kv) return rows[best].sy;
     return v != null ? v : best >= 0 ? rows[best].sy : rows[0].sy;
   };
+}
+
+/**
+ * A series that only ever jumps between a few held levels: at most 4 distinct values and no two consecutive frames that
+ * both change (every change is a one-frame jump followed by a hold). That is a switch (a hover state), never a value
+ * following a coordinate: a pointer sweep changes on adjacent frames and visits many values, a jump does neither. The
+ * old test (exactly two values) missed a hover that steps through three levels (A -> B -> C) and called it a linear map.
+ */
+export function isSwitchSeries(y) {
+  const lv = []; let prevChanged = false;
+  for (let i = 0; i < y.length; i++) {
+    if (!lv.some((v) => Math.abs(v - y[i]) <= 1e-9 * Math.max(1, Math.abs(v)))) lv.push(y[i]);
+    const changed = i > 0 && y[i] !== y[i - 1];
+    if (changed && prevChanged) return false;
+    prevChanged = changed;
+  }
+  return lv.length >= 2 && lv.length <= 4;
 }
 
 /** Pointer driver per row of a take: the last pointer coordinate (axis x|y) received at or before the row, NaN before any. */

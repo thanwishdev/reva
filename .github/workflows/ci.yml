@@ -10,7 +10,8 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    # a hang must not burn an hour: npm test also has a per-test timeout and --test-force-exit
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -27,5 +28,6 @@ jobs:
         run: node bin/reva.js doctor
       - name: Test
         run: npm test
+        timeout-minutes: 25
       - name: Package contents
         run: npm pack --dry-run

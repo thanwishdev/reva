@@ -2,10 +2,26 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { browserCache, headlessShellPath, puppeteerCache } from '../../src/browser/engines.js';
 
 export const FIX = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'report', 'fixtures');
+/**
+ * A sandbox moves REVA_HOME, and with it REVA's own browser folder (<REVA_HOME>/browsers). A developer Mac still finds
+ * the pinned build in the Puppeteer cache, but a fresh machine (CI, Linux) has it only where `reva doctor --install`
+ * put it. So before REVA_HOME moves, point REVA_BROWSER_CACHE at that real folder. Only when the Puppeteer fallback
+ * would not find the headless shell, so a Mac keeps resolving exactly as before (cft included).
+ */
+function keepBrowser() {
+  if (process.env.REVA_BROWSER_CACHE) return;
+  try {
+    if (fs.existsSync(headlessShellPath(puppeteerCache()))) return;
+    const c = browserCache('chs');
+    if (fs.existsSync(headlessShellPath(c))) process.env.REVA_BROWSER_CACHE = c;
+  } catch { /* unsupported platform: nothing to keep */ }
+}
 /** A private data root for one test file; REVA_OUT / REVA_HOME point at it so nothing touches the real one. */
 export function sandbox(tag) {
+  keepBrowser();
   const root = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), `wr-mcp-${tag}-`)));
   process.env.REVA_HOME = root; process.env.REVA_OUT = path.join(root, 'out');
   process.env.REVA_USAGE_FILE = path.join(root, 'usage.txt'); fs.writeFileSync(process.env.REVA_USAGE_FILE, `${Math.floor(Date.now() / 1000)} 10 10\n`);

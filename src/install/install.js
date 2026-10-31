@@ -63,6 +63,56 @@ function sha256File(file) {
   return h.digest('hex');
 }
 
+// Debian / Ubuntu package of each shared library the headless shell links (the `ldd` list of chrome-headless-shell 147 on a
+// bare ubuntu:24.04, plus the few Chromium may add). Packages renamed for the 64-bit time_t move carry a t64 suffix from
+// Ubuntu 24.04 and Debian 13 on (the old names are virtual there and apt refuses them).
+const LIB_PACKAGES = {
+  'libglib-2.0.so.0': 'libglib2.0-0', 'libgobject-2.0.so.0': 'libglib2.0-0', 'libgio-2.0.so.0': 'libglib2.0-0',
+  'libnspr4.so': 'libnspr4', 'libplc4.so': 'libnspr4', 'libplds4.so': 'libnspr4',
+  'libnss3.so': 'libnss3', 'libnssutil3.so': 'libnss3', 'libsmime3.so': 'libnss3',
+  'libatk-1.0.so.0': 'libatk1.0-0', 'libatk-bridge-2.0.so.0': 'libatk-bridge2.0-0', 'libatspi.so.0': 'libatspi2.0-0',
+  'libdbus-1.so.3': 'libdbus-1-3', 'libexpat.so.1': 'libexpat1', 'libudev.so.1': 'libudev1',
+  'libX11.so.6': 'libx11-6', 'libXcomposite.so.1': 'libxcomposite1', 'libXdamage.so.1': 'libxdamage1', 'libXext.so.6': 'libxext6',
+  'libXfixes.so.3': 'libxfixes3', 'libXrandr.so.2': 'libxrandr2', 'libxcb.so.1': 'libxcb1', 'libxkbcommon.so.0': 'libxkbcommon0',
+  'libgbm.so.1': 'libgbm1', 'libdrm.so.2': 'libdrm2', 'libasound.so.2': 'libasound2', 'libcups.so.2': 'libcups2',
+  'libpango-1.0.so.0': 'libpango-1.0-0', 'libcairo.so.2': 'libcairo2',
+};
+const T64 = new Set(['libglib2.0-0', 'libatk1.0-0', 'libatk-bridge2.0-0', 'libatspi2.0-0', 'libasound2', 'libcups2']);
+
+/** /etc/os-release as { id, versionId, like } (empty when absent). */
+export function osRelease(text) {
+  if (text == null) { try { text = fs.readFileSync('/etc/os-release', 'utf8'); } catch { return {}; } }
+  const kv = Object.fromEntries(text.split('\n').map((l) => /^([A-Z_]+)=("?)(.*)\2$/.exec(l.trim())).filter(Boolean).map((m) => [m[1], m[3]]));
+  return { id: kv.ID || '', versionId: kv.VERSION_ID || '', like: kv.ID_LIKE || '' };
+}
+
+/**
+ * The apt packages that provide the missing shared libraries on this Debian / Ubuntu release: { packages, unknown } (unknown =
+ * libraries with no known package), or null when the system is not Debian-like.
+ */
+export function aptPackagesFor(missing, os = osRelease()) {
+  const debianLike = os.id === 'debian' || os.id === 'ubuntu' || /\b(debian|ubuntu)\b/.test(os.like || '');
+  if (!debianLike) return null;
+  const v = parseFloat(os.versionId) || 0;
+  const t64 = (os.id === 'ubuntu' && v >= 24.04) || (os.id === 'debian' && v >= 13);
+  const packages = new Set(); const unknown = [];
+  for (const lib of missing) {
+    const p = LIB_PACKAGES[lib];
+    if (!p) { unknown.push(lib); continue; }
+    packages.add(t64 && T64.has(p) ? `${p}t64` : p);
+  }
+  return { packages: [...packages].sort(), unknown };
+}
+
+/** The sentence that tells the person how to get the missing libraries. */
+export function missingLibsAdvice(missing, os = osRelease()) {
+  const apt = aptPackagesFor(missing, os);
+  const head = ` Missing system libraries: ${missing.join(', ')}.`;
+  if (!apt) return `${head} Install them with your system's package manager, then run  reva doctor --install  again.`;
+  const extra = apt.unknown.length ? ` (no known package for ${apt.unknown.join(', ')}: search for it with  apt-file search <name>)` : '';
+  return `${head} Install them with:  sudo apt-get install -y ${apt.packages.join(' ')}${extra}  then run  reva doctor --install  again.`;
+}
+
 /** Start the installed binary with --version. On Linux a failure lists the shared libraries the loader could not find. */
 export async function smokeTest(exe, { platform = platformKey() } = {}) {
   try {
@@ -73,7 +123,7 @@ export async function smokeTest(exe, { platform = platformKey() } = {}) {
     if (platform.startsWith('linux')) {
       try { const { stdout } = await execFileP('ldd', [exe], { timeout: 10000 }); missing = stdout.split('\n').filter(l => /not found/.test(l)).map(l => l.trim().split(' ')[0]); } catch { /* no ldd */ }
     }
-    const lib = missing.length ? ` Missing system libraries: ${missing.join(', ')}. Install them with your package manager (on Debian/Ubuntu: apt-get install libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 libxkbcommon0 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libgbm1 libasound2).` : '';
+    const lib = missing.length ? missingLibsAdvice(missing) : '';
     return { ok: false, error: `${path.basename(exe)} did not start: ${(e.stderr || e.message || '').toString().split('\n')[0]}.${lib}` };
   }
 }

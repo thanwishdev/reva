@@ -156,7 +156,10 @@ test('unknowns: what computed styles cannot expose is listed with a reason, neve
 test('fonts: actually used (custom + fallback), declared-but-unused listed, bytes from the session response, no second fetch', () => {
   const f = record.assets.fonts;
   const custom = f.used.find(x => x.familyName.value === truth.fonts.customUsed); assert.ok(custom && custom.isCustomFont.value === true && custom.glyphCount.value > 0);
-  assert.ok(f.used.some(x => x.familyName.value === truth.fonts.fallbackUsed && x.isCustomFont.value === false), 'fallback font actually used must be listed');
+  // the fallback is a system face for the stack "WR Plant Sans, Helvetica, sans-serif": Helvetica on macOS (truth.json); a
+  // Linux machine without Helvetica draws its default sans (e.g. Liberation Sans or DejaVu Sans), named as the OS reports it
+  const fallbackOk = (x) => x.isCustomFont.value === false && (process.platform === 'darwin' ? x.familyName.value === truth.fonts.fallbackUsed : !!x.familyName.value);
+  assert.ok(f.used.some(fallbackOk), `fallback font actually used must be listed (used: ${f.used.map(x => x.familyName.value)})`);
   assert.ok(!f.used.some(x => x.familyName.value === truth.fonts.declaredNotUsed), 'a declared but unused face must not appear as used');
   assert.ok(f.declaredNotUsed.includes(truth.fonts.declaredNotUsed));
   const file = f.files.find(x => x.url.endsWith('wr-plant.ttf')); assert.equal(file.bytes.value, truth.fonts.fileBytes); assert.equal(file.bytes.provenance, 'measured');

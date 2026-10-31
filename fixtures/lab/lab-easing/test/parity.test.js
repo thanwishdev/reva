@@ -21,7 +21,13 @@ import { recordCell } from '../tools/harness.mjs';
 const RATES = (process.env.LAB_PARITY_RATES || (process.env.LAB_PARITY === 'quick' ? '120' : '120,60')).split(',').map(Number);
 const REG = { 120: 'R3', 60: 'R2', 30: 'R4' };
 const outDir = ensureOutDir('m2', 'parity', 'lab-easing');
-const digest = (take) => crypto.createHash('sha256').update(JSON.stringify(take.data.rows)).digest('hex');
+// Rows compared for determinism. macOS: every row, as before. Elsewhere: the rows from the boot-done mark on, plus an equal
+// boot-done frame. Before that mark the page is still being parsed in real time, so on a slower machine (a CI runner, an
+// emulated x64 under load) a boot frame can be sampled before the parser has made the element. Measured 31 Oct 2026 on
+// linux-x64 under load: the only row that ever differed was frame k=2 (pre-boot, empty vs filled); boot-done was k=4 in every run.
+const bootK = (take) => (take.marks.find((m) => m.name === 'boot-done') || {}).k;
+const detRows = (take) => (process.platform === 'darwin' ? take.data.rows : take.data.rows.filter((r) => r.k >= bootK(take)));
+const digest = (take) => crypto.createHash('sha256').update(JSON.stringify(detRows(take))).digest('hex');
 
 let srv;
 test.before(async () => { srv = await serveLab(); });
@@ -109,8 +115,9 @@ test('write the parity report', () => {
 for (const [route, variant, K] of [['m12', 'go', 5], ['m17', 'go', 3], ['m18', 'interrupted', 3], ['m19', 'timer', 3], ['m06', 'go', 3]]) {
   test(`determinism ${route}.${variant}: ${K} runs bit-identical at 120 Hz`, { timeout: 300000 }, async () => {
     const r = routes.find((x) => x.id === route);
-    const ds = [];
-    for (let i = 0; i < K; i++) ds.push(digest(await recordCell({ origin: srv.origin, route, params: r.params.default, variant, rate: 120 })));
+    const ds = []; const boots = [];
+    for (let i = 0; i < K; i++) { const t = await recordCell({ origin: srv.origin, route, params: r.params.default, variant, rate: 120 }); ds.push(digest(t)); boots.push(bootK(t)); }
+    assert.equal(new Set(boots).size, 1, `boot-done frames differ: ${boots}`);
     fs.appendFileSync(path.join(outDir, 'determinism.jsonl'), JSON.stringify({ when: new Date().toISOString(), route, variant, K, digests: ds.map((d) => d.slice(0, 16)) }) + '\n');
     assert.equal(new Set(ds).size, 1, `digests differ: ${ds.map((d) => d.slice(0, 8))}`);
   });

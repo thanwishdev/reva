@@ -16,7 +16,10 @@ test('H1 guard accepts Chrome for Testing and headless-shell', () => {
 });
 
 test('resolveEngine returns real explicit paths for both engines', () => {
-  for (const e of ['cft', 'chs']) {
+  // cft (the full Chrome for Testing) exists only for macOS arm64 by design; elsewhere it must refuse with a clear code
+  const onMacArm = process.platform === 'darwin' && process.arch === 'arm64';
+  if (!onMacArm) assert.throws(() => resolveEngine('cft'), (e) => e.code === 'engine_unavailable');
+  for (const e of onMacArm ? ['cft', 'chs'] : ['chs']) {
     const r = resolveEngine(e);
     // REVA's own browser folder (<data root>/browsers, or REVA_BROWSER_CACHE) or a Puppeteer cache that has the pinned build
     assert.ok([installCache(), puppeteerCache()].some((c) => r.executablePath.startsWith(c + path.sep)), r.executablePath);

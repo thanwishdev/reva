@@ -16,7 +16,7 @@ test('completion candidates: same-site disallowed paths are not fetched; allowed
   const fetchImpl = async (u) => {
     asked.push(u);
     const o = new URL(u).origin;
-    if (o === 'https://shop.site.co.th') throw new Error('ECONNRESET'); // unreadable robots.txt: allow, as preflight does
+    if (o === 'https://shop.site.co.th') throw new Error('ECONNRESET'); // unreadable robots.txt: cannot tell, not fetched (PR-07, as preflight)
     return ROBOTS[o] != null ? new Response(ROBOTS[o], { status: 200 }) : new Response('nope', { status: 404 });
   };
   const c = (url) => ({ url, origin: 'miss-driven' });
@@ -27,18 +27,19 @@ test('completion candidates: same-site disallowed paths are not fetched; allowed
     c('https://www.site.co.th/team/people.json'), // ClaudeBot disallow
     c('https://api.site.co.th/v1/items?page=2'), // REVA disallow on that host's own robots.txt
     c('https://cdn.other.com/lib.js'), // third party
-    c('https://shop.site.co.th/products.json'), // robots.txt unreadable
+    c('https://shop.site.co.th/products.json'), // robots.txt unreachable (network error)
     c('https://www.site.co.th/api/public/other.json'),
   ];
   const r = await robotsFilter(cands, { siteUrl: 'https://www.site.co.th/', robotsText: robotsFetcher({ fetchImpl }) });
   assert.deepEqual(r.allowed.map(x => x.url), [
     'https://www.site.co.th/api/public/menu.json', 'https://www.site.co.th/api/private/ok/x.json', 'https://cdn.other.com/lib.js',
-    'https://shop.site.co.th/products.json', 'https://www.site.co.th/api/public/other.json',
+    'https://www.site.co.th/api/public/other.json',
   ]);
   assert.deepEqual(r.disallowed.map(x => [x.url, x.reason, x.agent]), [
     ['https://www.site.co.th/api/private/user.json', 'not-fetched:robots', '*'],
     ['https://www.site.co.th/team/people.json', 'not-fetched:robots', 'ClaudeBot'],
     ['https://api.site.co.th/v1/items?page=2', 'not-fetched:robots', 'REVA'],
+    ['https://shop.site.co.th/products.json', 'not-fetched:robots-unreachable', 'robots-unreachable'],
   ]);
   // one robots.txt per same-site origin, never one for a third-party host
   assert.deepEqual(asked.sort(), ['https://api.site.co.th/robots.txt', 'https://shop.site.co.th/robots.txt', 'https://www.site.co.th/robots.txt']);

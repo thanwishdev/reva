@@ -82,7 +82,18 @@ export const CUSTOM_EXACT = new Set(['ren:--v', 'ren:--c', 'ren:--n', 'ren:--st'
  * Compare refsim channels with a take. Returns {ok, channels: [{key, n, maxAbs, floor, tol, at}]}.
  * A channel passes when max |rendered - refsim| <= max(2 * floor, 1e-9).
  */
-export function compareToTake(take, sim, { registeredNumber = 5e-7 } = {}) {
+/**
+ * First frame a comparison covers. macOS: every row (0), as before. Elsewhere: the boot-done frame on, like lab-scroll's
+ * parity (which starts after boot-done everywhere). Before that mark the page is still loading in real time: on a slower
+ * machine (a CI runner, an emulated x64 under load) frame k=2 can be sampled before the stylesheet applies (measured
+ * 31 Oct 2026 on linux-x64: m11.gap opacity read 1 at k=2 where the start value is 0.15; boot-done was k=4 in every run).
+ */
+export function compareFromK(take) {
+  if (process.platform === 'darwin') return 0;
+  return ((take.marks || []).find((m) => m.name === 'boot-done') || { k: 0 }).k;
+}
+
+export function compareToTake(take, sim, { registeredNumber = 5e-7, fromK = compareFromK(take) } = {}) {
   const idx = elementIndex(take);
   const rows = take.data.rows;
   const out = [];
@@ -92,6 +103,7 @@ export function compareToTake(take, sim, { registeredNumber = 5e-7 } = {}) {
     if (id == null) { out.push({ key, error: 'element not found in take' }); continue; }
     let maxAbs = 0, at = -1, n = 0, missing = 0;
     for (let j = 0; j < rows.length; j++) {
+      if (rows[j].k < fromK) continue;
       const v = rows[j].v && rows[j].v[id];
       if (!v) continue;
       const got = v[ch];

@@ -32,6 +32,19 @@ reva doctor --install     # downloads the pinned headless browser into the data 
 reva doctor               # checks this machine: browser, isolation rules, data folder
 ```
 
+On Linux the browser needs a few system libraries and at least one font, which a desktop install has but a bare server
+or container does not. `reva doctor --install` lists exactly what is missing and prints the `apt-get` line to fix it. On a
+bare Ubuntu 24.04 (Debian 13 is the same) that is:
+
+```sh
+sudo apt-get install -y libasound2t64 libatk-bridge2.0-0t64 libatk1.0-0t64 libatspi2.0-0t64 libdbus-1-3 libexpat1 \
+  libgbm1 libglib2.0-0t64 libnspr4 libnss3 libx11-6 libxcb1 libxcomposite1 libxdamage1 libxext6 libxfixes3 \
+  libxkbcommon0 libxrandr2 fonts-liberation
+```
+
+On Ubuntu 22.04 or Debian 12, drop the `t64` suffixes. Without a font, text draws as nothing, so every measurement of it
+would be wrong. `reva doctor` checks for that too.
+
 REVA only ever launches its own headless browser with a throwaway profile. It never opens or touches your own browser.
 On another platform, point `REVA_BROWSER_CACHE` at a Puppeteer-style browser cache that holds a headless shell.
 

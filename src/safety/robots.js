@@ -22,6 +22,31 @@ export async function readRobotsBody(res, max = MAX_ROBOTS_BYTES) {
   return new TextDecoder().decode(Buffer.concat(chunks.map((c) => Buffer.from(c))).subarray(0, max));
 }
 
+/**
+ * Fetch one origin's robots.txt and classify the answer (RFC 9309 2.3.1; PR-07, 31 Oct):
+ *   2xx                      -> {status, text}: the file decides
+ *   other 4xx (404, 403 ...) -> {status, text: null}: no robots.txt, everything is allowed
+ *   5xx, 429, timeout, network error -> unreachable: the site said "try later" or could not be asked, so REVA does not open
+ *                                       the page (transient: the corpus runner retries once later)
+ *   DNS failure (ENOTFOUND)  -> not unreachable: the page fetch fails with the same cause and that failure is permanent
+ * @returns {Promise<{status:number|null, text:string|null, unreachable:boolean, error?:string}>}
+ */
+export async function fetchRobots(origin, { fetchImpl = globalThis.fetch, timeoutMs = 10000 } = {}) {
+  try {
+    const r = await fetchImpl(origin + '/robots.txt', { headers: { 'user-agent': UA }, redirect: 'follow', signal: AbortSignal.timeout(timeoutMs) });
+    const status = r.status;
+    if (status >= 200 && status < 300) return { status, text: await readRobotsBody(r), unreachable: false };
+    try { r.body?.cancel()?.catch?.(() => {}); } catch { /* already closed */ } // not awaited: a cancel can wait for a second reader of a teed body
+    if (status >= 500 || status === 429) return { status, text: null, unreachable: true, error: `http ${status}` };
+    return { status, text: null, unreachable: false };
+  } catch (e) {
+    const code = e?.cause?.code ?? e?.cause?.errors?.[0]?.code ?? e?.code ?? null;
+    if (code === 'ENOTFOUND') return { status: null, text: null, unreachable: false, error: 'network ENOTFOUND' };
+    const timeout = e?.name === 'TimeoutError' || e?.name === 'AbortError';
+    return { status: null, text: null, unreachable: true, error: timeout ? 'timeout' : `network${code ? ' ' + code : ''}` };
+  }
+}
+
 export function parseRobots(text) {
   const groups = [];
   const sitemaps = [];

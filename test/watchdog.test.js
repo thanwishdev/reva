@@ -24,7 +24,13 @@ test('decide: caps are inclusive, unknown never stops', () => {
   assert.deepEqual(DEFAULT_CAPS, { fiveHour: 88, sevenDay: 79 });
 });
 
-function alive(pid) { try { process.kill(pid, 0); return true; } catch { return false; } }
+// A stopped process can linger as a zombie until its new parent reaps it (a container whose PID 1 is not an init never does);
+// kill(pid, 0) still succeeds on a zombie, so on Linux read its state: Z (zombie) / X (dead) count as stopped.
+function alive(pid) {
+  try { process.kill(pid, 0); } catch { return false; }
+  if (process.platform === 'linux') { try { return !/^\d+ \(.*\) [ZX]/.test(fs.readFileSync(`/proc/${pid}/stat`, 'utf8')); } catch { return false; } }
+  return true;
+}
 
 test('dummy run: watchdog samples, stops the job at the cap, exits 75, child tree is gone', async () => {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'wr-wd-'));

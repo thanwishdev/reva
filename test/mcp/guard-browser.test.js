@@ -53,15 +53,18 @@ fetch('http://rebind.test:${pubPortRef.p}/one', { mode: 'no-cors' }).then(() => 
     if (ip === FAKE_PUBLIC) return net.connect({ host: '127.0.0.1', port });
     const s = new net.Socket(); process.nextTick(() => s.destroy(new Error('test dial refused'))); return s; // never the internet
   };
-  return { hits, pubHits, dials, S, P, lookup, dial, close: () => { secret.close(); pub.close(); } };
+  return { hits, pubHits, dials, S, P, lookup, dial, close: () => { for (const x of [secret, pub]) { x.closeAllConnections(); x.close(); } } };
 }
 
 test('guard proxy in a real browser: redirects, WebSockets and rebinding cannot reach a local service', { timeout: 90000 }, async () => {
   const w = await world();
-  const proxy = await startGuardProxy({ lookup: w.lookup, dial: w.dial, ports: [w.P] });
-  const h = await launchBrowser({ args: [...proxy.args, '--host-resolver-rules=MAP * ~NOTFOUND, EXCLUDE 127.0.0.1'] });
+  // Everything after world() sits inside the try: a browser that fails to launch must not leave the proxy and the test
+  // servers listening (that kept this file, and with it the whole `npm test`, running forever on a machine without a browser).
+  let proxy, h;
   let topTitle, metaTitle, pageTitle;
   try {
+    proxy = await startGuardProxy({ lookup: w.lookup, dial: w.dial, ports: [w.P] });
+    h = await launchBrowser({ args: [...proxy.args, '--host-resolver-rules=MAP * ~NOTFOUND, EXCLUDE 127.0.0.1'] });
     await h.page.goto(`http://public.test:${w.P}/redir`, { timeout: 20000 }).catch(() => {});
     topTitle = await h.page.title().catch(() => '');
     await h.page.goto(`http://public.test:${w.P}/redir-meta`, { timeout: 20000 }).catch(() => {});
@@ -70,7 +73,7 @@ test('guard proxy in a real browser: redirects, WebSockets and rebinding cannot 
     await h.page.waitForFunction(() => /rebind2=/.test(document.title) && /localws=/.test(document.title), null, { timeout: 15000 }).catch(() => {});
     await h.page.waitForTimeout(500);
     pageTitle = await h.page.title();
-  } finally { await h.close(); await proxy.close(); w.close(); }
+  } finally { await h?.close(); await proxy?.close(); w.close(); }
   assert.notEqual(topTitle, 'SECRET-LOCAL-SERVICE', 'top-level redirect to loopback was loaded');
   assert.notEqual(metaTitle, 'SECRET-LOCAL-SERVICE');
   assert.deepEqual(w.hits, [], `the local service was reached: ${w.hits.join(', ')}`);
@@ -118,25 +121,29 @@ const out = (k, v) => { document.title += ' ' + k + '=' + v; };
   const P = await listen(pub);
   const lookup = async (h) => { if (h === 'public.test') return [{ address: FAKE_PUBLIC }]; throw Object.assign(new Error('ENOTFOUND'), { code: 'ENOTFOUND' }); };
   const dial = (ip, port) => { if (ip === FAKE_PUBLIC) return net.connect({ host: '127.0.0.1', port }); const s = new net.Socket(); process.nextTick(() => s.destroy(new Error('test dial refused'))); return s; };
-  return { udp, P, lookup, dial, close: () => { pub.close(); u.close(); } };
+  return { udp, P, lookup, dial, close: () => { pub.closeAllConnections(); pub.close(); u.close(); } };
 }
 
-async function rtcRun(w, { prefs, initScript }) {
+async function rtcRun(w, { prefs, initScript, bare = false }) {
   const proxy = await startGuardProxy({ lookup: w.lookup, dial: w.dial, ports: [w.P] });
-  const h = await launchBrowser({ args: [...proxy.args, '--host-resolver-rules=MAP * ~NOTFOUND, EXCLUDE 127.0.0.1'], prefs });
+  // The bare control drops the guard's WebRTC switch too: on Linux --force-webrtc-ip-handling-policy alone already stops
+  // every UDP candidate (on macOS the headless shell ignores it, hence the prefs), so keeping it made the control gather nothing.
+  const args = bare ? proxy.args.filter((a) => !a.startsWith('--force-webrtc-ip-handling-policy')) : proxy.args;
+  let h;
   try {
+    h = await launchBrowser({ args: [...args, '--host-resolver-rules=MAP * ~NOTFOUND, EXCLUDE 127.0.0.1'], prefs });
     if (initScript) await h.context.addInitScript({ content: initScript });
     await h.page.goto(`http://public.test:${w.P}/`, { timeout: 20000 });
     await h.page.waitForFunction(() => /rtc=/.test(document.title), null, { timeout: 10000 }).catch(() => {});
     await h.page.waitForTimeout(800);
     return await h.page.title();
-  } finally { await h.close(); await proxy.close(); }
+  } finally { await h?.close(); await proxy.close(); }
 }
 
 test('WebRTC UDP: the sentinel sees datagrams without the pref, none with the guard prefs, none with the API removal', { timeout: 120000 }, async () => {
   const w = await udpWorld();
   try {
-    const bare = await rtcRun(w, { prefs: null }); const bareHits = w.udp.length;
+    const bare = await rtcRun(w, { prefs: null, bare: true }); const bareHits = w.udp.length;
     assert.ok(bareHits > 0, `control: without the pref WebRTC reaches the loopback UDP socket (title "${bare}"); else this test proves nothing`);
     w.udp.length = 0;
     const proxy = await startGuardProxy({ lookup: w.lookup, dial: w.dial, ports: [w.P] }); const prefs = proxy.prefs; await proxy.close();

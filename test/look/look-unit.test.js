@@ -144,6 +144,11 @@ test('plain lines: spring, tween, declared, smoothing, scroll map, pin, unknown,
   // a two-level switch on pointer input is an instant change on hover, never 'pointer-linked … linear'
   const ps = describeRecord(rec({ class: 'step', target: { el: 1, desc: 'A.btn', channel: 'ren:op' }, model: { family: 'step (two-level, on pointer input)', driver: { kind: 'pointer', axis: 'x' }, params: { before: P(0, 'measured'), after: P(1, 'measured') } } }));
   assert.match(ps.text, /^Instant change when the pointer arrives: 0 → 1/); assert.doesNotMatch(ps.text, /linked|linear/);
+  // a three-level jump on hover is still an instant change; a real linear tween is still called linear
+  const ps3 = describeRecord(rec({ class: 'step', target: { el: 1, desc: 'A.btn', channel: 'ren:op' }, model: { family: 'step (two-level, on pointer input)', driver: { kind: 'pointer', axis: 'x' }, params: { before: P(0, 'measured'), after: P(1, 'measured') } } }));
+  assert.match(ps3.text, /^Instant change/);
+  const lr = describeRecord(rec({ class: 'ramp', model: { family: 'ramp', params: { D: P(300, 'fitted', 'ms') } } }));
+  assert.match(lr.text, /^Linear ramp, 300 ms/);
   const pin = describeRecord(rec({ class: 'scroll map', model: { family: 'pin (moves with the scroll, held over the pin range)', params: {}, pin: { start: { value: 1500.1 }, end: { value: 2140.1 } } } }));
   assert.match(pin.text, /^Pinned: held in place while the page scrolls 1500 px \[fitted\] → 2140 px \[fitted\]$/);
   // a missing value never prints as "null px"

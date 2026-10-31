@@ -17,7 +17,9 @@ const { loadElements } = await import('../../src/static/extract.js');
 const { designSection } = await import('../../src/card/design.js');
 const { launchBrowser } = await import('../../src/browser/launch.js');
 
-const DARK_OS = ['--force-dark-mode'];
+// A dark OS: --force-dark-mode switches the macOS / Windows native theme; a Linux headless shell has no OS theme, so there the
+// same preference is set where Blink reads it (preferredColorScheme 0 = dark). Either way the pass must still read light.
+const DARK_OS = process.platform === 'linux' ? ['--blink-settings=preferredColorScheme=0'] : ['--force-dark-mode'];
 let srv, d, h;
 test.before(async () => {
   srv = await serveFixture('look');
@@ -71,14 +73,18 @@ test('a declared webfont that did not load: said next to the family, in gaps, te
   const f = d.fonts.families.find((x) => x.family === 'MissingFace');
   assert.ok(f, 'the declared first family is listed');
   assert.equal(f.loaded, false); assert.notEqual(f.source.label, 'exact'); assert.ok(f.faceStatus.includes('error'));
-  assert.ok(f.drawnAs.some((n) => /georgia/i.test(n)), `drawn as ${f.drawnAs}`);
+  // the fallback is the OS's own serif for the stack "MissingFace, Georgia, serif": Georgia on macOS; a Linux machine without
+  // Georgia draws its default serif (e.g. Liberation Serif), and the read must name that face, whatever it is
+  const fb = process.platform === 'darwin' ? 'Georgia' : f.drawnAs.find((n) => !/missingface/i.test(n));
+  assert.ok(fb && f.drawnAs.some((n) => n.toLowerCase() === fb.toLowerCase()), `drawn as ${f.drawnAs}`);
+  const esc = fb.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   assert.equal(d.fonts.notLoaded, 1);
   assert.ok(d.gaps.some((g) => g.id === 'webfont_not_loaded' && g.count === 1));
   const txt = formatDesign(d);
-  assert.match(txt, /MissingFace .*declared webfont did not load; drawn as Georgia/);
-  assert.match(txt, /drawn with: .*Georgia \(system\)/);
+  assert.match(txt, new RegExp(`MissingFace .*declared webfont did not load; drawn as ${esc}`));
+  assert.match(txt, new RegExp(`drawn with: .*${esc} \\(system\\)`));
   assert.doesNotMatch(txt, /MissingFace[^\n]*webfont \[exact\]/);
-  assert.match(designSection(d), /declared webfont did not load; drawn as Georgia/);
+  assert.match(designSection(d), new RegExp(`declared webfont did not load; drawn as ${esc}`));
 });
 
 // design-bg-h100.html: html, body { height: 100% } on a 5000 px document; expected shares in the fixture's header

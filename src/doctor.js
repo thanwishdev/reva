@@ -8,6 +8,7 @@ import { resolveEngine, assertTestBrowser, MANDATORY_ARGS, PINNED_BROWSER } from
 import { listProcesses, procsUsingProfile, testBrowserProcs, ownerChromeMainPids, sleep } from './browser/procs.js';
 import { OFFLINE_ARGS } from './replay/target.js';
 import { ensureOutDir, usageFile, profilesDir, REPO_ROOT, ensureDataRoot } from './util/paths.js';
+import { osRelease } from './install/install.js';
 
 const require = createRequire(import.meta.url);
 const checks = [];
@@ -88,6 +89,29 @@ export async function runDoctor({ engines = ['chs'], write = true } = {}) {
       try { await h.page.goto('https://dns-probe.example/', { timeout: 10000 }); } catch (e) { err = e.message.split('\n')[0]; }
     } finally { if (h) await h.close(); }
     add('replay offline flag: DNS disabled', /ERR_NAME_NOT_RESOLVED/.test(err || ''), err || 'navigation unexpectedly succeeded');
+  }
+
+  // Text needs at least one system font. A bare Linux (a fresh Ubuntu, a container) has none: the headless shell then draws
+  // every glyph as nothing, text has no size on screen and every measurement of it is wrong (measured 31 Oct 2026 on a bare
+  // ubuntu:24.04: the demo's heading ranked 0 % of the visual weight instead of 68 %). Proven by drawing text on a canvas.
+  if (checks.some(c => c.id === 'chs: explicit executable' && c.pass)) {
+    let h, painted = null, err = null;
+    try {
+      h = await launchBrowser({ engine: 'chs' });
+      painted = await h.page.evaluate(() => {
+        const c = document.createElement('canvas'); c.width = 200; c.height = 60; const g = c.getContext('2d');
+        g.font = '40px sans-serif'; g.fillStyle = '#000'; g.fillText('Wg Ag', 4, 44);
+        const d = g.getImageData(0, 0, c.width, c.height).data; let n = 0; for (let i = 3; i < d.length; i += 4) if (d[i] > 0) n++;
+        return n;
+      });
+    } catch (e) { err = e.message.split('\n')[0]; } finally { if (h) await h.close(); }
+    const ok = painted > 0;
+    add('system fonts: text is drawn', ok, err || (ok ? `${painted} px of sample text drawn` : 'no system font: text draws as nothing, so text sizes, type and anything measured on text would be wrong'));
+    if (!ok && !err) {
+      const os = osRelease(); const deb = os.id === 'debian' || os.id === 'ubuntu' || /\b(debian|ubuntu)\b/.test(os.like || '');
+      hints.push(deb ? 'no system fonts: install some with  sudo apt-get install -y fonts-liberation  (then run reva doctor again)'
+        : 'no system fonts: install a basic font package (for example Liberation or DejaVu) with your package manager, then run reva doctor again');
+    }
   }
 
   // Guard unit: the user's own Chrome and arbitrary binaries must be refused.

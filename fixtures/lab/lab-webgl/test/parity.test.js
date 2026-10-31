@@ -82,13 +82,20 @@ for (const route of ROUTES) {
   }
 }
 
-const digest = (take) => crypto.createHash('sha256').update(JSON.stringify(take.data.rows)).digest('hex');
+// Rows compared for determinism. macOS: every row, as before. Elsewhere: the rows from the boot-done mark on, plus an equal
+// boot-done frame. Before that mark the page is still being parsed in real time, so on a slower machine (a CI runner, an
+// emulated x64 under load) a boot frame can be sampled before the parser has made the element. Measured 31 Oct 2026 on
+// linux-x64 under load: the only row that ever differed was frame k=2 (pre-boot, empty vs filled); boot-done was k=4 in every run.
+const bootK = (take) => (take.marks.find((m) => m.name === 'boot-done') || {}).k;
+const detRows = (take) => (process.platform === 'darwin' ? take.data.rows : take.data.rows.filter((r) => r.k >= bootK(take)));
+const digest = (take) => crypto.createHash('sha256').update(JSON.stringify(detRows(take))).digest('hex');
 for (const [id, variant] of [['m14', 'steps'], ['m22', 'steps'], ['m16b', 'steps']]) {
   test(`${id} ${variant}: a repeated take is bit-identical (K = 2, one session apart)`, { timeout: 180000 }, async () => {
     const route = ROUTES.find((r) => r.id === id);
     const a = await recordCell({ route, params: route.params.default, variant, rate: 120, server: srv });
     const b = await recordCell({ route, params: route.params.default, variant, rate: 120, server: srv });
     assert.equal(a.data.rows.length, b.data.rows.length);
+    assert.equal(bootK(a), bootK(b), 'boot-done frame');
     assert.equal(digest(a), digest(b), `${id} rows differ between two takes`);
   });
 }
