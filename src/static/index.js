@@ -17,7 +17,7 @@ export { STATIC_SCHEMA, PROVENANCE } from './prov.js';
  * Full static run: extraction (one browser session), then dembrandt in a second, separate session, then the report section.
  * Sessions are sequential and never shared with a motion take.
  */
-export async function runStatic({ url, outDir, engine = defaultEngine(), dembrandt = true, allowLive = false, variants, sweep, replay = null, log = () => {} } = {}) {
+export async function runStatic({ url, outDir, engine = defaultEngine(), dembrandt = true, allowLive = false, variants, sweep, replay = null, preloader = null, log = () => {} } = {}) {
   // replay = { target, cls }: serve the page from a frozen archive (offline, DNS disabled, misses counted). No live load.
   let replayNet = null; let extra = {};
   if (replay) {
@@ -28,7 +28,7 @@ export async function runStatic({ url, outDir, engine = defaultEngine(), dembran
     } };
     dembrandt = false; // dembrandt drives its own browser session, which cannot be given the archive routes
   } else assertLocalTarget(url, allowLive);
-  const { record, outDir: dir, ledger } = await extractStatic({ url, outDir, engine, allowLive, variants, sweep, log, ...extra });
+  const { record, outDir: dir, ledger } = await extractStatic({ url, outDir, engine, allowLive, variants, sweep, preloader, log, ...extra });
   if (replay) {
     record.environment.archiveReplay = { value: { target: replay.target.id, cls: replay.cls, misses: replayNet.misses.length, missSample: replayNet.misses.slice(0, 20), blocked: replayNet.blocked.length }, provenance: 'measured', from: 'wireReplay' };
   }

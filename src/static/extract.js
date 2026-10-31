@@ -15,6 +15,7 @@ import { buildTokens, styleObject } from './tokens.js';
 import { openCss, listMediaQueries, nodeIdsForRows, matchedStyles, pseudoView, pickDeclared, declaredPart, checkConsistency, platformFonts, forcedComputed, isGoneError } from './cdpcss.js';
 import { sweepBreakpoints, queryEdges, explainEdges } from './breakpoints.js';
 import { defaultEngine } from '../browser/engines.js';
+import { waitForPreloader } from '../browser/preloader.js';
 import { declaredTransition } from './transition.js';
 
 export const DEFAULT_VARIANTS = [
@@ -149,7 +150,7 @@ async function fontsUsed(css, data, nodeIdsCache) {
  * @param {Array}  [o.variants]     DEFAULT_VARIANTS
  * @param {object} [o.sweep]        {from,to,step} width sweep for breakpoints
  */
-export async function extractStatic({ url, outDir, engine = defaultEngine(), variants = DEFAULT_VARIANTS, sweep = {}, allowLive = false, allowHosts = [], offlineReplay = false, prepare, launchArgs = [], maxDeclaredRows = 400, maxStates = 40, maxElements = 4000, a11y = true, saveScripts = true, prefs, signal, settleText = null, afterLoad = null, log = () => {} } = {}) {
+export async function extractStatic({ url, outDir, engine = defaultEngine(), variants = DEFAULT_VARIANTS, sweep = {}, allowLive = false, allowHosts = [], offlineReplay = false, prepare, launchArgs = [], maxDeclaredRows = 400, maxStates = 40, maxElements = 4000, a11y = true, saveScripts = true, prefs, signal, settleText = null, afterLoad = null, preloader = null, log = () => {} } = {}) {
   // a11y=false: no ariaSnapshot (it holds the page's words); saveScripts=false: no JS bodies on disk; prefs: browser profile
   // prefs (e.g. the WebRTC no-UDP policy); signal: an AbortSignal that closes the browser (the session then fails fast)
   // offlineReplay: the page is served from an archive by `prepare(context)` (e.g. routeFromHAR). The guard below is registered
@@ -192,6 +193,7 @@ export async function extractStatic({ url, outDir, engine = defaultEngine(), var
     const browserInfo = await css.cdp.send('Browser.getVersion').catch(() => ({}));
 
     const out = { variants: [], a11y: [] };
+    let preCap = null;
     let baseData = null, baseInventory = null, declaredQueries = [], baseDeclMeta = null, fontsByVariant = {};
     // a page that reloads or redirects right after it loads destroys the context mid-variant: wait for the new document and
     // read the whole variant again from its start (at most twice); the ledger names the variant
@@ -205,6 +207,14 @@ export async function extractStatic({ url, outDir, engine = defaultEngine(), var
     for (const [vi, v] of variants.entries()) for (let attempt = 0; ; attempt++) try {
       log(`variant ${v.id}`);
       await applyVariant(h, css, v, url);
+      // preloader = { capMs }: C1 (1 Nov) wait for a loader overlay / counter / one-colour screen to go before the read;
+      // after one variant hit the cap (a loader the archive cannot finish) the next variants wait at most 3 s
+      let preWait = null;
+      if (preloader) {
+        preWait = await waitForPreloader(page, { capMs: preCap ?? (preloader.capMs ?? 20000) }).catch(e => ({ state: 'error', error: String(e.message || e).split('\n')[0].slice(0, 200) }));
+        if (preWait.state === 'cap') preCap = Math.min(preloader.capMs ?? 20000, 3000);
+        if (preWait.state !== 'none') log(`variant ${v.id}: preloader ${preWait.state} after ${preWait.waitedMs} ms (${(preWait.first || []).join('; ')})`);
+      }
       const settle = await page.evaluate(settlePage);
       // afterLoad(page): the caller's step once the variant has loaded and settled (REVA's design pass rejects a cookie banner)
       if (afterLoad) { try { if (await afterLoad(page)) await page.evaluate(settlePage); } catch {} }
@@ -231,6 +241,7 @@ export async function extractStatic({ url, outDir, engine = defaultEngine(), var
         media: measured({ pointerCoarse: data.page.pointerCoarse, hoverNone: data.page.hoverNone, prefersDark: data.page.colorSchemeDark, prefersReducedMotion: data.page.reducedMotion }, { from: 'matchMedia' }),
         document: measured({ scrollWidth: data.page.scrollWidth, scrollHeight: data.page.scrollHeight }, { from: 'documentElement.scrollWidth/Height' }),
         settle: measured(settle, { from: 'document.fonts.ready + finish()/cancel() of CSS animations' }), elementCount: data.rows.length,
+        ...(preWait ? { preloader: measured(preWait, { from: 'waitForPreloader: loader element / counter / progress bar / one-colour screen, polled until gone or the cap' }) } : {}),
         ...(textSettle ? { textSettle: measured(textSettle, { from: 'text font sizes + document height sampled until three reads agree, and once after the extract' }) } : {}) };
 
       const nodeIdsCache = new Map();

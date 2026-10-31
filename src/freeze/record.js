@@ -10,6 +10,7 @@ import { seedScript } from '../replay/target.js';
 import { recordArgs } from './config.js';
 import { defaultEngine } from '../browser/engines.js';
 import { blockTrackers } from './trackers.js';
+import { waitForPreloader } from '../browser/preloader.js';
 
 export const sleep = ms => new Promise(r => setTimeout(r, ms));
 
@@ -64,6 +65,11 @@ export async function recordClass(cfg, cls, { harPath, extraUrls = [], engine = 
     const resp = await page.goto(cfg.startUrl, { waitUntil: 'load', timeout: 60000 });
     log.docStatus = resp.status(); log.finalUrl = page.url();
     await sleep(cfg.settleMs);
+    // C1 (1 Nov): a loader overlay / counter / one-colour screen still showing: wait until it is gone (or the cap), so the
+    // evidence shot, the sweep and the recording see the real page; the outcome goes into the log (and live.json)
+    if (cfg.preloaderWait !== false && !fetchOnly) {
+      log.preloader = await waitForPreloader(page, { capMs: cfg.preloaderCapMs ?? 20000 }).catch(e => ({ state: 'error', error: String(e.message || e).split('\n')[0].slice(0, 200) }));
+    }
     for (const sel of (fetchOnly ? [] : cfg.clicks)) { // declared record-time interactions (e.g. open a menu so its lazy content loads)
       try { await page.click(sel, { timeout: 3000 }); log.clicked.push(sel); await sleep(300); } catch { log.clicked.push(sel + ' (not found)'); }
     }
@@ -82,7 +88,7 @@ export async function recordClass(cfg, cls, { harPath, extraUrls = [], engine = 
           const text = (document.body && document.body.innerText) || '';
           return { title: document.title.slice(0, 200), elements: all.length, visible, aboveFold, media, textChars: text.length, text: text.slice(0, 20000), htmlChars: document.documentElement.outerHTML.length, scrollHeight: document.documentElement.scrollHeight };
         });
-        log.live = { docStatus: log.docStatus, finalUrl: log.finalUrl, ...d, text: undefined, textSha1: crypto.createHash('sha1').update(d.text).digest('hex'), textHead: d.text.replace(/\s+/g, ' ').slice(0, 300), screenshot: `${cls}.jpg`, at: new Date().toISOString() };
+        log.live = { docStatus: log.docStatus, finalUrl: log.finalUrl, ...d, text: undefined, textSha1: crypto.createHash('sha1').update(d.text).digest('hex'), textHead: d.text.replace(/\s+/g, ' ').slice(0, 300), screenshot: `${cls}.jpg`, ...(log.preloader ? { preloader: log.preloader } : {}), at: new Date().toISOString() };
       } catch (e) { log.live = { docStatus: log.docStatus, finalUrl: log.finalUrl, error: String(e.message || e).split('\n')[0].slice(0, 200) }; }
     }
     if (cfg.sweep && !fetchOnly) { // a slow wheel pass mounts lazy content; stop at the bottom (or when the page stops moving: a latch, an end-of-scroll)
