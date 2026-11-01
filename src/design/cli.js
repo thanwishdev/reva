@@ -6,13 +6,15 @@ import path from 'node:path';
 import { buildViews, writeViews, summarizeViews, buildTokens } from './run.js';
 import { assertOutsideRepo } from '../util/paths.js';
 
-export const DESIGN_HELP = `reva design <url | archive> [--json] [--all] [--tokens] [--cls A] [--out DIR] [--engine cft|chs] [--ignore-robots]
+export const DESIGN_HELP = `reva design <url | archive> [--json] [--all] [--tokens] [--cls A] [--out DIR] [--engine cft|chs] [--color-scheme light|dark] [--ignore-robots]
   How the page is designed, in plain words: fonts and their roles, type scale, colours with roles and contrast, spacing,
   radii, shadows, layout (content widths, columns, sections), breakpoints, hover / focus changes. Every value is labelled
   exact (the page's own CSS), measured (computed by the browser) or derived (our arithmetic), with its unit. Content-free:
   no page text, images or font files. One headless session of its own (\`reva look\` records the same data in look.json).
   --json    print design.json   --all  list every type style and shadow   --tokens  also write design-tokens.css / .json
   --engine  browser: cft (Chrome for Testing) or chs (the headless shell); default: cft when installed, else chs
+  --color-scheme  read the page in the light (default) or dark colour scheme (what prefers-color-scheme matches); the
+            output names the scheme that was read, so a site with a dark palette can be read in both
   --ignore-robots  the site is yours: open it even where its robots.txt disallows REVA (the typed site only)
   A live page is checked first, like reva look: robots.txt (of the page, every redirect and every page it sends the
   browser to) and bot / login / region walls stop the read; a recognised cookie banner is rejected, never accepted.
@@ -70,6 +72,9 @@ export async function designCommand(f) {
   const { stripControls, terminalJson } = await import('../report/untrusted.js');
   const { ensureOutDir } = await import('../util/paths.js');
   const cls = typeof f.cls === 'string' ? f.cls : 'A';
+  const { parseColorScheme } = await import('../browser/scheme.js');
+  let colorScheme;
+  try { colorScheme = parseColorScheme(f['color-scheme']); } catch (e) { console.error(e.message); return 2; }
   let src;
   try { src = resolveSource(input, { cls }); } catch (e) { console.error(stripControls(e.message)); return 2; }
   const id = `${new Date().toISOString().replace(/[:.]/g, '-')}_design`;
@@ -88,7 +93,7 @@ export async function designCommand(f) {
   const DEADLINE_MS = 240000; const deadline = AbortSignal.timeout(DEADLINE_MS);
   let d;
   try {
-    d = await runDesignPass({ src, cls, outDir: path.join(out, 'static'), engine: typeof f.engine === 'string' ? f.engine : undefined,
+    d = await runDesignPass({ src, cls, outDir: path.join(out, 'static'), engine: typeof f.engine === 'string' ? f.engine : undefined, ...(colorScheme ? { colorScheme } : {}),
       consentClicks: safety ? safety.consent.clicks : null, navGuard, log, signal: deadline });
   } catch (e) {
     if (deadline.aborted) throw Object.assign(new Error(`design: no result within ${DEADLINE_MS / 1000} s (the time limit of one read); the browser was closed. The page may never finish loading.`), { code: 'timeout' });

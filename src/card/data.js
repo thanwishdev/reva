@@ -461,7 +461,7 @@ export function buildCardData(look, { rows, inputs } = {}) {
   const src = look.source || {};
   return {
     schema: CARD_SCHEMA,
-    source: { kind: src.kind || null, url: src.kind === 'archive' ? src.startUrl : src.url, offline: src.kind === 'archive' || src.live === false },
+    source: { kind: src.kind || null, url: src.kind === 'archive' ? src.startUrl : src.url, offline: src.kind === 'archive' || src.live === false, ...(src.demo ? { demo: true } : {}) },
     action: { do: look.action && look.action.do, el: look.action && look.action.el, on: look.action && look.action.on },
     take: { rate: look.take && look.take.rate, frames: look.take && look.take.frames, misses: src.kind === 'archive' && look.take && look.take.net ? look.take.net.misses : null, started: (look.take && look.take.dir && (/(\d{4}-\d\d-\d\d)T/.exec(look.take.dir) || [])[1]) || null },
     status: look.status, warnings: look.warnings || [], errors: look.errors || [],

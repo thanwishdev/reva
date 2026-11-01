@@ -29,6 +29,7 @@ import { withRecordedEnds } from '../export/index.js';
 import { recordedEnds } from '../mcp/analysis.js';
 import { WEBRTC_PREFS, NO_UDP_APIS_SCRIPT } from '../mcp/guard.js';
 import { runDesignPass } from '../design/pass.js';
+import { parseColorScheme } from '../browser/scheme.js';
 import { defaultEngine } from '../browser/engines.js';
 import { safetyGate, navigationGuard } from '../safety/gate.js';
 import { clickRejectInPage } from '../safety/consent.js';
@@ -472,7 +473,7 @@ function startDesign({ src, cls, o, allowNet, guard, safety, log }) {
   const signal = o.signal ? AbortSignal.any([o.signal, ctrl.signal]) : ctrl.signal;
   const stageRoot = ensureOutDir('takes', '.design-staging');   // beside the takes: the same disk, so the move is a rename
   const stage = fs.mkdtempSync(path.join(stageRoot, 'd-')); const outDir = path.join(stage, 'design');
-  const promise = runDesignPass({ src, cls, outDir, viewport: o.viewport, args: o.args, allowNet, prefs: o.prefs, onSession: o.onSession, signal, engine: o.engine, navGuard: guard, consentClicks: safety ? safety.consent.clicks : null, log });
+  const promise = runDesignPass({ src, cls, outDir, viewport: o.viewport, colorScheme: o.colorScheme, args: o.args, allowNet, prefs: o.prefs, onSession: o.onSession, signal, engine: o.engine, navGuard: guard, consentClicks: safety ? safety.consent.clicks : null, log });
   promise.catch(() => {});   // awaited by finishDesign or cancel; never an unhandled rejection meanwhile
   const run = { promise, guard, stage, outDir, taken: false };
   run.cancel = async () => { ctrl.abort(); await promise.catch(() => {}); try { fs.rmSync(stage, { recursive: true, force: true }); } catch { /* gone */ } };
@@ -494,6 +495,8 @@ async function lookOnce(o, T0, cache) {
   const log = o.log || (() => {});
   const action = o.action || 'load';
   if (!ACTIONS.includes(action)) throw new Error(`look: unknown action "${action}" (use ${ACTIONS.join(', ')})`);
+  // the colour scheme the page is read in (--color-scheme): undefined = light, exactly as before the option
+  const colorScheme = parseColorScheme(o.colorScheme, 'colorScheme');
   const cls = o.cls || 'A';
   const src = resolveSource(o.input, { cls });
   if (o.after && action === 'load') throw Object.assign(new Error('look: --after clicks first and then does the action; it needs --do hover, click or scroll (a load has nothing to click before)'), { code: 'bad_arguments' });
@@ -517,7 +520,7 @@ async function lookOnce(o, T0, cache) {
   const args = [...(src.kind === 'archive' ? BLACKHOLE_ARGS : isLocal ? localArgs(allowNet, { map: o._testHostMap }) : []), ...(o.args || [])];
   if (!o._retake) log(`look: ${src.kind === 'archive' ? `archive ${src.archive}` : src.url} · ${action}${aimed ? ` · ${o.el}` : ''} · hx ${rate} Hz`);
   const S = await openSession({
-    lane: 'hx', rate, engine: o.engine || defaultEngine(), cls, args, prefs: noUdpPrefs(o.prefs), timerFlag: o.timerFlag !== false, keepalive: o.keepalive !== false,
+    lane: 'hx', rate, engine: o.engine || defaultEngine(), cls, args, prefs: noUdpPrefs(o.prefs), timerFlag: o.timerFlag !== false, keepalive: o.keepalive !== false, ...(colorScheme ? { colorScheme } : {}),
     ...(src.kind === 'archive' ? { target: src.target } : { url: src.url, live: src.live, viewport: o.viewport || { width: 1440, height: 900 }, seed: 1 }),
     discover: !aimed, aim: aimed ? { selectors: sels, pseudos: aim.pseudos } : null, maxElements: o.maxElements, capPolicy: aimed ? null : 'viewport',
     netGate: o.netGate !== false, cpuThrottle: o.cpuThrottle ?? (+process.env.REVA_CPU_THROTTLE || 0),
@@ -1084,14 +1087,17 @@ async function lookOnce(o, T0, cache) {
     schema: LOOK_SCHEMA, ok: !errors.length && found,
     status: errors.length ? 'error' : found ? 'motion' : 'no-motion',
     errors, warnings,
-    source: src.kind === 'archive' ? { kind: 'archive', archive: src.archive, startUrl: src.target.startUrl, target: src.target.id || null } : { kind: 'url', url: src.url, live: src.live },
+    // demo: REVA's bundled demo page (reva demo, compare "demo", the MCP fixture "demo"): the card calls it by that name
+    source: src.kind === 'archive' ? { kind: 'archive', archive: src.archive, startUrl: src.target.startUrl, target: src.target.id || null } : { kind: 'url', url: src.url, live: src.live, ...(o.demo && !src.live ? { demo: true } : {}) },
     action: { do: action, el: o.el || null, on: onSel, after: afterInfo ? afterInfo.selector : null, picked, ...(o._triggerSearch ? { triggerSearch: o._triggerSearch } : {}), ...actInfo },
     safety,
     network: localNet ? localNet.net : { mode: src.kind === 'archive' ? 'archive' : 'live' },
     ready,
     take: { dir, lane: take.lane, rate: take.rate, rateRule: o._rateRule ? { rule: 'a canvas covers more than 30 % of the viewport: 60 Hz', ...o._rateRule } : null, frames: take.data.rows.length, watched: watched.length, aimMatches: aimIds ? aimIds.length : null, capped,
       net: { misses: src.kind === 'archive' ? take.net.misses : null, blocked: take.net.blocked, docStatus: take.net.docStatus }, netGate, frameClock: (take.extra && take.extra.frameClock) || null,
-      stepWallMsMedian: median(take.stepWall), pageErrors: (take.pageErrors || []).length },
+      stepWallMsMedian: median(take.stepWall), pageErrors: (take.pageErrors || []).length,
+      // only when --color-scheme was given: what was asked and what prefers-color-scheme matched in the page
+      ...(take.context && take.context.colorScheme ? { colorScheme: { requested: take.context.colorScheme, read: (take.env && take.env.colorScheme) || null, label: 'measured' } } : {}) },
     timing: { totalMs, lap, screensMs: { before: shotB ? shotB.ms : null, end: shotE ? shotE.ms : null, page: shotP ? shotP.ms : null } },
     fit: res ? { partial: !!res.partial, flags: res.flags, capped: res.capped, records: res.records.length, unknowns: res.unknowns.length, budget: fitOpts } : null,
     page,

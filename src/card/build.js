@@ -9,6 +9,7 @@ import { startsText } from '../look/starts.js';
 import { gsapLineText } from '../look/gsap.js';
 import { lenisDeclaredText, compareLenisTau, fittedTauMs } from '../look/lenis.js';
 import { declaredLibLines } from '../look/libprobe.js';
+import { cardTitle } from './title.js';
 import { execFileSync } from 'node:child_process';
 import os from 'node:os';
 
@@ -164,7 +165,9 @@ export function trimLook(look, dir = look.dir) {
     dirName: dir ? path.basename(path.resolve(dir)) : '',
     status: look.status,
     errors: look.errors || [],
-    source: { kind: src.kind, startUrl: src.startUrl || src.url || null },
+    source: { kind: src.kind, startUrl: src.startUrl || src.url || null, ...(src.demo ? { demo: true } : {}) },
+    // the page's name for the title and the heading (src/card/title.js, the one formatter)
+    title: cardTitle(src),
     action: { do: look.action && look.action.do, el: look.action && look.action.el },
     take: { frames: look.take && look.take.frames, rate: look.take && look.take.rate, lane: look.take && look.take.lane, watched: look.take && look.take.watched, misses: look.take && look.take.net && look.take.net.misses, pageErrors: look.take && look.take.pageErrors },
     timing: { totalMs: look.timing && look.timing.totalMs },

@@ -13,6 +13,7 @@ import { summarizeDesign, DESIGN_SCHEMA } from './summary.js';
 import { defaultEngine } from '../browser/engines.js';
 import { clickRejectInPage } from '../safety/consent.js';
 import { localArgs } from '../look/localnet.js';
+import { parseColorScheme } from '../browser/scheme.js';
 
 /** Loopback only (the same walls as look's LOCAL_ARGS; restated here so this module does not import look). */
 const LOCAL_ARGS = (allow = []) => localArgs(allow);
@@ -24,6 +25,7 @@ export const DESIGN_SWEEP = { from: 320, to: 1920, step: 80, ignoreWrap: true, m
  * @param {string} o.outDir     where the raw static record goes (outside the repo)
  * @param {string} [o.cls]      archive viewport class (default A)
  * @param {object} [o.viewport] {width,height} for a URL (default 1440×900)
+ * @param {'light'|'dark'} [o.colorScheme] the colour scheme the page is read in (--color-scheme; default light)
  * @param {string[]} [o.args]   extra browser args (the MCP's guard proxy for a live page)
  * @param {object} [o.prefs]    browser profile prefs (merged with the WebRTC no-UDP policy)
  * @param {Function} [o.onSession] ({ctx, page}) => Promise: the caller's guard (route handler) for a live page
@@ -56,8 +58,9 @@ export async function runDesignPass(o) {
       } };
     }
     fs.mkdirSync(o.outDir, { recursive: true });
-    // the scheme and motion preference are pinned (light, no preference): the design read never follows the OS appearance
-    const pin = { colorScheme: 'light', reducedMotion: 'no-preference' };
+    // the scheme and motion preference are pinned (light unless --color-scheme dark; no preference): the design read never
+    // follows the OS appearance
+    const pin = { colorScheme: parseColorScheme(o.colorScheme, 'colorScheme') || 'light', reducedMotion: 'no-preference' };
     const variants = [{ id: `desktop-${vp.width}`, width: vp.width, height: vp.height, ...pin }, { id: 'mobile-390', width: 390, height: 844, touch: true, light: true, ...pin }];
     const prefs = { ...(o.prefs || {}), webrtc: { ...((o.prefs && o.prefs.webrtc) || {}), ...WEBRTC_PREFS.webrtc } };
     const { record } = await extractStatic({ url, outDir: o.outDir, engine: o.engine || defaultEngine(), variants, sweep: o.sweep || DESIGN_SWEEP, maxStates: 24, maxDeclaredRows: 300,

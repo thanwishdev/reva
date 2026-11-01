@@ -4,7 +4,7 @@
 // ownDomains of <data root>/config.json; the MCP has no override flag) or when the page is a bot, login or region wall; REVA never
 // gets around those. The cookie banner's reject buttons found here are clicked in the page later (clickRejectInPage).
 import { preflight, sameSite } from './preflight.js';
-import { UA, PRODUCT_TOKEN, robotsVerdict, readRobotsBody } from './robots.js';
+import { UA, PRODUCT_TOKEN, robotsVerdict, readRobotsBody, robotsUnreachableText } from './robots.js';
 import { readOwnDomains, isOwnDomain, ownDomainsFile } from './own-domains.js';
 
 const userError = (code, message) => Object.assign(new Error(message), { code });
@@ -51,9 +51,19 @@ export async function safetyGate(url, { ignoreRobots = false, ownDomains, who = 
         : `If the site is yours, run again with --ignore-robots, or add its domain to "ownDomains" in ${configFile}.`;
     throw userError('blocked_robots', `${origin}/robots.txt disallows ${blockedUrl}${via} for ${s.robots.agent === '*' ? 'all robots (User-agent: *)' : s.robots.agent}. REVA respects robots.txt and did not open the page. ${lift}`);
   }
+  // robots.txt answered 5xx / 429 or not at all: not a wall and not a refusal, a "try again later" (transient)
+  if (p.verdict === 'blocked:robots-unreachable') {
+    const ru = p.robotsUnreachable || {};
+    throw userError('robots_unreachable', robotsUnreachableText(ru.origin || origin, ru.error || (p.robotsFetch && p.robotsFetch.error)));
+  }
   if (String(p.verdict).startsWith('blocked:')) {
     const kind = (p.wall && p.wall.kind) || p.verdict.slice(8);
     throw userError('blocked_wall', `${url} is behind a ${WALL_WORD[kind] || kind} (${(p.wall && p.wall.marker) || p.reason}). REVA does not get around bot, login or region walls, so it did not open the page.`);
+  }
+  // PR-06: the page answered 429 with no challenge: the site asked to slow down, so REVA does not open it now
+  if (p.verdict === 'failed:rate-limited') {
+    const wait = Number.isFinite(p.retryAfterMs) ? ` (it asked to wait ${Math.round(p.retryAfterMs / 1000)} s)` : '';
+    throw userError('rate_limited', `${url} answered HTTP 429, too many requests${wait}. REVA did not open the page; try again later.`);
   }
   if (s.robots.ignored) log(`robots.txt disallows ${blockedUrl}; opening it anyway because ${isOwnDomain(blockedUrl, own) ? `its domain is in "ownDomains" (${configFile})` : 'of --ignore-robots'}`);
   if (String(p.verdict).startsWith('failed:')) log(`preflight could not fetch the page (${p.verdict}${p.reason ? ' ' + p.reason : ''}); robots.txt ${s.robots.found ? 'allows it' : 'not found'}; the browser will try`);

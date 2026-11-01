@@ -10,13 +10,14 @@ export const DEMO_ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)),
 const DEFAULT_EL = { load: null, hover: '#card-1', click: '.knob', scroll: '.progress' };
 const DEFAULT_ON = { click: '#toggle' };
 
-export const DEMO_HELP = `reva demo [--do load|hover|click|scroll] [--el <selector>] [--no-card] [--json] [--code]
+export const DEMO_HELP = `reva demo [--do load|hover|click|scroll] [--el <selector>] [--color-scheme light|dark] [--no-card] [--json] [--code]
 
   Runs "reva look" on REVA's own demo page (bundled, served on 127.0.0.1; no network) and writes the motion card.
   --do load    the elements that move when the page loads (default): a CSS rise, a fade, a JS spring
   --do hover   the first card lifting on hover (#card-1)
   --do click   the switch knob sliding when the switch is clicked
   --do scroll  the reading-progress bar tied to the scroll
+  --color-scheme dark  read the demo page in the dark colour scheme (default light); the motion is the same in both
   Other look options (--code, --json, --verbose) pass through. Next: reva look <your url> ... (reva look --help).`;
 
 export async function runDemoCommand(f) {
@@ -29,7 +30,7 @@ export async function runDemoCommand(f) {
   let code;
   try {
     const { runLookCommand } = await import('../look/cli.js');
-    code = await runLookCommand({ ...f, _: ['look', srv.url], do: action, ...(el ? { el } : {}), ...(on ? { on } : {}), card: !f['no-card'] });
+    code = await runLookCommand({ ...f, _: ['look', srv.url], _demo: true, do: action, ...(el ? { el } : {}), ...(on ? { on } : {}), card: !f['no-card'] });
   } finally { await srv.close(); }
   if (!f.json) console.error(`\nThat was REVA's own demo page. Next: reva look <your url> --do ${action === 'load' ? 'hover --el "<selector>"' : action} (reva look --help)`);
   return code;

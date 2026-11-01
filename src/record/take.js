@@ -70,6 +70,8 @@ export function buildEnvironment(t) {
     viewport: t.env ? meas({ width: t.env.innerWidth, height: t.env.innerHeight }, { from: 'window.innerWidth/innerHeight' }) : U('unk_viewport', 'page never answered', 'finish() on a live page'),
     dpr: t.env ? meas(t.env.dpr, { from: 'devicePixelRatio' }) : U('unk_dpr', 'page never answered', 'finish() on a live page'),
     reducedMotion: t.env ? meas(t.env.reducedMotion, { from: 'matchMedia' }) : U('unk_rm', 'page never answered', 'finish() on a live page'),
+    // the colour scheme, only on a take that asked for one (--color-scheme): what prefers-color-scheme matched in the page
+    ...(t.context && t.context.colorScheme ? { colorScheme: t.env && t.env.colorScheme ? meas(t.env.colorScheme, { from: 'matchMedia', requested: t.context.colorScheme }) : U('unk_color_scheme_read', 'page never answered', 'finish() on a live page') } : {}),
     userAgent: t.env ? meas(t.env.ua, { from: 'navigator.userAgent' }) : U('unk_ua', 'page never answered', 'finish() on a live page'),
     buildId: t.buildId != null ? meas(t.buildId, { from: 'archive version.json' }) : U('unk_build_id', 'not an archived target (local fixture or no version.json)', 'freeze the target with a version file'),
     seed: t.cfg.seed != null ? decl(t.cfg.seed) : t.extra && t.extra.seed != null ? decl(t.extra.seed) : U('unk_seed', 'Math.random not seeded for this take', 'pass a seed (target config or --seed)'),

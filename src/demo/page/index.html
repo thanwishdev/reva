@@ -36,6 +36,12 @@
   .toggle.on .knob { transform: translateX(28px); }
   .long p { max-width: 38em; color: var(--muted); }
   footer { padding: 12vh 8vw 20vh; color: var(--muted); font-size: 14px; }
+  /* dark colour scheme (reva demo --color-scheme dark): colours only; every motion, timing, size and layout value above
+     stays as it is, so the demo's measured numbers are the same in both schemes */
+  @media (prefers-color-scheme: dark) {
+    :root { color-scheme: dark; --ink: #ecebe7; --muted: #a3a8b4; --paper: #121316; --card: #1b1d22; --line: #2c2f36; }
+    .card:hover { box-shadow: 0 18px 40px rgba(0, 0, 0, .5); }
+  }
 </style>
 </head>
 <body>

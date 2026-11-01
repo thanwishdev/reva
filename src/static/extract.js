@@ -163,7 +163,7 @@ export async function extractStatic({ url, outDir, engine = defaultEngine(), var
   outDir = outDir ? assertOutsideRepo(path.resolve(outDir)) : ensureOutDir('static', id);
   fs.mkdirSync(outDir, { recursive: true });
 
-  const h = await launchBrowser({ engine, args: launchArgs, prefs, context: { viewport: { width: variants[0].width, height: variants[0].height }, deviceScaleFactor: 1 } });
+  const h = await launchBrowser({ engine, args: launchArgs, prefs, context: { viewport: { width: variants[0].width, height: variants[0].height }, deviceScaleFactor: 1, ...(variants[0].colorScheme ? { colorScheme: variants[0].colorScheme } : {}) } });
   const onAbort = () => { h.close().catch(() => {}); };
   if (signal) { if (signal.aborted) { await h.close(); throw Object.assign(new Error('static: cancelled'), { code: 'cancelled' }); } signal.addEventListener('abort', onAbort, { once: true }); }
   const resources = []; const blocked = [];
@@ -336,11 +336,12 @@ export async function extractStatic({ url, outDir, engine = defaultEngine(), var
       const widthDriven = e.edges.length > 0;
       return { query: decl(q.text, q.file ?? 'stylesheet', { kind: 'media' }), widthDriven, activeAtBase: q.activeNow, expressions: q.expressions };
     });
-    const variantMedia = { dark: variants.some(v => v.colorScheme === 'dark'), reducedMotion: variants.some(v => v.reducedMotion === 'reduce'), touch: variants.some(v => v.touch) };
+    const variantMedia = { dark: variants.some(v => v.colorScheme === 'dark'), light: variants.some(v => (v.colorScheme ?? 'light') === 'light'), reducedMotion: variants.some(v => v.reducedMotion === 'reduce'), touch: variants.some(v => v.touch) };
     for (const q of declaredQueries) {
       const t = q.text;
       if (/print/.test(t)) ledger.add('unk_print_media', `rules under "@media ${t}" are declared but print media is not emulated`, 'page.emulateMedia({media:"print"}) pass', t);
       if (/prefers-color-scheme/.test(t) && !variantMedia.dark) ledger.add('unk_color_scheme', `"${t}" declared but no dark variant was run`, 'add a colorScheme:dark variant', t);
+      else if (/prefers-color-scheme/.test(t) && !variantMedia.light) ledger.add('unk_color_scheme', `"${t}" declared but no light variant was run`, 'add a colorScheme:light variant', t);
       if (/prefers-reduced-motion/.test(t) && !variantMedia.reducedMotion) ledger.add('unk_reduced_motion', `"${t}" declared but no reduced-motion variant was run`, 'add a reducedMotion:reduce variant', t);
       if (/pointer|hover/.test(t) && !variantMedia.touch) ledger.add('unk_pointer_media', `"${t}" declared but no touch variant was run`, 'add a touch variant', t);
       if (/forced-colors|prefers-contrast|prefers-reduced-transparency|inverted-colors|color-gamut/.test(t)) ledger.add('unk_other_media_feature', `"${t}" declared; this media feature is not emulated`, 'Emulation.setEmulatedMedia features', t);

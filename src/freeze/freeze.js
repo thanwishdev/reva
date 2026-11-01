@@ -15,7 +15,7 @@ import { analyseCompletion } from './complete.js';
 import { replayVerify } from './verify.js';
 import { buildArchive, sealArchive, unsealArchive } from './build.js';
 import { rankCandidates, completenessOf } from './policy.js';
-import { robotsFilter, robotsFetcher } from './robots-gate.js';
+import { robotsFilter, robotsFetcher, notFetchedText } from './robots-gate.js';
 import { defaultEngine } from '../browser/engines.js';
 import { BrowserPool } from '../browser/pool.js';
 import { recordArgs } from './config.js';
@@ -315,7 +315,7 @@ async function completeOnce(cfg, { outDir, work, engine, log, t0, B, block, trun
   const dropped = rb.disallowed.length ? { ...rk.dropped, robots: rb.disallowed.length } : rk.dropped;
   info = { ...info, candidates: picked, notFetched: [...rk.notFetched, ...rb.disallowed], dropped, unknown: [...a.unknown, ...mediaUnknown()] };
   log(`completion: ${picked.length} typed candidates (${rk.notFetched.length} over the cap; dropped ${JSON.stringify(dropped)})`);
-  for (const d of rb.disallowed) log(`completion: not fetched (robots.txt disallows ${d.agent}): ${d.url.slice(0, 200)}`);
+  for (const d of rb.disallowed) log(notFetchedText(d));
   if (!picked.length) return { ok: cur.ok, report: cur.report, sums: cur.sums, outDir };
 
   const cls0 = Object.keys(cfg.classes)[0];

@@ -241,3 +241,54 @@ test('card page: separate pages with a hash each; deep link, back and forward, s
     await ctx.close();
   } finally { await browser.close(); }
 });
+
+// the Overview replay moves each element's own pixels by its measured model: a press that sinks to 0.92 and springs back
+// to 1 (two declared lines, the crop is the button at rest) shrinks and returns; a group with member boxes moves each
+// member on its own measured offset
+test('card page: the Overview replay moves the crop by every timed line, relative to the crop; group members on their own offsets', { timeout: 60000 }, async (t) => {
+  let engine; try { engine = resolveEngine('chs'); } catch (e) { return t.skip('no pinned headless engine'); }
+  const { PNG } = require('pngjs');
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'reva-card-replay-'));
+  fs.mkdirSync(path.join(dir, 'crops'));
+  const png = (w, h) => { const p = new PNG({ width: w, height: h }); p.data.fill(80); return PNG.sync.write(p); };
+  fs.writeFileSync(path.join(dir, 'crops', 'm1.png'), png(18, 7)); fs.writeFileSync(path.join(dir, 'crops', 'm2.png'), png(60, 30));
+  const css = (a, b) => `.el { transform: ${a}; transition: transform 120ms cubic-bezier(0.25, 1, 0.5, 1); }\n.el.to { transform: ${b}; }`;
+  const box = { x: 600, y: 500, w: 180, h: 72 };
+  const press = { rank: 1, kind: 'element', desc: 'BUTTON.press', selector: 'button.press', box, count: 1, weightShare: 0.2, channels: ['ren:sx', 'ren:sy'],
+    lines: [{ text: 'CSS transition: 120 ms [exact], cubic-bezier(0.25, 1, 0.5, 1) [exact], scale 1 → 0.92 [exact]', kind: 'declared', family: 'declared:css', label: 'exact', channels: ['ren:sx', 'ren:sy'], t0: 1000, times: 1, values: [{ name: 'duration', value: 120, unit: 'ms', label: 'exact' }] },
+      { text: 'CSS transition: 900 ms [exact], linear(0, 1.16 35%, 0.97 70%, 1) [exact], scale 0.92 → 1 [exact]', kind: 'declared', family: 'declared:css', label: 'exact', channels: ['ren:sx', 'ren:sy'], t0: 1300, times: 1, values: [{ name: 'duration', value: 900, unit: 'ms', label: 'exact' }] }],
+    records: [], exports: ['ren:sx', 'ren:sy'].map((c) => ({ channel: c, family: 'declared:css', kind: 'tween', model: { duration_ms: 120 }, exports: [{ lib: 'css', code: css('none', 'scale(0.92)') }] })),
+    position: { viewport: { width: 1440, height: 900 }, start: { ...box, t: 990, scroll: { x: 0, y: 0 } }, end: { ...box, t: 2200, scroll: { x: 0, y: 0 } }, image: { path: 'crops/m1.png', box, visible: 'full', matchesEnd: true } } };
+  const lines = [0, 1, 2].map((k) => ({ x: 100, y: 200 + k * 40, w: 300, h: 40 }));
+  const ty = { channel: 'ren:ty', family: 'declared:css', kind: 'tween', model: {}, exports: [{ lib: 'css', code: '.el { transform: translateY(36px); }\n.el.to { transform: translateY(0px); }' }] };
+  const group = { rank: 2, kind: 'group', desc: 'SPAN.ln', selector: 'span.ln', box: lines[0], count: 3, weightShare: 0.1, channels: ['ren:ty'],
+    lines: [{ text: 'CSS animation: 600 ms [exact], ease-out [exact], y 36 → 0 [exact]', kind: 'declared', family: 'declared:css', label: 'exact', channels: ['ren:ty'], t0: 100, times: 1, values: [{ name: 'duration', value: 600, unit: 'ms', label: 'exact' }, { name: 'easing', value: 'ease-out', label: 'exact' }] }],
+    records: [], exports: [ty],
+    position: { viewport: { width: 1440, height: 900 }, start: { ...lines[0], y: 236, t: 90 }, end: { ...lines[0], t: 900 },
+      group: { members: 3, withBox: 3, start: { x: 100, y: 236, w: 300, h: 120, t: 90 }, end: { x: 100, y: 200, w: 300, h: 120, t: 900 },
+        boxes: lines.map((b, k) => ({ start: { ...b, y: b.y + 36 }, last: b, dt: k * 90 })) },
+      image: { path: 'crops/m2.png', box: { x: 100, y: 200, w: 300, h: 120 }, visible: 'full', matchesEnd: true } } };
+  const look = { ...KINDS.tween, action: { do: 'click', el: '.press' }, dir, motions: [press, group] };
+  const f = path.join(tmp, 'replay.html'); fs.writeFileSync(f, buildCardHtml(look));
+  const { chromium } = require('playwright-core');
+  const browser = await chromium.launch({ executablePath: engine.executablePath, headless: true, args: MANDATORY_ARGS });
+  try {
+    const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 } }); const page = await ctx.newPage(); const errs = [];
+    page.on('pageerror', (e) => errs.push(e.message));
+    await page.goto('file://' + f); await page.waitForTimeout(150);
+    const at = (T) => page.evaluate((T) => { stopPlay(); setT(T); const px = document.querySelector('#mini .mb[data-i="0"] .px');
+      return { press: px && px.style.transform, members: [...document.querySelectorAll('#mini .mb[data-i="1"] .gm')].map((g) => g.style.transform) }; }, T);
+    const sc = (tr) => { const m = /scale\(([\d.]+)/.exec(tr || ''); return m ? +m[1] : 1; };
+    assert.equal(sc((await at(900)).press), 1, 'at rest before the press');
+    assert.ok(Math.abs(sc((await at(1250)).press) - 0.92) < 0.002, 'sunk to 0.92 after the press');
+    assert.ok(sc((await at(1300 + 900 * 0.35)).press) > 1.005, 'springs past 1 on the release');
+    assert.equal(sc((await at(2400)).press), 1, 'back at rest: the crop shows the button at rest');
+    const mid = await at(100 + 45);   // the first member has started, the third has not
+    assert.equal(mid.members.length, 3, 'one slice per member');
+    const dy = (tr) => { const m = /translate\([^,]+,\s*(-?[\d.]+)%/.exec(tr || ''); return m ? +m[1] : 0; };
+    assert.ok(dy(mid.members[0]) < dy(mid.members[2]) && dy(mid.members[2]) === 90, 'members start one after another: ' + mid.members.join(' | '));
+    assert.ok((await at(2400)).members.every((tr) => !tr), 'members end where the crop shows them');
+    assert.deepEqual(errs, []);
+    await ctx.close();
+  } finally { await browser.close(); }
+});

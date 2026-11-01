@@ -6,6 +6,7 @@ import { resolveEngine, MANDATORY_ARGS } from './engines.js';
 import { resolveToolkit, loadPlaywright } from './toolkit.js';
 import { profilesDir, assertOutsideRepo } from '../util/paths.js';
 import { procsUsingProfile, sleep } from './procs.js';
+import { parseColorScheme } from './scheme.js';
 
 const live = new Set();
 let hooked = false;
@@ -19,7 +20,7 @@ function hookExit() {
 /**
  * @param {object} o
  * @param {'cft'|'chs'} [o.engine]
- * @param {object} [o.context]  Playwright context options (viewport, locale, reducedMotion, ...)
+ * @param {object} [o.context]  Playwright context options (viewport, locale, reducedMotion, colorScheme light|dark, ...)
  * @param {string[]} [o.args]   extra Chromium args (MANDATORY_ARGS are always added)
  * @param {string} [o.toolkit]  't147' | 't155' (default: REVA_TOOLKIT or DEFAULT_TOOLKIT)
  * @param {object} [o.prefs]    profile preferences written to the throwaway profile's Default/Preferences before launch
@@ -48,6 +49,10 @@ export async function launchBrowser({ engine, context = {}, args = [], version, 
   try {
     if (prefs) { fs.mkdirSync(path.join(profile, 'Default'), { recursive: true }); fs.writeFileSync(path.join(profile, 'Default', 'Preferences'), JSON.stringify(prefs)); }
     const { channel, executablePath, ...ctxOpts } = context; // a caller can never smuggle in a channel/executable
+    // --color-scheme: only light or dark reach the browser (null would hand the media feature back to the OS appearance)
+    if (ctxOpts.colorScheme === undefined) delete ctxOpts.colorScheme;
+    else if (ctxOpts.colorScheme === null) throw Object.assign(new Error('colorScheme needs a value: light or dark (null would follow the OS appearance)'), { code: 'bad_arguments' });
+    else ctxOpts.colorScheme = parseColorScheme(ctxOpts.colorScheme, 'colorScheme');
     handle.context = await pw.chromium.launchPersistentContext(profile, {
       ...ctxOpts, executablePath: eng.executablePath, headless: true, serviceWorkers: ctxOpts.serviceWorkers ?? 'block',
       args: [...MANDATORY_ARGS, ...args],

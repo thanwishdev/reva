@@ -661,7 +661,7 @@ const GAP_WORDS = {
   unk_reduced_motion: ['a prefers-reduced-motion query is declared; only the default motion setting was read', 'read again with reduced motion'],
   unk_print_media: ['print styles are declared; print was not emulated', null],
   unk_pointer_media: ['pointer / hover queries are declared; only a mouse (desktop) and a touch phone were read', null],
-  unk_color_scheme: ['a colour-scheme query is declared; only the default (light) scheme was read', 'read again in dark mode'],
+  unk_color_scheme: ['a colour-scheme query is declared; only the default (light) scheme was read', 'read again with --color-scheme dark'],
   unk_other_media_feature: ['media queries on other features were not emulated', null],
   unk_layout_boxes_truncated: ['the breakpoint sweep tracked part of the elements only', null],
 };
@@ -672,7 +672,7 @@ export function designGaps(d) {
   for (const [id, count] of Object.entries((d && d.unknowns) || {})) {
     if (GAP_SKIP.has(id) || !/^unk_[a-z0-9_]{1,60}$/.test(id)) continue;
     let w = GAP_WORDS[id];
-    if (id === 'unk_color_scheme' && d.scheme && d.scheme.colorScheme === 'dark') w = ['a colour-scheme query is declared; only the dark scheme was read', 'read again in the light scheme'];
+    if (id === 'unk_color_scheme' && d.scheme && d.scheme.colorScheme === 'dark') w = ['a colour-scheme query is declared; only the dark scheme was read', 'read again without --color-scheme (light)'];
     out.push({ id, count, what: w ? w[0] : `${id.replace(/^unk_/, '').replace(/_/g, ' ')}: not measured (the raw static record has the details)`, ...(w && w[1] ? { probe: w[1] } : {}) });
   }
   if (d && d.withheldValues) out.push({ id: 'withheld_values', count: d.withheldValues, what: 'measured value(s) that did not match the grammar of their property (a page can patch what the browser reports): left out' });
@@ -705,7 +705,7 @@ function schemeOf(v0) {
   const m = (v0.media && v0.media.value) || {}; const rq = v0.requested || {};
   const read = m.prefersDark === true ? 'dark' : m.prefersDark === false ? 'light' : null;
   return { colorScheme: read, requested: rq.colorScheme === 'light' || rq.colorScheme === 'dark' ? rq.colorScheme : null, reducedMotion: m.prefersReducedMotion === true ? 'reduce' : m.prefersReducedMotion === false ? 'no-preference' : null, label: 'measured',
-    note: 'colorScheme: what prefers-color-scheme matched during the read (matchMedia); requested: what the pass pinned (absent on records from before it was pinned, which followed the OS appearance)' };
+    note: 'colorScheme: what prefers-color-scheme matched during the read (matchMedia); requested: what the pass pinned, light unless --color-scheme dark (absent on records from before it was pinned, which followed the OS appearance)' };
 }
 
 function mobile(record) {

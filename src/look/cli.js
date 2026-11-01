@@ -11,11 +11,12 @@ import { librariesLine } from './libs.js';
 import { lenisPageLines, lenisLibLine } from './lenis.js';
 import { declaredLibLines } from './libprobe.js';
 import { CONTROL_CHARS, stripControls, terminalJson } from '../report/untrusted.js';
+import { parseColorScheme } from '../browser/scheme.js';
 
 export const LOOK_HELP = `reva look <url | archive> [--el <selector> | --pick [key|N]] [--do load|hover|click|scroll] [--on <selector|x,y>] [--after <selector>]
           [--top 5] [--ch ren:ty,ren:opacity] [--max-channels 40] [--members 24] [--fit-budget <evaluations>]
           [--rate 120|60] [--hold <ms>] [--press <ms>] [--wheels <n>] [--json] [--code [css,gsap,motion,lenis,raf,react-spring]] [--card] [--verbose] [--no-keepalive] [--no-design] [--no-retake]
-          [--engine chs|cft] [--ignore-robots] [--allow-net <host,...>] [--allow-cdn]
+          [--engine chs|cft] [--color-scheme light|dark] [--ignore-robots] [--allow-net <host,...>] [--allow-cdn]
 
   Records just that element during just that action (hx lane: virtual 120 Hz clock), fits how it moves and prints it in
   plain words. Every number is labelled exact (read from the page's CSS), fitted (measured and fitted) or unknown.
@@ -39,6 +40,8 @@ export const LOOK_HELP = `reva look <url | archive> [--el <selector> | --pick [k
             between the two runs gets one line ("varies between two runs: ..."). Skipped near the time limit or with --after.
   --engine  the browser: chs (headless shell, what reva doctor --install installs) or cft (full Chrome for Testing, macOS
             arm64, installed separately). Default: cft when it is installed, else chs.
+  --color-scheme  read the page in the light (default) or dark colour scheme: what prefers-color-scheme matches, for the
+            take and the design pass. look.json "take.colorScheme" and the design section say which scheme was read.
   --ignore-robots  open the page even when its robots.txt disallows it. Only for sites you own or may test; it covers
                    the typed site only. Domains listed under "ownDomains" in ~/.reva/config.json need no flag.
   --allow-net / --allow-cdn  a LOCAL page (http://localhost:<port>/...) is offline by default: every other host is blocked, and
@@ -271,6 +274,8 @@ export async function runLookCommand(f) {
   if (typeof pick === 'number' && pick < 1) { console.error(`--pick ${f.pick}: a rank starts at 1 (or give a key: a printed selector or descriptor)`); return 2; }
   if (typeof pick === 'string' && /^[-+]?\d*\.?\d+$/.test(pick)) { console.error(`--pick ${pick}: a rank is a whole number from 1`); return 2; }
   if (pick === true && !process.stdin.isTTY) { console.error('--pick needs a terminal to ask; give a key or a rank: --pick <selector|descriptor> or --pick N'); return 2; }
+  let colorScheme;
+  try { colorScheme = parseColorScheme(f['color-scheme']); } catch (e) { console.error(e.message); return 2; }
   if (f['allow-net'] === true) { console.error('--allow-net needs host names: --allow-net cdn.jsdelivr.net,unpkg.com (or --allow-cdn for the known library CDNs)'); return 2; }
   let r;
   try {
@@ -278,7 +283,7 @@ export async function runLookCommand(f) {
     input, action, el: typeof f.el === 'string' ? f.el : undefined, on: typeof f.on === 'string' ? f.on : undefined, pick, chooser: ask,
     top: n(f.top), channels: list(f.ch), maxChannels: n(f['max-channels']), maxMembers: n(f.members), fitBudget: n(f['fit-budget']),
     rate: n(f.rate), holdMs: n(f.hold), pressMs: n(f.press), after: typeof f.after === 'string' ? f.after : undefined, n: n(f.wheels), cls: typeof f.cls === 'string' ? f.cls : 'A', keepalive: !f['no-keepalive'], design: !f['no-design'], retake: !f['no-retake'],
-    engine: typeof f.engine === 'string' ? f.engine : undefined, ignoreRobots: !!f['ignore-robots'],
+    engine: typeof f.engine === 'string' ? f.engine : undefined, ignoreRobots: !!f['ignore-robots'], ...(colorScheme ? { colorScheme } : {}), ...(f._demo === true ? { demo: true } : {}),
     allowNet: typeof f['allow-net'] === 'string' ? f['allow-net'].split(',').map((x) => x.trim()).filter(Boolean) : undefined, allowCdn: !!f['allow-cdn'],
     log: (m) => process.stderr.write(m + '\n'),
     });

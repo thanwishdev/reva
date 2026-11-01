@@ -31,6 +31,8 @@ test('position (unit): rest box before the motion, box at its last change, scrol
   assert.equal(g.members, 2);
   assert.deepEqual([g.start.x, g.start.y, g.start.w, g.start.h, g.start.t], [10, 10, 20, 50, 30], 'group box at the first member onset');
   assert.deepEqual([g.end.x, g.end.w, g.end.h, g.end.t], [30, 20, 50, 40], 'group box when the last member has stopped');
+  // each member's own rest box, last box and start relative to the lead (the card cuts each one from the group crop)
+  assert.deepEqual(g.boxes.map((b) => [b.start.x, b.start.y, b.last.x, b.last.y, b.dt]), [[10, 10, 30, 10, 0], [10, 40, 30, 40, 10]]);
   assert.equal(pos.get(3), null, 'an element that never moved has no position');
   assert.deepEqual(unionOf([{ x: 0, y: 0, w: 0, h: 5 }, { x: 5, y: 5, w: 5, h: 5 }]), { x: 5, y: 5, w: 5, h: 5 }, 'a box with no area adds nothing');
 });

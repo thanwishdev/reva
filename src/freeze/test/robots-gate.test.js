@@ -3,7 +3,7 @@
 // no network, no browser.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { robotsFilter, robotsFetcher } from '../robots-gate.js';
+import { robotsFilter, robotsFetcher, notFetchedText } from '../robots-gate.js';
 
 const ROBOTS = {
   'https://www.site.co.th': 'User-agent: *\nDisallow: /api/private\nAllow: /api/private/ok\n\nUser-agent: ClaudeBot\nDisallow: /team\n',
@@ -39,8 +39,13 @@ test('completion candidates: same-site disallowed paths are not fetched; allowed
     ['https://www.site.co.th/api/private/user.json', 'not-fetched:robots', '*'],
     ['https://www.site.co.th/team/people.json', 'not-fetched:robots', 'ClaudeBot'],
     ['https://api.site.co.th/v1/items?page=2', 'not-fetched:robots', 'REVA'],
-    ['https://shop.site.co.th/products.json', 'not-fetched:robots-unreachable', 'robots-unreachable'],
+    ['https://shop.site.co.th/products.json', 'not-fetched:robots-unreachable', null],
   ]);
+  // the log lines say what happened in plain words (never "robots.txt disallows robots-unreachable")
+  const lines = r.disallowed.map(notFetchedText);
+  assert.equal(lines[0], 'completion: not fetched (robots.txt disallows *): https://www.site.co.th/api/private/user.json');
+  assert.match(lines[3], /^completion: not fetched \(robots\.txt of https:\/\/shop\.site\.co\.th could not be read \(network error[^)]*\); try again later\): https:\/\/shop\.site\.co\.th\/products\.json$/);
+  assert.ok(!lines.some((l) => /disallows robots-unreachable/.test(l)));
   // one robots.txt per same-site origin, never one for a third-party host
   assert.deepEqual(asked.sort(), ['https://api.site.co.th/robots.txt', 'https://shop.site.co.th/robots.txt', 'https://www.site.co.th/robots.txt']);
 });

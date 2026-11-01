@@ -40,6 +40,8 @@ function restRow(rows, id, t0) {
   for (let i = Math.min(lowerBound(rows, t0), rows.length) - 1; i >= 0; i--) if (boxIn(rows[i], id)) return rows[i];
   const i = lowerBound(rows, t0); return rows[Math.min(i, rows.length - 1)] || null;
 }
+/** Member boxes are kept for groups of at most this many members (look.json stays small; a bigger group is drawn whole). */
+export const MEMBER_BOXES = 40;
 const at = (row, box) => (row && box ? { ...box, t: round(row.T), scroll: { x: round(num(row.sx) ?? 0), y: round(num(row.sy) ?? 0) } } : null);
 
 /**
@@ -76,6 +78,15 @@ export function motionPositions({ entries, stats, rows, viewport }) {
           start: unionOf(startBoxes) ? { ...unionOf(startBoxes), t: round(t0) } : null, end: unionOf(endBoxes) ? { ...unionOf(endBoxes), t: round(r1.T) } : null,
           what: 'the box that holds all members: at the first member\'s onset, and when the last member has stopped' };
         pos.groupLast = unionOf(e.ids.map((id) => boxIn(last, id)));
+        // each member's own boxes and start, so the card can cut each one from the group's crop and replay it on its own
+        // offset: its rest box before it moved, its box in the last frame (where the crop is cut), and its first move
+        // relative to the lead's (ms). Only for groups small enough to draw one by one.
+        if (e.ids.length <= MEMBER_BOXES) {
+          pos.group.boxes = e.ids.map((id) => {
+            const s = stats.get(id), t = s && s.firstMoveT != null ? s.firstMoveT : null;
+            return { start: boxIn(restRow(rows, id, t ?? t0), id), last: boxIn(last, id), dt: t != null ? round(t - st.firstMoveT) : null };
+          });
+        }
       }
     }
     if (!pos.start && !pos.end && !(pos.group && (pos.group.start || pos.group.end))) { out.set(e.rank, null); continue; }

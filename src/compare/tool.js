@@ -50,6 +50,7 @@ export const compareTool = {
       on: S('hover / click trigger on both pages: a selector or a viewport point "x,y"', { maxLength: 300 }),
       depth: { type: 'string', enum: ['quick', 'full'], default: 'quick', description: 'as in look: quick = top 5 elements, full = top 10 (slower)' },
       card: { type: 'boolean', default: false, description: 'also write compare.html (both curves overlaid per motion, self-contained)' },
+      color_scheme: { type: 'string', enum: ['light', 'dark'], description: 'the colour scheme both pages are read in (what prefers-color-scheme matches); default light' },
     },
   },
   annotations: { readOnlyHint: false, idempotentHint: false, openWorldHint: true },
@@ -67,7 +68,7 @@ export const compareTool = {
     // the stability re-take and the design pass are not compared: off, so each look takes half the time
     const lctx = { ...ctx, runLook: (o) => baseRun({ ...o, retake: false, design: false }) };
     const look = async (page) => {
-      const res = await lookTool.run({ ...page, target: a.target || 'auto', interaction, ...(a.on ? { on: a.on } : {}), depth: a.depth || 'quick', design: false }, lctx);
+      const res = await lookTool.run({ ...page, target: a.target || 'auto', interaction, ...(a.on ? { on: a.on } : {}), depth: a.depth || 'quick', design: false, ...(a.color_scheme ? { color_scheme: a.color_scheme } : {}) }, lctx);
       const id = res && res.data && res.data.analysis; if (!id) throw bad('look returned no analysis', 'analysis_failed');
       return loadAnalysis(id, ctx.env || process.env).look;
     };

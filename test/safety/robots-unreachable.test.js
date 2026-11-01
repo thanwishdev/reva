@@ -4,7 +4,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { preflight } from '../../src/safety/index.js';
-import { fetchRobots } from '../../src/safety/robots.js';
+import { fetchRobots, unreachableWhy } from '../../src/safety/robots.js';
+import { safetyGate } from '../../src/safety/gate.js';
 
 const PAGE = '<html><head><title>x</title></head><body><main><h1>Hello</h1><p>content</p></main></body></html>';
 /** robots: Response | Error | (() => never); the page itself is always a 200. */
@@ -85,4 +86,16 @@ test('fetchRobots: the classification used by preflight and the completion fetch
   assert.equal((await r(new Response('', { status: 503 }))).unreachable, true);
   assert.equal((await r(new Response('', { status: 429 }))).unreachable, true);
   assert.equal((await fetchRobots('https://x.test', { fetchImpl: async () => { throw new Error('boom'); } })).unreachable, true);
+});
+
+test('PU-1: the gate says robots.txt could not be read and to try again later (never "behind a robots-unreachable wall")', async () => {
+  const gate = (res) => safetyGate('https://example.com/', { ownDomains: [], fetchImpl: stub(res) });
+  await assert.rejects(gate(new Response('down', { status: 503 })), (e) => {
+    assert.equal(e.code, 'robots_unreachable');
+    assert.equal(e.message, 'robots.txt of https://example.com could not be read (HTTP 503); REVA does not open a page whose robots.txt it cannot read. Try again later.');
+    return true;
+  });
+  await assert.rejects(gate(new Response('slow down', { status: 429 })), (e) => e.code === 'robots_unreachable' && /\(HTTP 429, too many requests\)/.test(e.message) && !/behind a|walls|robots-unreachable/.test(e.message));
+  await assert.rejects(gate(new Error('boom')), (e) => e.code === 'robots_unreachable' && /could not be read \(network error\)/.test(e.message));
+  assert.equal(unreachableWhy('timeout'), 'no answer within 10 s'); assert.equal(unreachableWhy('network ECONNRESET'), 'network error ECONNRESET');
 });

@@ -6,12 +6,12 @@
 // the code and the reasons behind three quiet disclosures. Monospace is used for code only.
 import { designSection, DESIGN_CSS } from './design.js';
 import { declaredSection } from './declared.js';
+import { cardTitle } from './title.js';
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const jsonForScript = (x) => JSON.stringify(x).replace(/</g, '\\u003c').replace(/[\u2028\u2029]/g, (c) => `\\u${c.charCodeAt(0).toString(16)}`);
 const num = (x, d = 3) => (x == null || !Number.isFinite(x) ? '?' : String(Math.round(x * 10 ** d) / 10 ** d));
 const ACTION_WORD = { load: 'Load', hover: 'Hover', click: 'Click', scroll: 'Scroll' };
-const host = (u) => { try { return new URL(u).host || u; } catch { return u || 'a local page'; } };
 
 function fmtValue(v) {
   if (v.value == null || !Number.isFinite(v.value)) return v.text || '?';
@@ -157,7 +157,7 @@ export function renderCard(d0) {
   // hover response, not on a preloader that was still finishing
   const mScore = (m) => Math.min(...(m.laws.length ? m.laws.map((l) => actionScore(l, m, d0.action)) : [1]));
   const d = { ...d0, motions: d0.motions.map((m, i) => [m, mScore(m), i]).sort((a, b) => a[1] - b[1] || a[2] - b[2]).map(([m]) => m) };
-  const where = host(d.source.url);
+  const where = cardTitle(d.source);
   const title = `${ACTION_WORD[d.action.do] || 'Motion'} on ${where}`;
   const pageSec = d.page && d.page.laws.length ? motionSection({ desc: 'Page scroll', count: 1, laws: d.page.laws, unknowns: d.page.unknowns }, 'p', specs) : '';
   const sections = d.motions.map((m, i) => motionSection(m, i, specs)).join('');

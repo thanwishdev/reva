@@ -40,11 +40,13 @@ export function sessionArgs(o = {}) {
   const keepalive = !!o.keepalive && (o.lane || 'hx') === 'hx';
   return [...(o.live ? [] : OFFLINE_ARGS), ...(o.timerFlag ? [TIMER_FLAG] : []), ...(keepalive ? KEEPALIVE_ARGS : []), ...(o.args || [])];
 }
-/** Context options of a session (pure): viewport class (or o.viewport), reduced motion, locale, timezone. */
+/** Context options of a session (pure): viewport class (or o.viewport), reduced motion, colour scheme (when asked), locale, timezone. */
 export function sessionContext(o = {}) {
   const vpCls = o.target && o.cls ? o.target.classes[o.cls] : null;
   const ctxOpts = vpCls ? { ...vpCls } : { viewport: o.viewport || { width: 1440, height: 900 }, deviceScaleFactor: 1 };
   ctxOpts.reducedMotion = o.reducedMotion || 'no-preference';
+  // --color-scheme (src/browser/scheme.js): absent = Playwright's default (light) and nothing added, as before the option
+  if (o.colorScheme) ctxOpts.colorScheme = o.colorScheme;
   ctxOpts.locale = (o.target && o.target.locale) || 'en-US';
   if (o.target && o.target.timezone) ctxOpts.timezoneId = o.target.timezone;
   return ctxOpts;
@@ -537,12 +539,15 @@ export async function openSession(o) {
         let gl = null; try { gl = W.glInfo ? W.glInfo() : null; } catch (e) { gl = { error: String(e && e.message).slice(0, 200) }; }
         return { pageInputs: W.inputs || [], pix: window.__WR_PIX ? window.__WR_PIX.status() : null, gl, c: W.c, errors: W.errors, escapes: W.escapes, els: W.elDescs(0), watch: [...W.watch].map(([id, w]) => [id, w.why]), selectors: W.selectors([...W.watch.keys()]),
           rtDt: W.rtDt || null, marks: W.marks, env: { innerWidth, innerHeight, dpr: devicePixelRatio, reducedMotion: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'reduce' : 'no-preference',
+            colorScheme: matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light',
             ua: navigator.userAgent, docUrl: location.href, readback: W.readbackFloor() } };
       });
       if (o.target && o.target.archive) {
         try { tail.buildId = JSON.parse(fs.readFileSync(path.join(o.target.archive, 'version.json'), 'utf8')).version; } catch {}
       }
     } finally { await S.close(); }
+    // the scheme the page matched is kept only on a take that asked for one (take.json stays as before without --color-scheme)
+    if (tail.env && !ctxOpts.colorScheme) delete tail.env.colorScheme;
     // the page can replace window.__WR.desc: descriptors are stripped of terminal escapes / bidi overrides again here
     if (Array.isArray(tail.els)) tail.els = tail.els.map((d) => (d == null ? d : stripControls(d)));
     // selectors keep matching: a control or bidi character CSS.escape left raw (C1, U+2028/9, U+202A-E, U+2066-9) becomes a CSS hex escape

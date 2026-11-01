@@ -82,7 +82,15 @@ breakpoints, each value with its unit. `--tokens` also writes them as `design-to
 
 ### The same tools in your coding agent
 
-REVA is also an MCP server. Add it to Claude Code, or any agent that speaks MCP, and ask in plain words:
+REVA is also an MCP server (stdio). Install the browser once with `reva doctor --install` (or
+`npx -y reva-cli doctor --install`), add REVA to your agent, then ask in plain words:
+
+> "Look at the hero of https://your-site.example on load and give me the motion as CSS."
+
+Every client below starts `reva mcp`. Without a global install, use `npx` with `-y reva-cli mcp` in its place.
+
+<details>
+<summary>Claude Code</summary>
 
 ```sh
 claude mcp add reva -- reva mcp
@@ -90,7 +98,75 @@ claude mcp add reva -- reva mcp
 claude mcp add reva -- npx -y reva-cli mcp
 ```
 
-> "Look at the hero of https://your-site.example on load and give me the motion as CSS."
+Add `--scope user` (before `reva`) to have it in every project, or `--scope project` to share it through `.mcp.json`.
+
+</details>
+
+<details>
+<summary>Codex CLI</summary>
+
+```sh
+codex mcp add reva -- reva mcp
+```
+
+or in `~/.codex/config.toml` (`.codex/config.toml` for one trusted project):
+
+```toml
+[mcp_servers.reva]
+command = "reva"
+args = ["mcp"]
+tool_timeout_sec = 360   # a look can take up to 5 minutes; the default is 60 s
+```
+
+</details>
+
+<details>
+<summary>Cursor</summary>
+
+`.cursor/mcp.json` in the project, or `~/.cursor/mcp.json` for every project:
+
+```json
+{
+  "mcpServers": {
+    "reva": { "command": "reva", "args": ["mcp"] }
+  }
+}
+```
+
+</details>
+
+<details>
+<summary>VS Code</summary>
+
+`.vscode/mcp.json` in the workspace (note the `servers` key):
+
+```json
+{
+  "servers": {
+    "reva": { "type": "stdio", "command": "reva", "args": ["mcp"] }
+  }
+}
+```
+
+or for your user profile: `code --add-mcp '{"name":"reva","type":"stdio","command":"reva","args":["mcp"]}'`
+
+</details>
+
+<details>
+<summary>Windsurf</summary>
+
+In Cascade's MCP menu choose **Open MCP config file** (`~/.config/devin/mcp_config.json` on macOS and Linux), add the
+server, then press refresh:
+
+```json
+{
+  "mcpServers": {
+    "reva": { "command": "reva", "args": ["mcp"] }
+  }
+}
+```
+
+</details>
 
 Details are under [MCP](#mcp) below.
 
@@ -140,9 +216,11 @@ The published `reva` command and its MCP server are `demo`, `look`, `design`, `c
   source on your machine so you can read how it works; it is not copied anywhere else.
 - It does not crawl. One page, started by you, at a time.
 
-The source tree also holds the research modules REVA was built with (a recorder, an offline archiver under `src/freeze`,
-a fixture lab). They are not commands of the published `reva`, they skip the `robots.txt` and wall checks described
-under [Responsible use](#responsible-use-learn-dont-copy), and they are meant for your own pages only.
+The repository also holds the research modules REVA was built with (a recorder, an offline archiver under `src/freeze`,
+a fixture lab). They stay in the source tree for developers and are not in the npm package: `npm install reva-cli` gets
+only the code the commands above load (`npm run check:pack` checks this before every publish). They skip the
+`robots.txt` and wall checks described under [Responsible use](#responsible-use-learn-dont-copy), and are meant for your
+own pages only.
 
 <br>
 
@@ -183,6 +261,8 @@ would be wrong. `reva doctor` checks for that too.
 ## Usage
 
 `reva look --help` and `reva design --help` list every option; the [docs](https://reva-cli.pages.dev/docs/) explain them.
+`--color-scheme light|dark` works on `demo`, `look`, `design` and `compare`: the page is read in that colour scheme
+(default light), and the result says which scheme was read.
 
 <details>
 <summary>Commands by example</summary>
@@ -195,6 +275,7 @@ Start with REVA's own demo page. It ships with REVA and runs offline:
 reva demo                 # what moves when the demo page loads, and its motion card (the path is printed at the end)
 reva demo --do hover      # a card lifting on hover
 reva demo --do scroll     # a reading-progress bar tied to the scroll
+reva demo --color-scheme dark   # the same page read in its dark colour scheme
 ```
 
 Then a page you may analyse:
@@ -211,6 +292,7 @@ reva look https://your-site.example --do scroll --el html   # how the page itsel
 reva card ~/.reva/out/look/<analysis>                  # motion card for an earlier look (~/.reva is the default data folder, $REVA_HOME)
 reva design https://your-site.example                  # how the page is designed, in plain words
 reva design https://your-site.example --tokens         # also write design-tokens.css / .json
+reva design https://your-site.example --color-scheme dark   # read the page in its dark colour scheme (default light)
 reva compare https://your-site.example http://localhost:5173/ --do hover --el ".card"   # the same look on two pages, and how their motion differs
 ```
 
@@ -303,7 +385,8 @@ The server speaks MCP over stdio and offers `look` (look at a URL, or at the bun
 chosen motions), `compare` (two pages looked at the same way), `unknowns` and `doctor`. The old names (`analyze`,
 `export`, `series`, `specimen`) still work.
 
-`look` takes the action (`interaction`), a `target` (a CSS selector, pseudo-elements included) and an `on` trigger;
+`look` takes the action (`interaction`), a `target` (a CSS selector, pseudo-elements included), an `on` trigger and an
+optional `color_scheme` (`light` or `dark`, as `--color-scheme` on the command line; `compare` takes it too);
 `--press`, `--after`, `--hold` and `--wheels` are command-line options only.
 
 **Page text is data.** Text that comes from a page is untrusted input. REVA marks page text as such in its results and

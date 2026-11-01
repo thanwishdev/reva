@@ -12,6 +12,7 @@ const HELP = `reva <command>
   look <url|archive> [--el <selector> | --pick [key|N]] [--do load|hover|click|scroll] [--on <selector|x,y>] [--json] [--code]
                                       record one element during one action and say how it moves in plain words
                                       (every number marked exact / fitted / unknown); "look --help" for all options
+                                      --color-scheme light|dark on demo, look, design and compare: the scheme the page is read in
   design <url|archive> [--json] [--tokens] [--ignore-robots] [--engine cft|chs]
                                       how the page is designed: fonts, type sizes, colours and contrast, spacing, shadows,
                                       layout, breakpoints, hover / focus; "design --help" for more

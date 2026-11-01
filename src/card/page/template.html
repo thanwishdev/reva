@@ -100,6 +100,10 @@ main{min-width:0;max-width:1120px;padding-bottom:96px}
 .mini .mb:hover{outline-color:var(--accent)}
 .mini .mb.gl,.mini .mb.gl.live{outline-style:solid;background-color:transparent;box-shadow:none}
 .mini .pt{position:absolute;pointer-events:none}
+/* a replayed element: the outline stays where it is in the crop, its own pixels (.px, or one .gm per group member) move */
+.mini .mb.ov{overflow:visible}
+.mini .mb .px,.mini .mb .gm{position:absolute;background-repeat:no-repeat;transform-origin:50% 50%;pointer-events:none;border-radius:inherit}
+.mini .mb .px{inset:0;background-size:100% 100%}
 .ctl[hidden]{display:none}
 .ctl{position:absolute;left:16px;right:16px;bottom:16px;display:flex;align-items:center;gap:14px;padding:8px 14px 8px 8px;border-radius:14px;
   background:color-mix(in srgb,var(--bg) 74%,transparent);backdrop-filter:blur(16px) saturate(1.4);-webkit-backdrop-filter:blur(16px) saturate(1.4);box-shadow:0 4px 24px rgba(0,0,0,.12)}
@@ -109,7 +113,10 @@ main{min-width:0;max-width:1120px;padding-bottom:96px}
 .pvin{position:relative;width:100%}
 .pvin .mb{position:absolute;padding:0;border:0;border-radius:4px;background:transparent;cursor:pointer;outline:1.5px dashed color-mix(in srgb,var(--accent) 70%,transparent);outline-offset:2px;transition:outline-color var(--t1) var(--ease)}
 .pvin .mb:hover,.pvin .mb.sel{outline:2.5px solid var(--accent)}
-.pvwin{position:absolute;left:0;right:0;pointer-events:none}
+.pvwin{position:absolute;left:0;right:0;pointer-events:none;box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--accent) 30%,transparent)}
+.pvin .mb{background-size:100% 100%}
+.pvin .mb.live{outline-style:solid;outline-color:var(--accent)}
+.ctl.pvctl{position:static;margin-top:12px}
 /* what moves: one plain line per motion, a picture of it, a click opens its page */
 .wm-h{margin-top:64px}
 .wmlist{list-style:none;margin:16px 0 0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 24px}
@@ -545,6 +552,35 @@ function parseEasing(str) {
   const m = /cubic-bezier\(\s*([-\d.]+)\s*,\s*([-\d.]+)\s*,\s*([-\d.]+)\s*,\s*([-\d.]+)\s*\)/.exec(str);
   return m ? m.slice(1, 5).map(Number) : null;
 }
+/* CSS linear(): stops "value [pos%] [pos%]", positions not given spread evenly between their neighbours (the CSS rule) */
+function linearEase(str) {
+  const m = /^\s*linear\(([^)]*)\)\s*$/.exec(String(str || '')); if (!m) return null;
+  const pts = [];
+  for (const part of m[1].split(',')) {
+    const n = part.trim().split(/\s+/).filter(Boolean); if (!n.length) continue;
+    const v = parseFloat(n[0]); if (!Number.isFinite(v)) return null;
+    const ps = n.slice(1).map(x => parseFloat(x) / 100).filter(Number.isFinite);
+    if (!ps.length) pts.push([null, v]); else for (const q of ps) pts.push([q, v]);
+  }
+  if (pts.length < 2) return null;
+  if (pts[0][0] == null) pts[0][0] = 0;
+  if (pts[pts.length - 1][0] == null) pts[pts.length - 1][0] = 1;
+  for (let i = 1; i < pts.length; i++) if (pts[i][0] != null && pts[i][0] < pts[i - 1][0]) pts[i][0] = pts[i - 1][0];
+  for (let i = 1; i < pts.length - 1; i++) if (pts[i][0] == null) {
+    let j = i; while (pts[j][0] == null) j++;
+    const a = pts[i - 1][0], b = pts[j][0]; for (let k = i; k < j; k++) pts[k][0] = a + (b - a) * (k - i + 1) / (j - i + 1);
+  }
+  return t => {
+    if (t <= pts[0][0]) return pts[0][1];
+    for (let i = 1; i < pts.length; i++) if (t <= pts[i][0]) { const [x0, y0] = pts[i - 1], [x1, y1] = pts[i]; return x1 > x0 ? y0 + (y1 - y0) * (t - x0) / (x1 - x0) : y1; }
+    return pts[pts.length - 1][1];
+  };
+}
+/* the curve a declared line names in its own text: "..., cubic-bezier(0.25, 1, 0.5, 1) [exact], ..." */
+function easeInText(text) {
+  const m = /(cubic-bezier\([^)]*\)|linear\([^)]*\)|ease-in-out|ease-in|ease-out|ease|linear)\s*\[(?:exact|fitted)\]/.exec(String(text || ''));
+  return m ? m[1] : null;
+}
 /* named eases (Penner / easings.net names, GSAP names): exact functions, not bezier look-alikes */
 const PW_N = n => ({ in: p => Math.pow(p, n), out: p => 1 - Math.pow(1 - p, n), inOut: p => (p < .5 ? Math.pow(2, n - 1) * Math.pow(p, n) : 1 - Math.pow(-2 * p + 2, n) / 2) });
 const BK1 = 1.70158, BK2 = BK1 * 1.525, BK3 = BK1 + 1;
@@ -598,9 +634,11 @@ function parseCss(code) {
   if (!code) return null;
   const a = /\.el \{ ([\w-]+): ([^;]+);/.exec(code), b = /\.el\.to \{ [\w-]+: ([^;]+);/.exec(code);
   if (!a || !b) return null;
-  const f = /none/.test(a[2]) ? 0 : firstNum(a[2]), t = /none/.test(b[1]) ? 0 : firstNum(b[1]);
+  // 'none' is the identity of the other side's function: scale 1, a translate / rotate / blur 0
+  const fnOf = v => (/^\s*([a-z-]+)\(/i.exec(v) || [])[1] || null, fn = fnOf(a[2]) || fnOf(b[1]), id = /^scale/i.test(fn || '') ? 1 : 0;
+  const f = /none/.test(a[2]) ? id : firstNum(a[2]), t = /none/.test(b[1]) ? id : firstNum(b[1]);
   // u: a translate written in % of the element's own size stays in % (not read as px)
-  return f == null || t == null ? null : { from: f, to: t, fn: (/^\s*([a-z-]+)\(/i.exec(a[2]) || [])[1] || null, u: /translate[XY]?\(\s*-?[\d.]+%/.test(a[2] + b[1]) ? '%' : null };
+  return f == null || t == null ? null : { from: f, to: t, fn, u: /translate[XY]?\(\s*-?[\d.]+%/.test(a[2] + b[1]) ? '%' : null };
 }
 const CHWORD = { tx: 'horizontal position', ty: 'vertical position', sx: 'horizontal scale', sy: 'vertical scale', rz: 'rotation', rx: 'tilt forward', ry: 'tilt sideways', opacity: 'opacity' };
 const GLCAM = { fov: 'camera field of view (°)', aspect: 'camera aspect', x: 'camera position x', y: 'camera position y', z: 'camera position z', rx: 'camera rotation x (°)', ry: 'camera rotation y (°)', rz: 'camera rotation z (°)' };
@@ -697,11 +735,12 @@ function buildMotions(L) {
     } else if (kind === 'declared' || kind === 'tween') {
       o.dur = V('duration') ? V('duration').value : null;
       o.delay = V('delay') ? V('delay').value : 0;
-      const given = V('easing') ? V('easing').value : null;
+      // a declared line carries its curve in its value list, or (a transition read from its births) only in its text
+      const given = V('easing') ? V('easing').value : kind === 'declared' ? easeInText(line.text) : null;
       o.bz = o.ramp ? null : kind === 'declared' ? parseEasing(given) : (rec && rec.model.bezier) || parseEasing(rec && rec.model.ease);
       o.easeLabel = o.ramp ? 'linear' : easeName(o.bz, kind === 'declared' ? given : (rec && rec.model.ease));
       const easeStr = kind === 'declared' ? given : (rec && rec.model.ease);
-      const nfn = o.ramp || o.bz ? null : namedEaseFn(easeStr);
+      const nfn = o.ramp || o.bz ? null : namedEaseFn(easeStr) || linearEase(easeStr);
       // an ease REVA cannot draw is not drawn as a straight line: the shape is simply not shown
       o.curveUnknown = !o.ramp && !o.bz && !nfn;
       const f = o.bz ? bezierFn(...o.bz) : nfn || (x => x);
@@ -776,6 +815,11 @@ function buildMotions(L) {
     o.rowT = o.t0 != null ? o.t0 : o.winS;
     o.startAbs = o.t0 == null ? null : o.t0 - o.lead;
     o.endAbs = o.t0 == null || o.len == null ? null : o.t0 + o.len + (o.stag ? (o.stag.n - 1) * o.stag.step : 0);
+    // the overview replays every clock-timed line (a press and its release), each member of a group on its own start
+    o.segs = ovSegments(o);
+    { const gb = ps && ps.group && Array.isArray(ps.group.boxes) ? ps.group.boxes : [];
+      const spread = Math.max(0, ...gb.map(b => (b && Number.isFinite(b.dt) ? b.dt : 0)));
+      o.endAll = o.segs.length ? Math.max(...o.segs.map(sg => sg.t0 + sg.len)) + spread : null; }
     // sentence
     const chs = channels.filter(c => ft[c] || kind === 'unknown' || true);
     // a scroll map's own start and end values are on its line; the exported model may be extrapolated far past them
@@ -898,6 +942,8 @@ function legendHTML() {
 /* ---------- overview ---------- */
 const isCurve = m => ['declared', 'tween', 'spring', 'smooth'].includes(m.kind) && !m.drive && !m.know && typeof m.p === 'function' && !m.curveUnknown && m.len > 0;
 function titleOf(L) {
+  // host + path from src/card/title.js (build.js); a card built before it had the title falls back to the host
+  if (L.title) return L.title;
   const u = L.source.startUrl || '';
   try { const h = new URL(u).hostname; if (h && h !== 'localhost') return h; } catch (e) {}
   return 'REVA demo page';
@@ -932,7 +978,7 @@ function choreoSentence() {
   return last === known[0] ? `${last.name} starts first and is the last to finish, ${secs(last.endAbs)} in.${tail}` : `${known[0].name} starts first; ${last.name} is the last to finish, ${secs(last.endAbs)} in.${tail}`;
 }
 function axisEnd() {
-  const e = Math.max(...M.map(m => m.endAbs != null ? m.endAbs : (m.winE || 0)), 500);
+  const e = Math.max(...M.map(m => Math.max(m.endAbs != null ? m.endAbs : (m.winE || 0), m.endAll || 0)), 500);
   return Math.ceil(e / 250) * 250;
 }
 function lineSample(cert) {
@@ -985,6 +1031,136 @@ function placeBox(b, g, pr, vp) {
   b.style.width = (lerp(g.s.w, g.e.w) / vp.width * 100) + '%';
   b.style.height = (lerp(g.s.h, g.e.h) / vp.height * 100) + '%';
 }
+
+/* ---------- the overview replay: each element's own pixels, moved in place by its measured model ----------
+   A motion's clock-timed lines are its segments. The first is the motion's own model (the same curve and start / end
+   values the Motion panel plays); a later declared line (the press, then its release) adds its own duration, curve and
+   values, read from the line. The crop is the element at the end of the recording, so each value is drawn relative to
+   the value the crop shows: a press that sinks to 0.92 and springs back to 1 shrinks and returns, though its crop is
+   the button at rest. */
+const OVK = ['tx', 'ty', 'sx', 'sy', 'rz', 'opacity', 'blur'];
+const TRW = { x: ['tx'], y: ['ty'], translateX: ['tx'], translateY: ['ty'], translate: ['tx', 'ty'], scale: ['sx', 'sy'], 'scale x': ['sx'], 'scale y': ['sy'], scaleX: ['sx'], scaleY: ['sy'], rotate: ['rz'], rotateZ: ['rz'], rotation: ['rz'], opacity: ['opacity'], filter: ['blur'], blur: ['blur'] };
+/* the start and end values a line states in its text: "scale 0.92 → 1 [exact]", "y 0 → -10 [exact]", "blur(14px) → blur(0px)" */
+function travelsInText(text) {
+  const out = {};
+  // a px note after a relative value ("y 20 % → 0 % (24.8 → 0 px)") is not a value of its own
+  const t = String(text || '').replace(/\s\([^()]*px\)/g, '');
+  const re = /(?:^|[:,]\s+)(translateX|translateY|translate|scale x|scale y|scaleX|scaleY|scale|rotateZ|rotate|rotation|opacity|filter|blur|x|y) ((?:(?!→)[^\[])+?)\s*(?:\[[a-z]+\]\s*)?→\s*([^\[]+?)\s*(?=\[|$)/g;
+  let m;
+  while ((m = re.exec(t))) {
+    const ks = TRW[m[1]]; if (!ks || (m[1] === 'filter' && !/blur\(/.test(m[2] + m[3]))) continue;
+    const nums = s => (String(s).match(/-?\d*\.?\d+(?:e-?\d+)?/gi) || []).map(Number);
+    const a = nums(m[2]), b = nums(m[3]); if (!a.length || !b.length) continue;
+    const u = /%/.test(m[2] + m[3]) && (ks[0] === 'tx' || ks[0] === 'ty') ? '%' : null;
+    ks.forEach((k, i) => { out[k] = { from: a[Math.min(i, a.length - 1)], to: b[Math.min(i, b.length - 1)], u }; });
+  }
+  return out;
+}
+/* the clock-timed segments of one motion; [] when it is not replayed on the clock (scroll / pointer, no model) */
+function ovSegments(o) {
+  if (o.know || !o.p || o.t0 == null || o.drive) return [];
+  const first = {};
+  for (const c of o.channels) {
+    const f = o.ft[c]; if (!f || !Number.isFinite(f.from) || !Number.isFinite(f.to)) continue;
+    const k = CH[c] ? CH[c].k : f.fn === 'blur' ? 'blur' : null; if (k) first[k] = { from: f.from, to: f.to, u: f.u || null };
+  }
+  if (!Object.keys(first).length) return [];
+  const L0 = (o.lead || 0) + (o.len || 0);
+  const segs = [{ t0: o.startAbs, len: L0, p: tl => (tl <= o.lead ? 0 : tl >= L0 ? 1 : o.p(tl - o.lead)), ends: first }];
+  for (const l of ((o.raw && o.raw.lines) || []).slice(1)) {
+    if (l.kind !== 'declared' || !Number.isFinite(l.t0)) continue;
+    const d = (l.values || []).find(v => v.name === 'duration'); if (!d || !(d.value > 0)) continue;
+    const ends = travelsInText(l.text); if (!Object.keys(ends).length) continue;
+    const es = easeInText(l.text), bz = parseEasing(es), f = bz ? bezierFn(...bz) : linearEase(es) || namedEaseFn(es) || (x => x);
+    const D = d.value;
+    segs.push({ t0: l.t0, len: D, p: tl => (tl >= D ? 1 : f(Math.max(0, tl / D))), ends });
+  }
+  return segs.sort((a, b) => a.t0 - b.t0);
+}
+/* a channel's value at clock time T (px for a translate given in % of the element's own box) */
+function chanAt(segs, k, T, box) {
+  let v = null;
+  for (const s of segs) {
+    const e = s.ends[k]; if (!e) continue;
+    const cv = x => (e.u === '%' && box ? x / 100 * (k === 'tx' ? box.w : box.h) : x);
+    if (v == null) v = cv(e.from);
+    if (T < s.t0) break;
+    v = cv(e.from + (e.to - e.from) * s.p(T - s.t0));
+  }
+  return v;
+}
+const ovKeys = segs => OVK.filter(k => segs.some(s => s.ends[k]));
+/* the value each channel has in the crop. The crop is the last recorded frame; its box against the rest box tells a
+   motion that came back (a press, a hover that was left) from one that stayed. The answer is always one of the values
+   the lines state, never a value made up from the boxes. */
+function ovEndVals(segs, keys, s, e, box) {
+  const out = {};
+  const sameScroll = !!(s && e) && (!s.scroll || !e.scroll || (Math.abs(s.scroll.x - e.scroll.x) < 1 && Math.abs(s.scroll.y - e.scroll.y) < 1));
+  for (const k of keys) {
+    const last = chanAt(segs, k, Infinity, box), v0 = chanAt(segs, k, -Infinity, box);
+    const cands = [];
+    for (const sg of segs) { const en = sg.ends[k]; if (!en) continue; const cv = x => (en.u === '%' && box ? x / 100 * (k === 'tx' ? box.w : box.h) : x); cands.push(cv(en.from), cv(en.to)); }
+    let bv = null;
+    if (sameScroll && s.w > 0 && s.h > 0) {
+      if (k === 'tx') bv = v0 + (e.x + e.w / 2) - (s.x + s.w / 2);
+      else if (k === 'ty') bv = v0 + (e.y + e.h / 2) - (s.y + s.h / 2);
+      else if (k === 'sx' && !keys.includes('rz')) bv = v0 * e.w / s.w;
+      else if (k === 'sy' && !keys.includes('rz')) bv = v0 * e.h / s.h;
+    }
+    out[k] = bv == null || !Number.isFinite(bv) ? last : cands.reduce((a, c) => (Math.abs(c - bv) < Math.abs(a - bv) - 1e-9 ? c : a), last);
+  }
+  return out;
+}
+/* the CSS of the crop at clock time T: transform, opacity and blur relative to what the crop shows. `k` = mini px per css px */
+function ovLook(it, T, k) {
+  const { segs, keys, endv, box } = it, at = c => chanAt(segs, c, T, box), has = c => keys.includes(c);
+  if (it.fadeOut) { const v0 = Math.max(.05, chanAt(segs, 'opacity', -Infinity, box)); return { tr: '', op: String(Math.max(0, Math.min(1, 1 - at('opacity') / v0))), fl: '' }; }
+  let tr = '';
+  const dx = has('tx') ? at('tx') - endv.tx : 0, dy = has('ty') ? at('ty') - endv.ty : 0;
+  if (Math.abs(dx) > 1e-3 || Math.abs(dy) > 1e-3) tr += `translate(${nf(dx / box.w * 100, 3)}%, ${nf(dy / box.h * 100, 3)}%)`;
+  if (has('rz')) tr += ` rotate(${nf(at('rz') - endv.rz, 3)}deg)`;
+  const sc = c => (has(c) && Math.abs(endv[c]) > 1e-3 ? at(c) / endv[c] : 1), sx = sc('sx'), sy = sc('sy');
+  if (Math.abs(sx - 1) > 1e-4 || Math.abs(sy - 1) > 1e-4) tr += ` scale(${nf(sx, 4)}, ${nf(sy, 4)})`;
+  const op = has('opacity') ? String(Math.max(0, Math.min(1, at('opacity') / Math.max(.05, endv.opacity)))) : '';
+  const bl = has('blur') ? Math.max(0, at('blur') - Math.max(0, endv.blur || 0)) * k : 0;
+  return { tr: tr.trim(), op, fl: bl > .01 ? `blur(${nf(bl, 2)}px)` : '' };
+}
+/* how the overview draws motion m: 'drive' (its own crop, moved by the model), 'members' (each member of a group cut
+   from the group's crop, each on its own start), 'unit' (a group crop moved as one piece: the look has no member boxes),
+   or 'lerp' (no crop or no model: the box moves between its start and end boxes, as before) */
+function ovPlan(m, g, vp) {
+  if (!g || !g.crop || g.crop.sheet || m.raw.kind === 'gl' || m.raw.isGl) return null;
+  const segs = m.segs || []; if (!segs.length) return null;
+  const keys = ovKeys(segs); if (!keys.length) return null;
+  const gp = g.p && g.p.group, grp = isGroupCrop(g);
+  const cb = g.crop.box;
+  if (!grp) {
+    const it = { mode: 'drive', segs, keys, box: cb, rest: g.s };
+    it.endv = ovEndVals(segs, keys, g.s, g.e, cb);
+    it.fadeOut = keys.includes('opacity') && it.endv.opacity < .05;
+    return it;
+  }
+  const mem = gp && Array.isArray(gp.boxes) ? gp.boxes.filter(b => b && b.last && b.last.w > 0 && b.last.h > 0) : [];
+  if (mem.length > 1) {
+    const it = { mode: 'members', segs, keys, box: cb, rest: gp.start || g.s };
+    it.members = mem.map(b => {
+      const one = { segs, keys, box: b.last, dt: Number.isFinite(b.dt) ? b.dt : 0 };
+      one.endv = ovEndVals(segs, keys, b.start || b.last, b.last, b.last);
+      one.fadeOut = keys.includes('opacity') && one.endv.opacity < .05;
+      return one;
+    });
+    it.spread = Math.max(0, ...it.members.map(x => x.dt));
+    return it;
+  }
+  // a group crop with no member boxes (an older look): moved as one piece when that cannot misplace a member (a shift,
+  // a fade, a blur); a scale or a turn of the whole group about its centre would be wrong, so those keep the old picture
+  if (keys.some(k => k === 'sx' || k === 'sy' || k === 'rz')) return null;
+  const it = { mode: 'unit', segs, keys, box: cb, rest: (gp && gp.start) || g.s };
+  it.endv = ovEndVals(segs, keys, (gp && gp.start) || g.s, (gp && gp.end) || g.e, cb);
+  it.fadeOut = keys.includes('opacity') && it.endv.opacity < .05;
+  return it;
+}
+const OVP = {};   // motion index -> its overview plan (set by renderOverview)
 
 function librariesHTML() {
   const lb = L.libraries;
@@ -1044,17 +1220,35 @@ function renderOverview() {
   // background a moving element's other place is covered by a patch of the page colour while it is away from it.
   const back = SC.before ? SC.before : SC.viewport ? SC.viewport : null;
   OV.bg = back ? (SC.before ? 'before' : 'end') : 'flat';
+  OV.back = back;
+  const pageMode = M.length && SC.page && (noScrub || L.action.do === 'scroll');
+  for (const k in OVP) delete OVP[k];
+  if (!noScrub && !pageMode) for (const m of M) { const g = geom(m); if (g && inView(g, vp)) { const it = ovPlan(m, g, vp); if (it) OVP[m.i] = it; } }
   const backs = M.map(m => {
-    const g = geom(m); if (!g || !g.crop || !isGroupCrop(g) || m.raw.kind === 'gl') return '';
+    const g = geom(m); if (!g || !g.crop || !isGroupCrop(g) || m.raw.kind === 'gl' || OVP[m.i]) return '';
     return `<span class="bd" data-b="${m.i}" style="${st(g.crop.box)};${cropBg(g.crop)}" aria-hidden="true"></span>`;
   }).join('');
+  // a patch hides the element's copy in the background picture (its rest place on the picture before the action, its end
+  // place on the end picture), so the replayed pixels are not drawn twice; its colour is read from the picture around it
   const patches = OV.bg === 'flat' || noScrub ? '' : M.map(m => {
-    const g = geom(m); if (!g || !inView(g, vp) || m.drive || m.raw.isGl || m.raw.kind === 'gl' || (m.kind === 'unknown' || m.know) && !g.travel) return '';
+    const g = geom(m), it = OVP[m.i];
+    if (it) { if (it.fadeOut) return ''; const box = OV.bg === 'end' ? it.box : it.rest; return box ? `<span class="pt" data-p="${m.i}" data-box="${[box.x, box.y, box.w, box.h].map(n => nf(n, 2)).join(',')}" style="${st(box)};background:${esc(bg)}" aria-hidden="true"></span>` : ''; }
+    if (!g || !inView(g, vp) || m.drive || m.raw.isGl || m.raw.kind === 'gl' || (m.kind === 'unknown' || m.know) && !g.travel) return '';
     const box = OV.bg === 'end' ? (g.crop && isGroupCrop(g) ? g.crop.box : g.e) : g.s;
-    return `<span class="pt" data-p="${m.i}" style="${st(box)};background:${esc(bg)}" aria-hidden="true"></span>`;
+    return `<span class="pt" data-p="${m.i}" data-box="${[box.x, box.y, box.w, box.h].map(n => nf(n, 2)).join(',')}" style="${st(box)};background:${esc(bg)}" aria-hidden="true"></span>`;
   }).join('');
   const boxes = M.map(m => {
     const g = geom(m); if (!g || !inView(g, vp)) return '';
+    const it = OVP[m.i];
+    if (it) {
+      const cb = it.box;
+      // members: each one's slice of the group crop, placed inside the group's box
+      const inner = it.mode === 'members' ? it.members.map((mb, k) => { const b = mb.box;
+        const bs = `${nf(cb.w / b.w * 100, 3)}% ${nf(cb.h / b.h * 100, 3)}%`, bp = `${nf(cb.w - b.w ? (b.x - cb.x) / (cb.w - b.w) * 100 : 0, 3)}% ${nf(cb.h - b.h ? (b.y - cb.y) / (cb.h - b.h) * 100 : 0, 3)}%`;
+        return `<span class="gm" data-k="${k}" style="left:${nf((b.x - cb.x) / cb.w * 100, 3)}%;top:${nf((b.y - cb.y) / cb.h * 100, 3)}%;width:${nf(b.w / cb.w * 100, 3)}%;height:${nf(b.h / cb.h * 100, 3)}%;background-image:url(${g.crop.data});background-size:${bs};background-position:${bp}"></span>`; }).join('')
+        : `<span class="px" style="${cropBg(g.crop)}"></span>`;
+      return `<button class="mb ov k-${m.cert}${m.raw.kind === 'gl' ? ' gl' : ''}" type="button" data-i="${m.i}" style="${st(cb)}" title="${esc(m.name)}" aria-label="${esc(m.name)}: open this motion">${inner}</button>`;
+    }
     const own = g.crop && !isGroupCrop(g);
     return `<button class="mb k-${m.cert}${own ? '' : ' nocrop'}${m.raw.kind === 'gl' ? ' gl' : ''}" type="button" data-i="${m.i}" style="${st(g.s)}${own ? ';' + cropBg(g.crop) : ''}" title="${esc(m.name)}" aria-label="${esc(m.name)}: open this motion"></button>`;
   }).join('');
@@ -1062,7 +1256,6 @@ function renderOverview() {
   let stage = '';
   // a scroll look with a picture of the whole page: the page itself, each mover where it ends (the clock replay of a fixed
   // first screen would hide that the page scrolled under it)
-  const pageMode = M.length && SC.page && (noScrub || L.action.do === 'scroll');
   if (pageMode) stage = pageViewHTML(SC, bg);
   else if (M.length && (!noScrub || back)) stage = `<div class="mini-wrap">
     <div class="mini" id="mini" style="${backStyle};aspect-ratio:${vp.width}/${vp.height}" role="group" aria-label="The first screen of the page, ${vp.width} by ${vp.height}, with each moving element outlined${noScrub ? ' where it ends' : ' and replayed in place'}">${patches}${backs}${boxes}</div>
@@ -1080,7 +1273,8 @@ function renderOverview() {
   </div>
   ${stage}
   ${whatMovesHTML()}</div>`;
-  if (pageMode) initPageView();
+  if (pageMode) { initPageView(); wirePageView(); }
+  if (!pageMode) samplePatches();
   const pb = $('#play'), sb = $('#scrub');
   if (pb) pb.addEventListener('click', togglePlay);
   if (sb) sb.addEventListener('input', e => { stopPlay(); setT(+e.target.value); });
@@ -1090,6 +1284,29 @@ function renderOverview() {
   });
 }
 const OV = { bg: 'flat' };
+/* each patch takes the colour of the background picture just around its box (the median of a thin ring outside it),
+   so it blends with what the element sits on; until the picture is decoded it keeps the page colour */
+function samplePatches() {
+  const pts = $$('#mini .pt[data-box]'); if (!pts.length || !OV.back || !OV.back.data) return;
+  const img = new Image();
+  img.onload = () => {
+    let cx; try { const c = document.createElement('canvas'); c.width = img.naturalWidth; c.height = img.naturalHeight; cx = c.getContext('2d', { willReadFrequently: true }); cx.drawImage(img, 0, 0); } catch (e) { return; }
+    const vp = viewportOf(), k = img.naturalWidth / vp.width;
+    for (const pt of pts) {
+      const [x, y, w, h] = pt.dataset.box.split(',').map(Number); if (![x, y, w, h].every(Number.isFinite)) continue;
+      const r = [], d = Math.max(2, Math.round(3 * k));
+      const take = (px, py) => { px = Math.round(px); py = Math.round(py); if (px < 0 || py < 0 || px >= img.naturalWidth || py >= img.naturalHeight) return; r.push(px, py); };
+      const x0 = x * k - d, y0 = y * k - d, x1 = (x + w) * k + d, y1 = (y + h) * k + d, n = 24;
+      for (let i = 0; i <= n; i++) { const fx = x0 + (x1 - x0) * i / n, fy = y0 + (y1 - y0) * i / n; take(fx, y0); take(fx, y1); take(x0, fy); take(x1, fy); }
+      if (!r.length) continue;
+      const ch = [[], [], []];
+      try { for (let i = 0; i < r.length; i += 2) { const p = cx.getImageData(r[i], r[i + 1], 1, 1).data; ch[0].push(p[0]); ch[1].push(p[1]); ch[2].push(p[2]); } } catch (e) { return; }
+      const med = a => { a.sort((u, v) => u - v); return a[a.length >> 1]; };
+      pt.style.background = `rgb(${med(ch[0])}, ${med(ch[1])}, ${med(ch[2])})`;
+    }
+  };
+  img.src = OV.back.data;
+}
 /* what moves, at a glance: one plain line per motion, in rank order; a click opens it */
 function whatMovesHTML() {
   if (!M.length) return (L.declaredOnly || []).length ? `<p class="lead" style="margin-top:28px">The page declares ${L.declaredOnly.length} colour, background or shadow ${L.declaredOnly.length === 1 ? 'change' : 'changes'}; they are under <a href="#motion">Motion</a>.</p>` : '';
@@ -1105,22 +1322,87 @@ const rankWhy = m => { const r = m.raw && (m.raw.notice || m.raw.rank); return r
 /* a scroll look: the whole page as one tall picture, each moving element outlined where it ends on the page */
 function pageViewHTML(SC, bg) {
   const P = SC.page, vp = viewportOf(), y0 = SC.viewport ? SC.viewport.scrollY || 0 : 0;
-  const st = b => `left:${b.x / P.w * 100}%;top:${(b.y + y0) / P.h * 100}%;width:${b.w / P.w * 100}%;height:${b.h / P.h * 100}%`;
+  const st = b => `left:${b.x / P.w * 100}%;top:${b.y / P.h * 100}%;width:${b.w / P.w * 100}%;height:${b.h / P.h * 100}%`;
+  PV.items = {}; PV.max = Math.max(0, y0);
   const boxes = M.map(m => {
-    const g = geom(m); if (!g || !g.e) return '';
-    return `<button class="mb k-${m.cert} nocrop" type="button" data-i="${m.i}" style="${st(g.e)}" title="${esc(m.name)}" aria-label="${esc(m.name)}: open this motion"></button>`;
+    const it = pvPlan(m, y0); if (!it) return '';
+    PV.items[m.i] = it; PV.max = Math.max(PV.max, it.s.sy, it.e.sy);
+    return `<button class="mb k-${m.cert}${it.crop ? '' : ' nocrop'}" type="button" data-i="${m.i}" style="${st(it.e)}${it.crop ? ';' + cropBg(it.crop) + ';background-repeat:no-repeat' : ''}" title="${esc(m.name)}" aria-label="${esc(m.name)}: open this motion"></button>`;
   }).join('');
+  PV.y0 = y0; PV.P = P; PV.vh = vp.height;
+  const ctl = PV.max > 0 ? `<div class="ctl pvctl">
+      <button class="btn pri" id="pvplay" type="button">Play</button>
+      <input type="range" id="pvscrub" min="0" max="${Math.round(PV.max)}" step="1" value="${Math.round(PV.max)}" aria-label="Page scroll position for the replay">
+      <span class="ms" id="pvnow">${spaced(Math.round(PV.max))} px</span>
+    </div>` : '';
   return `<div class="pv-wrap">
-    <div class="pageview" id="pageview" tabindex="0" role="group" aria-label="The whole page, ${Math.round(P.w)} by ${Math.round(P.h)} px, with each moving element outlined where it ends">
+    <div class="pageview" id="pageview" tabindex="0" role="group" aria-label="The whole page, ${Math.round(P.w)} by ${Math.round(P.h)} px, with each moving element outlined">
       <div class="pvin" style="aspect-ratio:${P.w}/${P.h};background:${esc(bg)} url(${P.data}) 0 0/100% 100% no-repeat">${boxes}${SC.viewport ? `<span class="pvwin" style="top:${y0 / P.h * 100}%;height:${vp.height / P.h * 100}%" aria-hidden="true"></span>` : ''}</div>
     </div>
-    <p class="off">The whole page, ${spaced(P.h)} px tall. It opens where the recording ended; scroll inside it. Each outline is a moving element where it ends.</p>
+    ${ctl}
+    <p class="off">The whole page, ${spaced(P.h)} px tall. ${ctl ? 'Play scrolls it the way the recording did: the frame is the screen, each outline is a moving element where it is at that scroll.' : 'It opens where the recording ended; scroll inside it. Each outline is a moving element where it ends.'}${ctl && REDUCED ? ' Replay is off because your system asks for reduced motion; drag the slider to scroll.' : ''}</p>
   </div>`;
 }
+/* ---------- scroll replay on the whole-page picture ----------
+   One input, the page scroll: each element's box on the page goes from where it was when its motion started to where it
+   was at its end, in step with the scroll between those two recorded scroll offsets (a fixed bar rides with the screen,
+   an element in the flow keeps its place, a parallax layer shifts by its measured amount). A scroll-linked width or
+   height follows its measured map. */
+const PV = { S: 0, max: 0, y0: 0, items: {}, playing: false, raf: 0, last: 0 };
+function pvPlan(m, y0) {
+  const g = geom(m); if (!g || !g.e) return null;
+  const pb = (b, fallbackY) => { const sy = b.scroll ? b.scroll.y : fallbackY, sx = b.scroll ? b.scroll.x : 0; return { x: b.x + sx, y: b.y + sy, w: b.w, h: b.h, sy }; };
+  const e = pb(g.e, y0), s = g.s ? pb(g.s, g.e.scroll ? g.e.scroll.y : y0) : e;
+  // its own picture, when the whole element was in view at the end: drawn in the box (a bar that fills stretches with it)
+  const c = g.crop && !g.crop.sheet && !isGroupCrop(g) && (!g.p || !g.p.image || g.p.image.visible === 'full' || g.p.image.visible == null) ? g.crop : null;
+  const map = m.kind === 'map' && m.p && Number.isFinite(m.s0) && m.drive === 'scroll' ? m : null;
+  return { s, e, crop: c, map };
+}
+function setPV(S) {
+  PV.S = Math.max(0, Math.min(PV.max, S));
+  const sc = $('#pvscrub'); if (sc) sc.value = Math.round(PV.S);
+  const tn = $('#pvnow'); if (tn) tn.textContent = spaced(Math.round(PV.S)) + ' px';
+  const P = PV.P; if (!P) return;
+  const win = $('#pageview .pvwin'); if (win) win.style.top = (PV.S / P.h * 100) + '%';
+  for (const k in PV.items) {
+    const it = PV.items[k], m = M[+k], b = $(`#pageview .mb[data-i="${k}"]`); if (!b) continue;
+    const span = it.e.sy - it.s.sy;
+    const f = Math.abs(span) > 1 ? Math.max(0, Math.min(1, (PV.S - it.s.sy) / span)) : (PV.S >= it.e.sy ? 1 : 0);
+    const lerp = (a, z) => a + (z - a) * f;
+    let x = lerp(it.s.x, it.e.x), y = lerp(it.s.y, it.e.y), w = lerp(it.s.w, it.e.w), h = lerp(it.s.h, it.e.h);
+    if (it.map) {
+      const p = it.map.p(PV.S - it.map.s0);
+      for (const c of it.map.channels) { const fa = it.map.ftAll[c]; if (!fa || !Number.isFinite(fa.from) || !Number.isFinite(fa.to)) continue;
+        const v = fa.from + (fa.to - fa.from) * p;
+        if (c === 'ren:bw') w = Math.max(0, v); else if (c === 'ren:bh') h = Math.max(0, v); }
+    }
+    b.style.left = (x / P.w * 100) + '%'; b.style.top = (y / P.h * 100) + '%';
+    b.style.width = (w / P.w * 100) + '%'; b.style.height = (h / P.h * 100) + '%';
+    b.classList.toggle('live', f > 0 && f < 1);
+  }
+  // while it plays, the view follows the screen down the page
+  const pv = $('#pageview'), pin = pv && $('.pvin', pv);
+  if (PV.playing && pv && pin) pv.scrollTop = Math.max(0, PV.S / P.h * pin.clientHeight - pv.clientHeight * .15);
+}
+function pvTick(now) {
+  if (!PV.playing) return;
+  const dur = Math.min(6000, Math.max(2600, PV.max * 1.2));
+  setPV(PV.S + (now - PV.last) * PV.max / dur); PV.last = now;
+  if (PV.S >= PV.max) { pvStop(); return; }
+  PV.raf = requestAnimationFrame(pvTick);
+}
+function pvStart() { if (REDUCED || !PV.max) return; if (PV.S >= PV.max) setPV(0); PV.playing = true; PV.last = performance.now(); const b = $('#pvplay'); if (b) b.textContent = 'Pause'; PV.raf = requestAnimationFrame(pvTick); }
+function pvStop() { PV.playing = false; cancelAnimationFrame(PV.raf); const b = $('#pvplay'); if (b) b.textContent = PV.S >= PV.max ? 'Replay' : 'Play'; }
 function initPageView() {
   // open on the end screen's place on the page, so the outlined elements are in view
   const pv = $('#pageview'), win = pv && $('.pvwin', pv); if (!pv || !win) return;
   requestAnimationFrame(() => { pv.scrollTop = Math.max(0, win.offsetTop - pv.clientHeight * .15); });
+}
+function wirePageView() {
+  const pb = $('#pvplay'), sb = $('#pvscrub');
+  if (pb) pb.addEventListener('click', () => (PV.playing ? pvStop() : pvStart()));
+  if (sb) sb.addEventListener('input', e => { pvStop(); setPV(+e.target.value); const pv = $('#pageview'), pin = pv && $('.pvin', pv); if (pv && pin && PV.P) pv.scrollTop = Math.max(0, PV.S / PV.P.h * pin.clientHeight - pv.clientHeight * .15); });
+  setPV(PV.max);
 }
 
 /* ---------- timeline, libraries, recording: their own sections ---------- */
@@ -1183,7 +1465,7 @@ function aboutHTML() {
   const what = L.action.do === 'load' ? 'The page loading' : L.action.do === 'scroll' ? 'Scrolling down the page' : L.action.do === 'hover' ? 'Moving the pointer over an element' : L.action.do === 'click' ? 'A click' : cap1(String(L.action.do || 'unknown'));
   return `<div class="facts">${fact(whenOf(L) || 'Unknown', 'Recorded')}${fact(what, 'What was recorded')}${fact(`${vp.width} × ${vp.height}`, 'Screen size, px')}${fact(`${L.take.frames} at ${L.take.rate} fps`, 'Frames')}${fact(rep, 'Played from')}</div>
     <p class="plead" style="margin:24px 0 0">${esc(summaryOf(L))}</p>
-    ${fold('How the replay on Overview is drawn', `<p class="muted" style="max-width:72ch">${L.screens && (L.screens.before || L.screens.viewport) ? `The replay is the first screen, drawn on ${L.screens.before ? 'a picture of the page at rest before the ' + recWord() : 'a picture of the page at the end of the recording'}.` : 'The replay is the first screen on the page’s background colour.'} Each outlined box is a moving element: its own pixels from the end of the recording, moved from where it started to where it ended on the measured curve. A group of alike elements shows the picture of the whole group in place, appearing while the group moves, with its first member’s box moving on top. Anything outside the first screen is cut off.</p>`)}`;
+    ${fold('How the replay on Overview is drawn', `<p class="muted" style="max-width:72ch">${L.screens && (L.screens.before || L.screens.viewport) ? `The replay is the first screen, drawn on ${L.screens.before ? 'a picture of the page at rest before the ' + recWord() : 'a picture of the page at the end of the recording'}.` : 'The replay is the first screen on the page’s background colour.'} Each outline is a moving element where it is at the end of the recording. Its own pixels from that moment move inside and around it by the measured values on the measured curves: every timed line plays in turn (a press, then its release), each relative to what the picture shows, so a button that sinks and springs back shrinks and returns although its picture is the button at rest. A group of alike elements is cut into its members, each starting at its own measured offset (an older recording without member boxes moves the group as one piece). Where the element sits on the background picture, a patch in the colour around it keeps it from showing twice. An element with no picture or no measured values is a plain outline moved between its start and end boxes. Anything outside the first screen is cut off. A scroll recording plays on the whole page instead: the frame is the screen, and each outline moves with the scroll as it was recorded.</p>`)}`;
 }
 function othersHTML() {
   if (!L.others.length) return '';
@@ -1308,9 +1590,19 @@ function setT(T) {
   const sc = $('#scrub'); if (sc) sc.value = S.T;
   for (const tn of [$('#tnow'), $('#tnow2')]) if (tn) tn.textContent = (S.T / 1000).toFixed(2) + ' s';
   const pl = $('#pline'); if (pl) pl.style.left = (S.T / AX * 100) + '%';
-  const vp = viewportOf();
+  const vp = viewportOf(), mini = $('#mini'), kpx = mini ? mini.clientWidth / vp.width : 1;
   for (const m of M) {
-    const b = $(`.mb[data-i="${m.i}"]`); if (!b) continue;
+    const b = mini && $(`.mb[data-i="${m.i}"]`, mini); if (!b) continue;
+    const it = OVP[m.i];
+    if (it) {
+      // its own pixels, moved by the model on this clock; the outline stays where the element is in the crop
+      const a = it.segs[0].t0, z = (m.endAll != null ? m.endAll : AX);
+      b.classList.toggle('live', S.T >= a && S.T < z); b.classList.toggle('done', S.T >= z);
+      const paint = (el, one, T) => { const v = ovLook(one, T, kpx); el.style.transform = v.tr; el.style.opacity = v.op; el.style.filter = v.fl; };
+      if (it.mode === 'members') $$('.gm', b).forEach(el => { const one = it.members[+el.dataset.k]; if (one) paint(el, one, S.T - one.dt); });
+      else { const px = $('.px', b); if (px) paint(px, it, S.T); }
+      continue;
+    }
     let st = '';
     if (m.t0 != null) { if (S.T >= m.startAbs && S.T < m.endAbs) st = 'live'; else if (S.T >= m.endAbs) st = 'done'; }
     else if (m.winS != null) { if (S.T >= m.winS && S.T < m.winE) st = 'live'; else if (S.T >= m.winE) st = 'done'; }
@@ -1332,6 +1624,7 @@ function setT(T) {
   // rest screen its start place is covered once it has left
   for (const pt of $$('.mini .pt')) {
     const m = M[+pt.dataset.p];
+    if (OVP[m.i]) { pt.style.opacity = '1'; continue; }   // under replayed pixels the patch stays: they cover it at rest
     const a = m.startAbs != null ? m.startAbs : m.winS != null ? m.winS : 0, z = m.endAbs != null ? m.endAbs : m.winE != null ? m.winE : AX;
     pt.style.opacity = OV.bg === 'end' ? (S.T < z ? '1' : '0') : (S.T >= a ? '1' : '0');
   }
@@ -1828,6 +2121,21 @@ function initPanel(m, el) {
     layFn = p => { const b = box(p); se0.style.left = nf((b.x - ex0) * lsc, 1) + 'px'; se0.style.top = nf((b.y - ey0) * lsc, 1) + 'px'; se0.style.width = nf(b.w * lsc, 1) + 'px'; se0.style.height = nf(b.h * lsc, 1) + 'px'; };
     cap.textContent = `No picture of it was cut, so a plain block stands in its place: it moves and resizes on the measured curve between the recorded start and end boxes. The outline is where it ends.${lsc < 1 ? ` Drawn at ${nf(lsc * 100, 0)} % of its real size.` : lsc > 1 ? ` Drawn at ${nf(lsc, 1)} times its real size.` : ''}`;
     if (lsc < .1) cap.textContent = `It travels ${nf(Math.max(ex1 - ex0, ey1 - ey0), 0)} px, too far to draw to scale here; the curve and its playhead show it instead.`;
+  } else if (!m.know && m.p && !chs.length && !m.raw.isPage && m.kind === 'smooth' && m.channels.some(c => c === 'ren:ty' || c === 'ren:tx')) {
+    // a smooth follow has a measured curve but no start and end of its own (it chases a target that keeps moving): the
+    // specimen shows that curve catching up after one jump of a set size, drawn as a picture, not a value of the site
+    const J = Math.round(Math.min(120, MH * .3)), ax = m.channels.includes('ren:ty') ? 'Y' : 'X';
+    stage.innerHTML = `<span class="ghost" style="${pos}"></span><span class="${seCls}" style="${pos}">${inner}</span>`;
+    const s1 = $('.se', stage);
+    layFn = p => { s1.style.transform = `translate${ax}(${nf((1 - Math.max(0, Math.min(1.2, p))) * J, 2)}px)`; };
+    cap.textContent = `${cr ? 'The element’s own pixels' : 'A plain block'} catching up after its target jumps ${J} px: the curve is the measured one (time constant ${ms(m.tau)}); the ${J} px jump is only for the picture, the real distance is whatever the ${m.drive === 'scroll' ? 'scroll' : 'target'} moved. The outline is where it settles.${cr ? scaleNote : ''}`;
+  } else if (!m.know && m.p && !chs.length && m.ftAll['ren:dash'] && Number.isFinite(m.ftAll['ren:dash'].from) && Number.isFinite(m.ftAll['ren:dash'].to)) {
+    // a line drawn by its dash offset (stroke-dashoffset as a share of its length): a stand-in curve drawn on the measured map
+    const fd = m.ftAll['ren:dash'];
+    stage.innerHTML = `<svg viewBox="0 0 400 200" style="position:absolute;left:calc(50% - ${MW / 2}px);top:calc(50% - ${MH / 2}px);width:${MW}px;height:${MH}px" aria-hidden="true"><path d="M20 170 C 120 170, 140 40, 220 60 S 330 150, 380 30" fill="none" stroke="var(--accent)" stroke-width="4" stroke-linecap="round" pathLength="1" stroke-dasharray="1 1"/></svg><span class="still">A stand-in line: no picture of it was cut</span>`;
+    const path = $('path', stage);
+    layFn = p => { path.setAttribute('stroke-dashoffset', nf(fd.from + (fd.to - fd.from) * p, 4)); };
+    cap.textContent = `No picture of the line was cut, so a stand-in curve is drawn by the same measured offset, from ${nf(fd.from)} to ${nf(fd.to)} of its length.`;
   } else if (m.know || !chs.length) {
     stage.innerHTML = cr ? `<span class="${seCls}" style="${pos}">${inner}</span><span class="still">${m.know ? 'A still from the end of the recording' : 'A still: its start and end values were not read'}</span>` : '';
     stage.hidden = !cr;
@@ -2102,7 +2410,7 @@ function renderDesign() {
 
 /* ---------- render all ---------- */
 function load() {
-  stopPlay();
+  stopPlay(); pvStop();
   for (const k in panelPlayers) { panelPlayers[k].pause(); delete panelPlayers[k]; }
   L = DATA.look; M = buildMotions(L); AX = axisEnd(); S.sel = 0; S.T = 0;
   // two motions with the same name are told apart by their order on screen ("Title line", "Title line 2")
@@ -2153,6 +2461,7 @@ function show(v, sub, opts = {}) {
     // what plays on the page being left stops
     if (CUR.view === 'motion') for (const k in panelPlayers) panelPlayers[k].pause();
     if (CUR.view === 'overview' || CUR.view === 'timeline') stopPlay();
+    if (CUR.view === 'overview') pvStop();
   }
   CUR.view = v; CUR.sub = sub;
   // the page list shows the current page (and, on Design, the current part)
@@ -2176,6 +2485,7 @@ function show(v, sub, opts = {}) {
   if (v === 'overview' && changed) {
     initPageView();
     if ($('#play') && !REDUCED && !opts.find) { setT(0); startPlay(); }
+    if ($('#pvplay') && !REDUCED && !opts.find) { setPV(0); pvStart(); }
   }
   if (opts.find) return;
   if (v === 'design' && sub) {

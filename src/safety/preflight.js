@@ -8,6 +8,16 @@ import { detectConsent } from './consent.js';
 
 const firstLine = (s) => String(s || '').split('\n')[0];
 const MAX_HOPS = 10;
+
+/** Retry-After of a response in ms (delta seconds or an HTTP date; PR-06), null when absent or unreadable. */
+export function retryAfterMs(headers, now = Date.now()) {
+  const v = headers && typeof headers.get === 'function' ? headers.get('retry-after') : null;
+  if (v == null || String(v).trim() === '') return null;
+  const s = String(v).trim();
+  if (/^\d+$/.test(s)) return Number(s) * 1000;
+  const t = Date.parse(s);
+  return Number.isFinite(t) ? Math.max(0, t - now) : null;
+}
 const rank = (r) => (!r ? -1 : r.blocked && !r.ignored ? 2 : r.blocked ? 1 : 0);
 
 const bareHost = (u) => { try { return new URL(u).hostname.toLowerCase().replace(/^www\./, ''); } catch { return null; } };
@@ -110,6 +120,16 @@ export async function preflight(url, { fetchImpl = globalThis.fetch, timeoutMs =
     const fh = new URL(out.finalUrl).hostname;
     if (fh !== new URL(url).hostname) out.redirectHost = fh;
   } catch { /* ignore */ }
+  // PR-06: a bare HTTP 429 (no challenge page in the body) is "too many requests, try later", not a wall: failed:rate-limited
+  // (transient, out.retryAfterMs from Retry-After). A 429 that carries a bot challenge stays the wall it names.
+  if (res.status === 429) {
+    const marked = detectWall({ status: 200, html, headers: res.headers, finalUrl: out.finalUrl });
+    if (!marked) {
+      out.retryAfterMs = retryAfterMs(res.headers, Date.now());
+      out.consent = detectConsent(html);
+      return done('failed:rate-limited', `http 429${out.retryAfterMs != null ? ` (Retry-After ${Math.round(out.retryAfterMs / 1000)} s)` : ''}`);
+    }
+  }
   out.wall = detectWall({ status: res.status, html, headers: res.headers, finalUrl: out.finalUrl });
   out.consent = detectConsent(html);
   if (out.wall) return done('blocked:' + (out.wall.kind === 'wall' ? 'wall' : out.wall.kind), out.wall.marker);

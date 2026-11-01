@@ -197,3 +197,16 @@ export function robotsVerdict(text, urls) {
     reason: star === 'disallow' ? 'robots:star' : reva === 'disallow' ? 'robots:reva' : anthropicAgent ? 'robots:anthropic' : null,
   };
 }
+
+/** Why a robots.txt could not be read, in plain words, from fetchRobots' error ('http 503', 'timeout', 'network ECONNRESET'). */
+export function unreachableWhy(error) {
+  const e = String(error || '');
+  const m = /^http (\d{3})$/.exec(e);
+  if (m) return m[1] === '429' ? 'HTTP 429, too many requests' : `HTTP ${m[1]}`;
+  if (e === 'timeout') return 'no answer within 10 s';
+  if (/^network/.test(e)) return `network error${e.slice(7) ? ` ${e.slice(8)}` : ''}`;
+  return e || 'no answer';
+}
+
+/** The sentence for a page REVA did not open because its robots.txt could not be read (5xx, 429, timeout, network error). */
+export const robotsUnreachableText = (origin, error) => `robots.txt of ${origin} could not be read (${unreachableWhy(error)}); REVA does not open a page whose robots.txt it cannot read. Try again later.`;

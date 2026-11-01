@@ -233,7 +233,7 @@ const valueFormRow = (f) => (f === undefined ? null : f ? { css: formValue(f, '<
 async function analyzeSource(a, ctx) {
   const given = ['url', 'archive', 'fixture'].filter((k) => a[k] != null);
   if (given.length !== 1) throw bad(`give exactly one of url, archive, fixture (got ${given.join(', ') || 'none'})`);
-  if (a.fixture) { const fx = fixturePath(a.fixture); const srv = await serveFixtureDir(fx); return { input: srv.url, close: srv.close, kind: 'fixture' }; }
+  if (a.fixture) { const fx = fixturePath(a.fixture); const srv = await serveFixtureDir(fx); return { input: srv.url, close: srv.close, kind: 'fixture', ...(/^demo(\/index\.html)?$/.test(a.fixture) ? { demo: true } : {}) }; }
   if (a.archive) {
     // an archive folder / run folder / target .json inside the data roots, or a target id from the targets folders
     const looksLikePath = /[/\\]|^~|\.json$/.test(a.archive);
@@ -269,6 +269,7 @@ const analyze = {  // JS identifier kept; the tool is named look
     depth: { type: 'string', enum: ['quick', 'full'], default: 'quick', description: 'quick: top 5 elements, 40 channels; full: top 10, 80 channels (slower)' },
     viewport_class: S('viewport class of an archive (default A)', { pattern: '^[A-Za-z0-9_-]{1,20}$', default: 'A' }),
     design: { type: 'boolean', default: true, description: 'also record how the page is designed (type, colour, spacing, layout, breakpoints, hover / focus) in a second session after the take; the design tool reads it (false: motion only, a few seconds faster)' },
+    color_scheme: { type: 'string', enum: ['light', 'dark'], description: 'the colour scheme the page is read in (what prefers-color-scheme matches), for the take and the design pass; default light' },
   }),
   annotations: { readOnlyHint: false, idempotentHint: false, openWorldHint: true },
   async run(a, ctx) {
@@ -284,7 +285,7 @@ const analyze = {  // JS identifier kept; the tool is named look
     let r;
     try {
       r = await runLook({ input: src.input, action: a.interaction, el: aimed ? canonSelector(a.target) : undefined, on: a.on ? canonSelector(a.on) : undefined, top: d.top, maxChannels: d.maxChannels, maxMembers: d.maxMembers,
-        cls: a.viewport_class, design: a.design !== false, safetyWho: 'mcp', preflightFetch: src.guard ? hopCheckedFetch((u) => checkTargetUrl(u, { allow: false, lookup: ctx.lookup })) : undefined, outDir: path.join(outDirOf(ctx.env, 'look'), id), onSession: src.guard ? src.guard.onSession : undefined, args: src.proxy ? src.proxy.args : undefined, prefs: src.proxy ? src.proxy.prefs : undefined, log: () => {}, signal: ctx.signal });
+        cls: a.viewport_class, design: a.design !== false, ...(a.color_scheme ? { colorScheme: a.color_scheme } : {}), ...(src.demo ? { demo: true } : {}), safetyWho: 'mcp', preflightFetch: src.guard ? hopCheckedFetch((u) => checkTargetUrl(u, { allow: false, lookup: ctx.lookup })) : undefined, outDir: path.join(outDirOf(ctx.env, 'look'), id), onSession: src.guard ? src.guard.onSession : undefined, args: src.proxy ? src.proxy.args : undefined, prefs: src.proxy ? src.proxy.prefs : undefined, log: () => {}, signal: ctx.signal });
     } catch (e) {
       // a usage error from the look, in the MCP's argument names (target / on), never CLI flags
       if (e && e.code === 'bad_arguments') throw bad(String(e.message).replace(/^--el\b/, 'target').replace(/^--on\b/, 'on'));

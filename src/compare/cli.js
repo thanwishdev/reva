@@ -9,7 +9,7 @@ import { recordedEnds } from '../mcp/analysis.js';
 import { ensureOutDirIn } from '../util/paths.js';
 import { terminalJson } from '../report/untrusted.js';
 
-export const COMPARE_HELP = `reva compare <url-a> <url-b> [--do load|hover|click|scroll] [--el <selector>] [--on <selector|x,y>] [--json] [--card] [--retake]
+export const COMPARE_HELP = `reva compare <url-a> <url-b> [--do load|hover|click|scroll] [--el <selector>] [--on <selector|x,y>] [--color-scheme light|dark] [--json] [--card] [--retake]
 
   Does B move like A? Runs "reva look" on A, then on B (one after the other, the same action and target), pairs their
   motions (same selector first, then start order and visual weight) and compares them value by value: start, duration,
@@ -19,6 +19,7 @@ export const COMPARE_HELP = `reva compare <url-a> <url-b> [--do load|hover|click
   <url-a>, <url-b>  a URL (http(s) or file:), an archive, "demo" (REVA's bundled demo page), or a local .html file / a
             folder with index.html (served on 127.0.0.1 for that look only)
   --do / --el / --on  as in reva look, used for both pages
+  --color-scheme  read both pages in the light (default) or dark colour scheme
   --json    print the full comparison (reva.compare/0)
   --card    also write compare.html: both curves overlaid per motion, self-contained
   --retake  also run look's stability re-take on each page (off by default here: twice the time)
@@ -36,7 +37,7 @@ async function openInput(input) {
   const s = String(input);
   if (s === 'demo') {
     const { serveFixtureDir } = await import('../mcp/fixture.js'); const { DEMO_ROOT } = await import('../demo/cli.js');
-    const srv = await serveFixtureDir({ root: DEMO_ROOT, page: 'index.html' }); return { input: srv.url, close: srv.close, shown: 'demo' };
+    const srv = await serveFixtureDir({ root: DEMO_ROOT, page: 'index.html' }); return { input: srv.url, close: srv.close, shown: 'demo', demo: true };
   }
   const p = path.resolve(s);
   if (!/^[a-z]+:\/\//i.test(s) && fs.existsSync(p)) {
@@ -67,10 +68,13 @@ export async function runCompareCommand(f) {
   const action = typeof f.do === 'string' ? f.do : 'load';
   if (!ACTIONS.includes(action)) { console.error(`unknown --do ${action} (use ${ACTIONS.join(', ')})`); return 2; }
   const el = typeof f.el === 'string' ? f.el : undefined; const on = typeof f.on === 'string' ? f.on : undefined;
+  const { parseColorScheme } = await import('../browser/scheme.js');
+  let colorScheme;
+  try { colorScheme = parseColorScheme(f['color-scheme']); } catch (e) { console.error(e.message); return 2; }
   const look = async (input, side) => {
     const src = await openInput(input);
     try {
-      const r = await runLook({ input: src.input, action, el, on, design: false, retake: !!f.retake, log: (m) => process.stderr.write(`[${side}] ${m}\n`) });
+      const r = await runLook({ input: src.input, action, el, on, ...(colorScheme ? { colorScheme } : {}), ...(src.demo ? { demo: true } : {}), design: false, retake: !!f.retake, log: (m) => process.stderr.write(`[${side}] ${m}\n`) });
       if (src.shown !== src.input) r.source = { ...r.source, shown: src.shown };
       return r;
     } finally { if (src.close) await src.close(); }
