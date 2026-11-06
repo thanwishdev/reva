@@ -208,19 +208,63 @@ look again, up to 3 times, and the output says so.
 ## What REVA does not do
 
 The published `reva` command and its MCP server are `demo`, `look`, `design`, `card`, `compare`, `doctor` and `mcp` (plus
-`tools` / `tool`, the same tools on the command line). Within them:
+`tools` / `tool`, the same tools on the command line); the command line also has `scan`, whose folders the MCP tools
+`scan_moves` and `scan_move` read. `look`, `design` and `compare`:
 
-- REVA does not download, mirror or clone a site.
-- It never exports a site's images, fonts, text, CSS or JavaScript into your project. Fonts and assets are named as facts
+- do not download, mirror or clone a site.
+- never export a site's images, fonts, text, CSS or JavaScript into your project. Fonts and assets are named as facts
   ("font: X"); they are licensed separately by their owners. Like DevTools, the motion card shows a WebGL page's shader
-  source on your machine so you can read how it works; it is not copied anywhere else.
-- It does not crawl. One page, started by you, at a time.
+  source on your machine so you can read how it works; it never goes into the code REVA writes. A scan's move files keep
+  the shader sources as reference data in your local scan folder; the prompt for a coding agent points to that file and
+  never carries them. REVA does not export a working clone and sends nothing anywhere.
+- do not crawl. One page, started by you, at a time.
 
-The repository also holds the research modules REVA was built with (a recorder, an offline archiver under `src/freeze`,
-a fixture lab). They stay in the source tree for developers and are not in the npm package: `npm install reva-cli` gets
-only the code the commands above load (`npm run check:pack` checks this before every publish). They skip the
-`robots.txt` and wall checks described under [Responsible use](#responsible-use-learn-dont-copy), and are meant for your
-own pages only.
+`reva scan <url>` goes further, and says so. It lists the site (its sitemap and links, fetching up to 250 pages to tell their
+templates apart) and records one page per template (`--one-page`: only the page you name). To record those pages again and
+again on a virtual clock it keeps a **temporary copy** of them (their files, in both viewports) in a folder on your machine,
+records every moment on the copy, and **deletes the copy when the scan ends** (`--keep-archive` keeps it for your own use; a
+scan cut short keeps it in its output folder so the same command can go on). What stays is measurements: the numbers of every
+moving element, a picture of each frame, and `coverage.json`, which lists the units of the scan with what was captured and, for
+what was not, why. What it does to the site:
+
+- It reads `robots.txt` before anything opens and stops on a block, or a bot, login or region wall. Every URL of the site it
+  fetches, the files a page loads included, and every page its browser goes to (each redirect hop too) is checked against
+  `robots.txt` first; what is disallowed is not requested and gets a row. The browser never leaves the site: a link or a
+  script that would take it to another site, or to a disallowed page, is refused.
+- It loads each page it records once per viewport, the home page again for each pass that fetches files the recording
+  missed, and the whole visit once more if the copy fails its check. A click that starts a WebGL experience loading (a 3D world
+  behind an "enter" button) is pressed once more in a take of its own, which waits up to 60 s for it to draw; the files it asks
+  for then are fetched under the same rules as below.
+- Every request to the site's hosts waits at least 500 ms after the one before to that host (more if `robots.txt` sets a
+  `Crawl-delay`), while a page loads too, so a page with 100 files takes about a minute to load. Pages are 10 s apart. A host
+  of another site the page loads from (fonts, a CDN) gets at most one request per 100 ms.
+- On every answer, not only the first page's, a 429, a 503 with Retry-After or a challenge page stops all traffic to the site;
+  what was captured before is kept, and the ledger says why. A login or region wall on an inner page leaves that page out.
+- Every request names REVA in its user agent, with a link to this project. The phone viewport presents itself as Chrome on
+  Android (mobile, touch, DPR 2), so a site that serves phones a different page serves that one.
+- It never clicks accept and never submits a form. It does not log in, and nothing it records leaves your machine. The pictures show the page as it looked: they are for your own
+study, like a screenshot, and are not a way to republish someone else's site.
+
+What a scan leaves, in its `--out` folder: `card.html` (opens from disk: the real page playing, then the site's moves, each
+framed with what sets it off, its curve, how REVA knows and code for CSS, GSAP and Motion), `moves.json` (the same for an
+agent, one entry per move), `moves/<id>.json` (one move in full: every group, what changes from and to, its law, when each group
+starts, and a prompt with the whole spec; a WebGL move adds its passes in drawing order, the clocks its shaders run on, every
+value each drawn program reads (set once or animated, arrays and per-draw values included), the shader sources (reference data
+in the file; the prompt names each program, its source's hash and the JSON path, not the text), when the drawn
+programs switch, where each canvas sits among the page's layers, and the geometry of each draw: mode, counts, attribute layout and
+buffers by hash, a buffer's bytes kept in the scan's recording up to 256 KB and its URL beyond that) and `coverage.json` (the
+ledger). WebGL drawn inside the page's own workers is recorded with the page's. Each move says how its
+values were found: `declared` (the site's own GSAP or CSS), `fitted` (measured and fitted, with its error), `sampled`
+(recorded frame by frame; the code replays the recording) or `seen` (seen, not measured). `reva scan moves <dir>` prints one
+line per move, `--id m-...` one move in full. Without `--out` the folder is `~/.reva/out/scan/<host>-<time>`; the MCP tools
+read folders under `~/.reva`, so for one written elsewhere start `reva mcp` with that folder in `REVA_MCP_ROOTS` (colon
+separated).
+
+The repository also holds the research modules REVA was built with (a recorder, a fixture lab). They stay in the source tree
+for developers and are not in the npm package: `npm install reva-cli` gets only the code the commands above load (`npm run
+check:pack` checks this before every publish). The offline archiver in `src/freeze` that `reva scan` uses is part of the
+package; its other entry points (the `freeze` command line, the report writer) are not, and they skip the `robots.txt` and wall
+checks that `scan` runs first, so they are meant for your own pages only.
 
 <br>
 
@@ -294,6 +338,7 @@ reva design https://your-site.example                  # how the page is designe
 reva design https://your-site.example --tokens         # also write design-tokens.css / .json
 reva design https://your-site.example --color-scheme dark   # read the page in its dark colour scheme (default light)
 reva compare https://your-site.example http://localhost:5173/ --do hover --el ".card"   # the same look on two pages, and how their motion differs
+reva scan https://your-site.example                    # the site in depth, one page per template (--one-page: that page only): both viewports, every moment, every moving element, a picture of each frame, and coverage.json
 ```
 
 </details>
@@ -382,7 +427,8 @@ at 390 px, honours reduced motion and opens every fold when printed.
 
 The server speaks MCP over stdio and offers `look` (look at a URL, or at the bundled demo page with `fixture: "demo"`),
 `motions`, `design`, `code` (code for chosen motions), `curve` (recorded vs fitted curve), `card` (the motion card for
-chosen motions), `compare` (two pages looked at the same way), `unknowns` and `doctor`. The old names (`analyze`,
+chosen motions), `compare` (two pages looked at the same way), `unknowns`, `doctor`, and for a finished `reva scan` folder
+`scan_moves` (one row per move) and `scan_move` (one move in full, in parts: groups, code, webgl, prompt): 11 tools. The old names (`analyze`,
 `export`, `series`, `specimen`) still work.
 
 `look` takes the action (`interaction`), a `target` (a CSS selector, pseudo-elements included), an `on` trigger and an
@@ -407,14 +453,15 @@ check or region wall are not analysed. A look has a 5-minute limit; run one at a
 <br>
 
 - **WebGL:** REVA reads the page's WebGL calls (WebGL 1 and 2, any library). It shows each shader's source on your machine
-  (look.json and the card, like DevTools; never in exported code), a technique summary taken from the source
+  (look.json, the card and a scan's move files, like DevTools; never in exported code or an agent prompt), a technique summary taken from the source
   (`derived`), every float uniform the page sets over time (fitted like any other motion; a uniform that only counts time
   is a clock, even when its first reading is off the line), and the camera's field of view, position and rotation decoded
   from its matrices (`measured`). A WebGL context a page creates late is still found: a load look waits up to 6 s of page
   time for one when the page has a canvas (not with `--hold`). A loop longer than the take, or a motion still moving when
-  it ends, is reported over what was seen ("part of a slower or looping motion"), not as a finished tween. Not read: draw
-  calls, textures and buffers, what post-processing passes do inside, uniforms set to a new value for every object,
-  rendering in a worker or OffscreenCanvas, and WebGPU. A camera channel that barely moves can show as "no model explains
+  it ends, is reported over what was seen ("part of a slower or looping motion"), not as a finished tween. A look does not
+  read: draw calls, textures and buffers, what post-processing passes do inside, uniforms set to a new value for every
+  object, uniform arrays, and rendering in a worker (an OffscreenCanvas the page draws on its own thread is read). A
+  `reva scan` reads all of those except texture pixels (see above). Neither reads WebGPU. A camera channel that barely moves can show as "no model explains
   it": it may be float noise from decoding the matrix.
 - **2D canvas, video and Lottie:** REVA sees the element move or change, not the frames inside it.
 - **One page per look.** Transitions between pages and the structure of a whole site are not measured.
@@ -465,7 +512,8 @@ work.
   default) to skip the flag.
 - **No circumvention.** REVA never bypasses logins, paywalls, CAPTCHAs or bot protection. On a cookie banner it
   recognises, it clicks "reject", never "accept".
-- **One page at a time**, started by you.
+- **Started by you.** `look`, `design` and `compare` read the one page you name. `reva scan` reads one page per template of
+  the site, at the pace and under the stop rules above.
 - **Check the site's terms.** REVA cannot read them for you. You are responsible for how you use the output.
 
 **Site owners:** REVA obeys the group for `User-agent: *` and the group for its own name. To opt out of REVA only, add
@@ -476,8 +524,10 @@ User-agent: REVA
 Disallow: /
 ```
 
-REVA also respects the groups for `ClaudeBot`, `anthropic-ai` and `Claude-User`. Requests carry the user agent
-`REVA/0.1`.
+REVA also respects the groups for `ClaudeBot`, `anthropic-ai` and `Claude-User`. Its own requests (`robots.txt`, the
+first check of a page, `reva scan`'s site list) carry the user agent `REVA/0.1 (+https://github.com/thanwishdev/reva; ...)`.
+`reva scan`'s browser sends Chrome's user agent for its viewport followed by `(compatible; REVA/0.1;
++https://github.com/thanwishdev/reva)`. The browser of `look`, `design` and `compare` sends the browser's own user agent.
 
 <br>
 

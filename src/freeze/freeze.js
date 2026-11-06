@@ -93,8 +93,10 @@ export function targetConfig(cfg, archiveDir) {
  *   bounded?:{maxUrls?:number, budgetMs?:number, concurrency?:number}|null, onSealed?:Function}} o
  *   bounded: the corpus policy (seal early, one typed completion pass, never lose a sealed archive); see freezeBounded.
  *   shareBrowser: one browser per round, a context per class (roundPool); off by default (`reva freeze` unchanged).
+ *   policy: reva scan's live-visit rules (src/scan/polite.js), bounded freeze only. After a stop no further class records and
+ *     no completion runs; the classes recorded so far are sealed, so what was captured is kept.
  */
-export async function freeze(rawCfg, { outDir, engine = defaultEngine(), maxRounds = 3, completion = true, missDriven = true, allowLive = false, log = () => {}, bounded = null, onSealed = null, shareBrowser = false } = {}) {
+export async function freeze(rawCfg, { outDir, engine = defaultEngine(), maxRounds = 3, completion = true, missDriven = true, allowLive = false, log = () => {}, bounded = null, onSealed = null, shareBrowser = false, policy = null } = {}) {
   const t0 = Date.now();
   const cfg = normalizeConfig(rawCfg);
   assertFreezable(cfg, { allowLive });
@@ -106,7 +108,7 @@ export async function freeze(rawCfg, { outDir, engine = defaultEngine(), maxRoun
   for (const x of ['.next', '.prev']) fs.rmSync(outDir + x, { recursive: true, force: true });
   fs.mkdirSync(work, { recursive: true });
   if (bounded) {
-    try { return await freezeBounded(cfg, { outDir, work, engine, completion, log, t0, bounded, onSealed, shareBrowser }); }
+    try { return await freezeBounded(cfg, { outDir, work, engine, completion, log, t0, bounded, onSealed, shareBrowser, policy }); }
     finally { fs.rmSync(work, { recursive: true, force: true }); fs.rmSync(outDir + '.next', { recursive: true, force: true }); }
   }
   try { return await freezeInner(cfg, { outDir, work, engine, maxRounds, completion, missDriven, log, t0, shareBrowser }); }
@@ -220,7 +222,7 @@ export async function sealVersion(cfg, { dir, finalDir, version, union, classes,
   buildArchive({ dir, union, classes, raw, provenance, meta });
   const finalVerify = {};
   const clsList = Object.keys(cfg.classes);
-  const check = (cls, pool) => replayVerify(cfg, cls, [path.join(dir, 'har', 'all.har.zip'), path.join(dir, 'har', `${cls}.har.zip`)], { engine, timeoutMs: 30000, pool });
+  const check = (cls, pool) => replayVerify(cfg, cls, [path.join(dir, 'har', 'all.har.zip'), path.join(dir, 'har', `${cls}.har.zip`)], { engine, timeoutMs: 30000, pool, live: live?.classes?.[cls] || null });
   if (sealParallel(clsList.length)) {
     // S-SPEED #5 (27 Oct): the class checks are independent offline loads of the same sealed files, so they run side by
     // side, each with its own whole check (same 2.5 s settle, same steps, same timeouts). Each class launches its own
@@ -267,7 +269,7 @@ export async function sealVersion(cfg, { dir, finalDir, version, union, classes,
  *  3. v2 is built next to v1 and replaces it only when it is not worse on render-relevant misses and adds entries; a kill at any
  *     point leaves sealed v1 (or v2) in outDir. The miss log + completeness % travel in the report and misses.json.
  */
-async function freezeBounded(cfg, { outDir, work, engine, completion, log, t0, bounded, onSealed, shareBrowser = false }) {
+async function freezeBounded(cfg, { outDir, work, engine, completion, log, t0, bounded, onSealed, shareBrowser = false, policy = null }) {
   const B = { maxUrls: 200, budgetMs: 120000, concurrency: 4, ...bounded };
   const block = cfg.block ? new RegExp(cfg.block) : null;
   const truncated = new Map();
@@ -276,15 +278,18 @@ async function freezeBounded(cfg, { outDir, work, engine, completion, log, t0, b
   const recPool = roundPool(shareBrowser, Object.keys(cfg.classes).length, recordArgs(cfg), engine);
   try {
     for (const cls of Object.keys(cfg.classes)) {
+      if (policy?.stopped) { log(`round 1: class ${cls} not recorded: the site asked REVA to stop (${policy.stopped.why})`); continue; }
       const harPath = path.join(work, 'round1', 'raw', `${cls}.har.zip`);
       log(`round 1: recording class ${cls} (${cfg.extraUrls.length} declared URLs)`);
-      recLogs[cls] = await recordClass(cfg, cls, { harPath, extraUrls: cfg.extraUrls, engine, evidence: { dir: liveDir }, pool: recPool });
+      recLogs[cls] = await recordClass(cfg, cls, { harPath, extraUrls: cfg.extraUrls, engine, evidence: { dir: liveDir }, pool: recPool, policy });
       raw[cls] = fs.readFileSync(harPath);
       const s = sanitizeHar(parseHarZip(raw[cls]), { block });
       capMedia(s, cfg, truncated);
       classes[cls] = s; recLogs[cls].sanitise = s.report;
     }
   } finally { await closePool(recPool); }
+  // a stop: the classes recorded so far are what the archive holds (the others have no recording to check)
+  if (Object.keys(recLogs).length < Object.keys(cfg.classes).length) cfg = { ...cfg, classes: Object.fromEntries(Object.entries(cfg.classes).filter(([k]) => recLogs[k])) };
   const live = { dir: liveDir, classes: Object.fromEntries(Object.entries(recLogs).map(([k, l]) => [k, l.live || null])) };
   const union1 = mergeHars(Object.values(classes));
   const mediaUnknown = () => [...truncated].map(([url, bytes], i) => ({ id: `unk_media_${i + 1}`, kind: 'media-truncated', url, bytes, reason: `body left out by the archive caps (mediaMaxBytes ${cfg.mediaMaxBytes}, archiveCapBytes ${cfg.archiveCapBytes}); the entry replays with an empty body`, probe: 'freeze again without the caps' }));
@@ -294,15 +299,15 @@ async function freezeBounded(cfg, { outDir, work, engine, completion, log, t0, b
   let cur = await sealVersion(cfg, { dir: outDir, finalDir: outDir, version: 1, union: union1, classes, raw, provenance: declaredProv, recLogs, live, rounds, completionInfo: info, engine, t0, shareBrowser });
   log(`v1 sealed at ${Math.round((Date.now() - t0) / 1000)} s: completeness ${cur.completeness.pct} %, ${cur.completeness.renderMisses} render misses, ${cur.completeness.siteDataMisses} site-data misses`);
   if (onSealed) await onSealed(outDir, cur.report);
-  if (!completion) return { ok: cur.ok, report: cur.report, sums: cur.sums, outDir };
-  try { return await completeOnce(cfg, { outDir, work, engine, log, t0, B, block, truncated, recLogs, classes, raw, live, union1, mediaUnknown, declaredProv, rounds, info, cur, onSealed, shareBrowser }); }
+  if (!completion || policy?.stopped) return { ok: cur.ok, report: cur.report, sums: cur.sums, outDir, ...(policy?.stopped ? { stopped: policy.stopped } : {}) };
+  try { return await completeOnce(cfg, { outDir, work, engine, log, t0, B, block, truncated, recLogs, classes, raw, live, union1, mediaUnknown, declaredProv, rounds, info, cur, onSealed, shareBrowser, policy }); }
   catch (e) { // the completion pass is best effort: sealed v1 stands
     log(`completion failed, v1 kept: ${String(e.message || e).split('\n')[0]}`);
     return { ok: cur.ok, report: cur.report, sums: cur.sums, outDir, completionError: String(e.message || e).split('\n')[0].slice(0, 300) };
   }
 }
 
-async function completeOnce(cfg, { outDir, work, engine, log, t0, B, block, truncated, recLogs, classes, raw, live, union1, mediaUnknown, declaredProv, rounds, info, cur, onSealed, shareBrowser = false }) {
+async function completeOnce(cfg, { outDir, work, engine, log, t0, B, block, truncated, recLogs, classes, raw, live, union1, mediaUnknown, declaredProv, rounds, info, cur, onSealed, shareBrowser = false, policy = null }) {
 
   // typed, bounded completion: once
   const have = new Set(union1.har.log.entries.map(e => e.request.url));
@@ -310,7 +315,9 @@ async function completeOnce(cfg, { outDir, work, engine, log, t0, B, block, trun
   const a = analyseCompletion({ files: codeFiles(union1), documentOrigin: new URL(cfg.startUrl).origin, have, block, domains: cfg.domains });
   const rk = rankCandidates({ misses, literals: a.candidates, have, maxUrls: B.maxUrls, origin: new URL(cfg.startUrl).origin, siteUrl: cfg.startUrl });
   // robots.txt of the site's own hosts decides before anything is fetched (26 Oct): a disallowed URL stays a logged miss
-  const rb = await robotsFilter(rk.picked, { siteUrl: cfg.startUrl, robotsText: robotsFetcher() });
+  // with a live-visit policy every host's robots.txt is read through its paced queue, and REVA's own fetch of another site's
+  // file is checked against that site's robots.txt as well (the policy aborts a disallowed one; it is also kept out here)
+  const rb = await robotsFilter(rk.picked, { siteUrl: cfg.startUrl, robotsText: policy ? robotsFetcher({ fetchImpl: policy.pacedFetch }) : robotsFetcher(), allHosts: !!policy });
   const picked = rb.allowed;
   const dropped = rb.disallowed.length ? { ...rk.dropped, robots: rb.disallowed.length } : rk.dropped;
   info = { ...info, candidates: picked, notFetched: [...rk.notFetched, ...rb.disallowed], dropped, unknown: [...a.unknown, ...mediaUnknown()] };
@@ -320,7 +327,7 @@ async function completeOnce(cfg, { outDir, work, engine, log, t0, B, block, trun
 
   const cls0 = Object.keys(cfg.classes)[0];
   const harPath = path.join(work, 'round2', 'raw', 'completion.har.zip');
-  const rec = await recordClass(cfg, cls0, { harPath, extraUrls: picked.map(c => c.url), engine, fetchOnly: true, fetchBudgetMs: B.budgetMs, fetchConcurrency: B.concurrency });
+  const rec = await recordClass(cfg, cls0, { harPath, extraUrls: picked.map(c => c.url), engine, fetchOnly: true, fetchBudgetMs: B.budgetMs, fetchConcurrency: B.concurrency, policy });
   const rawC = fs.readFileSync(harPath);
   const sC = sanitizeHar(parseHarZip(rawC), { block });
   capMedia(sC, cfg, truncated);

@@ -7,7 +7,7 @@ import { serveFixture } from './helpers.js';
 const RUNS = Number(process.env.WR_ESCAPE_RUNS || 3);
 const CASES = {
   'iframe-same': 'iframe-same-origin', 'iframe-cross': 'iframe-cross-origin', worker: 'worker',
-  offscreen: 'offscreen-canvas', 'offscreen-ctor': 'offscreen-canvas', ric: 'request-idle-callback',
+  offscreen: 'offscreen-canvas', 'offscreen-ctor': 'offscreen-main', ric: 'request-idle-callback',
 };
 
 test(`A10 escapes detected and flagged in ${RUNS}/${RUNS} runs per case; control case has none`, async () => {

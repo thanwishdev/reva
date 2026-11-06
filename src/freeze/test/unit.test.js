@@ -109,3 +109,21 @@ test('live guard: only loopback and reserved test hosts are freezable without --
   await assert.rejects(freeze({ id: 'x', startUrl: 'http://a.test/' }, { outDir: new URL('../../../out-here', import.meta.url).pathname }), /H2/);
   assert.equal(normalizeConfig({ id: 'a', startUrl: 'http://a.test/' }).classes.A.viewport.width, 1280);
 });
+
+test('sanitiser: a later 0-byte duplicate never replaces the real body (blank-replay bug, 2 Nov)', () => {
+  const mk = (text, status = 200) => ({ request: { method: 'GET', url: 'https://x.test/', headers: [], cookies: [] }, response: { status, headers: [], content: { text, size: text.length } } });
+  for (const order of [[mk('<html>real</html>'), mk('')], [mk(''), mk('<html>real</html>')]]) {
+    const s = sanitizeHar({ har: { log: { version: '1.2', entries: order } }, files: new Map() });
+    assert.equal(s.har.log.entries.length, 1);
+    assert.equal(s.har.log.entries[0].response.content.text, '<html>real</html>');
+  }
+});
+
+test('replay vs live: a blank or thin replay fails even when every request was answered', async () => {
+  const { liveChecks } = await import('../verify.js');
+  assert.deepEqual(liveChecks(900, { elements: 1000 }), { docNotBlank: true, matchesLive: true });
+  assert.equal(liveChecks(2, { elements: 1000 }).docNotBlank, false);
+  assert.equal(liveChecks(300, { elements: 1000 }).matchesLive, false);
+  assert.equal(liveChecks(null, { elements: 1000 }).docNotBlank, false);
+  assert.deepEqual(liveChecks(3, null), { docNotBlank: false, matchesLive: true });
+});

@@ -5,6 +5,8 @@
 //           (a load look takes only the small PNG, after boot: there is no rest state before a load)
 //   end     the viewport at the end of the take: the PNG the crops are cut from (index.js) + a JPEG file
 //   page    scroll looks: one full-page JPEG at the end, at most PAGE_MAX_PX image px tall
+//   mid     scroll looks: a few viewport JPEGs on the way down. A pinned stage is only ever seen like this: the end screen is past
+//           it, and in the full-page picture it is parked with its last state in a place of the capture's own making
 import { PNG } from 'pngjs';
 
 export const JPEG_Q = 70;
@@ -32,7 +34,7 @@ export function viewInPage() {
   };
   try { walk(document); } catch (e) { /* a page that throws on access: no canvases */ }
   const de = document.documentElement;
-  return { w: innerWidth, h: innerHeight, scrollY, dpr: devicePixelRatio, pageW: de.clientWidth, pageH: Math.max(de.scrollHeight, document.body ? document.body.scrollHeight : 0), canvases: out };
+  return { w: innerWidth, h: innerHeight, scrollX, scrollY, dpr: devicePixelRatio, pageW: de.clientWidth, pageH: Math.max(de.scrollHeight, document.body ? document.body.scrollHeight : 0), canvases: out };
 }
 
 const view = (S) => S.evRetry(viewInPage).catch(() => null);
@@ -42,7 +44,7 @@ const rnd = (x) => Math.round(x * 100) / 100;
 export async function shotBefore(S, { file = true } = {}) {
   const t0 = Date.now();
   const v = await view(S); if (!v) return null;
-  const small = await cap(S, { format: 'png', clip: { x: 0, y: 0, width: v.w, height: v.h, scale: SMALL } }).catch(() => null);
+  const small = await cap(S, { format: 'png', clip: { x: v.scrollX || 0, y: v.scrollY || 0, width: v.w, height: v.h, scale: SMALL } }).catch(() => null);
   const jpg = file ? await cap(S, { format: 'jpeg', quality: JPEG_Q }).catch(() => null) : null;
   return { view: v, small, jpg, ms: Date.now() - t0 };
 }
@@ -53,8 +55,20 @@ export async function shotEnd(S) {
   const v = await view(S);
   const png = await cap(S, { format: 'png', captureBeyondViewport: false }).catch(() => null);
   const jpg = await cap(S, { format: 'jpeg', quality: JPEG_Q, captureBeyondViewport: false }).catch(() => null);
-  const small = v ? await cap(S, { format: 'png', clip: { x: 0, y: 0, width: v.w, height: v.h, scale: SMALL } }).catch(() => null) : null;
+  const small = v ? await cap(S, { format: 'png', clip: { x: v.scrollX || 0, y: v.scrollY || 0, width: v.w, height: v.h, scale: SMALL } }).catch(() => null) : null;
   return { view: v, png, jpg, small, ms: Date.now() - t0 };
+}
+
+export const MID_MAX = 6;
+/** Scroll looks: called between wheel steps, keeps a viewport JPEG every sixth of the page (at most MID_MAX, 300 px apart or more). */
+export function midShooter(S, maxScroll, out) {
+  const gap = Math.max(300, (maxScroll || 0) / MID_MAX); let next = gap * 0.5;
+  return async (y) => {
+    if (!(y >= next) || out.length >= MID_MAX) return;
+    next = y + gap;
+    const data = await cap(S, { format: 'jpeg', quality: JPEG_Q, captureBeyondViewport: false }).catch(() => null);
+    if (data) out.push({ data, scrollY: rnd(y) });
+  };
 }
 
 /**

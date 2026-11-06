@@ -10,7 +10,7 @@ import { numOf } from '../analysis/fit/series.js';
 import { NAMED, parseEasing } from '../analysis/fit/eases.js';
 import { cubicBezier } from '../analysis/oracles.js';
 import { springProgress, emaProgress, settleMs } from '../export/curves.js';
-import { familyKind, exportRecord } from '../export/index.js';
+import { familyKind, exportRecord, combineCss } from '../export/index.js';
 import { asExportRecord, exportWord } from '../look/exportword.js';
 import { shapeFn } from '../export/eases.js';
 import { channelWord, followWord } from '../look/words.js';
@@ -149,7 +149,7 @@ const nearest = (pts, T) => { let best = null; for (const p of pts) if (!best ||
  * One curve: recorded and fitted progress on the same axis, plus the property the specimen animates.
  * Returns {axis, span, lead, rec:[[x,p]], fit:[[x,p]], gap, prop, note} (x in ms since t0, or scroll px since s0).
  */
-export function curveOf(rec, rows, inputs = null) {
+export function curveOf(rec, rows, inputs = null, { maxRec = MAX_REC } = {}) {
   if (isStillMap(rec)) return null;
   const fp = fittedProgress(rec, rows);
   const ch = rec.target.channel; const el = String(rec.target.el);
@@ -169,7 +169,7 @@ export function curveOf(rec, rows, inputs = null) {
     const rx = (x) => { const k = 10 ** Math.max(1, 3 - Math.floor(Math.log10(Math.max(1e-9, Math.abs(fp.span))))); return Math.round(x * k) / k; };
     const pts = xOf ? samplesOf(rows, el, ch).map((p) => ({ ...p, x: xOf(p.row) })).filter((p) => Number.isFinite(p.x) && p.x >= lo && p.x <= hi) : [];
     const toPt = (p) => [rx(p.x - fp.s0), r4((p.y - fp.a) / fp.b)];
-    const recPts = thin(pts.sort((a, b) => a.x - b.x), MAX_REC).map(toPt);
+    const recPts = thin(pts.sort((a, b) => a.x - b.x), maxRec).map(toPt);
     // only frames inside the ramp test its start, end and shape: frames before s0 or after s1 sit on the flat ends,
     // which any ramp between the same two values matches (a driver that jumps across the ramp proves nothing). A frame
     // within RAMP_EDGE of an end is an end too (a wheel sum of 0 against a fitted s0 of -0.04 px tests nothing).
@@ -195,7 +195,7 @@ export function curveOf(rec, rows, inputs = null) {
     const own = Number.isFinite(fp.from) && Number.isFinite(fp.to) && Math.abs(fp.to - fp.from) > 1e-9;
     const { from, to, scaled } = own ? { from: fp.from, to: fp.to, scaled: false } : travelOf(pts, (p) => fp.fn(p.T - fp.t0));
     let recPts = [];
-    if (from != null && to != null && Math.abs(to - from) > 1e-9) recPts = thin(pts, MAX_REC).map((p) => [r1(p.T - fp.t0), r4((p.y - from) / (to - from))]);
+    if (from != null && to != null && Math.abs(to - from) > 1e-9) recPts = thin(pts, maxRec).map((p) => [r1(p.T - fp.t0), r4((p.y - from) / (to - from))]);
     const fit = Array.from({ length: FIT_N + 1 }, (_, i) => { const t = -lead + ((fp.span + lead + tail) * i) / FIT_N; return [r1(t), r4(fp.fn(t))]; });
     return { axis: 'time', span: r1(fp.span), lead: r1(lead), rec: recPts, fit, gap: gapOf(recPts, fp.fn), scaled, x0: Number.isFinite(fp.x0) ? fp.x0 : null,
       prop: { ...prop, from: from != null ? r4(from) : null, to: to != null ? r4(to) : null } };
@@ -230,7 +230,7 @@ function gapOf(recPts, fn) {
   let max = 0, at = 0; for (const [x, p] of recPts) { const e = Math.abs(p - fn(x)); if (e > max) { max = e; at = x; } }
   // a gap above 1000 % of the travel (or not finite) is a broken scale, not a measurement: omitted
   if (!Number.isFinite(max) || max > 10) return null;
-  return { maxPct: Math.round(max * 1000) / 10, at: r1(at) };
+  return { maxPct: Math.round(max * 1000) / 10, rawPct: max * 100, at: r1(at) };
 }
 
 /** What the neutral box does in the specimen: move (x), fade, scale or turn; distance is always normalised. */
@@ -280,10 +280,18 @@ function lawCode(line, chans, meta, rate) {
       if (!x.code) { if (!na.has(x.lib)) na.set(x.lib, m.why || (x.accuracy && (x.accuracy.why || x.accuracy.label)) || 'not representable'); continue; }
       const list = per.get(x.lib) || []; per.set(x.lib, list);
       if (list.some((e) => e.channel === it.channel && e.form === (x.form || null))) continue;
-      list.push({ channel: it.channel, chWord: propOf(it.channel).word, form: x.form || null, word: m.word, why: m.why || null, note: x.note || null, code: x.code });
+      list.push({ channel: it.channel, chWord: propOf(it.channel).word, form: x.form || null, word: m.word, why: m.why || null, note: x.note || null, code: x.code, ...(x.decl ? { decl: x.decl, t0: rec.derived && Number.isFinite(rec.derived.t0) ? rec.derived.t0 : null } : {}) });
     }
   }
-  const tabs = LIB_ORDER.filter((l) => per.has(l)).map((l) => ({ lib: l, name: LIB_NAME[l], entries: per.get(l) }));
+  // the css snippets of one law's channels are ONE rule: per-channel rules each set `transition` on the same selector,
+  // so pasting two of them together would animate one property only (export combineCss, as the card page and the CLI)
+  const cssList = per.get('css');
+  if (cssList && cssList.length > 1 && cssList.every((e) => e.decl)) {
+    const known = cssList.every((e) => Number.isFinite(e.t0)); const min = known ? Math.min(...cssList.map((e) => e.t0)) : 0;
+    const c = combineCss(cssList.map((e) => ({ el: 1, id: e.channel, decl: e.decl, delayMs: known ? e.t0 - min : 0 })));
+    if (c.code) per.set('css', [{ channel: cssList.map((e) => e.channel).join(' + '), chWord: [...new Set(cssList.map((e) => e.chWord))].join(' and '), form: null, word: [...new Set(cssList.map((e) => e.word))].join(' / '), why: null, note: 'all the channels in one rule, so it can be pasted as it is', code: c.code }]);
+  }
+  const tabs = LIB_ORDER.filter((l) => per.has(l)).map((l) => ({ lib: l, name: LIB_NAME[l], entries: per.get(l).map(({ decl, t0, ...e }) => e) }));
   const missing = LIB_ORDER.filter((l) => !per.has(l) && na.has(l)).map((l) => ({ lib: l, name: LIB_NAME[l], why: na.get(l) }));
   return { tabs, missing, notes: [...notes] };
 }

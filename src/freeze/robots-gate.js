@@ -20,15 +20,16 @@ export function robotsFetcher({ fetchImpl = globalThis.fetch, timeoutMs = 10000 
  * Split completion candidates into the ones robots.txt allows and the ones it disallows. Only URLs on the site's own hosts
  * are checked (third-party hosts are not the site; they keep their old handling).
  * @param {{url:string, origin?:string}[]} cands
- * @param {{siteUrl:string, robotsText?:(origin:string)=>Promise<string|null|{text:string|null, unreachable?:boolean}>}} o
+ * @param {{siteUrl:string, robotsText?:(origin:string)=>Promise<string|null|{text:string|null, unreachable?:boolean}>, allHosts?:boolean}} o
+ *   allHosts: check another site's URL against that site's robots.txt too (reva scan: every host REVA fetches on its own)
  * @returns {Promise<{allowed:object[], disallowed:{url:string, origin?:string, reason:string, agent:string|null}[]}>}
  */
-export async function robotsFilter(cands, { siteUrl, robotsText = robotsFetcher() } = {}) {
+export async function robotsFilter(cands, { siteUrl, robotsText = robotsFetcher(), allHosts = false } = {}) {
   const allowed = [], disallowed = [];
   for (const c of cands) {
     let o = null;
     try { o = new URL(c.url).origin; } catch { /* not a URL: left to the fetch, which logs the error */ }
-    if (!o || !siteUrl || !sameSite(c.url, siteUrl)) { allowed.push(c); continue; }
+    if (!o || !siteUrl || (!allHosts && !sameSite(c.url, siteUrl))) { allowed.push(c); continue; }
     const r = await robotsText(o);
     const rec = r && typeof r === 'object' ? r : { text: r ?? null, unreachable: false }; // a plain text|null (older callers) still works
     // robots.txt answered 5xx / 429 or not at all: not a disallow (no agent), a "try again later"; the error says which

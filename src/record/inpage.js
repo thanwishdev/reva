@@ -8,7 +8,9 @@
 //   rt : real time; the same sampler runs once per real frame (rAF -> MessageChannel post-frame task).
 //
 // This function is serialised with Function.prototype.toString and must stay self-contained.
-export function wrRuntime(CFG) {
+import { rowEncoder } from './rowcodec.js';
+
+export function wrRuntime(CFG, rowEncoder, scanTracker) {
   if (window.__WR) return;
   const isTop = (() => { try { return window.top === window; } catch { return false; } })();
   const RAF = window.requestAnimationFrame.bind(window);
@@ -16,6 +18,7 @@ export function wrRuntime(CFG) {
   const RST = window.setTimeout.bind(window);
   const RIC0 = window.requestIdleCallback ? window.requestIdleCallback.bind(window) : null;   // native, before the page or the escape wrapper replaces it
   const OD = Date;
+  const JS = JSON.stringify; const GOPD = Object.getOwnPropertyDescriptor; const DP = Object.defineProperty;
   const W = window.__WR = {
     cfg: CFG, isTop, errors: [], escapes: {}, births: [], rows: [], marks: [], mut: [], wheel: [], declared: [],
     c: { timers: 0, rafs: 0, steps: 0, pagePause: 0, pagePlay: 0, pageReverse: 0, pageFinish: 0, pageRate: 0, pageStartTime: 0,
@@ -43,12 +46,34 @@ export function wrRuntime(CFG) {
     F.prototype = O.prototype; Object.setPrototypeOf(F, O);
     try { Object.defineProperty(window, name, { configurable: true, writable: true, value: F }); } catch (e) { err('wrap ' + name + ': ' + e.message); }
   };
-  wrapCtor('Worker', 'worker', 'a Worker has its own clock (performance.now, timers, rAF); hx steps only the top document');
+  // scan: a dedicated worker starts from a bootstrap that runs the WebGL tap first (workergl.js), on this page's virtual clock; a worker
+  // of another origin (which the page could not start) or a page that forbids blob workers starts as it would have
+  if (CFG.scan && typeof window.Worker === 'function' && window.__WR_WORKER_TAP) {
+    const OW = window.Worker; let nW = 0;
+    const F = function (url, opts) {
+      escape('worker', 'a Worker runs its own script; scan takes tap its WebGL and run its clock with the page', url && String(url));
+      if (!new.target) return OW(url, opts);
+      let abs = null; try { abs = new URL(String(url), location.href).href; } catch (e) {}
+      const own = abs && (new URL(abs).origin === location.origin || /^(blob|data):/i.test(abs));
+      if (!own) return new OW(url, opts);
+      try {
+        const C = { t0: CFG.t0 || 0, dt: CFG.dt, epoch: CFG.dateEpoch || 0, k0: W.V ? W.V.k : 0, idBase: 1000 * ++nW, base: abs };
+        const head = '(' + window.__WR_WORKER_TAP + ')(' + JSON.stringify(C) + ');', mk = (s) => URL.createObjectURL(new Blob([s], { type: 'text/javascript' }));
+        const boot = opts && opts.type === 'module' ? 'import ' + JSON.stringify(mk(head)) + ';\nimport ' + JSON.stringify(abs) + ';' : head + '\nimportScripts(' + JSON.stringify(abs) + ');';
+        const w = new OW(mk(boot), opts); W.workerTaps = (W.workerTaps || 0) + 1; return w;
+      } catch (e) { return new OW(url, opts); }
+    };
+    F.prototype = OW.prototype; Object.setPrototypeOf(F, OW);
+    try { Object.defineProperty(window, 'Worker', { configurable: true, writable: true, value: F }); } catch (e) { err('wrap Worker: ' + e.message); }
+  } else wrapCtor('Worker', 'worker', 'a Worker has its own clock (performance.now, timers, rAF); hx steps only the top document');
   wrapCtor('SharedWorker', 'shared-worker', 'a SharedWorker has its own clock; hx steps only the top document');
-  wrapCtor('OffscreenCanvas', 'offscreen-canvas', 'OffscreenCanvas can render from a worker clock that hx does not control');
+  // an OffscreenCanvas made on the page itself (three.js r128 makes a 1x1 one to resize images) draws on this thread: its WebGL is
+  // tapped like any other, so it is said apart from a canvas whose control went to a worker (a shader-transition site, 6 Nov: a false "worker" row)
+  wrapCtor('OffscreenCanvas', 'offscreen-main', 'an OffscreenCanvas made on the page itself: drawn on this thread, its WebGL is recorded like any canvas');
   try {
     const T = HTMLCanvasElement.prototype.transferControlToOffscreen;
-    if (T) HTMLCanvasElement.prototype.transferControlToOffscreen = function (...a) { escape('offscreen-canvas', 'canvas control moved off the main thread; frames come from a clock hx does not control'); return T.apply(this, a); };
+    if (CFG.scan) W.xfer = [];
+    if (T) HTMLCanvasElement.prototype.transferControlToOffscreen = function (...a) { if (W.xfer) W.xfer.push(this); try { if (W.watchEl) W.watchEl(this, 'webgl'); } catch (e) {} escape('offscreen-canvas', 'canvas control moved off the main thread; frames come from a clock hx does not control'); return T.apply(this, a); };
   } catch (e) {}
   try {
     const RIC = window.requestIdleCallback;
@@ -59,7 +84,10 @@ export function wrRuntime(CFG) {
   } catch (e) {}
   try {
     const d = Object.getOwnPropertyDescriptor(Event.prototype, 'timeStamp');
-    if (d && d.get) Object.defineProperty(Event.prototype, 'timeStamp', { configurable: true, get() { if (CFG.lane === 'hx') escape('event-timestamp', 'Event.timeStamp is real time; velocity trackers that read it see real, not virtual, deltas'); return d.get.call(this); } });
+    // a scan take: the event's time on the virtual clock, kept per event (velocity code reads it; a sweep is false without it)
+    const stamps = new WeakMap();
+    if (d && d.get && CFG.scan && CFG.lane === 'hx' && isTop) Object.defineProperty(Event.prototype, 'timeStamp', { configurable: true, get() { let t = stamps.get(this); if (t == null) { t = W.V ? W.V.now : d.get.call(this); stamps.set(this, t); } return t; } });
+    else if (d && d.get) Object.defineProperty(Event.prototype, 'timeStamp', { configurable: true, get() { if (CFG.lane === 'hx') escape('event-timestamp', 'Event.timeStamp is real time; velocity trackers that read it see real, not virtual, deltas'); return d.get.call(this); } });
   } catch (e) {}
   const originOf = (src) => { try { return new URL(src, location.href).origin; } catch { return null; } };
   const seenFrames = new WeakSet();
@@ -163,7 +191,7 @@ export function wrRuntime(CFG) {
   const declOf = (a) => {
     let tm = {}, kf = null;
     try { tm = a.effect.getTiming(); } catch (e) {}
-    try { kf = a.effect.getKeyframes().slice(0, 12).map(f => { const o = {}; for (const [k, v] of Object.entries(f)) if (k !== 'computedOffset') o[k] = typeof v === 'string' ? v.slice(0, 120) : v; return o; }); } catch (e) {}
+    try { kf = a.effect.getKeyframes().slice(0, CFG.scan ? Infinity : 12).map(f => { const o = {}; for (const [k, v] of Object.entries(f)) if (k !== 'computedOffset') o[k] = typeof v === 'string' ? v.slice(0, 120) : v; return o; }); } catch (e) {}
     // an animation on ::before / ::after / ::marker ... belongs to that pseudo-element, not to its host (the descriptor carries the
     // pseudo name, as the element descriptor of a recorded pseudo-element does); View Transition pseudos keep the root as target
     let pse = ''; try { const pe = a.effect && a.effect.pseudoElement; if (pe && /^::(before|after|marker|placeholder|first-letter|first-line|backdrop|selection|file-selector-button)$/.test(pe)) pse = String(pe); } catch (e) {}
@@ -221,9 +249,10 @@ export function wrRuntime(CFG) {
   };
   const watch = (el, why, idArg) => {
     if (!el || el.nodeType !== 1) return; const id = idArg != null ? idArg : idOf(el); if (W.watch.has(id)) return;
-    if (W.watch.size < cap || (why === 'selector' && CFG.capPolicy) || evictFor(el)) { W.watch.set(id, { el, why }); over.delete(id); return; }
+    if (W.watch.size < cap || (why === 'selector' && CFG.capPolicy) || evictFor(el)) { W.watch.set(id, { el, why }); over.delete(id); if (W.selQ) W.selQ.push(id); return; }
     if (over.size < 1e6) over.add(id); W.c.watchOverflow = over.size;
   };
+  W.watchEl = (el, why) => watch(el, why);
   W.watchSelectors = (sels) => { let n = 0; for (const s of sels || []) for (const el of document.querySelectorAll(s)) { watch(el, 'selector'); n++; } return n; };
   // Aim mode (`look --el`, promoted from the spike): only elements matching the aim selectors join the moving set, each
   // when it first gets a style/class write, a --var write or a running animation (the same trigger as the discovery
@@ -242,10 +271,22 @@ export function wrRuntime(CFG) {
       }
     });
   };
+  // Scan: an animation on ::before / ::after is that pseudo-element's own motion, and a scroll or view timeline never reaches W.pin,
+  // so it is born here (DESIGN 3.6). The host stays watched too, as it always was.
+  const PSEUDO = /^::(before|after|marker|placeholder|first-letter|first-line|backdrop|selection|file-selector-button)$/;
+  const scrollBorn = new WeakSet();
+  const scanAnim = (a, t) => {
+    try {
+      const pe = a.effect && a.effect.pseudoElement;
+      if (t && pe && PSEUDO.test(pe)) watch(t, 'animation', pseudoId(t, String(pe)));
+      const tl = a.timeline;
+      if (CFG.births && tl && !(tl instanceof DocumentTimeline) && !scrollBorn.has(a)) { scrollBorn.add(a); W.birth(a, performance.now()); }
+    } catch (e) { err('scan discovery: ' + e.message); }
+  };
   const discover = () => {
     if (CFG.aim) { aimDiscover(); return; }
     if (CFG.discover === false) return;
-    for (const a of document.getAnimations()) { const t = a.effect && a.effect.target; if (t) watch(t, 'animation'); }
+    for (const a of document.getAnimations()) { const t = a.effect && a.effect.target; if (t) watch(t, 'animation'); if (CFG.scan) scanAnim(a, t); }
     for (let i = W._mutSeen || 0; i < W.mut.length; i++) { const el = els[W.mut[i][2]]; if (el) watch(el, 'mutation'); }
     W._mutSeen = W.mut.length;
     for (const id of varsOf.keys()) watch(els[id], 'setProperty');
@@ -312,9 +353,12 @@ export function wrRuntime(CFG) {
     if (cs.backgroundImage && cs.backgroundImage !== 'none') o['ren:bgPos'] = cs.backgroundPosition;
     const mi = cs.maskImage || cs.webkitMaskImage; if (mi && mi !== 'none') o['ren:maskPos'] = cs.maskPosition || cs.webkitMaskPosition;
     if (typeof SVGElement !== 'undefined' && el instanceof SVGElement) { o['ren:fill'] = cs.fill; o['ren:stroke'] = cs.stroke; const d = parseFloat(cs.strokeDashoffset); if (Number.isFinite(d)) o['ren:dash'] = d; }
+    if (W.attrsOf && !ps) { const as = W.attrsOf.get(id); if (as) W.attrChannels(el, id, as, o); }
+    if (W.charsOf && !ps && W.charsOf.has(id)) o['ren:chars'] = W.charsText(el);
     if (!ps) { const n = leadNum(el); if (n != null) o['ren:text'] = n; }
     if (ps) {   // a pseudo-element: no rect, no inline style; its size comes from the computed style when it is a number of px
       const w = parseFloat(cs.width), h = parseFloat(cs.height); if (Number.isFinite(w)) o['ren:bw'] = w; if (Number.isFinite(h)) o['ren:bh'] = h;
+      if (CFG.scan) { const r = el.getBoundingClientRect(); o['ren:bx'] = r.x; o['ren:by'] = r.y; if (!Number.isFinite(w)) o['ren:bw'] = r.width; if (!Number.isFinite(h)) o['ren:bh'] = r.height; }   // a scan frames it by its host's box
       for (const n of CFG.computedVars || []) { const rv = cs.getPropertyValue(n); if (rv !== '') o['ren:' + n] = num(rv); }
       return o;
     }
@@ -341,12 +385,47 @@ export function wrRuntime(CFG) {
   const GLP = [window.WebGLRenderingContext && WebGLRenderingContext.prototype, window.WebGL2RenderingContext && WebGL2RenderingContext.prototype].filter(Boolean);
   if (GLP.length && CFG.glTap !== false) {
     const G = W.glT = { ctxs: [], ctxIdx: new WeakMap(), progs: [], progOf: new WeakMap(), shaders: new WeakMap(), locs: new WeakMap(), vals: {}, mats: {}, keys: 0, mkeys: 0,
-      dropped: { keys: [], arrays: [], matrices: [], programs: 0 }, multi: {}, setFrames: {}, last: {}, frame: 0, fbs: new WeakSet(), fbN: 0, fbBinds: 0, instanced: 0, divisor: 0, cur: new WeakMap(), extW: new WeakSet() };
-    const MAXK = CFG.glMaxKeys || 96, MAXM = 8, MAXSRC = 200000, MAXP = 64, MAXU = 160;
+      dropped: { keys: [], arrays: [], matrices: [], programs: 0, textures: 0, objects: [], states: 0 }, multi: {}, setFrames: {}, last: {}, frame: 0, fbs: new WeakSet(), fbN: 0, fbBinds: 0, instanced: 0, divisor: 0, cur: new WeakMap(), extW: new WeakSet(),
+      // per frame: which program drew how often into which target (pass order); object matrices of every program; texture descriptions
+      fbId: new WeakMap(), fbList: [], curFb: new WeakMap(), draws: {}, seq: 0, objs: {}, okeys: 0, ofk: {}, on: {}, texId: new WeakMap(), texList: [], unit: new WeakMap(), bound: new WeakMap(),
+      // per frame, per program: the blend / depth / cull / scissor state it drew with, as ids into a table of the states seen (sample-and-hold)
+      st: new WeakMap(), blends: {}, states: [], stateIdx: {},
+      // per target (ctx:fb), the programs drawn into it since its last colour clear; per frame, per program, those it was drawn over
+      since: {}, under: {},
+      // scan: uniform arrays past 64 elements (bones: mat4[41]) one key per element, changed elements only, a program whose array holds
+      // the same values as another's this frame named by it; per-draw values one slot per set in the frame; geometry per draw
+      arrs: {}, akeys: 0, arrHash: {}, arrFk: -1, slots: {}, skeys: 0, setN: {}, firstV: {}, bufs: [], bufId: new WeakMap(), boundBuf: new WeakMap(), vaos: new WeakMap(), curVao: new WeakMap(),
+      geoms: [], geomIdx: {}, gdraw: {}, bufStore: {}, bufStoreBytes: 0, abUrl: new WeakMap(), places: {} };
+    // scan caps sized for a big engine (a skinned-mesh WebGL site, 6 Nov: 84 programs, 600 uniform keys, 192 object matrices hit 64 / 320 / 128); values are
+    // sample-and-hold deltas, so a key costs only when it changes
+    const MAXK = CFG.glMaxKeys || (CFG.scan ? 4096 : 96), MAXM = 8, MAXSRC = 200000, MAXP = CFG.scan ? 256 : 64, MAXU = CFG.scan ? 512 : 160;
+    const MAXA = 4096, SLOTS = 32, MAXSL = 2048, MAXG = 512, MAXB = 1024, BUF_KEEP = 262144, BUF_STORE = 16 * 1048576;
+    // object matrices (modelView / model of every program, not only the camera-like first 8): 7 significant digits (a float32 holds
+    // about 7), sample-and-hold like the rest. A program that draws several objects sets its matrix once per object: the n-th set of a
+    // frame is object n (`key#n`, draw order), up to OBJ_SLOTS objects per program
+    const MAXO = CFG.scan ? 4096 : 2 * MAXP, OBJ_SLOTS = CFG.scan ? 32 : 8, MAXT = CFG.scan ? 2048 : 256, SIG = (v) => +(+v).toPrecision(7);
     const TY = { 5126: 'float', 35664: 'vec2', 35665: 'vec3', 35666: 'vec4', 5124: 'int', 35667: 'ivec2', 35668: 'ivec3', 35669: 'ivec4', 5125: 'uint', 35670: 'bool', 35674: 'mat2', 35675: 'mat3', 35676: 'mat4',
       35678: 'sampler2D', 35679: 'sampler3D', 35680: 'samplerCube', 35682: 'sampler2DShadow', 36289: 'sampler2DArray', 36298: 'isampler2D', 36306: 'usampler2D' };
     const noteOnce = (list, k) => { if (list.length < 40 && !list.includes(k)) list.push(k); };
-    const ctxOf = (gl) => { let c = G.ctxIdx.get(gl); if (c == null) { c = G.ctxs.length; G.ctxs.push({ gl, canvas: gl.canvas, v2: !!(window.WebGL2RenderingContext && gl instanceof WebGL2RenderingContext) }); G.ctxIdx.set(gl, c); } return c; };
+    const ctxOf = (gl) => { let c = G.ctxIdx.get(gl); if (c == null) { c = G.ctxs.length; G.ctxs.push({ gl, canvas: gl.canvas, v2: !!(window.WebGL2RenderingContext && gl instanceof WebGL2RenderingContext) }); G.ctxIdx.set(gl, c);
+      // scan: a WebGL canvas is always in the rows (its box, opacity, transform per frame), whatever moves
+      if (CFG.scan && gl.canvas && gl.canvas.nodeType === 1) { try { watch(gl.canvas, 'webgl'); } catch (e) {} } } return c; };
+    // where a canvas sits among the page's layers: its CSS, its stacking parents and what is painted over it (scan, at its first draw
+    // and again at the take's end)
+    const cssOf = (el) => { const cs = getComputedStyle(el); return { position: cs.position, zIndex: cs.zIndex, transform: cs.transform, opacity: +cs.opacity, mixBlendMode: cs.mixBlendMode, pointerEvents: cs.pointerEvents, filter: cs.filter, visibility: cs.visibility, display: cs.display, isolation: cs.isolation }; };
+    const placeOf = (el) => {
+      if (!el || el.nodeType !== 1 || !el.isConnected) return null;
+      const r = el.getBoundingClientRect(), own = cssOf(el), parents = [];
+      for (let p = el.parentElement, n = 0; p && n < 12; p = p.parentElement, n++) { const c = cssOf(p); if (c.position !== 'static' || c.zIndex !== 'auto' || c.opacity < 1 || c.transform !== 'none' || c.isolation === 'isolate' || c.mixBlendMode !== 'normal' || c.filter !== 'none') parents.push({ el: idOf(p), desc: desc(p), ...c }); if (parents.length >= 6) break; }
+      // what is painted over it, at its centre and four inner points: the elements before it in hit order (pointer-events: none is skipped
+      // by hit testing, so an overlay that lets the pointer through is not seen: said by pointerEvents of the canvas and its parents)
+      const over = [], seen = new Set();
+      for (const [fx, fy] of [[0.5, 0.5], [0.2, 0.2], [0.8, 0.2], [0.2, 0.8], [0.8, 0.8]]) {
+        const x = r.left + r.width * fx, y = r.top + r.height * fy; if (x < 0 || y < 0 || x >= innerWidth || y >= innerHeight) continue;
+        for (const e of document.elementsFromPoint(x, y)) { if (e === el) break; if (e === document.documentElement || e === document.body || seen.has(e)) continue; seen.add(e); if (over.length < 12) over.push({ el: idOf(e), desc: desc(e), zIndex: getComputedStyle(e).zIndex }); }
+      }
+      return { box: [r.x, r.y, r.width, r.height].map((v) => Math.round(v * 100) / 100), ...own, parent: el.parentElement ? desc(el.parentElement) : null, index: el.parentElement ? [...el.parentElement.children].indexOf(el) : null, parents, over };
+    };
     const same = (a, b) => { if (typeof a === 'number' || typeof b === 'number') return a === b; if (!a || !b || a.length !== b.length) return false; for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return false; return true; };
     const listU = (p) => { const out = []; try { const gl = p.gl; const n = gl.getProgramParameter(p.p, gl.ACTIVE_UNIFORMS) || 0;
       for (let i = 0; i < Math.min(n, MAXU); i++) { const u = gl.getActiveUniform(p.p, i); if (u) out.push({ name: u.name, type: TY[u.type] || String(u.type), size: u.size }); }
@@ -355,19 +434,59 @@ export function wrRuntime(CFG) {
     // value per object), so its last value is not the uniform's motion
     const store = (bag, key, v) => {
       const fk = W.frameKey();
-      if (G.last[key] === fk) { if (!same(bag[key], v)) G.multi[key] = (G.multi[key] || 0) + 1; }
-      else { G.last[key] = fk; G.setFrames[key] = (G.setFrames[key] || 0) + 1; }
+      if (G.last[key] === fk) {
+        if (!same(bag[key], v)) G.multi[key] = (G.multi[key] || 0) + 1;
+        // scan: a value set again in the same frame is one per draw (an object's opacity, its matrix): each set its own slot, #0 the first
+        if (CFG.scan) { const n = ++G.setN[key]; if (n === 1) slot(key + '#0', G.firstV[key]); if (n < SLOTS) slot(key + '#' + n, v); }
+      }
+      else { G.last[key] = fk; G.setFrames[key] = (G.setFrames[key] || 0) + 1; if (CFG.scan) { G.setN[key] = 0; G.firstV[key] = v; } }
       bag[key] = v;
+    };
+    const slot = (k, v) => { if (!(k in G.slots)) { if (G.skeys >= MAXSL) { noteOnce(G.dropped.keys, k); return; } G.skeys++; } G.slots[k] = Array.isArray(v) ? v.map(SIG) : SIG(v); };
+    // an array uniform past 64 elements (or a mat4 / mat3 array): its elements, n floats each, as keys `name[i]` (7 significant digits)
+    const fnv = (d, off, len) => { let h = 2166136261; for (let i = off; i < off + len; i++) { const x = Math.round(+d[i] * 1e6); h ^= x & 0xffff; h = Math.imul(h, 16777619); h ^= x >>> 16; h = Math.imul(h, 16777619); } return h >>> 0; };
+    const putArr = (key, data, off, total, n) => {
+      if (!data || !(total > 0)) return;
+      const base = key.replace(/\[0\]$/, ''), fk = W.frameKey();
+      if (G.arrFk !== fk) { G.arrFk = fk; G.arrHash = {}; }
+      const h = fnv(data, off, total) + ':' + total, name = base.slice(base.indexOf('|') + 1), same0 = G.arrHash[name + '|' + h];
+      if (same0 && same0 !== base) { if (!(base in G.arrs)) G.akeys++; G.arrs[base] = '=' + same0; return; }
+      G.arrHash[name + '|' + h] = base;
+      if (typeof G.arrs[base] === 'string') G.arrs[base] = null;
+      const m = Math.floor(total / n);
+      for (let i = 0; i < m; i++) {
+        const k = base + '[' + i + ']';
+        if (!(k in G.arrs)) { if (G.akeys >= MAXA) { noteOnce(G.dropped.arrays, base); return; } G.akeys++; }
+        const v = new Array(n); for (let j = 0; j < n; j++) v[j] = SIG(data[off + i * n + j]); G.arrs[k] = v;
+      }
     };
     const putF = (L, data, off, len, n) => {
       if (data == null) return;
       const key = L.key;
       let v;
       if (n === 0) v = Number(data);
-      else { off = off || 0; const total = len || (data.length - off); if (total > n) { noteOnce(G.dropped.arrays, key); return; } v = Array.prototype.slice.call(data, off, off + n).map(Number); if (v.length === 1) v = v[0]; }
+      else { off = off || 0; const total = len || (data.length - off);
+        // scan: an array uniform is one key per element, `name[i]`, so the fit reads it as it reads a vector (DESIGN 3.6: up to 64)
+        if (CFG.scan && total > n && total <= n * 64) { const base = key.replace(/\[0\]$/, ''); for (let i = 0; i * n < total; i++) putF({ key: base + '[' + i + ']' }, Array.prototype.slice.call(data, off + i * n, off + (i + 1) * n), 0, n, n); return; }
+        if (CFG.scan && total > n) { putArr(key, data, off, total, n); return; }
+        if (total > n) { noteOnce(G.dropped.arrays, key); return; } v = Array.prototype.slice.call(data, off, off + n).map(Number); if (v.length === 1) v = v[0]; }
       if (!(key in G.vals)) { if (G.keys >= MAXK) { noteOnce(G.dropped.keys, key); return; } G.keys++; }
       store(G.vals, key, v);
     };
+    // scan: an int is mostly a sampler slot or a flag that never changes, so it takes a key only once it has changed
+    const intFirst = {};
+    const putI = (L, data, off, len, n) => {
+      if (data == null) return;
+      off = off || 0; const total = len || (data.length - off); if (total !== n) { if (total > n) noteOnce(G.dropped.arrays, L.key); return; }
+      let v = Array.prototype.slice.call(data, off, off + n).map(Number); if (n === 1) v = v[0];
+      const key = L.key;
+      if (key in G.vals) { store(G.vals, key, v); return; }
+      if (!(key in intFirst)) { intFirst[key] = v; return; }
+      if (same(intFirst[key], v)) return;
+      if (G.keys >= MAXK) { noteOnce(G.dropped.keys, key); return; } G.keys++;
+      store(G.vals, key, v);
+    };
+    const transposed = (d, off, total) => { const out = new Array(total); for (let b = 0; b < total; b += 16) for (let i = 0; i < 16; i++) out[b + i] = +d[off + b + [0, 4, 8, 12, 1, 5, 9, 13, 2, 6, 10, 14, 3, 7, 11, 15][i]]; return out; };
     const camName = (nm) => /proj|view|cam|mvp/i.test(nm) && !/normal|shadow|light|bone|tex|uv|inverse|inv[A-Z_]/.test(nm);
     const putM = (L, transpose, data, off) => {
       if (!data || data.length < 16) return;
@@ -375,12 +494,97 @@ export function wrRuntime(CFG) {
       if (transpose) m = [0, 4, 8, 12, 1, 5, 9, 13, 2, 6, 10, 14, 3, 7, 11, 15].map((i) => m[i]);
       const key = L.key;
       if (!(key in G.mats)) {
-        const persp = Math.abs(m[11] + 1) < 1e-6 && Math.abs(m[15]) < 1e-6;
-        if (!camName(L.name) && !persp) return;
-        if (G.mkeys >= MAXM) { noteOnce(G.dropped.matrices, key); return; } G.mkeys++;
+        const persp = Math.abs(m[11] + 1) < 1e-6 && Math.abs(m[15]) < 1e-6, cam = camName(L.name) || persp;
+        // not a camera key, or past the camera keys: an object matrix of its program
+        // scan: every other mat4 is kept too (a normal matrix, an inverse view-projection, a camera past the first 8), one key per draw slot
+        if (!cam || G.mkeys >= MAXM) { if (CFG.scan) putO(key, m); else if (cam) noteOnce(G.dropped.matrices, key); return; }
+        G.mkeys++;
       }
       store(G.mats, key, m);
     };
+    // a program's own projection, past the camera keys: with its object matrix it puts the object on the screen
+    const projName = (nm) => /^(projectionMatrix|uProjection|u_projection|uProjectionMatrix|u_projectionMatrix)$/.test(nm);
+    const objName = (nm) => /^(modelViewMatrix|modelMatrix|uModelViewMatrix|uModelMatrix|u_modelViewMatrix|u_modelMatrix|uModel|u_model|uMV|u_mv|worldMatrix|uWorld|u_world)$/.test(nm);
+    const putO = (key, m) => {
+      const fk = W.frameKey(); let n;
+      if (G.ofk[key] === fk) n = ++G.on[key]; else { G.ofk[key] = fk; n = G.on[key] = 0; }
+      if (n >= OBJ_SLOTS) { if (n === OBJ_SLOTS) noteOnce(G.dropped.objects, key); return; }
+      const k = n ? key + '#' + n : key;
+      if (!(k in G.objs)) { if (G.okeys >= MAXO) { noteOnce(G.dropped.objects, k); return; } G.okeys++; }
+      G.objs[k] = m.map(SIG);
+    };
+    // a draw: its program, how many times this frame, the order it first drew in, the targets it drew into (0 = the canvas)
+    const fbOf = (fb) => { let id = G.fbId.get(fb); if (id == null) { id = G.fbList.length + 1; G.fbId.set(fb, id); G.fbList.push({ id, ctx: null, tex: [], w: null, h: null }); } return id; };
+    const TEX_FOR = { sampler2D: 3553, sampler2DShadow: 3553, isampler2D: 3553, usampler2D: 3553, samplerCube: 34067, sampler3D: 32879, sampler2DArray: 35866 };
+    const samplersOf = (p) => { if (p.samplers) return p.samplers; const list = []; try { const gl = p.gl, n = gl.getProgramParameter(p.p, gl.ACTIVE_UNIFORMS) || 0;
+      for (let i = 0; i < Math.min(n, MAXU); i++) { const u = gl.getActiveUniform(p.p, i); const t = u && TY[u.type]; if (t && TEX_FOR[t]) list.push({ name: u.name.replace(/\[0\]$/, ''), target: TEX_FOR[t] }); } } catch (e) {}
+      return (p.samplers = list); };
+    // the state a draw composites with: blend (on, equation rgb / alpha, src rgb / alpha, dst rgb / alpha), depth (test, write, func),
+    // cull (on, face), scissor (on), colour mask. Kept per context from the calls that change it (WebGL defaults to start), interned
+    // once per change: a draw costs one lookup
+    const MAXS = 64;
+    const stOf = (gl) => { let s = G.st.get(gl); if (!s) G.st.set(gl, s = { b: 0, eq: [32774, 32774], f: [1, 0, 1, 0], dt: 0, dw: 1, df: 513, cu: 0, cf: 1029, sc: 0, cm: [1, 1, 1, 1], sid: null }); return s; };
+    const sidOf = (gl) => {
+      const s = stOf(gl); if (s.sid != null) return s.sid;
+      const sig = [s.b, s.b ? s.eq.join(',') : '', s.b ? s.f.join(',') : '', s.dt, s.dw, s.df, s.cu, s.cf, s.sc, s.cm.join('')].join('|');
+      let id = G.stateIdx[sig];
+      if (id == null) {
+        if (G.states.length >= MAXS) { G.dropped.states++; return (s.sid = 0); }
+        id = G.states.length + 1; G.stateIdx[sig] = id;
+        G.states.push({ id, blend: s.b ? { eq: s.eq.slice(), src: [s.f[0], s.f[2]], dst: [s.f[1], s.f[3]] } : null, depth: { test: !!s.dt, write: !!s.dw, func: s.df }, cull: s.cu ? s.cf : null, scissor: !!s.sc, colorMask: s.cm.slice() });
+      }
+      return (s.sid = id);
+    };
+    const CAPS = { 3042: 'b', 2929: 'dt', 2884: 'cu', 3089: 'sc' };
+    // a draw's geometry, interned: program, mode, counts, index type, instances and the attribute layout (by the program's attribute names)
+    const attrsOf = (p) => { if (p.attrNames) return p.attrNames; const out = {}; try { const gl = p.gl, n = gl.getProgramParameter(p.p, 35721) || 0;
+      for (let i = 0; i < Math.min(n, 32); i++) { const a = gl.getActiveAttrib(p.p, i); if (!a) continue; const loc = gl.getAttribLocation(p.p, a.name); if (loc >= 0) out[loc] = { name: a.name, glslType: TY[a.type] || String(a.type), size: a.size }; } } catch (e) {} return (p.attrNames = out); };
+    const geomOf = (gl, p, geo) => {
+      const v = G.vaoState ? G.vaoState(gl) : null; if (!v) return 0;
+      // an engine without vertex arrays sets its attributes again before each draw: the layout, not the call count, names a geometry
+      if (v.sigVer !== v.ver) { v.sig = JSON.stringify([v.attrs, v.on, v.div || null, v.index ? v.index.id : null]); v.sigVer = v.ver; }
+      const key = p.id + '|' + v.sig + '|' + geo.mode + '|' + geo.count + '|' + (geo.type || 0) + '|' + (geo.offset || 0) + '|' + (geo.first || 0) + '|' + (geo.inst || 0);
+      let id = G.geomIdx[key]; if (id !== undefined) return id;
+      if (G.geoms.length >= MAXG) { G.dropped.geometries = (G.dropped.geometries || 0) + 1; return (G.geomIdx[key] = 0); }
+      const names = attrsOf(p), attribs = [];
+      for (const loc of Object.keys(names)) { const a = v.on[loc] ? v.attrs[loc] : null, b = a && a.buffer ? G.bufs[a.buffer - 1] : null;
+        attribs.push({ name: names[loc].name, glslType: names[loc].glslType, location: +loc, ...(a ? { size: a.size, type: a.type, normalized: a.normalized, ...(a.integer ? { integer: true } : {}), stride: a.stride, offset: a.offset, buffer: a.buffer, ...(v.div && v.div[loc] ? { divisor: v.div[loc] } : {}), ...(b ? { bufferBytes: b.size, hash: b.hash } : {}) } : { constant: true }) }); }
+      const ib = geo.type ? v.index : null;
+      id = G.geoms.length + 1; G.geomIdx[key] = id;
+      G.geoms.push({ id, program: 'p' + p.id, mode: geo.mode, count: geo.count, ...(geo.first ? { first: geo.first } : {}), ...(geo.type ? { indexType: geo.type, indexOffset: geo.offset || 0, indexBuffer: ib ? ib.id : null, ...(ib ? { indexBytes: ib.size, indexHash: ib.hash } : {}) } : {}), instances: geo.inst || 0, attribs });
+      return id;
+    };
+    const drawn = (gl, geo) => {
+      const p = G.cur.get(gl); if (!p) return;
+      const k = 'p' + p.id, fb = G.curFb.get(gl) || 0;
+      // the geometry of each draw, in draw order (up to SLOTS a frame), so draw n pairs with the n-th slot of its per-draw values
+      // (a WebGL gallery site, 6 Nov: one page draws 7 meshes twice a frame; a list of distinct ids could not say which matrix went with which mesh)
+      if (geo) { try { const gid = geomOf(gl, p, geo); if (gid) { const g = G.gdraw[k]; if (g === undefined) G.gdraw[k] = gid; else if (typeof g === 'number') G.gdraw[k] = [g, gid]; else if (g.length < SLOTS) g.push(gid); } } catch (e) {} }
+      // the canvas drew: its frame, and how many frames it drew in (an experience that loads before it draws is waited for)
+      if (!fb) { const fk = W.frameKey(); if (G.canvasK !== fk) { G.canvasK = fk; G.canvasFrames = (G.canvasFrames || 0) + 1; } }
+      if (!fb && G.places[p.ctx] === undefined) { G.places[p.ctx] = null; try { G.places[p.ctx] = { T: W.V ? W.V.now : null, ...placeOf(gl.canvas) }; } catch (e) {} }
+      let d = G.draws[k]; if (!d) d = G.draws[k] = [0, G.seq++];
+      d[0]++; if (d.indexOf(fb, 2) < 0) d.push(fb);
+      // what it is drawn over: the programs that drew into this target since its colour was last cleared (a target keeps its
+      // list across frames, as its pixels stay; the canvas starts each frame empty)
+      const sk = p.ctx + ':' + fb, list = G.since[sk] || (G.since[sk] = []);
+      if (list.indexOf(p.id) < 0) { if (list.length) { const u = G.under[k]; if (!u) G.under[k] = list.slice(); else for (const q of list) if (u.indexOf(q) < 0 && u.length < 32) u.push(q); } if (list.length < 32) list.push(p.id); }
+      const sid = sidOf(gl), b = G.blends[k];
+      if (b === undefined) G.blends[k] = sid; else if (b !== sid) { if (typeof b === 'number') G.blends[k] = [b, sid]; else if (b.indexOf(sid) < 0 && b.length < 8) b.push(sid); }
+      const ss = samplersOf(p); if (!ss.length) return;
+      const units = G.bound.get(gl); if (!units) return;
+      for (const sm of ss) { const u = (p.ints && p.ints[sm.name]) || 0, t = units[u + '|' + sm.target]; if (t && t.sampled.length < 16) { const by = 'p' + p.id + '|' + sm.name; if (t.sampled.indexOf(by) < 0) t.sampled.push(by); } }
+    };
+    const srcKind = (x) => { if (x == null) return 'empty'; if (ArrayBuffer.isView(x)) return 'data'; const n = x.constructor && x.constructor.name; return n === 'HTMLImageElement' ? 'image' : n === 'HTMLCanvasElement' || n === 'OffscreenCanvas' ? 'canvas' : n === 'HTMLVideoElement' ? 'video' : n === 'ImageBitmap' ? 'bitmap' : n === 'ImageData' ? 'imagedata' : typeof x === 'number' ? 'buffer' : 'other'; };
+    const srcSize = (x) => { try { if (!x || ArrayBuffer.isView(x) || typeof x === 'number') return [null, null]; return [x.naturalWidth || x.videoWidth || x.width || null, x.naturalHeight || x.videoHeight || x.height || null]; } catch (e) { return [null, null]; } };
+    const boundTex = (gl, target) => { const units = G.bound.get(gl); if (!units) return null; const t = target >= 34069 && target <= 34074 ? 34067 : target; return units[((G.unit.get(gl) || 0)) + '|' + t] || null; };
+    // the file a buffer's bytes came from: fetch / XHR array buffers are tagged with their URL, and a slice keeps the tag (glTF
+    // loaders slice a buffer view out of the file). Read-only: every call returns what it returned before.
+    if (CFG.scan) {
+      try { const oab = Response.prototype.arrayBuffer; Response.prototype.arrayBuffer = function () { const url = this.url; return oab.call(this).then((ab) => { try { if (url) G.abUrl.set(ab, url); } catch (e) {} return ab; }); }; } catch (e) {}
+      try { const d = Object.getOwnPropertyDescriptor(XMLHttpRequest.prototype, 'response'); if (d && d.get) Object.defineProperty(XMLHttpRequest.prototype, 'response', { configurable: true, enumerable: d.enumerable, get() { const r = d.get.call(this); try { if (r instanceof ArrayBuffer && !G.abUrl.has(r)) G.abUrl.set(r, this.responseURL); } catch (e) {} return r; } }); } catch (e) {}
+      try { const os = ArrayBuffer.prototype.slice; ArrayBuffer.prototype.slice = function () { const r = os.apply(this, arguments); try { const u = G.abUrl.get(this); if (u) G.abUrl.set(r, u); } catch (e) {} return r; }; } catch (e) {}
+    }
     for (const P of GLP) {
       const wrap = (fn, make) => { const o = P[fn]; if (typeof o === 'function') P[fn] = make(o); };
       wrap('createShader', (o) => function (type) { const sh = o.call(this, type); try { if (sh) G.shaders.set(sh, { type, src: null }); } catch (e) {} return sh; });
@@ -394,39 +598,140 @@ export function wrRuntime(CFG) {
       wrap('getUniformLocation', (o) => function (p, name) { const loc = o.call(this, p, name); try { const i = loc && G.progOf.get(p); if (i) G.locs.set(loc, { info: i, name: String(name), key: 'p' + i.id + '|' + String(name) }); } catch (e) {} return loc; });
       for (const [fn, n] of [['uniform1f', 0], ['uniform2f', 2], ['uniform3f', 3], ['uniform4f', 4]]) wrap(fn, (o) => function (loc, ...a) { try { const L = loc && G.locs.get(loc); if (L) putF(L, n === 0 ? a[0] : a.slice(0, n), 0, n || 1, n); } catch (e) {} return o.call(this, loc, ...a); });
       for (const [fn, n] of [['uniform1fv', 1], ['uniform2fv', 2], ['uniform3fv', 3], ['uniform4fv', 4]]) wrap(fn, (o) => function (loc, data, off, len) { try { const L = loc && G.locs.get(loc); if (L) putF(L, data, off, len, n); } catch (e) {} return o.apply(this, arguments); });
-      wrap('uniformMatrix4fv', (o) => function (loc, tr, data, off) { try { const L = loc && G.locs.get(loc); if (L) putM(L, tr, data, off); } catch (e) {} return o.apply(this, arguments); });
-      wrap('bindFramebuffer', (o) => function (t, fb) { try { if (fb) { G.fbBinds++; if (!G.fbs.has(fb)) { G.fbs.add(fb); G.fbN++; } } } catch (e) {} return o.call(this, t, fb); });
+      if (CFG.scan) {
+        for (const [fn, n] of [['uniform1i', 1], ['uniform2i', 2], ['uniform3i', 3], ['uniform4i', 4], ['uniform1ui', 1], ['uniform2ui', 2], ['uniform3ui', 3], ['uniform4ui', 4]]) wrap(fn, (o) => function (loc, ...a) { try { const L = loc && G.locs.get(loc); if (L) putI(L, a, 0, n, n); } catch (e) {} return o.call(this, loc, ...a); });
+        for (const [fn, n] of [['uniform1iv', 1], ['uniform2iv', 2], ['uniform3iv', 3], ['uniform4iv', 4], ['uniform1uiv', 1], ['uniform2uiv', 2], ['uniform3uiv', 3], ['uniform4uiv', 4]]) wrap(fn, (o) => function (loc, data, off, len) { try { const L = loc && G.locs.get(loc); if (L) putI(L, data, off, len, n); } catch (e) {} return o.apply(this, arguments); });
+        // a 3x3 is its three columns, the vectors the fit can read
+        wrap('uniformMatrix3fv', (o) => function (loc, tr, data, off, len) { try { const L = loc && G.locs.get(loc); if (L) putF(L, data, off, len || (data.length - (off || 0)), 3); } catch (e) {} return o.apply(this, arguments); });
+      }
+      wrap('uniformMatrix4fv', (o) => function (loc, tr, data, off, len) { try { const L = loc && G.locs.get(loc); if (L) { const total = len || (data ? data.length - (off || 0) : 0);
+        if (CFG.scan && total > 16) putArr(L.key, tr ? transposed(data, off || 0, total) : data, tr ? 0 : off || 0, total, 16); else putM(L, tr, data, off); } } catch (e) {} return o.apply(this, arguments); });
+      wrap('bindFramebuffer', (o) => function (t, fb) { try { if (fb) { G.fbBinds++; if (!G.fbs.has(fb)) { G.fbs.add(fb); G.fbN++; } } if (CFG.scan && t !== 36008) G.curFb.set(this, fb ? fbOf(fb) : 0); } catch (e) {} return o.call(this, t, fb); });
+      if (CFG.scan) {
+        // a draw and its geometry: mode, counts, the index type, instances (drawArrays(mode, first, count); drawElements(mode, count, type, offset);
+        // ...Instanced(..., instances); drawRangeElements(mode, start, end, count, type, offset))
+        const GEO = { drawArrays: (a) => ({ mode: a[0], first: a[1], count: a[2] }), drawElements: (a) => ({ mode: a[0], count: a[1], type: a[2], offset: a[3] }),
+          drawArraysInstanced: (a) => ({ mode: a[0], first: a[1], count: a[2], inst: a[3] }), drawElementsInstanced: (a) => ({ mode: a[0], count: a[1], type: a[2], offset: a[3], inst: a[4] }),
+          drawRangeElements: (a) => ({ mode: a[0], count: a[3], type: a[4], offset: a[5] }) };
+        for (const fn of Object.keys(GEO)) wrap(fn, (o) => function () { try { drawn(this, GEO[fn](arguments)); } catch (e) {} return o.apply(this, arguments); });
+        // buffers: size, usage, a content hash per upload, the contents of small ones once per hash, the file a big one came from
+        const bufInfo = (b) => b && G.bufId.get(b);
+        const bytesOf = (d, off, len) => { if (d == null || typeof d === 'number') return null; let u8 = null;
+          if (d instanceof ArrayBuffer) u8 = new Uint8Array(d); else if (ArrayBuffer.isView(d)) { const el = d.BYTES_PER_ELEMENT || 1; u8 = new Uint8Array(d.buffer, d.byteOffset + (off || 0) * el, len ? len * el : d.byteLength - (off || 0) * el); }
+          return u8; };
+        const fnvBytes = (u8) => { let h = 2166136261; const n = u8.length, w = n >> 2, v32 = (u8.byteOffset & 3) === 0 ? new Uint32Array(u8.buffer, u8.byteOffset, w) : null;
+          if (v32) { for (let i = 0; i < w; i++) { h ^= v32[i]; h = Math.imul(h, 16777619); } for (let i = w << 2; i < n; i++) { h ^= u8[i]; h = Math.imul(h, 16777619); } }
+          else for (let i = 0; i < n; i++) { h ^= u8[i]; h = Math.imul(h, 16777619); }
+          return ((h >>> 0).toString(16).padStart(8, '0')) + ':' + n; };
+        const keep = (i, u8, hash) => { if (u8.length > BUF_KEEP) return; if (hash in G.bufStore) { i.kept = true; return; } if (G.bufStoreBytes + u8.length > BUF_STORE) { i.notKept = 'past the 16 MB store of a take'; return; }
+          let bin = ''; for (let j = 0; j < u8.length; j += 8192) bin += String.fromCharCode.apply(null, u8.subarray(j, j + 8192)); G.bufStore[hash] = btoa(bin); G.bufStoreBytes += u8.length; i.kept = true; };
+        wrap('createBuffer', (o) => function () { const b = o.call(this); try { if (b) { if (G.bufs.length < MAXB) { const i = { id: G.bufs.length + 1, ctx: ctxOf(this), target: null, size: null, usage: null, hash: null, hashes: [], uploads: 0, updates: 0, url: null, kept: false }; G.bufs.push(i); G.bufId.set(b, i); } else G.dropped.buffers = (G.dropped.buffers || 0) + 1; } } catch (e) {} return b; });
+        wrap('bindBuffer', (o) => function (target, b) { try { let m = G.boundBuf.get(this); if (!m) G.boundBuf.set(this, m = {}); const i = bufInfo(b) || null; m[target] = i; if (i && i.target == null) i.target = target;
+          // the element buffer is the vertex array's state
+          if (target === 34963) { const v = vaoState(this); v.index = i; v.ver++; } } catch (e) {} return o.call(this, target, b); });
+        wrap('bufferData', (o) => function (target, d, usage, off, len) { try { const i = (G.boundBuf.get(this) || {})[target]; if (i) { i.uploads++; i.usage = usage;
+          const u8 = bytesOf(d, off, len); if (u8) { i.size = u8.length; const h = fnvBytes(u8); i.hash = h; if (i.hashes.length < 4 && i.hashes.indexOf(h) < 0) i.hashes.push(h); keep(i, u8, h); const url = G.abUrl.get(u8.buffer); if (url && !i.url) i.url = url; } else if (typeof d === 'number') { i.size = d; i.hash = null; } } } catch (e) {} return o.apply(this, arguments); });
+        wrap('bufferSubData', (o) => function (target, dstOff, d, off, len) { try { const i = (G.boundBuf.get(this) || {})[target]; if (i) { i.updates++; const u8 = bytesOf(d, off, len); if (u8) { const h = fnvBytes(u8); i.lastSub = { at: dstOff, hash: h }; if (i.hashes.length < 4 && i.updates <= 4) keep(i, u8, h); } } } catch (e) {} return o.apply(this, arguments); });
+        // vertex arrays: the attribute layout a draw reads (WebGL 2 and OES_vertex_array_object); the default one per context
+        const vaoState = (gl) => { const cur = G.curVao.get(gl) || gl; let v = G.vaos.get(cur); if (!v) G.vaos.set(cur, v = { id: G.vaos.n = (G.vaos.n || 0) + 1, attrs: {}, on: {}, index: null, ver: 0 }); return v; };
+        G.vaoState = vaoState;
+        wrap('bindVertexArray', (o) => function (a) { try { G.curVao.set(this, a || null); } catch (e) {} return o.call(this, a); });
+        wrap('vertexAttribPointer', (o) => function (idx, size, type, norm, stride, off) { try { const v = vaoState(this), b = (G.boundBuf.get(this) || {})[34962] || null; v.attrs[idx] = { size, type, normalized: !!norm, stride, offset: off, buffer: b ? b.id : null }; v.ver++; } catch (e) {} return o.apply(this, arguments); });
+        wrap('vertexAttribIPointer', (o) => function (idx, size, type, stride, off) { try { const v = vaoState(this), b = (G.boundBuf.get(this) || {})[34962] || null; v.attrs[idx] = { size, type, integer: true, stride, offset: off, buffer: b ? b.id : null }; v.ver++; } catch (e) {} return o.apply(this, arguments); });
+        wrap('enableVertexAttribArray', (o) => function (idx) { try { const v = vaoState(this); v.on[idx] = 1; v.ver++; } catch (e) {} return o.call(this, idx); });
+        wrap('disableVertexAttribArray', (o) => function (idx) { try { const v = vaoState(this); delete v.on[idx]; v.ver++; } catch (e) {} return o.call(this, idx); });
+        wrap('vertexAttribDivisor', (o) => function (idx, d) { try { const v = vaoState(this); (v.div || (v.div = {}))[idx] = d; v.ver++; } catch (e) {} return o.call(this, idx, d); });
+        // composite state: only the calls that change it (an engine caches its state, so these are few per frame)
+        const setSt = (gl, f) => { const s = stOf(gl); f(s); s.sid = null; };
+        wrap('clear', (o) => function (mask) { try { if (mask & 16384) { const c = G.ctxIdx.get(this); if (c != null) G.since[c + ':' + (G.curFb.get(this) || 0)] = []; } } catch (e) {} return o.call(this, mask); });
+        wrap('enable', (o) => function (cap) { try { const c = CAPS[cap]; if (c) setSt(this, (s) => { s[c] = 1; }); } catch (e) {} return o.call(this, cap); });
+        wrap('disable', (o) => function (cap) { try { const c = CAPS[cap]; if (c) setSt(this, (s) => { s[c] = 0; }); } catch (e) {} return o.call(this, cap); });
+        wrap('blendEquation', (o) => function (m) { try { setSt(this, (s) => { s.eq = [m, m]; }); } catch (e) {} return o.call(this, m); });
+        wrap('blendEquationSeparate', (o) => function (r, a) { try { setSt(this, (s) => { s.eq = [r, a]; }); } catch (e) {} return o.call(this, r, a); });
+        wrap('blendFunc', (o) => function (sf, df) { try { setSt(this, (s) => { s.f = [sf, df, sf, df]; }); } catch (e) {} return o.call(this, sf, df); });
+        wrap('blendFuncSeparate', (o) => function (sr, dr, sa, da) { try { setSt(this, (s) => { s.f = [sr, dr, sa, da]; }); } catch (e) {} return o.call(this, sr, dr, sa, da); });
+        wrap('depthMask', (o) => function (f) { try { setSt(this, (s) => { s.dw = f ? 1 : 0; }); } catch (e) {} return o.call(this, f); });
+        wrap('depthFunc', (o) => function (f) { try { setSt(this, (s) => { s.df = f; }); } catch (e) {} return o.call(this, f); });
+        wrap('cullFace', (o) => function (m) { try { setSt(this, (s) => { s.cf = m; }); } catch (e) {} return o.call(this, m); });
+        wrap('colorMask', (o) => function (r, g, b, a) { try { setSt(this, (s) => { s.cm = [r ? 1 : 0, g ? 1 : 0, b ? 1 : 0, a ? 1 : 0]; }); } catch (e) {} return o.call(this, r, g, b, a); });
+        // sampler units: an int a program sets on a sampler says which texture unit it reads (default 0)
+        wrap('uniform1i', (o) => function (loc, v) { try { const L = loc && G.locs.get(loc); if (L) (L.info.ints || (L.info.ints = {}))[L.name.replace(/\[0\]$/, '')] = v; } catch (e) {} return o.call(this, loc, v); });
+        wrap('createTexture', (o) => function () { const t = o.call(this); try { if (t) { if (G.texList.length < MAXT) { const i = { id: G.texList.length + 1, ctx: ctxOf(this), target: null, w: null, h: null, internalFormat: null, format: null, type: null, source: null, uploads: 0, updates: 0, levels: 0, fb: null, sampled: [] }; G.texList.push(i); G.texId.set(t, i); } else G.dropped.textures++; } } catch (e) {} return t; });
+        wrap('activeTexture', (o) => function (u) { try { G.unit.set(this, u - 33984); } catch (e) {} return o.call(this, u); });
+        wrap('bindTexture', (o) => function (target, t) { try { let units = G.bound.get(this); if (!units) G.bound.set(this, units = {}); const i = t ? G.texId.get(t) : null; units[(G.unit.get(this) || 0) + '|' + target] = i || null; if (i && i.target == null) i.target = target; } catch (e) {} return o.call(this, target, t); });
+        const upload = (gl, target, level, ifmt, w, h, fmt, type, src) => { const i = boundTex(gl, target); if (!i) return; if (level === 0) { if (w != null) i.w = w; if (h != null) i.h = h; i.internalFormat = ifmt; i.format = fmt; i.type = type; i.source = srcKind(src); i.uploads++; } else i.levels = Math.max(i.levels, level); };
+        wrap('texImage2D', (o) => function (target, level, ifmt) { try { const a = arguments;
+          if (a.length >= 8 && typeof a[3] === 'number' && typeof a[4] === 'number') upload(this, target, level, ifmt, a[3], a[4], a[6], a[7], a.length > 8 ? a[8] : null);
+          else { const [w, h] = srcSize(a[5]); upload(this, target, level, ifmt, w, h, a[3], a[4], a[5]); } } catch (e) {} return o.apply(this, arguments); });
+        wrap('texImage3D', (o) => function (target, level, ifmt, w, h) { try { upload(this, target, level, ifmt, w, h, arguments[7], arguments[8], arguments[9]); } catch (e) {} return o.apply(this, arguments); });
+        wrap('texStorage2D', (o) => function (target, levels, ifmt, w, h) { try { const i = boundTex(this, target); if (i) { i.w = w; i.h = h; i.internalFormat = ifmt; i.source = i.source || 'storage'; i.levels = levels; } } catch (e) {} return o.apply(this, arguments); });
+        wrap('texSubImage2D', (o) => function (target) { try { const i = boundTex(this, target); if (i) { i.updates++; const a = arguments, src = a.length >= 9 ? a[8] : a[6]; if (!i.source || i.source === 'storage' || i.source === 'empty') i.source = srcKind(src); } } catch (e) {} return o.apply(this, arguments); });
+        wrap('framebufferTexture2D', (o) => function (target, att, textarget, t, level) { try { if (target !== 36008 && t) { const i = G.texId.get(t), id = G.curFb.get(this); if (i && id) { i.fb = id; const f = G.fbList[id - 1]; f.ctx = ctxOf(this); if (f.tex.indexOf(i.id) < 0 && f.tex.length < 8) f.tex.push(i.id); f.w = i.w; f.h = i.h; } } } catch (e) {} return o.apply(this, arguments); });
+      }
       const inst = (o) => function () { try { G.instanced++; const c = G.cur.get(this); if (c) c.inst++; } catch (e) {} return o.apply(this, arguments); };
       wrap('drawArraysInstanced', inst); wrap('drawElementsInstanced', inst);
       wrap('vertexAttribDivisor', (o) => function (i, d) { if (d) G.divisor++; return o.call(this, i, d); });
       wrap('getExtension', (o) => function (name) { const x = o.call(this, name); try {
         if (x && /ANGLE_instanced_arrays/i.test(name) && !G.extW.has(x)) { G.extW.add(x); const gl = this;
-          for (const f of ['drawArraysInstancedANGLE', 'drawElementsInstancedANGLE']) { const of = x[f]; if (typeof of === 'function') x[f] = function () { G.instanced++; const c = G.cur.get(gl); if (c) c.inst++; return of.apply(this, arguments); }; }
-          const od = x.vertexAttribDivisorANGLE; if (typeof od === 'function') x.vertexAttribDivisorANGLE = function (i, d) { if (d) G.divisor++; return od.apply(this, arguments); }; }
+          for (const f of ['drawArraysInstancedANGLE', 'drawElementsInstancedANGLE']) { const of = x[f]; if (typeof of === 'function') x[f] = function () { G.instanced++; const c = G.cur.get(gl); if (c) c.inst++; if (CFG.scan) { try { const a = arguments; drawn(gl, f === 'drawArraysInstancedANGLE' ? { mode: a[0], first: a[1], count: a[2], inst: a[3] } : { mode: a[0], count: a[1], type: a[2], offset: a[3], inst: a[4] }); } catch (e) {} } return of.apply(this, arguments); }; }
+          const od = x.vertexAttribDivisorANGLE; if (typeof od === 'function') x.vertexAttribDivisorANGLE = function (i, d) { if (d) G.divisor++; try { if (CFG.scan && G.vaoState) { const v = G.vaoState(gl); (v.div || (v.div = {}))[i] = d; v.ver++; } } catch (e) {} return od.apply(this, arguments); }; }
+        if (x && CFG.scan && /OES_vertex_array_object/i.test(name) && !G.extW.has(x)) { G.extW.add(x); const gl = this, ob = x.bindVertexArrayOES; if (typeof ob === 'function') x.bindVertexArrayOES = function (a) { try { G.curVao.set(gl, a || null); } catch (e) {} return ob.apply(this, arguments); }; }
       } catch (e) {} return x; });
     }
+    /** When a canvas last drew (frame key) and in how many frames it drew. */
+    W.glCanvas = () => ({ k: G.canvasK == null ? -1 : G.canvasK, frames: G.canvasFrames || 0, contexts: G.ctxs.length });
+    /** The contents of the small buffers (<= 256 KB), once per content hash, base64: one JSON string (session tail, series glBuffers). */
+    W.glBuffers = () => JSON.stringify(G.bufStore);
     /** Everything read from the WebGL calls (session tail): contexts, programs with sources and uniform lists, counters. */
     W.glInfo = () => ({
-      contexts: G.ctxs.map((c, i) => { const el = c.canvas && c.canvas.nodeType === 1 ? c.canvas : null; return { id: i, webgl2: c.v2, el: el ? idOf(el) : null, offscreen: !el, width: c.canvas ? c.canvas.width : null, height: c.canvas ? c.canvas.height : null }; }),
-      programs: G.progs.map((p) => ({ id: p.id, ctx: p.ctx, vs: p.vs, fs: p.fs, vsLen: p.vsLen, fsLen: p.fsLen, links: p.links, uses: p.uses, instancedDraws: p.inst, deleted: p.deleted, uniforms: p.uniforms || listU(p) })),
-      counters: { frames: G.frame, framebufferBinds: G.fbBinds, framebuffers: G.fbN, instancedDraws: G.instanced, attribDivisors: G.divisor, multi: G.multi, setFrames: G.setFrames, dropped: G.dropped, maxKeys: MAXK, maxMatrices: MAXM },
+      contexts: G.ctxs.map((c, i) => { const el = c.canvas && c.canvas.nodeType === 1 ? c.canvas : null; let end = null; if (CFG.scan && el) { try { end = placeOf(el); } catch (e) {} }
+        return { id: i, webgl2: c.v2, el: el ? idOf(el) : null, offscreen: !el, width: c.canvas ? c.canvas.width : null, height: c.canvas ? c.canvas.height : null, ...(CFG.scan ? { place: { firstDraw: G.places[i] || null, end } } : {}) }; }),
+      // ints: every int / sampler a program set (a value set once is no key in the rows: the recorder's int rule)
+      programs: G.progs.map((p) => { const pre = 'p' + p.id + '|', ints = {}; for (const k in intFirst) if (k.startsWith(pre)) ints[k.slice(pre.length)] = intFirst[k]; if (p.ints) Object.assign(ints, p.ints);
+        return { id: p.id, ctx: p.ctx, vs: p.vs, fs: p.fs, vsLen: p.vsLen, fsLen: p.fsLen, links: p.links, uses: p.uses, instancedDraws: p.inst, deleted: p.deleted, uniforms: p.uniforms || listU(p), ...(CFG.scan ? { ints, attributes: Object.values(attrsOf(p)) } : {}) }; }),
+      ...(CFG.scan ? { transferred: (W.xfer || []).map((el) => ({ el: idOf(el), width: el.width, height: el.height })), geometries: G.geoms.slice(), buffers: G.bufs.map((b) => ({ id: b.id, ctx: b.ctx, target: b.target, size: b.size, usage: b.usage, hash: b.hash, ...(b.hashes.length > 1 ? { hashes: b.hashes.slice() } : {}), uploads: b.uploads, updates: b.updates, url: b.url, kept: b.kept, ...(b.notKept ? { notKept: b.notKept } : {}) })), arrays: Object.keys(G.arrs).filter((k) => !/\]$/.test(k) || /\[0\]$/.test(k)).length } : {}),
+      counters: { frames: G.frame, framebufferBinds: G.fbBinds, framebuffers: G.fbN, instancedDraws: G.instanced, attribDivisors: G.divisor, multi: G.multi, setFrames: G.setFrames, dropped: G.dropped, maxKeys: MAXK, maxMatrices: MAXM, maxObjects: MAXO, objectSlots: OBJ_SLOTS },
+      // descriptions only, never pixels: size, format, where it came from, which target it is, who samples it
+      textures: G.texList.map((t) => ({ id: t.id, ctx: t.ctx, target: t.target, w: t.w, h: t.h, internalFormat: t.internalFormat, format: t.format, type: t.type, source: t.source, uploads: t.uploads, updates: t.updates, levels: t.levels, fb: t.fb, sampled: t.sampled.slice() })),
+      targets: G.fbList.map((f) => ({ id: f.id, ctx: f.ctx, tex: f.tex.slice(), w: f.w, h: f.h })),
+      // the composite states draws used (row.glb names them by id): GL enums as numbers
+      states: G.states.map((x) => ({ id: x.id, blend: x.blend && { eq: x.blend.eq.slice(), src: x.blend.src.slice(), dst: x.blend.dst.slice() }, depth: Object.assign({}, x.depth), cull: x.cull, scissor: x.scissor, colorMask: x.colorMask.slice() })),
     });
   }
   W.sampling = true;
+  const rowEnc = rowEncoder();
+  if (CFG.rowTee) W.teeRows = [];
+  // a document back from the page cache keeps this runtime, but the rows between went to another one: start a new chain
+  addEventListener('pageshow', (e) => { if (e.persisted) rowEnc.reset(); });
   W.sample = (T) => {
     if (!W.sampling) return;
     const t0 = RPN();
     discover();
+    if (W.selQ && W.selQ.length) W.noteSelectors();
     const v = {};
     for (const [id, w] of W.watch) { if (!w.el.isConnected) continue; try { v[id] = W.channelsOf(w.el, id); } catch (e) { err('sample: ' + e.message); } }
     const row = { k: W.frameKey(), T, sy: scrollY, sx: scrollX, v };
-    if (W.glT) { const G = W.glT; G.frame++; if (G.keys) row.gl = Object.assign({}, G.vals); if (G.mkeys) row.glm = Object.assign({}, G.mats); }
+    if (W.glT) { const G = W.glT; G.frame++; if (G.keys) row.gl = Object.assign({}, G.vals); if (G.mkeys) row.glm = Object.assign({}, G.mats);
+      if (CFG.scan && G.ctxs.length) { row.gld = G.draws; G.draws = {}; G.seq = 0; row.glb = G.blends; G.blends = {}; row.glu = G.under; G.under = {}; for (const sk in G.since) if (sk.endsWith(':0')) delete G.since[sk]; if (G.okeys) row.glo = Object.assign({}, G.objs);
+        if (G.akeys) row.gla = Object.assign({}, G.arrs); if (G.skeys) row.gls = Object.assign({}, G.slots); row.glg = G.gdraw; G.gdraw = {}; } }
     if (window.__WR_PROBE) { try { row.probe = window.__WR_PROBE(); } catch (e) { err('probe: ' + e.message); } }
     if (window.__WR_PIX) { try { row.pix = window.__WR_PIX.read(); } catch (e) { err('pix: ' + e.message); } }   // X4 canvas pixel channel
-    W.rows.push(row);
+    const wire = rowEnc.row(row); W.rows.push(wire);
+    if (W.noteRow) W.noteRow(wire);
+    if (W.teeRows) W.teeRows.push(row);   // o.rowTee: the full row as well, to prove the delta chain against it
     W.c.sampleMs += RPN() - t0;
   };
   W.drain = (what) => { const o = {}; for (const k of what) { o[k] = W[k]; W[k] = []; } return o; };
+  // Page data leaves as one JSON string: Playwright walks a returned object value by value, and that walk over rows was the
+  // whole cost of a big page. A site's Array.prototype.toJSON (old Prototype.js) would rewrite what JSON.stringify writes,
+  // so any such hook is taken off for the call and put back.
+  W.stringify = (x) => {
+    const kept = [];
+    for (const P of [Object.prototype, Array.prototype, String.prototype, Number.prototype, Boolean.prototype]) { const d = GOPD(P, 'toJSON'); if (d && d.configurable) { delete P.toJSON; kept.push([P, d]); } }
+    try { return JS(x); } finally { for (const [P, d] of kept) DP(P, 'toJSON', d); }
+  };
+  W.drainRows = () => { const s = W.stringify(W.rows); W.rows = []; return s; };
+  W.rowsReset = () => rowEnc.reset();
   W.elDescs = (from = 0) => els.slice(from).map((e, i) => desc(e) + (pseudoOf.get(i + from) || ''));
   // A selector that matches exactly this element (look prints it for --el; a bare "div" from the descriptor matches
   // every div). Order: the id; the descriptor's own tag.class selector when it is unique; else :nth-of-type steps up to
@@ -458,8 +763,24 @@ export function wrRuntime(CFG) {
    */
   W.selectors = (ids) => ids.map((id) => { const e = els[id]; if (!e) return [id, null, 0, 1];
     const ps = pseudoOf.get(id) || '';
-    if (!e.isConnected) { let n = 0; try { n = qAll(descSel(e)).length; } catch (x) {} return [id, null, n, 1]; }
+    if (!e.isConnected) { let n = 0; try { n = qAll(descSel(e)).length; } catch (x) {} return [id, (W.firstSel && W.firstSel.get(id)) || null, n, 1]; }
     let s = null; try { s = W.selectorOf(e); } catch (x) {} return [id, s && s + ps, qAll(descSel(e)).length, 0]; });
+
+  // Scan: the selector of each watched element, read in the first sample after it joined, while it is on the page. A node gone
+  // by the end of the take keeps this one, so it has one key at rest and in a test (W.selectors). Once per element.
+  if (CFG.scan) {
+    W.firstSel = new Map(); W.selQ = [];
+    W.noteSelectors = () => {
+      const t0 = RPN();
+      for (const id of W.selQ) {
+        const w = W.watch.get(id); if (!w) continue;
+        let s = null; try { s = W.selectorOf(w.el); } catch (x) {}
+        W.firstSel.set(id, s && s + (pseudoOf.get(id) || ''));
+      }
+      W.selQ.length = 0;
+      W.c.selMs = (W.c.selMs || 0) + RPN() - t0; W.c.selN = W.firstSel.size;
+    };
+  }
 
   // ---------------------------------------------------------------- D3 read-back floor (planted values, own element)
   W.readbackFloor = () => {
@@ -579,6 +900,7 @@ export function wrRuntime(CFG) {
         try { orig.pr.set.call(a, s.rate); orig.finish.call(a); } catch (e) { err('finish: ' + e.message); }
         continue;
       }
+      if (W.scan && !s.paused && a.effect && a.effect.pseudoElement) W.scan.signal('pseudo', V.k);
       orig.pause.call(a); orig.ct.set.call(a, s.local);
     }
     W.c.pinned = n;
@@ -638,6 +960,122 @@ export function wrRuntime(CFG) {
   // full step used by the driver: virtual frame, real settle, post-pin, sample
   W.step = async (doSample) => { busy++; try { await W.vstep(); await W.realFrame(); W.pin(null, 'post'); } finally { busy--; } if (doSample) W.sample(V.now); return V.k; };
   W.steps = async (n, doSample) => { for (let i = 0; i < n; i++) await W.step(doSample); return V.k; };
+  // ---------------------------------------------------------------- scan: what moved, the control set, W.quiet (DESIGN 3.3)
+  if (CFG.scan && scanTracker) {
+    const Q = W.scan = scanTracker();
+    W.noteRow = (wire) => {
+      const x = wire.x, G = W.glT;
+      Q.row(wire, G && x && ((x.gl && x.gl !== 0) || (x.glm && x.glm !== 0)) ? Object.assign({}, G.vals, G.mats) : null);
+    };
+    // what no row can see: a draw on a visible 2D canvas, a mutated attribute of a visible SVG (Lottie writes attributes)
+    const drew = new WeakMap();
+    const noteCanvas = (c) => { const k = V.k; if (!c || drew.get(c) === k) return; drew.set(c, k); try { if (c.isConnected && onScreen(c)) Q.signal('canvas', k); } catch (e) {} };
+    const C2 = window.CanvasRenderingContext2D && CanvasRenderingContext2D.prototype;
+    if (C2) for (const fn of ['fillRect', 'strokeRect', 'clearRect', 'fill', 'stroke', 'fillText', 'strokeText', 'drawImage', 'putImageData']) {
+      const o = C2[fn]; if (typeof o === 'function') C2[fn] = function (...a) { noteCanvas(this.canvas); return o.apply(this, a); };
+    }
+    new MutationObserver((list) => {
+      let told = false;
+      for (const r of list) {
+        const t = r.target; if (!(t instanceof SVGElement)) continue;
+        try { if (!told && onScreen(t.ownerSVGElement || t)) { Q.signal('svg', V.k); told = true; } } catch (e) {}
+        noteAttr(t, r.attributeName);
+      }
+    }).observe(document, { attributes: true, subtree: true });
+    // Discovery (DESIGN 3.6): SVG attributes. `transform`, `opacity`, `fill`, `stroke` and the dash offset already reach the computed
+    // style, so the element only has to join the moving set. A Lottie writes hundreds of nodes per frame, so one <svg> gives at most
+    // SVG_WATCH elements (W.c.svgOver counts the rest, and its pictures still run on the svg signal).
+    const SVG_WATCH = 16, IN_STYLE = new Set(['transform', 'opacity', 'fill', 'stroke', 'stroke-dashoffset']);
+    const svgCount = new WeakMap(), svgLeft = new WeakSet(), attrs = W.attrsOf = new Map(), shapes = new Map();
+    const noteAttr = (t, name) => {
+      if (!name || name === 'style' || name === 'class') return;   // W.mut has those
+      let id = elIds.get(t);
+      if (id == null || !W.watch.has(id)) {
+        const root = t.ownerSVGElement || t, n = svgCount.get(root) || 0;
+        if (n >= SVG_WATCH) { if (!svgLeft.has(t)) { svgLeft.add(t); W.c.svgOver = (W.c.svgOver || 0) + 1; } return; }
+        svgCount.set(root, n + 1); id = idOf(t); watch(t, 'attr');
+      }
+      if (IN_STYLE.has(name) || !/^[A-Za-z][\w:-]{0,40}$/.test(name)) return;
+      if (W.gsapHook && W.gsapHook.attrs === 'core' && name !== 'd') return;   // the 5 % stop of DESIGN 3.6
+      let s = attrs.get(id); if (!s) attrs.set(id, (s = new Set())); s.add(name);
+    };
+    // A morph has no number of its own and its path text is far too long for a row: the channel is the mean distance of its
+    // coordinates from the first shape seen, which runs from 0 to the full change as the morph plays.
+    const NUMS = /-?\d*\.?\d+(?:e[-+]?\d+)?/gi;
+    const shapeValue = (id, s) => {
+      let c = shapes.get(id);
+      if (c && c.s === s) return c.v;
+      const n = (s.match(NUMS) || []).slice(0, 4000).map(Number);
+      if (!c) { shapes.set(id, (c = { s, v: 0, base: n })); return 0; }
+      let sum = 0; const m = Math.min(n.length, c.base.length); for (let i = 0; i < m; i++) sum += Math.abs(n[i] - c.base[i]);
+      c.s = s; c.v = n.length === c.base.length ? (m ? r6(Math.round((sum / m) * 100) / 100) : 0) : Math.abs(n.length - c.base.length);
+      return c.v;
+    };
+    W.attrChannels = (el, id, names, o) => {
+      for (const n of names) {
+        const s = el.getAttribute(n); if (s == null) continue;
+        if (n === 'd' || n === 'points') { o['ren:--svg-' + n] = shapeValue(id, s); continue; }
+        const v = parseFloat(s); o['ren:--svg-' + n] = Number.isFinite(v) && String(v) === s.trim() ? v : s.slice(0, 80);
+      }
+    };
+    // Discovery: text that keeps changing, a scramble or a typewriter. One write is content, a second is motion. A text set by
+    // replacing its node is a childList change, not characterData. At most TEXT_WATCH elements a document.
+    const TEXT_WATCH = 400, TEXT_MAX = 120, textSeen = new WeakMap(), chars = W.charsOf = new Set();
+    W.charsText = (el) => String(el.textContent).slice(0, TEXT_MAX).replace(/[\u0000-\u001f\u007f-\u009f\u2028\u2029\u202a-\u202e\u2066-\u2069]/g, '');
+    new MutationObserver((list) => {
+      for (const r of list) {
+        const t = r.type === 'characterData' ? r.target.parentElement : r.target;
+        if (!t || t.nodeType !== 1 || t.childElementCount > 8) continue;
+        if (r.type === 'childList') { let text = false; for (const n of r.addedNodes) if (n.nodeType === 3) text = true; if (!text) continue; }
+        const n = (textSeen.get(t) || 0) + 1; textSeen.set(t, n);
+        if (n < 2) continue;
+        const id = idOf(t); if (chars.has(id)) continue;
+        if (chars.size >= TEXT_WATCH) { W.c.textOver = (W.c.textOver || 0) + 1; continue; }
+        chars.add(id); watch(t, 'text');
+      }
+    }).observe(document, { characterData: true, childList: true, subtree: true });
+    // what turns the gate off for the take: a picture that changes with no row and no signal. The media clock runs on real time.
+    const played = new Set();
+    try { const PL = HTMLMediaElement.prototype.play; HTMLMediaElement.prototype.play = function (...a) { if (this instanceof HTMLVideoElement) played.add(this); return PL.apply(this, a); }; } catch (e) {}
+    const rolling = (v) => !v.paused && !v.ended && v.readyState >= 2;
+    let off = null;
+    const opaque = () => {
+      if (off) return off;
+      for (const v of document.querySelectorAll('video')) if (rolling(v) && onScreen(v)) return (off = 'video');
+      for (const v of played) if (!v.isConnected && rolling(v)) return (off = 'video');   // a texture, drawn by a canvas
+      for (const c of W.xfer || []) if (c.isConnected && onScreen(c)) return (off = 'worker-canvas');
+      for (const f of document.querySelectorAll('iframe')) {
+        const src = f.getAttribute('src') || 'about:blank', o = originOf(src);
+        if (o && o !== 'null' && o !== location.origin && !/^(about|data|blob|javascript):/i.test(src) && onScreen(f)) return (off = 'cross-origin-frame');
+      }
+      return null;
+    };
+    W.controlStart = () => Q.controlStart();
+    W.controlStop = () => Q.controlStop();
+    W.controlClear = () => Q.controlClear();
+    W.partStart = () => { Q.part(V.k, V.tid); if (W.gsapHook) W.gsapHook.born.length = 0; };
+    /** At rest for this part: n still frames outside the control set, no finite animation left, no timer armed since the input. */
+    W.quiet = (n) => {
+      const k = V.k;
+      if (Q.still(k) < n) return false;
+      for (const a of document.getAnimations()) {
+        if (!(a.timeline instanceof DocumentTimeline)) continue;
+        if (!isFinite(endOf(a))) continue;
+        const s = ST.get(a);
+        if (s && (s.finished || s.paused)) continue;
+        if (cssPaused(a)) continue;
+        const t = a.effect && a.effect.target, id = t ? elIds.get(t) : null;
+        if (id != null && Q.inControl(id)) continue;
+        return false;
+      }
+      const from = Q.partTid();
+      for (const [id, t] of V.timers) if (!t.every && id >= from) return false;   // an interval has no end to wait for
+      return !(W.gsapHook && W.gsapHook.pending((id) => Q.inControl(id)));   // GSAP's delays live in its rAF ticker, which the timers above cannot see
+    };
+    /** One read per frame for the frame recorder: where the page is, whether a picture is due, and W.quiet(n) when asked. */
+    W.shotInfo = (n) => ({ k: V.k, T: performance.now(), sx: scrollX, sy: scrollY, moved: Q.moved(V.k), off: opaque(), quiet: n ? W.quiet(n) : null });
+  }
+
   // Between virtual frames (the driver's round trip, a network or page-idle wait, slow on a busy machine or a slow server)
   // real frames keep running. An animation the page starts in a real task then (a promise after a fetch or a font, an
   // event) would play on real time and can even finish before the next virtual frame pins it, and is then never seen
@@ -647,7 +1085,50 @@ export function wrRuntime(CFG) {
   RAF(between);
 }
 
+/**
+ * Scan: what the wire rows say moved, and when this part last changed. Self-contained, serialised into the page like rowEncoder,
+ * and run directly by the unit tests. A control window (nothing touched) teaches which elements and GL uniforms move by
+ * themselves; until controlClear they ask for no picture and do not hold W.quiet. Keys are element ids and uniform keys.
+ */
+export function scanTracker() {
+  const NEVER = -1e9;
+  const sig = { canvas: NEVER, svg: NEVER, pseudo: NEVER };
+  let changedK = NEVER, scrollK = NEVER, partK = NEVER, tid = 0, sy = null, sx = null;
+  let ctl = null, learning = false, ctlSig = { canvas: false, svg: false };
+  const seenGl = new Map();
+  const eq = (a, b) => {
+    if (a === b) return true;
+    if (!Array.isArray(a) || !Array.isArray(b) || a.length !== b.length) return false;
+    for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return false;
+    return true;
+  };
+  const touch = (key, k) => { if (learning) ctl.add(key); else if (!ctl || !ctl.has(key)) changedK = k; };
+  return {
+    /** One wire row; gl = every uniform value now, only on a row whose uniforms changed. */
+    row(w, gl) {
+      const k = w.k;
+      if (sy != null && (w.sy !== sy || w.sx !== sx)) scrollK = k;
+      sy = w.sy; sx = w.sx;
+      if (gl) for (const key of Object.keys(gl)) { const had = seenGl.has(key); if (had && eq(seenGl.get(key), gl[key])) continue; seenGl.set(key, gl[key]); if (had) touch('gl:' + key, k); }
+      if (w.r) return;   // the start of a chain sends everything: no change in itself
+      if (w.e) for (let i = 0; i < w.e.length; i++) touch(w.e[i][0], k);
+      if (w.g) for (let i = 0; i < w.g.length; i++) touch(w.g[i], k);
+    },
+    signal(name, k) { sig[name] = k; if (learning && name in ctlSig) ctlSig[name] = true; },
+    controlStart() { ctl = new Set(); ctlSig = { canvas: false, svg: false }; learning = true; },
+    controlStop() { learning = false; },
+    controlClear() { ctl = null; learning = false; ctlSig = { canvas: false, svg: false }; },
+    part(k, nextTid) { partK = k; tid = nextTid; },
+    partTid() { return tid; },
+    inControl(id) { return !!ctl && ctl.has(id); },
+    /** A picture is due: something changed in this frame or the one before (a canvas and a pseudo-element have no control set). */
+    moved(k) { return k - Math.max(changedK, scrollK, sig.canvas, sig.svg, sig.pseudo) < 2; },
+    /** Frames since this part's input or its last change, whichever is later. */
+    still(k) { return k - Math.max(changedK, partK, ctlSig.canvas ? NEVER : sig.canvas, ctlSig.svg ? NEVER : sig.svg); },
+  };
+}
+
 /** Script text for addInitScript. */
 export function inpageSource(cfg) {
-  return `(${wrRuntime.toString()})(${JSON.stringify(cfg)});`;
+  return `(${wrRuntime.toString()})(${JSON.stringify(cfg)}, ${rowEncoder.toString()}${cfg.scan ? `, ${scanTracker.toString()}` : ''});`;
 }

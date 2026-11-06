@@ -26,6 +26,7 @@ export function writeCard(look, { out = null, rows } = {}) {
 /** `reva card <look.json|folder> [--out card.html]` */
 export async function runCardCommand(f) {
   let input = f._[1];
+  if (f.help) { process.stdout.write('usage: reva card <look.json | look folder> [--out card.html]\n'); return 0; }
   if (!input) { console.error('usage: reva card <look.json | look folder> [--out card.html]'); return 2; }
   if (fs.existsSync(input) && fs.statSync(input).isDirectory()) input = path.join(input, 'look.json');
   let look;

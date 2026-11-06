@@ -40,7 +40,7 @@ import { readLenis, lookLenis } from './lenis.js';
 import { readLibs, lookLibs, attachAnime } from './libprobe.js';
 import { glPass, holdForLateGl } from './gl.js';
 import { glMotions, mergeRanked, screensOf } from './rank.js';
-import { shotBefore, shotEnd, shotPage, canvasesOf } from './screens.js';
+import { shotBefore, shotEnd, shotPage, canvasesOf, midShooter } from './screens.js';
 import { POSITION_SCHEMA } from './position.js';
 import { cacheWanted, withSessionCache, wireCacheReplay, retakePlan, RETAKE_MAX_MS, RETAKE_MOTIONS } from './cache.js';
 import { recordSummary, compareMotions, matchEntry, STABILITY_SCHEMA } from './stability.js';
@@ -224,7 +224,7 @@ async function act(S, o, sels) {
   if (a === 'scroll') {
     const maxScroll = await S.evRetry(() => document.documentElement.scrollHeight - innerHeight).catch(() => null);
     const dy = o.dy ?? wheelStep(maxScroll);
-    const w = await S.wheel({ dy, n: o.n ?? Math.max(200, 2 * Math.ceil((maxScroll || 0) / dy) + 80), until: wheelUntil(sels), stall: WHEEL_STALL });
+    const w = await S.wheel({ dy, n: o.n ?? Math.max(200, 2 * Math.ceil((maxScroll || 0) / dy) + 80), until: wheelUntil(sels), stall: WHEEL_STALL, onStep: o.midShots ? midShooter(S, maxScroll, o.midShots) : null });
     await S.hold(o.holdMs ?? 1000);
     // aimed elements still moving (a staggered reveal with a delay): hold on until they rest
     const extraMs = o.holdMs == null && sels && sels.length ? await holdWhileMoving(S, sels, { quietMs: 1200, capMs: 6000 }) : 0;
@@ -344,7 +344,7 @@ export async function aimStable(S, sels, { gapMs = 300, maxMs = 2000, reveal = f
 }
 
 /** Merge two fit results of the same take (pass 2 = the deferred channels). */
-function mergeFits(a, b) {
+export function mergeFits(a, b) {
   if (!b) return a;
   return { ...a, partial: a.partial || b.partial, flags: [...a.flags, ...b.flags.filter((f) => !a.flags.some((g) => g.id === f.id))], records: [...a.records, ...b.records],
     stagger: [...a.stagger, ...b.stagger], unknowns: [...a.unknowns, ...b.unknowns], pruned: [...(a.pruned || []), ...(b.pruned || [])], pins: [...(a.pins || []), ...(b.pins || [])], capped: { ...a.capped, pass2: b.capped } };
@@ -363,7 +363,7 @@ const PAINT_PROP = { 'ren:color': 'color', 'ren:bg': 'background-color', 'ren:fi
  * A colour that changes over many frames with no declaration (a script tween, a scrubbed colour) stays and is fitted.
  * @param {Map<number, object>} stats  elementStats output (mutated: `moving`)
  */
-function dropStatedPaint(stats, els, dir, fromT) {
+export function dropStatedPaint(stats, els, dir, fromT) {
   const any = [...stats.values()].some((st) => [...st.moving].some((c) => c in PAINT_PROP));
   if (!any) return;
   let decl = [];
@@ -518,7 +518,7 @@ async function lookOnce(o, T0, cache) {
   const isLocal = src.kind === 'url' && !src.live;
   if (allowNet.length && !isLocal) throw Object.assign(new Error(`--allow-net / --allow-cdn apply to a local page (http://localhost:<port>/...) only; ${src.kind === 'archive' ? 'an archive is replayed offline' : 'a live page already has the network'}`), { code: 'bad_arguments' });
   const args = [...(src.kind === 'archive' ? BLACKHOLE_ARGS : isLocal ? localArgs(allowNet, { map: o._testHostMap }) : []), ...(o.args || [])];
-  if (!o._retake) log(`look: ${src.kind === 'archive' ? `archive ${src.archive}` : src.url} · ${action}${aimed ? ` · ${o.el}` : ''} · hx ${rate} Hz`);
+  if (!o._retake) log(`look: ${src.kind === 'archive' ? `archive ${src.archive}` : src.url} · ${action}${aimed ? ` · ${o.el}` : ''} · virtual clock ${rate} Hz`);
   const S = await openSession({
     lane: 'hx', rate, engine: o.engine || defaultEngine(), cls, args, prefs: noUdpPrefs(o.prefs), timerFlag: o.timerFlag !== false, keepalive: o.keepalive !== false, ...(colorScheme ? { colorScheme } : {}),
     ...(src.kind === 'archive' ? { target: src.target } : { url: src.url, live: src.live, viewport: o.viewport || { width: 1440, height: 900 }, seed: 1 }),
@@ -594,6 +594,7 @@ async function lookOnce(o, T0, cache) {
   if (action !== 'load') await S.ctx.addInitScript({ content: LISTEN_HOOK });
   mark('launch');
   let take, dir, aimIds = null, actInfo = {}, afterInfo = null, ready = null, pageProbe = false, actStartT = null, netGate = null, shot = null, libEv = null, restRaw = null;
+  const shotM = [];   // scroll: viewport pictures on the way down
   let shotB = null, shotE = null, shotP = null;   // screens (src/look/screens.js): before the action, end of the take, full page (scroll)
   let lenisRead = null;   // declared Lenis options (read-only probe, src/look/lenis.js), once after the action
   const libReads = [];    // declared Swiper / Lottie / Locomotive / anime.js values (src/look/libprobe.js), same two moments
@@ -708,7 +709,7 @@ async function lookOnce(o, T0, cache) {
     const h0 = action === 'scroll' ? await pageH() : null;
     // hover / click: the rest pose before the action (after it the pointer still holds the hovered or pressed state)
     if (action !== 'load' && !o._retake) restRaw = await S.evRetry(restPoseInPage, [400, REST_ANCESTORS]).catch(() => null);
-    actInfo = await act(S, { ...o, on: onSel, action }, sels);
+    actInfo = await act(S, { ...o, on: onSel, action, midShots: o._retake ? null : shotM }, sels);
     if (action === 'scroll') actInfo = { ...actInfo, pageHeight: { start: h0, end: await pageH() } };
     // hover / click on an aimed element that did not react: act once more after a further settle (the page may have
     // wired its listeners after the first input); the take keeps both, and look.json says so
@@ -1128,6 +1129,7 @@ async function lookOnce(o, T0, cache) {
     const put = (f, b) => { if (!b) return false; try { fs.writeFileSync(path.join(out, f), b); return true; } catch { return false; } };
     const vOf = (sh, file) => (sh && sh.view && put(file, sh.jpg) ? { w: sh.view.w, h: sh.view.h, scrollY: Math.round(sh.view.scrollY * 100) / 100, dpr: sh.view.dpr } : null);
     result.screens = screensOf({ end: vOf(shotE, 'screen-end.jpg'), before: action === 'load' ? null : vOf(shotB, 'screen-before.jpg'), page: shotP && put('page.jpg', shotP.data) ? shotP : null });
+    if (shotM.length && shotE && shotE.view) result.screens.mid = shotM.map((m, i) => (put(`screen-mid${i}.jpg`, m.data) ? { file: `screen-mid${i}.jpg`, w: shotE.view.w, h: shotE.view.h, scrollY: m.scrollY } : null)).filter(Boolean);
     if (cropFiles.length) { fs.mkdirSync(path.join(out, 'crops'), { recursive: true }); for (const f of cropFiles) fs.writeFileSync(path.join(out, f.path), f.data); }
     fs.writeFileSync(path.join(out, 'look.json'), JSON.stringify(result, null, 1));
   }
@@ -1259,7 +1261,7 @@ const chOfProp = (name) => (name === 'opacity' ? new Set(['ren:opacity']) : TRAN
  * them (siblings that share a descriptor see each other's births), else from all births on the descriptor (click).
  * Returns the lines with the element's declared / retargeted lines of that property replaced.
  */
-function expandDeclaredBirths(lines, desc, births, fromT, recs = [], triggerOf = null) {
+export function expandDeclaredBirths(lines, desc, births, fromT, recs = [], triggerOf = null) {
   const own = []; for (const r of recs || []) { if (r.tier !== 'declared' || !r.declared || !Array.isArray(r.declared.births)) continue; for (const b of r.declared.births) if (b && b.type === 'CSSTransition') own.push({ ...b, tgt: desc }); }
   const runs = transitionRuns(own.length ? own : births, own.length ? null : desc, fromT).filter((r) => SAMPLED_TRANSITION(r.name));
   const count = new Map(); for (const r of runs) count.set(r.name, (count.get(r.name) || 0) + 1);
@@ -1286,7 +1288,7 @@ function expandDeclaredBirths(lines, desc, births, fromT, recs = [], triggerOf =
 }
 
 /** Stagger of one folded group, from its own members' onsets (same item shape as the fitter's, src/analysis/fit/index.js). */
-function groupStagger(recs, take, viewport) {
+export function groupStagger(recs, take, viewport) {
   const firstRow = new Map(); for (const r of take.data.rows) for (const id of Object.keys(r.v || {})) if (!firstRow.has(id)) firstRow.set(id, r.v[id]);
   const items = recs.filter((r) => r.derived && Number.isFinite(r.derived.t0) && r.tier !== 'unknown').map((r) => {
     const v = firstRow.get(String(r.target.el)) || {};
@@ -1303,7 +1305,7 @@ function groupStagger(recs, take, viewport) {
  * Planned channels with no record: covered by a same-shape twin (pruned), or an explicit unknown with the reason
  * (statics: no change above the noise floor in the number the fitter reads; cut by a budget; or no model at all).
  */
-function coverage(planned, res, rows, covered, els, noop = new Set()) {
+export function coverage(planned, res, rows, covered, els, noop = new Set()) {
   res = res || { records: [], unknowns: [] };
   const has = new Set(res.records.map((r) => baseKey(`${r.target.el}|${r.target.channel}`)));
   const statics = new Set(((res.statics && res.statics.sample) || []).map((x) => x.key));

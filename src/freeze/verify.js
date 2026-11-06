@@ -43,6 +43,17 @@ export function unexpectedFailures(out, misses = [], fuzzy = [], cfg) {
   return (out.failed || []).filter(f => !(block && block.test(f)) && !redirectHop(f) && !isTrackerFailure(f, cfg.startUrl) && !pageAborted(f) && !toleratedAbort(f));
 }
 
+/** Replay against live (pure). A replay that renders almost nothing must fail even when every request was answered:
+ *  the 2 Nov scan found a blank replay that still passed at 100 %. `live` = the round-1 stats of the same class ({elements}). */
+export function liveChecks(replayElements, live) {
+  const liveN = live && Number.isFinite(live.elements) ? live.elements : null;
+  const n = Number.isFinite(replayElements) ? replayElements : 0;
+  return {
+    docNotBlank: n >= 8 || (liveN !== null && liveN < 8),
+    matchesLive: liveN === null || liveN < 50 || n >= liveN * 0.5,
+  };
+}
+
 /** Browser flags + context options of one class's replay check (pure; the same with or without a shared browser). */
 export function verifyOpenOptions(cfg, cls) {
   // No host rules: with every name unresolvable, the archive is the only server there is.
@@ -64,7 +75,7 @@ export async function openVerifyBrowser(cfg, cls, { engine = defaultEngine(), po
  * @param {string[]} hars union first, class HAR last
  * @param {{engine?:string, steps?:object[], timeoutMs?:number, pool?:object}} [o]  pool: a BrowserPool with OFFLINE_ARGS
  */
-export async function replayVerify(cfg, cls, hars, { engine = defaultEngine(), steps = cfg.verifySteps, timeoutMs = 20000, pool = null } = {}) {
+export async function replayVerify(cfg, cls, hars, { engine = defaultEngine(), steps = cfg.verifySteps, timeoutMs = 20000, pool = null, live = null } = {}) {
   const out = { cls, engine, pageerrors: [], consoleErrors: [], failed: [], stepErrors: [], requests: 0 };
   const block = cfg.block ? new RegExp(cfg.block) : null;
   const inflight = new Map();
@@ -88,6 +99,7 @@ export async function replayVerify(cfg, cls, hars, { engine = defaultEngine(), s
     if (steps.length) await runSteps(page, steps, out);
     await sleep(300);
     if (cfg.probe) { try { out.probe = await page.evaluate(`(${cfg.probe})()`); } catch (e) { out.probeError = e.message.split('\n')[0]; } }
+    try { out.replayElements = await page.evaluate(() => document.querySelectorAll('*').length); } catch { out.replayElements = null; }
     out.misses = net.misses;
     out.blockedCount = net.blocked.length;
     out.trackers = [...new Set(net.trackers)].slice(0, 100); out.trackersBlocked = net.trackers.length; out.fuzzy = net.fuzzy.slice(0, 100); out.fuzzyAnswered = net.fuzzy.length;
@@ -114,6 +126,8 @@ export async function replayVerify(cfg, cls, hars, { engine = defaultEngine(), s
     noPageErrors: out.pageerrors.length === 0,
     stepsOk: out.stepErrors.length === 0,
   };
+  Object.assign(out.checks, liveChecks(out.replayElements, live));
+  out.liveElements = live && Number.isFinite(live.elements) ? live.elements : null;
   out.pass = Object.values(out.checks).every(Boolean);
   return out;
 }

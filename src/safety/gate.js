@@ -85,8 +85,11 @@ export async function safetyGate(url, { ignoreRobots = false, ownDomains, who = 
  * @param {string} typedUrl
  * @param {object} [o]  ignoreRobots, ownDomains, who: as safetyGate; fetchImpl: the robots.txt fetch (the MCP passes
  *   hopCheckedFetch); seed: Map origin -> robots text; log. attach(page, {onBlock}): onBlock(b) closes that browser
+ * @param {boolean} [o.sticky]  true (look): after the first refusal every later navigation of the page is refused too, as the
+ *   caller closes its browser. false (reva scan's live visit): each navigation is judged on its own, the visit goes on
+ * @param {(url:string)=>boolean} [o.scope]  reva scan: a navigation outside it (another site) is refused as well (agent 'scope')
  */
-export function navigationGuard(typedUrl, { ignoreRobots = false, ownDomains, who = 'cli', fetchImpl = globalThis.fetch, seed, log = () => {} } = {}) {
+export function navigationGuard(typedUrl, { ignoreRobots = false, ownDomains, who = 'cli', fetchImpl = globalThis.fetch, seed, log = () => {}, sticky = true, scope = null } = {}) {
   const own = ownDomains ?? readOwnDomains();
   const configFile = ownDomainsFile() || '~/.reva/config.json';
   const overridden = (u) => isOwnDomain(u, own) || (who !== 'mcp' && !!ignoreRobots && sameSite(u, typedUrl));
@@ -113,6 +116,7 @@ export function navigationGuard(typedUrl, { ignoreRobots = false, ownDomains, wh
     if (!popup) mainKeys.add(key);
     if (!verdicts.has(key)) {
       verdicts.set(key, (async () => {
+        if (scope && !scope(key)) return { url: key, origin: url.origin, agent: 'scope', rule: 'outside the site being scanned' };
         const v = robotsVerdict(await robotsFor(url.origin), [key]);
         if (!v.blocked) return null;
         if (overridden(key)) {
@@ -155,7 +159,7 @@ export function navigationGuard(typedUrl, { ignoreRobots = false, ownDomains, wh
           popupBlocked(p, req.url());
           return route.abort('blockedbyclient').catch(() => {});
         }
-        const b = blocked || await check(req.url()).catch(() => null);
+        const b = (sticky && blocked) || await check(req.url()).catch(() => null);
         if (b) { block(b, onBlock); return route.abort('blockedbyclient').catch(() => {}); }
         return route.fallback();
       });
@@ -173,7 +177,7 @@ export function navigationGuard(typedUrl, { ignoreRobots = false, ownDomains, wh
     cdp.on('Fetch.requestPaused', async (e) => {
       const go = () => cdp.send('Fetch.continueRequest', { requestId: e.requestId }).catch(() => {});
       if (mainId && e.frameId && e.frameId !== mainId) return go();
-      const b = blocked || await check(e.request && e.request.url).catch(() => null);
+      const b = (sticky && blocked) || await check(e.request && e.request.url).catch(() => null);
       if (!b) return go();
       block(b, onBlock);
       return cdp.send('Fetch.failRequest', { requestId: e.requestId, errorReason: 'BlockedByClient' }).catch(() => {});

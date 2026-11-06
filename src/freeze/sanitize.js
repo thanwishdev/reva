@@ -33,6 +33,14 @@ function bodyOf(rec, files) {
   return null;
 }
 
+/** Response body bytes of an entry (file, inline text, or the recorded size when the body is not stored). */
+export function bodyLen(e, files) {
+  const c = e.response.content || {};
+  if (c._file) return files.get(c._file)?.length ?? 0;
+  if (c.text !== undefined) return c.text.length;
+  return c.size > 0 ? c.size : 0;
+}
+
 export function entryKey(e, files) {
   const post = bodyOf(e.request.postData, files);
   return `${e.request.method} ${e.request.url} ${post ? sha256(post) : '-'}`;
@@ -60,7 +68,12 @@ export function sanitizeHar({ har, files }, { block = null, redact = DEFAULT_RED
     if (p && p._file && !files.has(p._file)) { report.problems.push(`request body file missing: ${p._file} for ${url}`); drop('post-body-file-missing'); continue; } // T3
     const k = entryKey(e, files);
     const prev = best.get(k);
-    if (prev) { report.duplicates++; if (rank(e) < rank(prev)) continue; }
+    if (prev) {
+      report.duplicates++;
+      // A later duplicate must not replace a real body with an empty one (a 0-byte retry once blanked a whole page); then status rank; then the later one wins.
+      const be = bodyLen(e, files), bp = bodyLen(prev, files);
+      if ((be === 0) !== (bp === 0) ? be === 0 : rank(e) < rank(prev)) { if (be === 0 && bp > 0) report.emptyDuplicatesDropped = (report.emptyDuplicatesDropped || 0) + 1; continue; }
+    }
     best.set(k, e);
   }
   const keep = [], keptFiles = new Map();

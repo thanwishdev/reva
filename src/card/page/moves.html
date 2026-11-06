@@ -1,0 +1,991 @@
+<style>
+/* The move card (DESIGN 5). A quiet gallery you read; the only colour on the page belongs to the sites recorded. Frames are tone and
+   space, never a border. The accent is the playhead on a curve and the focus ring, nowhere else. Nothing here is under 14 px, and
+   nothing moves on scroll: the motion on this page belongs to the site. */
+html.mvc{--mve:cubic-bezier(.22,1,.36,1);--bar:68px;--mvw:min(calc(100vw - 80px),1320px)}
+.mvc body{background:var(--bg)}
+.mvc .side{position:sticky;top:0;z-index:30;display:flex;flex-wrap:nowrap;align-items:center;gap:32px;height:var(--bar);padding:0 40px;background:color-mix(in srgb,var(--bg) 80%,transparent);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px)}
+.mvc .side .brand{display:none}
+.mvc .side .site{display:block;flex:none;margin:0;font-size:16px;font-weight:500;color:var(--ink)}
+.mvc .side .site a{color:inherit;text-decoration:none}
+.mv-built{min-width:0;flex:0 1 auto;font-size:15px;color:var(--ink2);text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:color var(--t1) var(--ease)}
+.mv-built:hover{color:var(--ink)}
+.mv-sp{flex:1 1 0;min-width:0}
+.mv-vps{flex:none;display:flex;gap:18px}
+.mv-vps button,.mvc .side nav a,.mv-findw{border:0;background:none;padding:0;font:inherit;font-size:15px;line-height:44px;color:var(--ink2);text-decoration:none;transition:color var(--t1) var(--ease)}
+.mv-vps button:hover,.mvc .side nav a:hover,.mv-findw:hover{color:var(--ink)}
+.mv-vps button[aria-pressed="true"],.mvc .side nav a[aria-current]{color:var(--ink);font-weight:600}
+.mvc .side nav{flex:none;flex-direction:row;gap:24px;width:auto;margin:0}
+.mv-findw{flex:none;cursor:pointer}
+.mv-q{flex:none;width:0;height:32px;padding:0;border:0;border-radius:8px;background:var(--surface);color:var(--ink);font:inherit;font-size:15px;opacity:0;transition:width 220ms var(--mve),opacity 120ms linear,padding 220ms var(--mve)}
+.mvc.mv-finding .mv-q{width:200px;padding:0 10px;opacity:1}
+.mvc.mv-finding .mv-findw{display:none}
+.mvc .st-pagesel{display:none}
+.mvc.mv-other .st-pagesel{display:block}
+.mvc.mv-other .mv-vps,.mvc.mv-other .mv-q,.mvc.mv-other .mv-findw{display:none}
+html.mvc:not(.mv-other) main,.mvc.on-stage main{max-width:none;padding:0}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+
+#moves{display:block;padding:0}
+#moves.enter{animation:mv-fade 160ms linear both}
+@keyframes mv-fade{from{opacity:0}to{opacity:1}}
+.mv-wrap{width:var(--mvw);margin:0 auto;padding:12px 0 120px}
+.mv-page{position:relative;display:block;width:100%;height:min(68dvh,calc(var(--mvw) * .625));padding:0;border:0;border-radius:14px;overflow:hidden;background:var(--surface);cursor:pointer}
+.mv-few .mv-page{height:calc(100dvh - var(--bar) - 96px)}
+.mv-page video,.mv-page img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top center}
+.mv-cap{display:flex;align-items:center;gap:20px;margin-top:14px;font-size:16px;line-height:24px;color:var(--ink2)}
+.mv-cap button{border:0;background:none;padding:0;font:inherit;color:var(--ink);transition:color var(--t1) var(--ease)}
+.mv-cap select{field-sizing:content;height:32px;max-width:280px;border:0;padding:0;background:none;color:var(--ink2);font:inherit;font-size:16px;cursor:pointer}
+
+.mv-sec{margin-top:88px}
+.mv-sec.first{margin-top:72px}
+.mv-sec h1{font-size:28px;line-height:34px;font-weight:600;letter-spacing:-.02em}
+.mv-sec h2{font-size:22px;line-height:28px;font-weight:600;letter-spacing:-.015em}
+.mv-g{margin-top:28px}
+.mv-r{display:flex;gap:28px;margin-top:40px}
+.mv-r:first-child{margin-top:0}
+.mv-sec.small .mv-r{gap:20px;margin-top:32px}
+.mv-sec.small .mv-r:first-child{margin-top:0}
+.mv-t{display:block;min-width:0;flex:none;color:inherit;text-decoration:none;border-radius:14px}
+.mv-h{display:block;position:relative;border-radius:14px;background:var(--surface)}
+.mv-f{position:absolute;inset:0;display:block;border-radius:14px;overflow:hidden;background:var(--surface);will-change:transform}
+.mv-f img,.mv-v{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.mv-v{opacity:0;transition:opacity 120ms linear;background:transparent}
+.mv-v.on{opacity:1}
+.mv-t[data-play="scrub"] .mv-f{cursor:ew-resize}
+.mv-n{display:block;margin-top:12px;font-size:16px;line-height:22px;font-weight:500;color:var(--ink);overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.mv-sec.small .mv-n{margin-top:10px;font-size:15px;line-height:20px}
+.mv-more{display:block;margin-top:28px;border:0;background:none;padding:0;font:inherit;font-size:16px;line-height:44px;color:var(--ink2);transition:color var(--t1) var(--ease)}
+.mv-more:hover{color:var(--ink)}
+.mv-none{margin-top:64px;font-size:20px;line-height:28px;color:var(--ink2)}
+.mv-only{margin-top:48px;font-size:16px;line-height:24px;color:var(--ink2)}
+.mv-only button{border:0;background:none;padding:0;font:inherit;color:var(--ink);text-decoration:underline;text-underline-offset:3px}
+.mv-end{max-width:720px;margin-top:120px;font-size:20px;line-height:30px;letter-spacing:-.01em;color:var(--ink)}
+.mv-end p{color:inherit}
+.mv-end p+p{margin-top:12px}
+.mv-end p.cov{margin-top:32px;color:var(--ink2)}
+.mv-end a{color:inherit;text-underline-offset:3px}
+.mvc.mv-searching .mv-page,.mvc.mv-searching .mv-cap,.mvc.mv-searching .mv-end,.mvc.mv-searching .mv-sec[data-g="top"]{display:none}
+.mvc.mv-searching .mv-sec{margin-top:48px}
+.mv-fading{opacity:0}
+#mv-lists{transition:opacity 120ms linear}
+
+/* One motion: grows out of its frame, over the gallery, which stays where it was. */
+.mv-one{position:fixed;inset:var(--bar) 0 0 0;z-index:20;overflow-y:auto;background:var(--bg);overscroll-behavior:contain}
+.mv-one[hidden]{display:none}
+.mvc.mv-lock{overflow:hidden}
+.mvc.mv-solid .side{background:var(--bg);-webkit-backdrop-filter:none;backdrop-filter:none}
+.mv-onew{display:grid;grid-template-columns:minmax(0,58fr) minmax(0,42fr);gap:64px;width:min(calc(100vw - 80px),1480px);min-height:100%;margin:0 auto;padding:12px 0 96px}
+.mv-left{position:sticky;top:12px;align-self:start;min-width:0}
+.mv-big{position:relative;width:100%;max-height:calc(100dvh - var(--bar) - 104px);margin:0 auto}
+.mv-big .mv-f{position:absolute;inset:0;width:auto;height:auto}
+.mv-big .mv-noclip{position:absolute;inset:0;display:grid;place-items:center;padding:32px;font-size:16px;line-height:24px;color:var(--ink2);text-align:center}
+.mv-ctl{display:flex;align-items:center;gap:20px;height:56px;margin-top:8px;font-size:15px;color:var(--ink2)}
+.mv-ctl button{flex:none;height:44px;border:0;background:none;padding:0;font:inherit;color:var(--ink2);transition:color var(--t1) var(--ease)}
+.mv-ctl button:hover,.mv-ctl button[aria-pressed="true"]{color:var(--ink)}
+.mv-ctl .pl{width:44px;margin-left:-14px;display:grid;place-items:center;color:var(--ink)}
+.mv-ctl .pl svg{width:14px;height:14px;fill:currentColor}
+.mv-track{position:relative;flex:1;min-width:48px;height:44px;cursor:pointer;touch-action:none}
+.mv-track i{position:absolute;left:0;right:0;top:21px;height:2px;border-radius:2px;background:var(--surface2);transition:height 120ms linear,top 120ms linear}
+.mv-track b{position:absolute;left:0;right:0;top:21px;height:2px;border-radius:2px;background:var(--ink);transform:scaleX(0);transform-origin:0 50%;transition:height 120ms linear,top 120ms linear}
+.mv-track:hover i,.mv-track:hover b,.mv-track.drag i,.mv-track.drag b{top:20px;height:4px}
+.mv-right{max-width:520px;min-width:0;padding-top:4px}
+.mv-right.in{animation:mv-rise 240ms var(--mve) 120ms both}
+@keyframes mv-rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.mv-right h1{font-size:28px;line-height:34px;font-weight:600;letter-spacing:-.02em;overflow-wrap:anywhere}
+.mv-sent{margin-top:14px;font-size:20px;line-height:29px;letter-spacing:-.01em;color:var(--ink)}
+.mv-facts{margin:40px 0 0}
+.mv-facts>div{margin-top:22px}
+.mv-facts dt{font-size:16px;line-height:24px;color:var(--ink2)}
+.mv-facts dd{margin:0;font-size:16px;line-height:24px;color:var(--ink)}
+.mv-curve{display:flex;align-items:center;gap:20px;margin-top:6px}
+.mv-curve svg{flex:none;display:block;width:160px;height:104px;overflow:visible}
+.mv-curve path,.mv-parts path{fill:none;stroke:var(--ink);stroke-width:1.5;vector-effect:non-scaling-stroke}
+.mv-curve circle.d,.mv-parts circle.d{fill:var(--faint);opacity:.5}
+.mv-curve line,.mv-parts line{stroke:var(--accent);stroke-width:1.5;vector-effect:non-scaling-stroke}
+.mv-curve circle.h,.mv-parts circle.h{fill:var(--accent)}
+/* Parts that move differently: their curves side by side, each with its name. */
+.mv-parts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;margin-top:10px}
+.mv-parts figure{margin:0;min-width:0}
+.mv-parts svg{display:block;width:100%;height:auto;aspect-ratio:160/104;overflow:visible}
+.mv-parts figcaption{margin-top:10px;font-size:15px;line-height:21px;color:var(--ink);overflow-wrap:anywhere}
+.mv-parts figcaption span{display:block;color:var(--ink2)}
+.mv-why{max-width:440px}
+.mv-status{margin-top:20px;font-size:16px;line-height:24px;color:var(--ink2)}
+.mv-status b{font-weight:600;color:var(--ink)}
+.mv-gap{margin-top:32px;font-size:16px;line-height:24px;color:var(--ink)}
+.mv-copy{display:flex;flex-wrap:wrap;gap:8px;margin-top:28px}
+.mv-copy button{height:44px;padding:0 16px;border:0;border-radius:10px;background:var(--surface);font:inherit;font-size:15px;color:var(--ink);transition:background var(--t1) var(--ease)}
+.mv-copy button:hover,.mv-copy button[aria-expanded="true"]{background:var(--surface2)}
+.mv-claim{margin-top:14px;font-size:15px;line-height:22px;color:var(--ink2)}
+.mv-claim+.mv-claim{margin-top:4px}
+.mv-code{margin-top:16px}
+.mv-tabs{display:flex;gap:18px;align-items:center}
+.mv-tabs button{border:0;background:none;padding:0;font:inherit;font-size:15px;line-height:36px;color:var(--ink2)}
+.mv-tabs button[aria-pressed="true"]{color:var(--ink);font-weight:600}
+.mv-tabs .cp{margin-left:auto}
+.mv-code pre{max-height:320px;overflow:auto;margin:8px 0 0;padding:16px;border-radius:10px;background:var(--surface);font-family:var(--mono);font-size:14px;line-height:21px;color:var(--ink);white-space:pre}
+.mv-note{margin-top:10px;font-size:15px;line-height:22px;color:var(--ink2)}
+.mv-rest{margin-top:48px}
+.mv-rest>div,.mv-rest>details{margin-top:18px}
+.mv-rest h3,.mv-rest summary{font-size:16px;line-height:24px;font-weight:400;color:var(--ink2)}
+.mv-rest summary{cursor:pointer}
+.mv-rest p{font-size:16px;line-height:24px}
+.mv-rest a{color:inherit;text-underline-offset:3px}
+.mv-pclip{position:relative;width:180px;margin-top:10px;border-radius:14px;overflow:hidden;background:var(--surface)}
+.mv-pclip img,.mv-pclip video{display:block;width:100%;height:auto}
+.mv-det{margin-top:14px;font-size:15px;line-height:23px}
+.mv-det h4{margin-top:20px;font-size:15px;font-weight:600}
+.mv-det code{font-family:var(--mono);font-size:14px;overflow-wrap:anywhere}
+
+/* The page, full window: the wheel drives the recording here, and only here. */
+.mv-full{position:fixed;inset:var(--bar) 0 0 0;z-index:20;display:grid;place-items:center;padding:0 40px 32px;background:var(--bg)}
+.mv-full[hidden]{display:none}
+.mv-full .box{position:relative;max-width:100%;max-height:100%;border-radius:14px;overflow:hidden;background:var(--surface)}
+.mv-full video{display:block;width:100%;height:100%;object-fit:contain}
+.mv-full p{position:absolute;left:50%;bottom:8px;transform:translateX(-50%);font-size:15px;line-height:24px;color:var(--ink2);transition:opacity 320ms linear}
+
+/* Site: a column to read. */
+.mv-site{width:min(calc(100vw - 80px),720px);margin:0 auto;padding:48px 0 120px}
+.mv-site h1{font-size:28px;line-height:34px;font-weight:600;letter-spacing:-.02em}
+.mv-site .feel{color:var(--ink);margin-top:20px;font-size:20px;line-height:30px;letter-spacing:-.01em}
+.mv-site .feel+.feel{margin-top:10px}
+.mv-site h2{margin-top:64px;font-size:22px;line-height:28px;font-weight:600;letter-spacing:-.015em}
+.mv-site ul{list-style:none;margin:16px 0 0;padding:0}
+.mv-site li{padding:6px 0;font-size:16px;line-height:26px}
+.mv-site li button{border:0;background:none;padding:0;font:inherit;color:var(--ink);text-align:left}
+.mv-site li button:hover{text-decoration:underline;text-underline-offset:3px}
+.mv-site li span{color:var(--ink2)}
+.mv-site h3{margin-top:28px;font-size:16px;line-height:24px;font-weight:600}
+.mv-site details{margin-top:12px}
+.mv-site summary{cursor:pointer;font-size:16px;line-height:26px;color:var(--ink2)}
+.mv-site p.q{margin-top:16px;font-size:16px;line-height:26px;color:var(--ink2)}
+
+@media (max-width:1180px){.mv-built{display:none}.mvc .side{gap:24px}}
+@media (max-width:980px){
+  .mv-onew{display:block;width:calc(100vw - 80px)}
+  .mv-left{position:static}
+  .mv-right{max-width:640px;margin-top:24px}
+}
+@media (max-width:760px){
+  html.mvc{--bar:auto;--mvw:calc(100vw - 32px)}
+  .mvc .side{position:sticky;height:auto;flex-wrap:wrap;gap:0 16px;padding:4px 16px}
+  .mvc .side .site{order:1;flex:1 1 auto;line-height:44px}
+  .mv-findw,.mv-q{order:2}
+  .mvc.mv-finding .mv-q{width:150px}
+  .mvc .side nav{order:3;flex:1 1 auto;gap:16px}
+  .mv-vps{order:4;gap:14px}
+  .mv-sp{display:none}
+  .mv-wrap{padding-bottom:72px}
+  .mv-page{height:calc(var(--mvw) * .625)}
+  .mv-few .mv-page{height:calc(var(--mvw) * .625)}
+  .mv-r,.mv-sec.small .mv-r{display:block;margin-top:0}
+  .mv-t{width:100%!important;margin-top:28px}
+  .mv-r:first-child .mv-t:first-child{margin-top:0}
+  .mv-sec{margin-top:64px}
+  .mv-one,.mv-full{top:var(--barpx,104px)}
+  .mv-onew{width:calc(100vw - 32px);padding-bottom:64px}
+  .mv-full{padding:0 16px 32px}
+  .mv-site{width:calc(100vw - 32px)}
+  .mv-ctl button,.mv-copy button{min-height:44px}
+}
+@media (prefers-reduced-motion:reduce){
+  .mv-v,.mv-right.in,#moves.enter,#mv-lists{transition:none;animation:none}
+}
+</style>
+<script>
+/* The move card (DESIGN 5). Classic script over DATA.moves: no fetch and no module, so it opens from disk. A move's full record comes
+   from moves/<id>.js by <script src>. Three <video> elements are all the card ever decodes at once: the page, the relay, the frame
+   under the hand. A clip is only asked for when a frame answers, posters carry the wall. */
+(() => {
+/*pure*/
+/** Rows that fill the width. Each row takes tiles until it passes its target height's share, keeps the break nearest that target, and
+    is then scaled to fill exactly. Heights cycle so that frames of one shape do not line up into an even grid. The last row keeps the
+    target height when filling would blow it up. items: {a: width/height}. */
+function justify(items, W, gap, heights) {
+  const rows = []; let i = 0, c = 0;
+  while (i < items.length) {
+    const H = heights[c++ % heights.length]; let sum = 0, j = i, best = i + 1, bestD = Infinity;
+    while (j < items.length) {
+      sum += items[j].a; j++;
+      const n = j - i, h = (W - gap * (n - 1)) / sum, d = Math.abs(Math.log(h / H));
+      if (d < bestD) { bestD = d; best = j; }
+      if (h < H) break;
+    }
+    const list = items.slice(i, best), s = list.reduce((a, t) => a + t.a, 0), fill = (W - gap * (list.length - 1)) / s;
+    const h = best === items.length && fill > H * 1.2 ? H : fill;
+    rows.push({ h, items: list.map((t) => ({ ...t, w: t.a * h })) });
+    i = best;
+  }
+  return rows;
+}
+/** The time in [c, d] that shows what time t in [a, b] shows, played backwards: an interrupted leave answers from where the hover was. */
+function mirrored(t, a, b, c, d) {
+  const p = b > a ? Math.min(1, Math.max(0, (t - a) / (b - a))) : 1;
+  return c + (1 - p) * (d - c);
+}
+/** A clip's marks in seconds, with every part a hand needs. A press-only move plays from its press. */
+function marksOf(frame) {
+  const k = frame.marks || {}, end = (frame.ms || 0) / 1000, at = k.in ?? k.press ?? 0, out = k.out ?? end, held = k.held ?? out;
+  return { at, held: Math.max(at, Math.min(held, out)), press: k.press ?? null, out, end };
+}
+const secs = (ms) => { const s = ms / 1000; return `${s >= 10 ? Math.round(s) : +s.toFixed(s < 1 ? 2 : 1)} s`; };
+/** What one change does, in words. Numbers are kept as far as a person reads them. */
+function changeWords(c) {
+  const n = (x) => +(+x).toFixed(Math.abs(x) >= 10 ? 0 : 2), num = typeof c.from === 'number' && typeof c.to === 'number', d = num ? c.to - c.from : 0, u = c.unit === 'px' || c.unit === '%' ? ` ${c.unit}`.replace(' %', ' %') : '';
+  switch (c.family) {
+    case 'move': if (!num) return 'moves'; return c.property === 'y' ? `${d < 0 ? 'rises' : 'drops'} ${n(Math.abs(d))}${u}` : `slides ${d < 0 ? 'left' : 'right'} ${n(Math.abs(d))}${u}`;
+    case 'fade': return !num ? 'fades' : c.to >= .99 ? 'fades in' : c.to <= .01 ? 'fades out' : `fades to ${n(c.to * 100)} %`;
+    case 'scale': return num ? `scale ${n(c.from)} to ${n(c.to)}` : 'scales';
+    case 'rotate': return num ? `turns ${n(Math.abs(d))}°` : 'turns';
+    case 'colour': return 'changes colour';
+    case 'clip': return 'wipes';
+    case 'dash': return 'draws';
+    case 'box': return 'resizes';
+    case 'text': return 'changes its text';
+    default: return num ? `${c.property} ${n(c.from)} to ${n(c.to)}` : `${c.property} changes`;
+  }
+}
+/** Is a [[x, y]] series something to draw: finite, two points or more, and not flat. */
+function drawable(c) {
+  if (!Array.isArray(c) || c.length < 2 || !c.every((p) => Number.isFinite(p[0]) && Number.isFinite(p[1]) && Math.abs(p[1]) <= 4)) return false;
+  const ys = c.map((p) => p[1]); return Math.max(...ys) - Math.min(...ys) >= 0.02;
+}
+/** What a group's curve area draws: its law's curve, else the recorded progress, else an instant step. Dots on a broken scale (a
+    track that never moved, scaled by nothing) are left out, never drawn as a flat line. Null when the group holds nothing to draw. */
+function curveData(g) {
+  const all = g.dots || [], ok = all.filter((p) => Number.isFinite(p[0]) && Number.isFinite(p[1]) && p[1] >= -1.5 && p[1] <= 2.5);
+  const dots = ok.length >= all.length * 0.8 ? ok : [], law = g.law || {};
+  if (drawable(g.curve)) return { c: g.curve, dots, recorded: law.class === 'keyframes' };
+  if (drawable(dots)) return { c: dots, dots: [], recorded: true };
+  if (law.class === 'steps') return { c: [[0, 0], [0, 1], [1, 1]], dots: [], recorded: false };
+  return null;
+}
+/** Progress of a series at x, by straight lines between its points. */
+function at(c, x) {
+  if (x <= c[0][0]) return c[0][1];
+  for (let i = 1; i < c.length; i++) if (x <= c[i][0]) { const a = c[i - 1], b = c[i], k = (x - a[0]) / ((b[0] - a[0]) || 1); return a[1] + (b[1] - a[1]) * k; }
+  return c[c.length - 1][1];
+}
+/** Two curves move differently: their lengths differ by more than 30 %, or their shapes by more than 15 % of the travel. */
+function differs(a, b) {
+  const xa = a[a.length - 1][0] - a[0][0], xb = b[b.length - 1][0] - b[0][0];
+  if (Math.abs(xa - xb) > 0.3 * Math.max(xa, xb)) return true;
+  for (let i = 0; i <= 20; i++) if (Math.abs(at(a, a[0][0] + (i / 20) * xa) - at(b, b[0][0] + (i / 20) * xb)) > 0.15) return true;
+  return false;
+}
+/** The curves a move shows: its lead alone, or up to three parts that move differently, lead first. Leaving parts only when there is
+    nothing else; a name already shown is not shown twice. Each is {g, k: curveData(g)}. */
+function partsOf(groups) {
+  const leaving = (g) => g.part === 'out' || g.part === 'close';
+  const all = (groups || []).map((g) => ({ g, k: curveData(g) })).filter((x) => x.k);
+  const on = all.filter((x) => !leaving(x.g)), list = on.length ? on : all;
+  if (!list.length) return [];
+  const out = [list.find((x) => x.g.role === 'lead') || list[0]];
+  for (const x of list) { if (out.length >= 3) break; if (!out.includes(x) && out.every((y) => y.g.name !== x.g.name && differs(y.k.c, x.k.c))) out.push(x); }
+  return out;
+}
+/*end pure*/
+  if (!DATA.moves) return;
+  const MV = DATA.moves, SC = DATA.scan, root = document.documentElement;
+  const byId = new Map(MV.moves.map((m) => [m.id, m])), docs = {};
+  const S = { vp: MV.site.viewports.includes('desktop') ? 'desktop' : MV.site.viewports[0], page: null, q: '', shown: {}, screen: null, oneId: null, from: null, pageI: 0 };
+  const COARSE = matchMedia('(hover:none)').matches;
+  root.classList.add('mvc');
+
+  /* ---------- the bar ---------- */
+  {
+    const bar = $('.side'), nav = $('#secnav'), si = $('#site');
+    nav.innerHTML = `<a href="#moves" data-s="moves">Moves</a><a href="#site" data-s="site">Site</a>${DATA.look.design ? '<a href="#design" data-s="design">Design</a>' : ''}<a href="#study" data-s="overview">Study</a>`;
+    si.innerHTML = `<a href="#moves">${esc(MV.site.host)}</a>`;
+    const names = [...new Set((MV.site.built || []).map((b) => b.name.replace(/\s*\(.*\)$/, '')))].slice(0, 4);
+    if (names.length) si.insertAdjacentHTML('afterend', `<a class="mv-built" href="#libraries">Built with ${esc(names.join(', '))}</a>`);
+    nav.insertAdjacentHTML('beforebegin', `<span class="mv-sp"></span>${MV.site.viewports.length > 1 ? `<div class="mv-vps" role="group" aria-label="Screen">${MV.site.viewports.map((v) => `<button type="button" data-vp="${esc(v)}" aria-pressed="${v === S.vp}">${v === 'desktop' ? 'Desktop' : 'Phone'}</button>`).join('')}</div>` : ''}`);
+    nav.insertAdjacentHTML('afterend', '<button type="button" class="mv-findw" id="mv-findw">Find</button><input class="mv-q" id="mv-q" type="search" placeholder="hover, scale, stagger" aria-label="Find a move" autocomplete="off">');
+    const fb = $('#findbtn'); if (fb) fb.remove();
+    bar.addEventListener('click', (e) => { const b = e.target.closest('[data-vp]'); if (b) setVp(b.dataset.vp); });
+    if (typeof ResizeObserver === 'function') new ResizeObserver(() => root.style.setProperty('--barpx', bar.offsetHeight + 'px')).observe(bar);
+  }
+
+  /* ---------- three videos, and small verbs on them ---------- */
+  const mk = () => {
+    const v = document.createElement('video');
+    v.muted = true; v.defaultMuted = true; v.playsInline = true; v.preload = 'auto'; v.disablePictureInPicture = true; v.className = 'mv-v'; v.setAttribute('aria-hidden', 'true');
+    let want = null, busy = false;
+    v.addEventListener('seeked', () => { busy = false; if (want != null) { const w = want; want = null; v.seek(w); } });
+    v.seek = (t) => { if (v.readyState < 1) return; if (busy) { want = t; return; } if (Math.abs(v.currentTime - t) < .004) return; busy = true; v.currentTime = t; };
+    return v;
+  };
+  const PAGE = mk(), RELAY = mk(), HAND = mk();
+  const stops = new Map(); let raf = 0, playhead = null;
+  function tick() {
+    raf = 0;
+    for (const [v, s] of stops) if (v.currentTime >= s.at - 1 / 120 || v.ended) { stops.delete(v); v.pause(); if (s.then) s.then(); }
+    if (playhead) playhead();
+    if (stops.size || playhead) wake();
+  }
+  const wake = () => { if (!raf) raf = requestAnimationFrame(tick); };
+  /** Plays a..b, then stops there. A frame's end is held, a hold is a pause on a real frame. */
+  function range(v, a, b, then) {
+    if (Math.abs(v.currentTime - a) > .02) v.currentTime = a;
+    stops.set(v, { at: b, then }); const p = v.play(); if (p) p.catch(() => {}); wake();
+  }
+  const halt = (v) => { stops.delete(v); v.pause(); };
+  function setSrc(v, src) {
+    if (v.dataset.src === src) return Promise.resolve();
+    v.dataset.src = src; v.src = src;
+    return new Promise((ok) => { const f = () => { v.removeEventListener('loadeddata', f); v.removeEventListener('error', f); ok(); }; v.addEventListener('loadeddata', f); v.addEventListener('error', f); });
+  }
+  /** The poster gives way to the clip on its first decoded frame, so there is never a blank. */
+  function reveal(v) {
+    let done = false; const on = () => { if (!done) { done = true; v.classList.add('on'); } };
+    if (v.requestVideoFrameCallback) v.requestVideoFrameCallback(on); else v.addEventListener('playing', on, { once: true });
+    setTimeout(on, 240);
+  }
+
+  /* ---------- a frame answers the hand ---------- */
+  const H = { tile: null, timer: 0, mode: null, fwd: false, leaving: false, m: null };
+  function claim(t) {
+    const m = t.m, f = t.querySelector('.mv-f');
+    if (!f) return Promise.resolve();   // its frame has gone to the open view
+    H.tile = t; H.m = m; HAND.loop = false; HAND.playbackRate = 1;
+    HAND.classList.remove('on'); f.append(HAND);
+    return setSrc(HAND, m.frame.clip);
+  }
+  function release(t) {
+    if (H.tile !== t) return;
+    H.tile = null; H.mode = null; HAND.classList.remove('on');
+    setTimeout(() => { if (!H.tile) { HAND.loop = false; halt(HAND); } }, 130);
+  }
+  function enter(t, e) {
+    const m = t.m; relayEnd();
+    if (!m.frame || !m.frame.clip || REDUCED || S.oneId) return;
+    clearTimeout(H.timer);
+    const again = H.tile === t;
+    H.timer = setTimeout(async () => {
+      const mode = m.frame.play, K = marksOf(m.frame);
+      if (!again) await claim(t);
+      if (H.tile !== t || S.oneId) return;
+      H.mode = mode; H.leaving = false;
+      if (mode === 'scrub') { scrubTo(t, H.x ?? e.clientX); reveal(HAND); return; }
+      if (mode === 'hover') {
+        const from = again && stops.has(HAND) ? mirrored(HAND.currentTime, K.out, K.end, K.at, K.held) : K.at;
+        H.fwd = true; if (!again) reveal(HAND);
+        range(HAND, from, K.held, () => { H.fwd = false; });
+        return;
+      }
+      if (mode === 'loop') { HAND.loop = true; HAND.currentTime = 0; reveal(HAND); const p = HAND.play(); if (p) p.catch(() => {}); return; }
+      reveal(HAND); range(HAND, 0, K.end, null);
+    }, again ? 0 : 50);
+  }
+  function leave(t) {
+    clearTimeout(H.timer);
+    if (H.tile !== t) return;
+    if (H.mode === 'hover') {
+      const K = marksOf(t.m.frame), from = H.fwd ? mirrored(HAND.currentTime, K.at, K.held, K.out, K.end) : K.out;
+      H.fwd = false; H.leaving = true;
+      range(HAND, from, K.end, () => { if (H.leaving) release(t); });
+    } else release(t);
+  }
+  function scrubTo(t, x) {
+    const r = t.querySelector('.mv-h').getBoundingClientRect(), p = Math.min(1, Math.max(0, (x - r.left) / r.width));
+    HAND.seek(p * Math.max(0, (t.m.frame.ms / 1000) - 1 / 60));
+  }
+  const tileOf = (el) => { const t = el.closest && el.closest('.mv-t'); return t && t.m ? t : null; };
+  function wireTiles(host) {
+    host.addEventListener('pointerover', (e) => { if (e.pointerType !== 'mouse' && e.pointerType !== 'pen') return; const t = tileOf(e.target); if (t && !t.contains(e.relatedTarget)) enter(t, e); });
+    host.addEventListener('pointerout', (e) => { const t = tileOf(e.target); if (t && !t.contains(e.relatedTarget)) leave(t); });
+    host.addEventListener('pointermove', (e) => { H.x = e.clientX; const t = tileOf(e.target); if (t && t === H.tile && H.mode === 'scrub') scrubTo(t, e.clientX); });
+    host.addEventListener('click', (e) => {
+      const t = tileOf(e.target); if (!t) return; S.from = t;
+      // on a touch screen the frame answers the finger, the name opens the move
+      if (COARSE && e.target.closest('.mv-f') && t.m.frame && t.m.frame.clip) { e.preventDefault(); tap(t); }
+    });
+  }
+  async function tap(t) {
+    const same = H.tile === t, m = t.m, playing = same && !HAND.paused;
+    if (playing && m.frame.play === 'loop') return release(t);
+    if (!same) await claim(t);
+    reveal(HAND);
+    if (m.frame.play === 'loop') { HAND.loop = true; const p = HAND.play(); if (p) p.catch(() => {}); return; }
+    range(HAND, 0, marksOf(m.frame).end, m.frame.play === 'hover' ? () => release(t) : null);
+  }
+
+  /* ---------- the gallery ---------- */
+  const inView = (m) => m.vp.includes(S.vp) && (S.page == null || m.pg.includes(S.page));
+  const hay = (m) => m.hay || (m.hay = [m.name, m.sentence, m.trigger.word, m.technique, m.kind, m.time && m.time.staggerMs ? 'stagger' : ''].filter(Boolean).join(' ').toLowerCase());
+  const matches = (m) => inView(m) && (!S.q || hay(m).includes(S.q));
+  const ratio = (m) => (m.frame && m.frame.w && m.frame.h ? m.frame.w / m.frame.h : 1.6);
+  const frameOf = (m, big) => `<span class="mv-f">${m.frame && m.frame.poster ? `<img src="${esc(m.frame.poster)}" alt="" loading="${big ? 'eager' : 'lazy'}" decoding="async" draggable="false">` : ''}</span>`;
+  function drawRows(el, list, heights, gap) {
+    const W = el.clientWidth || el.parentElement.clientWidth;
+    const k = Math.min(1, W / 1320), hs = heights.map((h) => h * Math.max(.72, k));
+    const rows = justify(list.map((m) => ({ m, a: ratio(m) })), W, gap, hs);
+    el.innerHTML = '';
+    for (const r of rows) {
+      const row = document.createElement('div'); row.className = 'mv-r';
+      for (const t of r.items) {
+        const a = document.createElement('a'); a.className = 'mv-t'; a.href = `#m/${t.m.id}`; a.dataset.id = t.m.id; a.dataset.play = t.m.frame ? t.m.frame.play : 'none'; a.m = t.m;
+        a.style.width = `${t.w.toFixed(2)}px`; a.setAttribute('aria-label', t.m.name);
+        a.innerHTML = `<span class="mv-h" style="aspect-ratio:${ratio(t.m).toFixed(4)}">${frameOf(t.m, heights[0] > 250)}</span><span class="mv-n">${esc(t.m.name)}</span>`;
+        row.append(a);
+      }
+      el.append(row);
+    }
+  }
+  function topList() {
+    const on = MV.top.map((id) => byId.get(id)).filter((m) => m && matches(m));
+    if (on.length >= 6) return on;
+    const rest = MV.moves.filter(matches);   // moves are in rank order
+    return rest.length >= 6 ? rest.slice(0, 10) : [];
+  }
+  function draw() {
+    const lists = $('#mv-lists'); if (!lists) return;
+    const q = !!S.q, top = q ? [] : topList(), total = MV.moves.filter(matches).length;
+    root.classList.toggle('mv-searching', q);
+    $('#mv-home').classList.toggle('mv-few', !q && total < 6);
+    let html = '';
+    if (S.page != null) html += `<p class="mv-only">Only what ran on ${esc(MV.site.pages[S.page].label)}. <button type="button" id="mv-allpages">Show every page</button></p>`;
+    if (top.length) html += '<section class="mv-sec first" data-g="top"><h1 id="mv-h-top" tabindex="-1">What makes this site move</h1><div class="mv-g" data-list="top"></div></section>';
+    const parts = [];
+    for (const g of MV.groups) {
+      const list = g.moves.map((id) => byId.get(id)).filter((m) => m && matches(m));
+      if (!list.length) continue;
+      const lim = q ? list.length : S.shown[g.id] || 18, n = list.length;
+      parts.push({ g, list: list.slice(0, lim) });
+      html += `<section class="mv-sec small" data-g="${esc(g.id)}"><h2>${esc(g.title)}</h2><div class="mv-g" data-list="${esc(g.id)}"></div>${n > lim ? `<button type="button" class="mv-more" data-more="${esc(g.id)}">Show ${Math.min(24, n - lim)} more</button>` : ''}</section>`;
+    }
+    if (q && !parts.length) html += '<p class="mv-none">Nothing here moves like that.</p>';
+    if (!q) html += closeHTML();
+    lists.innerHTML = html;
+    if (top.length) drawRows($('[data-list="top"]', lists), top, [430, 300, 360], 28);
+    for (const p of parts) drawRows($(`[data-list="${p.g.id}"]`, lists), p.list, [180, 212], 20);
+    relayWatch(top);
+  }
+  function closeHTML() {
+    const feel = (MV.site.feel && MV.site.feel.sentences) || [], line = coverageLine();
+    if (!feel.length && !line) return '';
+    return `<div class="mv-end">${feel.map((s) => `<p>${esc(s)}</p>`).join('')}${line ? `<p class="cov">${esc(line)} <a href="#site">What could not be read</a></p>` : ''}</div>`;
+  }
+  const coverageLine = () => (MV.coverage && MV.coverage.line) || (SC.site && (SC.site.lead || [])[0]) || '';
+  function setVp(vp) {
+    if (vp === S.vp) return;
+    S.vp = vp; $$('[data-vp]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.vp === vp)));
+    S.shown = {}; draw(); heroStart();
+  }
+
+  /* ---------- the relay: one tile at a time, in rank order, until a hand arrives ---------- */
+  const R = { over: REDUCED, i: 0, tile: null, timer: 0, io: null, seen: false, list: [] };
+  function relayEnd() { if (R.over) return; R.over = true; clearTimeout(R.timer); if (R.tile) { R.tile = null; } RELAY.classList.remove('on'); halt(RELAY); RELAY.remove(); if (R.io) R.io.disconnect(); }
+  function relayNext() {
+    if (R.over || !R.seen || S.screen !== 'home' || document.hidden) return;
+    const tiles = R.list, n = tiles.length; if (!n) return;
+    const t = tiles[R.i++ % n]; R.tile = t;
+    const f = t.querySelector('.mv-f'), m = t.m;
+    RELAY.classList.remove('on'); f.append(RELAY);
+    setSrc(RELAY, m.frame.clip).then(() => {
+      if (R.over || R.tile !== t) return;
+      reveal(RELAY);
+      range(RELAY, 0, marksOf(m.frame).end, () => { RELAY.classList.remove('on'); R.tile = null; R.timer = setTimeout(relayNext, 600); });
+    });
+  }
+  function relayWatch(top) {
+    if (R.io) R.io.disconnect();
+    clearTimeout(R.timer); if (R.tile) { RELAY.classList.remove('on'); halt(RELAY); R.tile = null; }
+    if (R.over || !top.length) return;
+    const sec = $('[data-g="top"]');
+    // a scroll move never plays on a timer: its time axis is the scroll
+    R.list = $$('.mv-t', sec).filter((t) => t.m.frame && t.m.frame.clip && t.m.frame.play !== 'scrub');
+    sec.addEventListener('pointerenter', relayEnd, { once: true });
+    R.io = new IntersectionObserver((es) => { const on = es[es.length - 1].isIntersecting; if (on && !R.seen) { R.seen = true; relayNext(); } else if (on && !R.tile) { relayNext(); } else if (!on) R.seen = false; }, { threshold: .2 });
+    R.io.observe(sec);
+  }
+
+  /* ---------- the page, on top ---------- */
+  const PG = { segs: [], i: 0, timer: 0, io: null, visible: true, on: false };
+  const heroOf = () => { const p = MV.site.pages[S.pageI]; return p && p.hero ? p.hero[S.vp] || null : null; };
+  function heroSegs(h) {
+    const out = [];
+    if (h.load) out.push({ src: h.video, a: h.load[0], b: h.load[1] });
+    if (h.scroll) out.push({ src: h.scrollVideo || h.video, a: h.scroll[0], b: h.scroll[1] });
+    return out;
+  }
+  function heroStop() { clearTimeout(PG.timer); PG.on = false; halt(PAGE); }
+  async function heroSeg() {
+    if (!PG.on) return;
+    const s = PG.segs[PG.i];
+    if (!s) { PG.timer = setTimeout(() => { PG.i = 0; heroSeg(); }, 3000); return; }   // rests on the last frame, then again
+    await setSrc(PAGE, s.src);
+    if (!PG.on) return;
+    PG.i++; range(PAGE, s.a, s.b, heroSeg);
+  }
+  function heroStart() {
+    heroStop();
+    const box = $('#mv-pagef'), cap = $('#mv-cap'), h = heroOf();
+    if (!box) return;
+    box.hidden = cap.hidden = !h;
+    if (!h) return;
+    PG.segs = heroSegs(h); PG.i = 0;
+    if (h.poster) PAGE.poster = h.poster; else PAGE.removeAttribute('poster');
+    box.append(PAGE); PAGE.classList.add('on');
+    if (REDUCED) { setSrc(PAGE, PG.segs[0] && PG.segs[0].src); return; }
+    if (PG.segs.length && PG.visible && S.screen === 'home') { PG.on = true; heroSeg(); }
+  }
+
+  /* ---------- screens ---------- */
+  function shell() {
+    const sec = $('#moves');
+    sec.innerHTML = `<div id="mv-home"><div class="mv-wrap">
+      <button type="button" class="mv-page" id="mv-pagef" aria-label="The recorded page, full window"></button>
+      <p class="mv-cap" id="mv-cap"><button type="button" id="mv-pagebtn">The page</button>${MV.site.pages.length > 1 ? `<select id="mv-pagesel" aria-label="Page">${MV.site.pages.map((p, i) => `<option value="${i}">${esc(p.label)}</option>`).join('')}</select>` : ''}</p>
+      <div id="mv-lists"></div></div></div>
+      <div id="mv-sitescreen" hidden></div>
+      <div class="mv-one" id="mv-one" hidden></div>
+      <div class="mv-full" id="mv-full" hidden></div>`;
+    wireTiles($('#mv-lists'));
+    $('#mv-pagef').addEventListener('click', () => { location.hash = 'page'; });
+    $('#mv-pagebtn').addEventListener('click', () => { location.hash = 'page'; });
+    const sel = $('#mv-pagesel'); if (sel) sel.addEventListener('change', () => { S.pageI = +sel.value; heroStart(); });
+    $('#mv-lists').addEventListener('click', (e) => {
+      const b = e.target.closest('[data-more]');
+      if (b) { const g = b.dataset.more; S.shown[g] = (S.shown[g] || 18) + 24; draw(); }
+      if (e.target.id === 'mv-allpages') { S.page = null; draw(); }
+    });
+    PG.io = new IntersectionObserver((es) => { PG.visible = es[es.length - 1].isIntersecting; if (S.screen !== 'home') return; if (PG.visible && !PG.on && !REDUCED) heroStart(); else if (!PG.visible) heroStop(); }, { threshold: .05 });
+    PG.io.observe($('#mv-pagef'));
+    $('#mv-one').addEventListener('click', onOneClick);
+    $('#mv-one').addEventListener('wheel', onOneWheel, { passive: false });
+  }
+  const parse = () => {
+    let s = ''; try { s = decodeURIComponent(location.hash.slice(1)); } catch (e) { /* a broken hash reads as the first screen */ }
+    if (s.startsWith('m/')) return { screen: 'one', id: s.slice(2) };
+    if (s === 'site') return { screen: 'site' };
+    if (s === 'page') return { screen: 'page' };
+    if (!s || s === 'moves') return { screen: 'home' };
+    return { screen: 'other' };
+  };
+  async function routeMoves() {
+    const r = parse(), was = S.screen;
+    if (r.screen === 'one' && !byId.has(r.id)) { location.replace('#moves'); return; }
+    S.screen = r.screen;
+    root.classList.toggle('mv-other', r.screen === 'other');
+    const nav = $('#secnav');
+    for (const a of $$('a', nav)) {
+      const on = a.dataset.s === (r.screen === 'site' ? 'site' : r.screen === 'other' ? (CUR.view === 'overview' ? 'overview' : CUR.view) : 'moves');
+      if (on) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
+    }
+    const home = $('#mv-home'), site = $('#mv-sitescreen'), full = $('#mv-full');
+    if (r.screen !== 'site') site.hidden = true;
+    if (r.screen !== 'page') { full.hidden = true; pageOff(); }
+    if (r.screen !== 'one' && S.oneId) await closeOne();
+    if (r.screen === 'other') { home.hidden = false; heroStop(); relayEnd(); return; }
+    if (r.screen === 'site') { home.hidden = true; heroStop(); renderSite(); site.hidden = false; scrollTo(0, 0); document.title = `Site, REVA card: ${MV.site.host}`; return; }
+    home.hidden = false;
+    if (was !== 'home' && was !== 'one' && !$('#mv-lists').firstChild) draw();
+    if (r.screen === 'home') { document.title = `Moves, REVA card: ${MV.site.host}`; if (was !== 'one' && was !== 'home') { draw(); heroStart(); } else if (was === 'one') heroStart(); return; }
+    heroStop();
+    if (r.screen === 'page') return pageOn();
+    return openOne(byId.get(r.id));
+  }
+
+  /* ---------- one motion ---------- */
+  const loadDoc = (id) => new Promise((ok) => {
+    if (docs[id]) return ok(docs[id]);
+    const s = document.createElement('script'); s.src = `moves/${id}.js`;
+    s.onload = () => { s.remove(); ok(docs[id] || null); }; s.onerror = () => { s.remove(); ok(null); };
+    document.head.append(s);
+  });
+  window.__move = (id, d) => { docs[id] = d; };
+  const O = { m: null, d: null, frame: null, holder: null, seen: false, press: false, speed: 1, inPage: false, inTile: null, t: 0 };
+  const sentencePart = (x) => x.replace(/^./, (c) => c.toUpperCase());
+  function setsOff(m) {
+    const tr = m.trigger || {}, sc = tr.scroll;
+    if (sc && sc.start) { const p = /(\d+)%/.exec(sc.start); return p ? `As the top of the element reaches ${p[1]} % of the screen${sc.scrub ? ', tied to scroll' : ''}` : (tr.word || ''); }
+    const lag = tr.lagMs, w = tr.word || '';
+    return lag > 40 ? `${w}, ${lag} ms later` : w;
+  }
+  function takes(m) {
+    const t = m.time || {}, bits = [];
+    if ((m.trigger || {}).kind === 'scroll-linked') return 'As long as the scroll lasts';
+    if (t.ms) bits.push(secs(t.ms));
+    if (t.delayMs) bits.push(`after ${secs(t.delayMs)}`);
+    if (t.staggerMs) bits.push(`${Math.round(t.staggerMs)} ms apart`);
+    return bits.join(', ');
+  }
+  function changesText(d) {
+    const out = [];
+    for (const g of (d.groups || []).slice(0, 3)) {
+      const seen = new Set(), acts = [];
+      for (const c of g.changes || []) { const w = changeWords(c); if (!seen.has(w) && !/ 0( |$)/.test(w)) { seen.add(w); acts.push(w); } }
+      const many = g.count > 1, verb = (w) => (many ? w.replace(/^(rise|drop|slide|fade|turn|change|draw|wipe|resize)s\b/, '$1') : w);
+      if (acts.length) out.push(`${g.name}${many && !/s$/.test(g.name) ? 's' : ''} ${acts.slice(0, 3).map(verb).join(', ')}.`);
+    }
+    return out.join(' ');
+  }
+  const CURVE = { W: 160, H: 104, P: 10 };
+  /** One curve. The first one drawn carries the playhead, which follows the clip. `span`: a time axis shared with other parts, over
+      which the curve holds its last value, as the part rests once it is done. */
+  function curveSVG({ c: c0, dots }, { head = true, span = null, label = 'The curve, with recorded frames as dots' } = {}) {
+    const end = c0[c0.length - 1], c = span && end[0] < span ? [...c0, [span, end[1]]] : c0;
+    const xs = c.map((p) => p[0]).concat(dots.map((p) => p[0])), ys = c.map((p) => p[1]).concat(dots.map((p) => p[1]));
+    const x0 = Math.min(0, ...xs), x1 = (Math.max(...xs) - x0) || 1, lo = Math.min(0, ...ys), hi = Math.max(1, ...ys), { W, H, P } = CURVE;
+    const X = (x) => ((x - x0) / x1) * W, Y = (y) => H - P - ((y - lo) / ((hi - lo) || 1)) * (H - 2 * P);
+    if (head) O.curve = { c, x1: x1 + x0, X, Y };
+    const d = c.map((p, i) => `${i ? 'L' : 'M'}${X(p[0]).toFixed(1)} ${Y(p[1]).toFixed(1)}`).join('');
+    const step = Math.max(1, Math.ceil(dots.length / 40));
+    return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(label)}">${dots.filter((_, i) => i % step === 0).map((p) => `<circle class="d" r="1.6" cx="${X(p[0]).toFixed(1)}" cy="${Y(p[1]).toFixed(1)}"/>`).join('')}<path d="${d}"/>${head ? `<line id="mv-ph" x1="0" x2="0" y1="0" y2="${H}"/><circle class="h" id="mv-pd" r="3.2" cx="0" cy="${Y(c[0][1]).toFixed(1)}"/>` : ''}</svg>`;
+  }
+  const curveName = (m) => {
+    const c = m.curve || {}; if (c.name && c.kind !== 'keyframes') return c.name;
+    return { spring: 'A spring', keyframes: 'Recorded progress, frame by frame', map: 'Mapped to scroll', steps: 'Instant', tween: 'A tween' }[c.kind] || '';
+  };
+  /** The name of one part's curve. */
+  function lawWord(g, k) {
+    const l = g.law || {};
+    if (k.recorded || l.class === 'keyframes') return 'Recorded progress';
+    if (l.class === 'tween') return l.named || (l.bezier ? `cubic-bezier(${l.bezier.map((v) => +(+v).toFixed(2)).join(', ')})` : 'A tween');
+    return { spring: 'A spring', smoothing: 'Smoothing', map: `Mapped to scroll${l.shape ? `, ${l.shape}` : ''}`, steps: 'Instant' }[l.class] || '';
+  }
+  /** The curve area: the lead's curve, the curves of parts that move differently, or, for Pictures only, why there is none. */
+  function curveHTML(m, d, st) {
+    if (st.key === 'pictures') return `<p class="mv-why">${esc(st.reason)}</p>`;
+    const parts = d ? partsOf(d.groups) : [];
+    O.lead = parts[0] ? parts[0].g : null;
+    if (!parts.length) return esc(curveName(m));
+    if (parts.length === 1) {
+      const k = parts[0].k, name = k.recorded && m.curve && m.curve.kind !== 'keyframes' ? 'Recorded progress' : curveName(m) || lawWord(parts[0].g, k);
+      return `<div class="mv-curve">${curveSVG(k)}<span>${esc(name)}</span></div>`;
+    }
+    // one time axis for all, so a part that takes longer looks longer; a scroll map is on scroll, not time, and keeps its own
+    const span = parts.some((p) => (p.g.law || {}).class === 'map') ? null : Math.max(...parts.map((p) => p.k.c[p.k.c.length - 1][0]));
+    return `<div class="mv-parts">${parts.map((p, i) => `<figure>${curveSVG(p.k, { head: i === 0, span, label: `${p.g.name}: its curve` })}<figcaption>${esc(p.g.name)}<span>${esc(lawWord(p.g, p.k))}</span></figcaption></figure>`).join('')}</div>`;
+  }
+  /** The move's status, from the index (src/scan/moves/contract.js, moveStatus). An older index has none: its proof stands in. */
+  const statusOf = (m) => m.status || ({ declared: { key: 'exact', word: 'Exact' }, fitted: { key: 'measured', word: 'Measured' }, sampled: { key: 'recorded', word: 'Recorded' } }[(m.proof || {}).source] || { key: 'pictures', word: 'Pictures only', reason: m.gap || 'Its values could not be read.' });
+  const num = (n) => Number(n).toLocaleString('en-US');
+  /** The size of what moves, on the screen. Said for Pictures only, and for a whole-screen move whose parts reach far off the screen. */
+  function sizeText(m, st) {
+    const z = m.size; if (!z) return '';
+    const whole = z.w >= z.screen[0] - 1 && z.h >= z.screen[1] - 1;
+    const far = z.off && ['change', 'load', 'gate'].includes(m.kind);
+    if (st.key !== 'pictures' && !far) return '';
+    const here = whole ? `The whole screen, ${num(z.screen[0])} × ${num(z.screen[1])} px` : `${num(z.w)} × ${num(z.h)} px`;
+    return z.off ? `${here}. Some parts sit far off the screen, ${num(z.off[0])} × ${num(z.off[1])} px in all, so the frame shows the screen only.` : here;
+  }
+  function restHTML(m, d) {
+    const rows = [];
+    const where = (d && d.where) || [], places = where.reduce((a, w) => a + (w.count || 0), 0), pages = new Set(where.map((w) => w.page)).size;
+    if (places > 1) rows.push(`<div><h3>Where else</h3><p>${places} places, ${pages === 1 ? 'one page' : `${pages} pages`}</p>${((d && d.variants) || []).slice(0, 4).map((v) => `<p><a href="#m/${esc(v.id)}">${esc(sentencePart(v.differs || 'A variant'))}</a></p>`).join('')}</div>`);
+    const ph = m.phone || {};
+    const phoneBody = ph.status === 'none' ? '<p>Does not happen on phone</p>'
+      : ph.status === 'not-recorded' ? '<p>Phone was not recorded here</p>'
+      : ph.clip ? `<div class="mv-pclip" style="aspect-ratio:${ph.w || 390}/${ph.h || 844}"><img src="${esc(ph.poster || '')}" alt="" loading="lazy"></div>`
+      : ph.status === 'own' && ph.id && byId.has(ph.id) ? `<p><a href="#m/${esc(ph.id)}">It moves differently there</a></p>`
+      : ph.status === 'own' ? '<p>It moves differently there</p>' : ph.status === 'same' ? '<p>The same on phone</p>' : '';
+    if (!m.vp.includes('desktop')) rows.push('<div><h3>On phone</h3><p>Happens on phone only</p></div>');
+    else if (phoneBody) rows.push(`<div><h3>On phone</h3>${phoneBody}</div>`);
+    if (d) rows.push(`<details><summary>Details</summary><div class="mv-det">${detailsHTML(d)}</div></details>`);
+    return `<div class="mv-rest">${rows.join('')}</div>`;
+  }
+  function detailsHTML(d) {
+    const out = [];
+    if (d.selector && d.selector.lead) out.push(`<p>Lead element <code>${esc(d.selector.lead)}</code></p>`);
+    for (const g of d.groups || []) {
+      const law = g.law || {}, fit = g.fit || {}, bits = [];
+      if (law.class) bits.push(law.class);
+      if (law.ms) bits.push(`${Math.round(law.ms)} ms`);
+      if (law.delayMs) bits.push(`${Math.round(law.delayMs)} ms delay`);
+      if (law.named) bits.push(law.named);
+      if (law.bezier) bits.push(`cubic-bezier(${law.bezier.join(', ')})`);
+      if (fit.rmsPct != null) bits.push(`${fit.rmsPct} % off`);
+      if (fit.runnerUp) bits.push(`next best ${fit.runnerUp}`);
+      if (g.checked) bits.push(`checked on ${g.checked.instances} more, worst ${g.checked.worstPct} %`);
+      const ch = (g.changes || []).filter((c) => !c.follows || true).slice(0, 6).map((c) => `${esc(c.property)} ${esc(String(c.from))} to ${esc(String(c.to))}${c.unit ? ` ${esc(c.unit)}` : ''}`).join('; ');
+      out.push(`<h4>${esc(g.name)}${g.count > 1 ? `, ${g.count}` : ''}</h4><p>${esc(bits.join(', '))}</p>${ch ? `<p>${ch}</p>` : ''}${g.selector ? `<p><code>${esc(g.selector)}</code></p>` : ''}`);
+    }
+    return out.join('');
+  }
+  function oneHTML(m, d) {
+    const st = statusOf(m), changes = d ? changesText(d) : '', size = sizeText(m, st);
+    const facts = [['Sets it off', esc(setsOff(m))], ['Takes', esc(takes(m))], ['Curve', curveHTML(m, d, st)]];
+    if (changes) facts.push(['Changes', esc(changes)]);
+    if (size) facts.push(['Size', esc(size)]);
+    const scene = d && d.gl;
+    const glLine = scene ? `<p class="mv-gap">${esc([scene.technique, (scene.uniforms || []).slice(0, 4).map((u) => `${u.name} follows ${u.driver}`).join(', ')].filter(Boolean).join('. '))}</p>` : '';
+    const hasCode = d && d.code && (d.code.css || d.code.gsap || d.code.motion);
+    // the buttons show whenever there is something to copy; what it cannot carry is a note under them
+    const copy = d && (d.timing || hasCode || d.prompt);
+    return `<h1 tabindex="-1" id="mv-one-h">${esc(m.name)}</h1><p class="mv-sent">${esc(m.sentence || '')}</p>
+      <p class="mv-status" data-status="${esc(st.key)}"><b>${esc(st.word)}.</b>${st.line ? ` ${esc(st.line)}` : ''}</p>
+      <dl class="mv-facts">${facts.filter((f) => f[1]).map(([a, b]) => `<div><dt>${esc(a)}</dt><dd>${b}</dd></div>`).join('')}</dl>
+      ${glLine}
+      ${copy ? `<div class="mv-copy" id="mv-copy">${d.timing ? '<button type="button" data-copy="timing">Timing</button>' : ''}${hasCode ? '<button type="button" data-code aria-expanded="false">Code</button>' : ''}${d.prompt ? '<button type="button" data-copy="prompt">For my agent</button>' : ''}</div>${st.note ? `<p class="mv-claim">${esc(st.note)}</p>` : ''}${d.proofLine ? `<p class="mv-claim">${esc(d.proofLine)}</p>` : ''}<div class="mv-code" id="mv-code" hidden></div>` : ''}
+      ${restHTML(m, d)}`;
+  }
+  const PLAYI = '<svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 1l11 6-11 6z"/></svg>', PAUSEI = '<svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 1h4v12H2zM8 1h4v12H8z"/></svg>';
+  function ctlHTML(m) {
+    const K = m.frame ? marksOf(m.frame) : null, press = K && K.press != null;
+    return `<button type="button" class="pl" id="mv-pl" aria-label="Play">${PLAYI}</button>
+      <button type="button" data-speed="1" aria-pressed="true">1</button><button type="button" data-speed=".25" aria-pressed="false" aria-label="A quarter of the speed">¼</button>
+      <div class="mv-track" id="mv-track" role="slider" tabindex="0" aria-label="Time in the clip" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i></i><b id="mv-prog"></b></div>
+      ${press ? '<button type="button" id="mv-press">Press</button>' : ''}${m.seen ? '<button type="button" id="mv-inpage" aria-pressed="false">See it in the page</button>' : ''}`;
+  }
+  function fitBig(ratio) {
+    const big = $('#mv-big'); if (!big) return;
+    const maxH = innerHeight - $('.side').offsetHeight - 104, w = big.parentElement.clientWidth, h = Math.min(maxH, w / ratio);
+    big.style.width = `${Math.round(h * ratio)}px`; big.style.height = `${Math.round(h)}px`;
+  }
+  async function openOne(m) {
+    clearTimeout(H.timer);
+    const one = $('#mv-one'), first = S.oneId == null, d = await loadDoc(m.id);
+    if (parse().id !== m.id) return;
+    O.m = m; O.d = d; O.press = false; O.inPage = false; O.curve = null; O.lead = null;
+    relayEnd();
+    const r = m.frame ? m.frame.w / m.frame.h : 1.6;
+    // the same element grows: the frame leaves its tile, and goes back there on the way out
+    if (first) S.y = scrollY;
+    if (!first && O.frame) { HAND.classList.remove('on'); HAND.remove(); if (O.holder) O.holder.append(O.frame); else O.frame.remove(); O.holder = null; }
+    const source = first ? (S.from && S.from.m === m ? S.from : $(`.mv-t[data-id="${m.id}"]`)) : null;
+    let rect = null, frame = null;
+    if (source && !REDUCED) { const b = source.querySelector('.mv-h').getBoundingClientRect(); if (b.bottom > 0 && b.top < innerHeight) { rect = b; frame = source.querySelector('.mv-f'); O.holder = source.querySelector('.mv-h'); } }
+    if (!frame) { O.holder = null; const t = document.createElement('div'); t.innerHTML = frameOf(m, true); frame = t.firstChild; }
+    one.hidden = false; root.classList.add('mv-lock', 'mv-solid');
+    one.innerHTML = `<div class="mv-onew"><div class="mv-left"><div class="mv-big" id="mv-big"></div><div class="mv-ctl" id="mv-ctl">${ctlHTML(m)}</div></div><div class="mv-right${first ? ' in' : ''}" id="mv-right">${oneHTML(m, d)}</div></div>`;
+    one.scrollTop = 0;
+    const big = $('#mv-big'); fitBig(r); big.append(frame); O.frame = frame;
+    if (!m.frame || !m.frame.clip) { const st = statusOf(m); big.insertAdjacentHTML('beforeend', `<div class="mv-noclip">${esc(st.clip || st.reason || 'No clip for this move.')}</div>`); }
+    S.oneId = m.id;
+    document.title = `${m.name}, REVA card: ${MV.site.host}`;
+    wireCtl(m);
+    if (rect) await flip(frame, rect, big.getBoundingClientRect(), 420);
+    if (S.oneId !== m.id) return;
+    startClip(m, frame);
+    const h = $('#mv-one-h'); if (h) h.focus({ preventScroll: true });
+  }
+  function flip(frame, from, to, ms) {
+    const s = from.width / (to.width || 1), x = from.left - to.left, y = from.top - to.top;
+    const a = frame.animate([{ transform: `translate(${x}px,${y}px) scale(${s})`, borderRadius: `${14 / s}px` }, { transform: 'none', borderRadius: '14px' }].map((k) => ({ ...k, transformOrigin: '0 0' })), { duration: ms, easing: 'cubic-bezier(.22,1,.36,1)' });
+    return a.finished.catch(() => {});
+  }
+  function flipBack(frame, from, to, ms) {
+    const s = to.width / (from.width || 1), x = to.left - from.left, y = to.top - from.top;
+    const a = frame.animate([{ transform: 'none', borderRadius: '14px', transformOrigin: '0 0' }, { transform: `translate(${x}px,${y}px) scale(${s})`, borderRadius: `${14 / s}px`, transformOrigin: '0 0' }], { duration: ms, easing: 'cubic-bezier(.22,1,.36,1)', fill: 'forwards' });
+    return a.finished.catch(() => {}).then(() => a);
+  }
+  async function closeOne() {
+    const one = $('#mv-one'), frame = O.frame, holder = O.holder;
+    S.oneId = null; playhead = null; H.tile = null; H.mode = null;
+    $('#mv-right')?.classList.remove('in');
+    if (S.y != null) { scrollTo(0, S.y); S.y = null; }
+    if (holder && holder.isConnected && !REDUCED && frame) {
+      const from = frame.getBoundingClientRect(), to = holder.getBoundingClientRect();
+      if (to.bottom > 0 && to.top < innerHeight) {
+        for (const el of [$('#mv-right'), $('#mv-ctl')]) if (el) el.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 120, fill: 'forwards' });
+        one.animate([{ backgroundColor: getComputedStyle(one).backgroundColor }, { backgroundColor: 'transparent' }], { duration: 320, fill: 'forwards' }).finished.catch(() => {}).then((a) => a && a.cancel());
+        const a = await flipBack(frame, from, to, 320);
+        holder.append(frame); a.cancel();
+      } else holder.append(frame);
+    } else if (holder) holder.append(frame);
+    HAND.loop = false; HAND.playbackRate = 1; HAND.classList.remove('on'); HAND.style.objectFit = ''; halt(HAND);
+    if (HAND.parentNode) HAND.remove();
+    one.getAnimations().forEach((a) => a.cancel());
+    one.hidden = true; one.innerHTML = ''; root.classList.remove('mv-lock', 'mv-solid'); O.frame = null; O.m = null;
+  }
+  function startClip(m, frame) {
+    if (!m.frame || !m.frame.clip) return;
+    H.tile = null; H.mode = null;
+    HAND.loop = false; HAND.playbackRate = O.speed; if (HAND.parentNode !== frame) { HAND.classList.remove('on'); frame.append(HAND); }
+    setSrc(HAND, m.frame.clip).then(() => {
+      if (S.oneId !== m.id) return;
+      reveal(HAND); O.t = 0;
+      startHead(m);
+      if (REDUCED) { HAND.currentTime = 0; return; }
+      // a scroll move waits for the wheel; anything else plays once, then waits
+      if (m.frame.play === 'scrub') { HAND.currentTime = 0; return; }
+      playAll();
+    });
+  }
+  const dur = () => (O.inPage && O.m.seen ? O.m.seen.t1 - O.m.seen.t0 : (O.m.frame ? O.m.frame.ms / 1000 : 0));
+  const base = () => (O.inPage && O.m.seen ? O.m.seen.t0 : 0);
+  function setPlayIcon(on) { const b = $('#mv-pl'); if (b) { b.innerHTML = on ? PAUSEI : PLAYI; b.setAttribute('aria-label', on ? 'Pause' : 'Play'); } }
+  function playAll() {
+    const K = O.m.frame ? marksOf(O.m.frame) : null;
+    const a = base(), b = a + dur(), at = HAND.currentTime >= b - .05 || HAND.currentTime < a ? a : HAND.currentTime;
+    if (O.press && K) return range(HAND, K.press, K.out, () => setPlayIcon(false)), setPlayIcon(true);
+    setPlayIcon(true); range(HAND, at, b, () => setPlayIcon(false));
+  }
+  function startHead(m) {
+    const prog = $('#mv-prog'), lead = O.lead, t0 = lead && Number.isFinite(lead.clipT0) ? lead.clipT0 : null, step = (m.frame && m.frame.step) || 1;
+    const ph = $('#mv-ph'), pd = $('#mv-pd'), cv = O.curve;
+    playhead = () => {
+      const D = dur() || 1, t = HAND.currentTime - base(), p = Math.min(1, Math.max(0, t / D));
+      if (prog) prog.style.transform = `scaleX(${p})`;
+      if (ph && cv) {
+        // the playhead follows the picture's own time: frames of the clip back to the law's time
+        const ms = O.inPage ? p * cv.x1 : t0 != null ? (t - t0) * 1000 * step : p * cv.x1, x = cv.X(Math.min(cv.x1, Math.max(0, ms)));
+        const c = cv.c; let y = c[c.length - 1][1];
+        if (ms <= c[0][0]) y = c[0][1]; else for (let i = 1; i < c.length; i++) if (ms < c[i][0]) { const a = c[i - 1], b = c[i], k = (ms - a[0]) / ((b[0] - a[0]) || 1); y = a[1] + (b[1] - a[1]) * k; break; }
+        ph.setAttribute('x1', x); ph.setAttribute('x2', x); pd.setAttribute('cx', x); pd.setAttribute('cy', cv.Y(y));
+      }
+    };
+    wake();
+  }
+  function wireCtl(m) {
+    const ctl = $('#mv-ctl');
+    ctl.addEventListener('click', (e) => {
+      const sp = e.target.closest('[data-speed]');
+      if (sp) { O.speed = +sp.dataset.speed; HAND.playbackRate = O.speed; $$('[data-speed]', ctl).forEach((b) => b.setAttribute('aria-pressed', String(b === sp))); }
+      if (e.target.closest('#mv-pl')) { if (!HAND.paused) { halt(HAND); setPlayIcon(false); } else { O.press = false; pressBtn(); playAll(); } }
+      if (e.target.closest('#mv-press')) { O.press = true; pressBtn(); playAll(); }
+      if (e.target.closest('#mv-inpage')) toggleInPage();
+    });
+    const tr = $('#mv-track'), at = (e) => { const r = tr.getBoundingClientRect(); halt(HAND); setPlayIcon(false); HAND.seek(base() + Math.min(1, Math.max(0, (e.clientX - r.left) / r.width)) * dur()); wake(); };
+    tr.addEventListener('pointerdown', (e) => { tr.setPointerCapture(e.pointerId); tr.classList.add('drag'); at(e); });
+    tr.addEventListener('pointermove', (e) => { if (tr.classList.contains('drag')) at(e); });
+    tr.addEventListener('pointerup', () => tr.classList.remove('drag'));
+    tr.addEventListener('keydown', (e) => { if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') { e.stopPropagation(); e.preventDefault(); halt(HAND); HAND.seek(Math.max(base(), HAND.currentTime + (e.key === 'ArrowLeft' ? -1 : 1) / 60)); } });
+  }
+  const pressBtn = () => { const b = $('#mv-press'); if (b) b.setAttribute('aria-pressed', String(O.press)); };
+  async function toggleInPage() {
+    const m = O.m; if (!m.seen) return;
+    const K = HAND.currentTime - base(), p = dur() ? Math.min(1, Math.max(0, K / dur())) : 0;
+    O.inPage = !O.inPage; halt(HAND);
+    const b = $('#mv-inpage'); if (b) b.setAttribute('aria-pressed', String(O.inPage));
+    const big = $('#mv-big'), ratio = O.inPage ? (S.vp === 'phone' ? 390 / 844 : 1.6) : m.frame.w / m.frame.h;
+    fitBig(ratio);
+    await setSrc(HAND, O.inPage ? m.seen.file : m.frame.clip);
+    // the same moment in both pictures
+    HAND.currentTime = base() + p * dur(); HAND.playbackRate = O.speed;
+    if (big) playAll();
+  }
+  function step(dir) {
+    const list = MV.moves.filter(matches), i = list.indexOf(O.m); if (i < 0) return;
+    const n = list[(i + dir + list.length) % list.length]; S.from = null; location.hash = `m/${n.id}`;
+  }
+  function onOneClick(e) {
+    if (e.target.id === 'mv-one' || e.target.classList.contains('mv-onew')) { location.hash = 'moves'; return; }
+    const cp = e.target.closest('[data-copy]');
+    if (cp && O.d) { copy(cp.dataset.copy === 'timing' ? O.d.timing : agentText(O.d.prompt), cp); return; }
+    const c = e.target.closest('[data-code]');
+    if (c) { const on = c.getAttribute('aria-expanded') !== 'true'; c.setAttribute('aria-expanded', String(on)); const box = $('#mv-code'); box.hidden = !on; if (on) drawCode(O.tab || 'css'); return; }
+    const t = e.target.closest('[data-tab]');
+    if (t) { drawCode(t.dataset.tab); return; }
+    if (e.target.closest('[data-copycode]') && O.d) copy(O.d.code[O.tab], e.target);
+  }
+  function drawCode(tab) {
+    const code = O.d.code, tabs = [['css', 'CSS'], ['gsap', 'GSAP'], ['motion', 'Motion']].filter(([k]) => code[k]);
+    if (!tabs.some(([k]) => k === tab)) tab = tabs[0] ? tabs[0][0] : 'css';
+    O.tab = tab;
+    const notes = (O.d.notes || []).filter((n) => !/^Selectors are placeholders/.test(n));
+    $('#mv-code').innerHTML = `<div class="mv-tabs">${tabs.map(([k, w]) => `<button type="button" data-tab="${k}" aria-pressed="${k === tab}">${w}</button>`).join('')}<button type="button" class="cp" data-copycode>Copy</button></div><pre tabindex="0"><code>${esc(code[tab] || '')}</code></pre>${notes.map((n) => `<p class="mv-note">${esc(n)}</p>`).join('')}`;
+  }
+  /** The prompt names its poster relative to the folder; the folder may have moved, so the absolute path is worked out here. */
+  function agentText(p) {
+    const dir = decodeURIComponent(location.pathname.replace(/[^/]*$/, ''));
+    return String(p || '').replace(/^(Reference frames|Shader sources \(not in this text\)): (\S+)/gm, (a, k, f) => (f === 'the' ? a : `${k}: ${dir}${f}`));
+  }
+  async function copy(text, btn) {
+    const word = btn.textContent;
+    try { await navigator.clipboard.writeText(text); }
+    catch (e) { const t = document.createElement('textarea'); t.value = text; document.body.append(t); t.select(); try { document.execCommand('copy'); } catch (x) { /* the text stays on screen under Code */ } t.remove(); }
+    btn.textContent = 'Copied'; setTimeout(() => { btn.textContent = word; }, 1200);
+  }
+  function onOneWheel(e) {
+    const m = O.m; if (!m || !m.frame || m.frame.play !== 'scrub' || !e.target.closest('#mv-big')) return;
+    e.preventDefault(); halt(HAND); setPlayIcon(false);
+    HAND.seek(Math.min(base() + dur() - 1 / 60, Math.max(base(), HAND.currentTime + e.deltaY / 1400)));
+    wake();
+  }
+
+  /* ---------- The page ---------- */
+  const F = { t: 0, a: 0, b: 0, ready: false };
+  async function pageOn() {
+    const full = $('#mv-full'), h = heroOf(); full.hidden = false; root.classList.add('mv-solid');
+    if (!h) { full.innerHTML = '<div class="box"><p>No recording of this page.</p></div>'; return; }
+    const segs = heroSegs(h), r = S.vp === 'phone' ? 390 / 844 : 1.6, room = Math.min(innerWidth - 80, (innerHeight - $('.side').offsetHeight - 32) * r);
+    full.innerHTML = `<div class="box" id="mv-fbox" style="width:${Math.round(room)}px;height:${Math.round(room / r)}px"></div><p id="mv-fhint">Scroll to drive the recording.</p>`;
+    PAGE.loop = false; PAGE.classList.add('on'); PAGE.style.position = 'static'; $('#mv-fbox').append(PAGE);
+    document.title = `The page, REVA card: ${MV.site.host}`;
+    const go = (s) => setSrc(PAGE, s.src).then(() => { F.a = s.a; F.b = s.b; F.t = s.a; F.ready = true; });
+    if (!REDUCED && segs[0]) { await setSrc(PAGE, segs[0].src); if (S.screen !== 'page') return; range(PAGE, segs[0].a, segs[0].b, () => { const s = segs[1]; if (s && S.screen === 'page') go(s).then(() => { PAGE.currentTime = s.a; }); }); }
+    else if (segs[1]) go(segs[1]);
+    F.wheel = (e) => {
+      if (!F.ready && segs[1]) { halt(PAGE); go(segs[1]); }
+      e.preventDefault();
+      if (!F.ready) return;
+      F.t = Math.min(F.b - 1 / 60, Math.max(F.a, F.t + e.deltaY / 900)); PAGE.seek(F.t);
+      const hint = $('#mv-fhint'); if (hint) hint.style.opacity = 0;
+    };
+    full.addEventListener('wheel', F.wheel, { passive: false });
+  }
+  function pageOff() {
+    const full = $('#mv-full'); if (!S.oneId) root.classList.remove('mv-solid'); if (F.wheel) { full.removeEventListener('wheel', F.wheel); F.wheel = null; }
+    F.ready = false; PAGE.style.position = ''; if (PAGE.parentNode && PAGE.parentNode.id === 'mv-fbox') { PAGE.remove(); full.innerHTML = ''; }
+  }
+
+  /* ---------- Site ---------- */
+  const CLASSES = { rule: "REVA's own rules", limit: 'Limits of this scan', notBuilt: 'Not built yet', broke: 'What broke', impossible: 'What no tool can read' };
+  function renderSite() {
+    const feel = (MV.site.feel && MV.site.feel.sentences) || [], cov = MV.coverage || {}, sc = MV.scan || {};
+    const counts = MV.site.pages.map((_, i) => MV.moves.filter((m) => m.pg.includes(i)).length);
+    const reasons = (cov.reasons || []).filter((r) => (r.words || []).length);
+    const flat = reasons.length ? '' : `<ul>${(MV.missing || []).map((p) => `<li>${esc(p)}</li>`).join('')}</ul>`;
+    const made = [sc.date && `Recorded on ${sc.date}`, sc.engine && `With ${sc.engine === 'cft' ? 'Chrome for Testing' : sc.engine}`, sc.wallMs && `In ${Math.round(sc.wallMs / 60000)} minutes`, MV.tally && `${MV.tally.frames.toLocaleString('en-US')} frames recorded`].filter(Boolean);
+    const notOpened = cov.notOpened || [];
+    const lead = coverageLine();
+    $('#mv-sitescreen').innerHTML = `<div class="mv-site">
+      <h1 tabindex="-1">How this site moves</h1>${feel.map((s) => `<p class="feel">${esc(s)}</p>`).join('')}
+      <h2>Pages</h2><ul>${MV.site.pages.map((p, i) => `<li><button type="button" data-fp="${i}">${esc(p.label)}</button> <span>${counts[i] === 1 ? 'one move' : `${counts[i]} moves`}</span></li>`).join('')}</ul>
+      ${notOpened.length ? `<details><summary>${notOpened.length === 1 ? 'One page' : `${notOpened.length} pages`} not opened</summary><ul>${notOpened.map((p) => `<li>${esc(p)}</li>`).join('')}</ul></details>` : ''}
+      <h2>What could not be read</h2>${lead ? `<p class="q">${esc(lead)}</p>` : ''}
+      ${reasons.map((r) => `<h3>${esc(CLASSES[r.class] || r.class)}</h3><ul>${r.words.map((w) => `<li>${esc(w)}</li>`).join('')}</ul>`).join('')}${flat}
+      <p class="q">Some things no recording can tell: what only a server knows, the original source and tokens, DRM video, how the site feels on your own machine, and pages nobody links to.</p>
+      ${made.length ? `<h2>How this was made</h2><details><summary>Show</summary><ul>${made.map((w) => `<li>${esc(w)}</li>`).join('')}</ul></details>` : ''}
+    </div>`;
+    $$('[data-fp]', $('#mv-sitescreen')).forEach((b) => b.addEventListener('click', () => { S.page = +b.dataset.fp; S.shown = {}; location.hash = 'moves'; }));
+  }
+
+  /* ---------- Find, keys ---------- */
+  function findOpen() { root.classList.add('mv-finding'); const q = $('#mv-q'); q.focus(); }
+  function findClose() { const q = $('#mv-q'); q.value = ''; S.q = ''; root.classList.remove('mv-finding'); q.blur(); draw(); heroStart(); }
+  {
+    const q = $('#mv-q'); let last = 0;
+    $('#mv-findw').addEventListener('click', findOpen);
+    q.addEventListener('input', () => {
+      if (S.screen !== 'home') location.hash = 'moves';
+      const was = !!S.q; S.q = q.value.trim().toLowerCase(); clearTimeout(last);
+      if (S.q) heroStop();
+      const lists = $('#mv-lists'); lists.classList.add('mv-fading');
+      last = setTimeout(() => { draw(); lists.classList.remove('mv-fading'); if (!S.q && was) heroStart(); }, REDUCED ? 0 : 120);
+    });
+    q.addEventListener('keydown', (e) => { if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); findClose(); } });
+    q.addEventListener('blur', () => { if (!q.value) root.classList.remove('mv-finding'); });
+  }
+  addEventListener('keydown', (e) => {
+    if (e.metaKey || e.ctrlKey || e.altKey || root.classList.contains('mv-other')) return;
+    const t = e.target, typing = t && /^(input|textarea|select)$/i.test(t.tagName);
+    if (e.key === '/' && !typing) { e.preventDefault(); e.stopImmediatePropagation(); if (S.screen !== 'home') location.hash = 'moves'; findOpen(); return; }
+    if (typing) return;
+    if (e.key === 'Escape' && (S.screen === 'one' || S.screen === 'page')) { e.preventDefault(); location.hash = 'moves'; return; }
+    if (S.screen === 'one') {
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') { e.preventDefault(); step(e.key === 'ArrowLeft' ? -1 : 1); }
+      else if (e.key === ' ' && !(t && t.closest && t.closest('button,a,summary'))) { e.preventDefault(); $('#mv-pl')?.click(); }
+    }
+  }, true);
+
+  /* ---------- start ---------- */
+  shell();
+  let lastW = 0, wt = 0;
+  addEventListener('resize', () => {
+    clearTimeout(wt);
+    wt = setTimeout(() => { if (innerWidth !== lastW && S.screen === 'home') { lastW = innerWidth; draw(); } if (O.m && O.m.frame) fitBig(O.inPage ? 1.6 : O.m.frame.w / O.m.frame.h); }, 120);
+  });
+  document.addEventListener('visibilitychange', () => { if (S.screen !== 'home') return; if (document.hidden) heroStop(); else if (PG.visible && !REDUCED) heroStart(); });
+  addEventListener('hashchange', routeMoves);
+  lastW = innerWidth;
+  S.screen = null;
+  draw();
+  routeMoves();
+  window.MOVES = { S, O, H, R, PG, marksOf, justify, videos: { PAGE, RELAY, HAND } };
+})();
+</script>

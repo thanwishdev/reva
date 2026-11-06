@@ -14,7 +14,7 @@ beforeEach(() => resetProviders());
 test('the surface is flat: the public MCP surface holds 5 to 12 tools, names are unique, every tool fully described', async () => {
   const tools = await allTools(); const pub = await publicTools();
   assert.ok(pub.length >= 5 && pub.length <= 12, `${pub.length} public tools`);
-  assert.deepEqual(pub.map((t) => t.name), ['look', 'motions', 'design', 'code', 'curve', 'card', 'unknowns', 'doctor', 'compare'], 'the 7 v1 tools (plan item 1.4) + design (REVA covers design too)');
+  assert.deepEqual(pub.map((t) => t.name), ['look', 'motions', 'design', 'code', 'curve', 'card', 'unknowns', 'doctor', 'compare', 'scan_moves', 'scan_move'], 'the 7 v1 tools (plan item 1.4) + design (REVA covers design too) + the moves of a scan');
   assert.deepEqual(Object.keys(PUBLIC_PENDING), [], 'no v1 tool is pending');
   assert.equal(new Set(tools.map((t) => t.name)).size, tools.length);
   for (const t of tools) {

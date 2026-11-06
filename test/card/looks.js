@@ -27,6 +27,12 @@ export const KINDS = {
     { family: 'ramp', cls: 'ramp', params: { t0: 7850, D: 1650, from: -1077.66, to: 8822.34 }, rms: 0.0009, T0: 7850, T1: 9500 },
     { family: 'bezier', cls: 'tween', params: { t0: 9500, D: 1180, x1: 0.12, y1: 0.4, x2: 0.37, y2: 0.06, from: 8822.34, to: 10853.4 }, rms: 0.5, T0: 9500, T1: 10500 }] }, attribution: { label: 'scroll-linked' }, text: 'tween: piecewise [fitted]' })], { action: { do: 'scroll' } }),
   declared: base([row(1, { kind: 'declared', label: 'exact', values: [v('duration', 300, 'ms', 'exact'), v('easing', 'ease-out', null, 'exact'), v('delay', 100, 'ms', 'exact')], model: { family: 'declared:css' } })]),
+  // two channels of one declared transition, each with the css rule parts the exporter writes (decl): joined into one rule
+  declaredTwo: base([row(1, { kind: 'declared', label: 'exact', channels: ['ren:ty', 'ren:opacity'], t0: 158.3, values: [v('duration', 900, 'ms', 'exact'), v('easing', 'cubic-bezier(0.22, 1, 0.36, 1)', null, 'exact'), v('delay', 150, 'ms', 'exact')], model: { family: 'declared:css' },
+    exports: [
+      { channel: 'ren:ty', family: 'declared:css', kind: 'tween', t0: 158.3, exports: [{ lib: 'css', code: '/* REVA: measured from x [ren:ty] */\n.el { transform: translateY(32px); transition: transform 900ms cubic-bezier(0.22, 1, 0.36, 1) 150ms; }\n.el.to { transform: translateY(0px); }', accuracy: { label: 'as declared' }, match: { word: 'as declared' }, decl: { prop: 'transform', from: 'translateY(32px)', to: 'translateY(0px)', timing: '900ms cubic-bezier(0.22, 1, 0.36, 1)', delayMs: 150, pre: '' } }] },
+      { channel: 'ren:opacity', family: 'declared:css', kind: 'tween', t0: 158.3, exports: [{ lib: 'css', code: '/* REVA: measured from x [ren:opacity] */\n.el { opacity: 0; transition: opacity 900ms cubic-bezier(0.22, 1, 0.36, 1) 150ms; }\n.el.to { opacity: 1; }', accuracy: { label: 'as declared' }, match: { word: 'as declared' }, decl: { prop: 'opacity', from: '0', to: '1', timing: '900ms cubic-bezier(0.22, 1, 0.36, 1)', delayMs: 150, pre: '' } }] },
+    ] })]),
   ramp: base([row(1, { kind: 'ramp', values: [v('duration', 800, 'ms')], model: { family: 'ramp' } })]),
   spring: base([row(1, { kind: 'spring', values: [v('overshoot', 9, '%'), v('settle', 700, 'ms'), v('omega', 11, 'rad/s'), v('zeta', 0.6)], model: { family: 'spring' } })]),
   step: base([row(1, { kind: 'step', values: [v('at', 900, 'ms')], model: { family: 'step' }, channels: ['ren:radius'] })]),

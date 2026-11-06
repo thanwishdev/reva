@@ -20,7 +20,7 @@ export const INTERNAL_ONLY_DYNAMIC = new Set(['src/mcp/contract.js']);
 /** Modules loaded only when present (src/cli.js checks fs.existsSync first). */
 export const OPTIONAL = new Set(['src/ext/index.js']);
 /** Non-JS files read at run time (not visible to the import trace). */
-export const ASSETS = ['src/card/page/template.html', 'src/demo/page/index.html', 'src/install/pins.json'];
+export const ASSETS = ['src/card/page/template.html', 'src/card/page/moves.html', 'src/demo/page/index.html', 'src/install/pins.json'];
 
 const SPEC_RES = [
   /(?:^|[\s;}])(?:import|export)\s[^'"`;]*?from\s*['"]([^'"]+)['"]/gm,

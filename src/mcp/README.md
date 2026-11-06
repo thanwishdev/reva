@@ -5,7 +5,7 @@ hand-written JSON-RPC, no SDK dependency, D-M3-mcp-1); `cli.js` derives CLI flag
 `runTool(name, args, ctx)` is the only execution path, so validation, guards and result shape are identical on both faces.
 
 ## Public surface (REVA v1, listed by `reva mcp`)
-Flow: `look` -> `motions` / `design` -> `code` / `curve` / `card` / `unknowns` (the old names analyze / export / series / specimen are hidden aliases: callable, not listed) (8 tools: the 7 of plan item 1.4 + `design`; the contract test checks the list).
+Flow: `look` -> `motions` / `design` -> `code` / `curve` / `card` / `unknowns` (the old names analyze / export / series / specimen are hidden aliases: callable, not listed) (11 tools: the 7 of plan item 1.4 + `design`, `compare`, `scan_moves`, `scan_move`; the contract test checks the list).
 
 | tool | what | heavy |
 |---|---|---|
@@ -17,6 +17,9 @@ Flow: `look` -> `motions` / `design` -> `code` / `curve` / `card` / `unknowns` (
 | card | analysis + motion ids (default: all) -> the motion card (src/card) for just those motions, written to `<out root>/specimen/<analysis>_<hash>.html`: each law replayed on a plain box (fitted vs recorded, scrub, 0.25×, replay), curve, values, code tabs; per law what plays (fitted + recorded / fitted / recorded / none, with why). Content-free: elements are named by their motion id, the source by its origin; descriptors, selectors, URL path, warnings and the page text in code comments are left out. | |
 | unknowns | the ledger of an analysis (or of a report / fit result): reason + probe per row, elements left out of the ranking included. | |
 | doctor | install check (test browser launch / close, offline flags). | yes |
+| compare | two pages (`a` / `b`: a URL, an archive or a fixture) looked at the same way (one browser at a time), motions paired and compared value by value: same / close / different. | yes |
+| scan_moves | a finished `reva scan` folder (under the data roots or `REVA_MCP_ROOTS`): the site in brief, how it moves, what the ledger could not read, one short row per move; paged. | no |
+| scan_move | one move of a scan folder in full, in parts that page with `offset` / `next_offset`: `groups`, `code` (CSS, GSAP, Motion), `webgl` (clocks, passes, program values, shader sources as untrusted_content, read from the local scan folder only when asked, program switches, canvases, geometry) and `prompt` (points to shader sources in the move file, never carries them). | no |
 
 Ids: an analysis is its folder under `<out root>/look/` (name made of our own characters, never page text). Inside it: `m<rank>`,
 `page` (the page's scroll line), `m<rank>/<channel>` (e.g. `m1/ren:ty`; `#2`, `#3` when one channel holds several motions),

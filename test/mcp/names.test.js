@@ -17,7 +17,7 @@ const cap = () => { const o = { out: [], err: [] }; return { o, io: { out: (s) =
 
 test('tools/list shows the new names only; the old names are not listed', async () => {
   const names = (await publicTools()).map((t) => t.name);
-  assert.deepEqual(names, ['look', 'motions', 'design', 'code', 'curve', 'card', 'unknowns', 'doctor', 'compare']);
+  assert.deepEqual(names, ['look', 'motions', 'design', 'code', 'curve', 'card', 'unknowns', 'doctor', 'compare', 'scan_moves', 'scan_move']);
   const listed = (await createServer().handle(rpc(1, 'tools/list'))).result.tools;
   for (const o of OLD) assert.ok(!listed.some((t) => t.name === o), `${o} must not be listed`);
   const titles = Object.fromEntries(listed.map((t) => [t.name, t.title]));
@@ -65,6 +65,18 @@ test('reva --help is plain: one line per command, no old words; compare is descr
   assert.ok(!/\b(specimen|series|take)\b/i.test(h.split('Research commands')[0]), 'public help has no jargon words');
   assert.ok(!/design views\|tokens/.test(h.split('Research commands')[0]));
   assert.ok(h.includes('compare <url-a> <url-b>') && h.includes('say how their motion differs'));
+  // each scan line carries its own words: scan, then scan moves (the agent's way in), then scan open
+  const scan = h.indexOf('  scan <url>'), moves = h.indexOf('  scan moves <dir>'), open = h.indexOf('  scan open <dir>');
+  assert.ok(scan > 0 && moves > scan && open > moves, 'scan, scan moves, scan open in order');
+  assert.match(h.slice(scan, moves), /capture a site in depth/);
+  const sh = spawnSync(process.execPath, [path.join(REPO, 'bin/reva.js'), 'scan', '--help'], { encoding: 'utf8' });
+  assert.equal(sh.status, 0); assert.match(sh.stdout, /^reva scan <url>/);
+  // every command's --help prints to stdout and exits 0 (scripts read exit 2 as a usage error)
+  for (const [args, re] of [[['look'], /^reva look </], [['card'], /^usage: reva card /], [['scan', 'moves'], /^usage: reva scan moves /], [['scan', 'open'], /^usage: reva scan open /]]) {
+    const r = spawnSync(process.execPath, [path.join(REPO, 'bin/reva.js'), ...args, '--help'], { encoding: 'utf8' });
+    assert.equal(r.status, 0, args.join(' ')); assert.match(r.stdout, re, args.join(' '));
+  }
+  assert.match(h, /scan_moves, scan_move\)/, 'the tools line names the scan tools');
 });
 
 test('reva --version and -v print the package version and exit 0', () => {

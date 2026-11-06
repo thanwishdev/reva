@@ -29,5 +29,5 @@ export const BLACKHOLE_ARGS = ['--proxy-server=127.0.0.1:9', '--proxy-bypass-lis
 export function harPaths(target, cls) {
   const d = path.join(target.archive, target.harDir || 'har');
   const fmt = n => path.join(d, (target.harPattern || '{name}.har.zip').replace('{name}', n));
-  return [fmt(target.harUnion || 'all'), fmt(cls)];
+  return [...(target.harExtras || []).map((f) => path.join(d, f)), fmt(target.harUnion || 'all'), fmt(cls)];
 }

@@ -1,6 +1,7 @@
 // Recorder session (Node side). One browser, one page, one lane. Owns time (hx), scroll and input; collects dense,
 // ungated samples and writes a provenance-tagged take (src/record/take.js).
 import fs from 'node:fs';
+import crypto from 'node:crypto';
 import os from 'node:os';
 import path from 'node:path';
 import { launchBrowser } from '../browser/launch.js';
@@ -10,6 +11,9 @@ import { harPaths, seedScript, OFFLINE_ARGS } from '../replay/target.js';
 import { inpageSource } from './inpage.js';
 import { stripControls, CONTROL_CHARS } from '../report/untrusted.js';
 import { writeTake } from './take.js';
+import { DELTA_HEADER, rowDecoder } from './rowcodec.js';
+import { attachWorkers, WORKER_TAP_SOURCE } from './workergl.js';
+import { Spool } from './series-io.js';
 import { pixelChannelSource } from './pixel.js';
 import { keepaliveSource, KEEPALIVE_ARGS } from './keepalive.js';
 
@@ -19,6 +23,9 @@ export const RATES = { 120: 1000 / 120, 60: 1000 / 60, 30: 1000 / 30 };   // 30 
 export const DEFAULT_DATE_EPOCH = Date.UTC(2026, 9, 14, 9, 0, 0);
 /** macOS: moves headless frames off the display link (W2G1-2 §6). Used for unattended hx takes only. */
 export const TIMER_FLAG = '--enable-features=ForceMacVSyncTimerForDebugging';
+
+/** o.maxElements: Infinity becomes this (Infinity does not survive the JSON that carries the config into the page). */
+export const NO_CAP = 1e9;
 
 export class FatalRecorderError extends Error {}
 
@@ -34,6 +41,15 @@ export const NET_IDLE_MS = 2000;
 export const NET_QUIET_FRAMES = 30;
 /** Bound (wall) of the wait for one arrived script to be parsed by V8. */
 export const SCRIPT_PARSE_MS = 10000;
+
+/** Scan: has this request's frame gone? A request of a removed sub-frame never finishes, so it must leave the gate (DESIGN 3.2). */
+export function frameGone(r) { try { return r.frame().isDetached(); } catch { return true; } }
+
+/** The pointer sweep's path (pure): a closed figure over the viewport, the same on every page, 8 % in from the edges. */
+export function sweepPoint(i, n, w, h) {
+  const t = n > 1 ? i / (n - 1) : 0;
+  return { x: Math.round(w * (0.5 - 0.42 * Math.cos(2 * Math.PI * t))), y: Math.round(h * (0.5 - 0.42 * Math.cos(4 * Math.PI * t))) };
+}
 
 /** Browser flags of a session (pure): what launchBrowser gets on top of MANDATORY_ARGS, and what a pool must carry. */
 export function sessionArgs(o = {}) {
@@ -76,6 +92,8 @@ export async function sessionHandle(o, { engine, args, ctxOpts, launch = launchB
  * @param {{selectors:string[], pseudos?:(string|null)[]}} [o.aim]  aim mode (pseudos[i]: read selectors[i] at that pseudo-element) (`look --el`): only elements matching the selectors are watched, each
  *                                   from its first style/class write, --var write or running animation (the corpus
  *                                   discovery trigger), and every match from S.aimOn() on
+ * @param {string} [o.writeDir]      where this take is written (default: a new folder under the output root); two sessions at once each name their own
+ * @param {Function} [o.onMiss]      archive replay only: read-through, see wireReplay. Off unless a caller passes it
  * @param {boolean} [o.live]         a live (non-local) URL: drop the DNS sinkhole (OFFLINE_ARGS). Archive replay never sets it.
  * @param {boolean|{maxMs:number, longMs:number}} [o.netGate]  hx only: virtual time waits for the network. Before each
  *                                   virtual step, wait (wall clock) until no request is in flight, no arrived script of
@@ -89,8 +107,50 @@ export async function sessionHandle(o, { engine, args, ctxOpts, launch = launchB
  *                                   started with exactly sessionArgs(o), the same engine and toolkit; the session gets a
  *                                   fresh empty context + page in it instead of its own browser launch. Without o.pool (every
  *                                   `reva look` path) the session launches its own browser exactly as before.
+ * @param {number} [o.maxElements]   moving-set cap (default 300); Infinity = no cap
+ * @param {boolean} [o.streamRows]   rows and mutations go to disk as they arrive (delta form, rowcodec.js) and never into the
+ *                                   heap: what lets a page with thousands of moving elements be recorded in full. S.data.rows
+ *                                   and take.data.rows hold only {k, T, sy, sx}; read the values with loadTake(dir, ['rows']).
+ * @param {boolean} [o.rowTee]       proof only, slow: the page also sends every row whole, the old way; S.teeResult() is the
+ *                                   sha256 and count of those rows as JSON Lines, which the decoded rows must equal
  * @param {object} [o.recordHar]     Playwright recordHar options ({path, mode, content}): the look's session cache
+ * @param {boolean} [o.scan]         a `reva scan` take: every capture change of the scan sits behind this one option, carried in
+ *                                   CFG, so a look's rows stay byte-equal. Page side: Event.timeStamp on the clock, every keyframe
+ *                                   kept, a selector at first watch, W.quiet, the shot signals. Node side: a request of a removed
+ *                                   frame leaves the gate. S.controlStart/controlStop/controlClear, S.partStart, S.quiet need it.
+ * @param {number} [o.idleMs]        wall bound of one page-idle wait in the network gate (default NET_IDLE_MS); hits are counted
  */
+export class BrowserDiedError extends FatalRecorderError {}
+export const WATCH = { everyMs: 4000, answerMs: 8000, misses: 2 };
+
+/**
+ * Browser-death watchdog (2 Nov): a killed or crashed browser used to leave a take waiting for ever on a CDP answer that
+ * never comes. Now the page closing or crashing, or `misses` unanswered browser-level pings in a row (about 24 s at most),
+ * rejects every later CDP call with BrowserDiedError, so the take ends in an error and the caller's finally closes the rest.
+ */
+export function watchBrowser(S, w = WATCH) {
+  let died = null, fail;
+  const dead = new Promise((_, rej) => { fail = rej; });
+  dead.catch(() => {});
+  const die = why => { if (died) return; died = new BrowserDiedError(`browser died: ${why}`); S.deadError = died; fail(died); };
+  const raw = S.cdp.send.bind(S.cdp);
+  S.cdp.send = (...a) => died ? Promise.reject(died) : Promise.race([raw(...a), dead]);
+  S.dead = dead;
+  S.page.on('close', () => die('the page closed'));
+  S.page.on('crash', () => die('the page crashed'));
+  let misses = 0, busy = false;
+  const timer = setInterval(async () => {
+    if (busy || died || S.closed) return; busy = true;
+    try {
+      await Promise.race([raw('Browser.getVersion'), new Promise((_, rej) => setTimeout(() => rej(new Error('no answer')), w.answerMs).unref())]);
+      misses = 0;
+    } catch (e) { if (++misses >= w.misses) die(`no answer from the browser for ${misses} pings (${e.message})`); }
+    busy = false;
+  }, w.everyMs);
+  timer.unref();
+  S.stopWatch = () => clearInterval(timer);
+}
+
 export async function openSession(o) {
   const lane = o.lane || 'hx';
   const rate = o.rate || 120;
@@ -107,10 +167,10 @@ export async function openSession(o) {
   const ctxOpts = sessionContext(o);
   const cfg = {
     lane, dt, t0: 0, dateEpoch: o.dateEpoch ?? DEFAULT_DATE_EPOCH, dateInteger: !!o.dateInteger, yieldMode: o.yieldMode || 'macro',
-    births: o.births !== false, rtPhase: o.rtPhase || 'post', birthRule: o.birthRule || 'next', settleTimeoutMs: o.settleTimeoutMs || 250, maxElements: o.maxElements || 300, capPolicy: o.capPolicy || null,
+    births: o.births !== false, rtPhase: o.rtPhase || 'post', birthRule: o.birthRule || 'next', settleTimeoutMs: o.settleTimeoutMs || 250, maxElements: o.maxElements === Infinity ? NO_CAP : o.maxElements || 300, capPolicy: o.capPolicy || null,
     seed: o.target ? o.target.seed : (o.seed ?? null),
     discover: o.discover !== false, computedVars: scene.computedVars || [], glUniforms: scene.glUniforms || [], glTap: o.glTap !== false, stall,
-    aim: o.aim && o.aim.selectors && o.aim.selectors.length ? { selectors: [...o.aim.selectors], ...(o.aim.pseudos && o.aim.pseudos.some(Boolean) ? { pseudos: [...o.aim.pseudos] } : {}) } : null, keepalive, live: !!o.live,
+    aim: o.aim && o.aim.selectors && o.aim.selectors.length ? { selectors: [...o.aim.selectors], ...(o.aim.pseudos && o.aim.pseudos.some(Boolean) ? { pseudos: [...o.aim.pseudos] } : {}) } : null, keepalive, live: !!o.live, ...(o.rowTee ? { rowTee: true } : {}), ...(o.scan ? { scan: true } : {}),
   };
   const started = new Date();
   const wallT0 = Date.now();
@@ -123,13 +183,14 @@ export async function openSession(o) {
   };
   try {
     if (o.target) {
-      S.net = await wireReplay(S.ctx, harPaths(o.target, o.cls), { blockRegex: o.target.blockRegex ? new RegExp(o.target.blockRegex) : null });
+      S.net = await wireReplay(S.ctx, harPaths(o.target, o.cls), { blockRegex: o.target.blockRegex ? new RegExp(o.target.blockRegex) : null, onMiss: o.onMiss ?? null });
       await S.ctx.addInitScript(seedScript(o.target.seed));
     } else {
       // no archive replay: nothing counts failed requests, so take.json says misses: null (not counted), never 0
       S.net = { misses: [], blocked: [] };
       if (o.seed != null) await S.ctx.addInitScript(seedScript(o.seed));
     }
+    if (o.scan && lane === 'hx' && cfg.glTap && o.workerGl !== false) await S.ctx.addInitScript({ content: `window.__WR_WORKER_TAP = ${JSON.stringify(WORKER_TAP_SOURCE)};` });
     await S.ctx.addInitScript({ content: inpageSource(cfg) });
     if (scene.pixelKeys && scene.pixelKeys.length) await S.ctx.addInitScript({ content: pixelChannelSource({ pixelKeys: scene.pixelKeys }) });
     if (scene.probe) await S.ctx.addInitScript({ content: `window.__WR_PROBE = ${scene.probe};` });
@@ -137,7 +198,10 @@ export async function openSession(o) {
     if (keepalive) await S.ctx.addInitScript({ content: keepaliveSource() });
     S.page.on('pageerror', e => S.errors.push('pageerror: ' + String(e).slice(0, 300)));
     S.cdp = await S.ctx.newCDPSession(S.page);
+    // a scan take taps WebGL inside the page's dedicated workers too, on the page's virtual clock (workergl.js)
+    if (o.scan && lane === 'hx' && cfg.glTap && o.workerGl !== false) { try { S.workers = await attachWorkers(S); } catch (e) { S.workers = null; S.errors.push('worker tap: ' + String(e.message).slice(0, 200)); } }
     S.browserInfo = await S.cdp.send('Browser.getVersion');
+    watchBrowser(S);
     // o.cpuThrottle (tests / load experiments only): CDP CPU throttling of the page, a controlled stand-in for a busy machine
     if (o.cpuThrottle > 1) await S.cdp.send('Emulation.setCPUThrottlingRate', { rate: +o.cpuThrottle });
   } catch (e) { await h.close(); throw e; }
@@ -148,11 +212,12 @@ export async function openSession(o) {
   // a local site with 2 s of added latency). So what a page waits for (document, script, style, font, image, and a
   // fetch / XHR until its response starts) holds virtual time up to `longMs` wall; only what can stay open by design
   // (a stream or a long poll's open body, media, beacons, event sources) stops counting after `maxMs`.
-  const gate = o.netGate && lane === 'hx' ? { maxMs: (o.netGate && o.netGate.maxMs) || 3000, longMs: (o.netGate && o.netGate.longMs) || NET_LONG_MS, flight: new Map(), waits: 0, waitedMs: 0, maxWaitMs: 0, expired: 0, expiredTypes: {}, done: 0, idleDone: 0, idleWaits: 0, idleMs: 0, lastAct: -1e9 } : null;
+  const gate = o.netGate && lane === 'hx' ? { maxMs: (o.netGate && o.netGate.maxMs) || 3000, longMs: (o.netGate && o.netGate.longMs) || NET_LONG_MS, flight: new Map(), waits: 0, waitedMs: 0, maxWaitMs: 0, expired: 0, expiredTypes: {}, done: 0, idleDone: 0, idleWaits: 0, idleMs: 0, idleHits: 0, detached: 0, lastAct: -1e9 } : null;
+  const idleBound = o.idleMs || NET_IDLE_MS;
   let stepsDone = 0;
   if (gate) {
     const done = (r) => { if (gate.flight.delete(r)) { gate.done++; gate.lastAct = stepsDone; } };
-    S.page.on('request', (r) => { let type = 'other'; try { type = r.resourceType(); } catch {} gate.flight.set(r, { t: Date.now(), type, resp: null }); gate.lastAct = stepsDone; });
+    S.page.on('request', (r) => { let type = 'other', sub = false; try { type = r.resourceType(); sub = r.frame() !== S.page.mainFrame(); } catch {} gate.flight.set(r, { t: Date.now(), type, sub, resp: null }); gate.lastAct = stepsDone; });
     S.page.on('response', (res) => { try { const e = gate.flight.get(res.request()); if (e) e.resp = Date.now(); } catch {} });
     S.page.on('requestfinished', done); S.page.on('requestfailed', done);
   }
@@ -181,14 +246,18 @@ export async function openSession(o) {
     for (const [u, q] of parse.want) { while (q.length && now - q[0] >= SCRIPT_PARSE_MS) { q.shift(); parse.expired++; } if (!q.length) parse.want.delete(u); else n += q.length; }
     return n;
   };
-  const capOf = (e) => (e.resp == null ? (NET_WAITED.has(e.type) ? gate.longMs : gate.maxMs) : (NET_BODY_WAITED.has(e.type) ? gate.longMs : gate.maxMs));
+  // a frame inside the page is not stepped, so its data requests cannot change the page's virtual time: they count only up
+  // to maxMs (a colour widget's fetch inside an iframe on a large marketing site never answers, and held every take for 30 s). What a
+  // frame needs to load (its document, scripts, styles, images) still counts: the page's load event waits for those.
+  const capOf = (e) => (e.resp == null ? (NET_WAITED.has(e.type) && !(e.sub && (e.type === 'fetch' || e.type === 'xhr')) ? gate.longMs : gate.maxMs) : (NET_BODY_WAITED.has(e.type) ? gate.longMs : gate.maxMs));
   const inFlight = () => {
     const now = Date.now(); let n = 0;
     for (const [r, e] of gate.flight) {
+      if (o.scan && e.sub && frameGone(r)) { gate.flight.delete(r); gate.detached++; continue; }
       if (now - (e.resp ?? e.t) < capOf(e)) n++;
       else { gate.flight.delete(r); gate.expired++; gate.expiredTypes[e.type] = (gate.expiredTypes[e.type] || 0) + 1; }
     }
-    return n;
+    return n + (S.net?.own || 0);   // a file read-through is fetching holds the clock whatever its type: only netWait's long bound ends it
   };
   const netWait = async () => {
     if (!gate || S.closed) return;   // (closed: a cancel or a failed navigation; nothing will finish any more)
@@ -200,15 +269,15 @@ export async function openSession(o) {
     for (let round = 0; ; round++) {
       while ((inFlight() || scriptsPending()) && Date.now() - w0 <= gate.longMs && !S.closed) await sleep(5);
       const seen = gate.done; const i0 = Date.now();
-      await evRetry((ms) => (window.__WR && window.__WR.idle ? window.__WR.idle(ms) : null), NET_IDLE_MS).catch(() => null);
-      gate.idleWaits++; gate.idleMs += Date.now() - i0;
+      const idled = await evRetry((ms) => (window.__WR && window.__WR.idle ? window.__WR.idle(ms) : null), idleBound).catch(() => null);
+      gate.idleWaits++; gate.idleMs += Date.now() - i0; if (idled && idled.ok === false) gate.idleHits++;
       if ((!inFlight() && !scriptsPending() && gate.done === seen) || Date.now() - w0 > gate.longMs || S.closed) break;
     }
     gate.idleDone = gate.done;
     const w = Date.now() - w0; gate.waitedMs += w; gate.maxWaitMs = Math.max(gate.maxWaitMs, w);
   };
   S.netInFlight = gate ? inFlight : null;
-  S.netGateStats = () => (gate ? { maxMs: gate.maxMs, longMs: gate.longMs, waits: gate.waits, waitedMs: gate.waitedMs, maxWaitMs: gate.maxWaitMs, expired: gate.expired, expiredTypes: gate.expiredTypes, idleWaits: gate.idleWaits, idleMs: gate.idleMs, scripts: { waited: parse.waited, expired: parse.expired } } : null);
+  S.netGateStats = () => (gate ? { maxMs: gate.maxMs, longMs: gate.longMs, waits: gate.waits, waitedMs: gate.waitedMs, maxWaitMs: gate.maxWaitMs, expired: gate.expired, expiredTypes: gate.expiredTypes, idleWaits: gate.idleWaits, idleMs: gate.idleMs, scripts: { waited: parse.waited, expired: parse.expired }, ...(o.scan ? { idleBoundMs: idleBound, idleHits: gate.idleHits, detached: gate.detached } : {}) } : null);
 
   const ev = (fn, arg) => S.page.evaluate(fn, arg);
   // page.evaluate that survives navigations during boot
@@ -231,9 +300,24 @@ export async function openSession(o) {
 
   let pending = 0;
   const drainEvery = 200;
+  // streamed take: its rows and mutations wait in a temp folder until writeTake stores them next to take.json
+  const spoolDir = o.streamRows ? fs.mkdtempSync(path.join(os.tmpdir(), 'reva-rows-')) : null;
+  const spool = spoolDir ? { rows: new Spool(path.join(spoolDir, 'rows'), JSON.stringify(DELTA_HEADER)), mut: new Spool(path.join(spoolDir, 'mutations')) } : null;
+  const dropSpool = () => { if (spool) { spool.rows.close(); spool.mut.close(); fs.rmSync(spoolDir, { recursive: true, force: true }); } };
+  if (spool) S.data.spool = spool;
+  const decodeRow = rowDecoder();
+  const tee = o.rowTee ? { hash: crypto.createHash('sha256'), n: 0 } : null;
+  S.teeResult = () => (tee ? { digest: tee.hash.copy().digest('hex'), n: tee.n } : null);
   S.drain = async () => {
-    const d = await evRetry(() => { const W = window.__WR; W.discover(); const o = W.drain(['rows', 'births', 'wheel', 'declared']); o.mut = W.mut.splice(0, W.mut.length); W._mutSeen = 0; return o; });
-    for (const k of Object.keys(S.data)) if (d[k]) S.data[k].push(...d[k]);
+    const d = await evRetry((wantTee) => { const W = window.__WR; W.discover(); const o = W.drain(['births', 'wheel', 'declared', ...(wantTee ? ['teeRows'] : [])]); o.rows = W.drainRows(); o.mut = W.stringify(W.mut); W.mut.length = 0; W._mutSeen = 0; return o; }, !!tee);
+    for (const w of JSON.parse(d.rows)) {
+      if (spool) { spool.rows.line(JSON.stringify(w)); S.data.rows.push({ k: w.k, T: w.T, sy: w.sy, sx: w.sx }); } else S.data.rows.push(decodeRow(w));
+    }
+    for (const m of JSON.parse(d.mut)) { if (spool) spool.mut.line(JSON.stringify(m)); else S.data.mut.push(m); }
+    // (one push per element: a spread of a long list overflows the call stack)
+    for (const k of ['births', 'wheel', 'declared']) for (const x of d[k]) S.data[k].push(x);
+    if (tee) for (const r of d.teeRows) { tee.hash.update(JSON.stringify(r) + '\n'); tee.n++; }
+    if (S.workers?.list.length) await S.workers.drain();
     pending = 0;
   };
 
@@ -247,7 +331,8 @@ export async function openSession(o) {
       await netWait();
       const m = Math.min(left, gate && stepsDone - gate.lastAct < NET_QUIET_FRAMES ? 1 : batch);
       const w0 = Date.now();
-      await evRetry(([m, s]) => window.__WR.steps(m, s), [m, sample]);
+      const kNow = await evRetry(([m, s]) => window.__WR.steps(m, s), [m, sample]);
+      if (S.workers?.list.length) await S.workers.step(kNow);
       S.stepWall.push((Date.now() - w0) / m);
       left -= m; pending += m; stepsDone += m;
       if (pending >= drainEvery) await S.drain();
@@ -303,7 +388,19 @@ export async function openSession(o) {
   S.aimIds = async () => evRetry(() => [...(window.__WR.aimIds || [])]);
   S.snapshotDeclared = async (label) => evRetry((l) => window.__WR.snapshotDeclared(l), label);
   S.setSampling = async (on) => evRetry((v) => { window.__WR.sampling = v; }, on);
-  S.clearSamples = async () => { await S.drain(); S.data.rows = []; };
+  // Scan (o.scan): one test's control window, then its parts. controlStart..controlStop learns what moves with nothing touched;
+  // controlClear ends the test. partStart comes right before an input: W.quiet counts frames and virtual timers from there.
+  S.controlStart = async () => evRetry(() => window.__WR.controlStart());
+  S.controlStop = async () => evRetry(() => window.__WR.controlStop());
+  S.controlClear = async () => evRetry(() => window.__WR.controlClear());
+  S.partStart = async () => evRetry(() => window.__WR.partStart());
+  S.quiet = async (n) => evRetry((n) => window.__WR.quiet(n), n);
+  S.clearSamples = async () => {
+    await S.drain(); S.data.rows = [];
+    if (spool) spool.rows.clear();
+    if (tee) { tee.hash = crypto.createHash('sha256'); tee.n = 0; }
+    await evRetry(() => window.__WR.rowsReset());   // what comes next has no row before it
+  };
 
   /** hx: run the real settle for an input just given, at the current virtual time (A2; see W.flush). rt: no-op. */
   S.settleInput = async () => { if (lane === 'hx') await evRetry(() => window.__WR.flush()); };
@@ -404,6 +501,14 @@ export async function openSession(o) {
   // progress bar) that jumps with that scroll would read as reacting to the pointer. SCROLL_GAP frames (more than the
   // 2-frame lead window of the driver attribution, src/analysis/fit/attribution.js) separate the two
   const SCROLL_GAP = 4;
+  // the raw parts of hover and click, for a recorder that takes a picture of every frame between them (src/scan/patterns.js)
+  S.mouse = mouse; S.locate = centreSized;
+  /** Scan: the pointer walks sweepPoint over the viewport, one move per frame (a canvas listening on window is no hover target), then parks. */
+  S.pointerSweep = async ({ frames = 180, park = [2, 2], onStep = null } = {}) => {
+    const vs = S.page.viewportSize() || { width: 1440, height: 900 };
+    for (let i = 0; i < frames; i++) { const p = sweepPoint(i, frames, vs.width, vs.height); await mouse('mouseMoved', p.x, p.y); if (onStep) await onStep(i); }
+    await mouse('mouseMoved', park[0], park[1]);
+  };
   S.hover = async (a) => {
     const { target, inMs = 800, outMs = 800 } = typeof a === 'string' ? { target: a } : a;
     const c = await centreSized(target);
@@ -469,7 +574,7 @@ export async function openSession(o) {
    * the end for `wheels` wheels), after `maxPauses` pauses in a row that brought no progress, or when `until` says so.
    * S.wheelStop says why it stopped ('until' | 'bottom' | 'stalled' | null); S.wheelPauses lists the pauses.
    */
-  S.wheel = async ({ dy = 10, n = 100, intervalMs = dt, x, y, until = null, stall = null } = {}) => {
+  S.wheel = async ({ dy = 10, n = 100, intervalMs = dt, x, y, until = null, stall = null, onStep = null } = {}) => {
     const vs = S.page.viewportSize() || { width: 800, height: 600 };
     const px = x ?? (vs.width >> 1), py = y ?? (vs.height >> 1);
     await evRetry(() => { window.__WR.inputMute = true; });
@@ -490,6 +595,7 @@ export async function openSession(o) {
         await send();
         const kt = await evRetry((u) => window.__WR.flush().then(() => ({ k: window.__WR.V.k, T: performance.now(), stop: u ? !!(0, eval)(u) : false, y: scrollY, max: document.documentElement.scrollHeight - innerHeight })), until);
         S.inputLog.push({ type: 'wheel', i, dy, k: kt.k, T: kt.T }); await S.step(1);
+        if (onStep) await onStep(kt.y);   // between two frames: the virtual clock stands still here
         if (kt.stop) { S.wheelStoppedAt = i + 1; S.wheelStop = 'until'; break; }
         if (!st) continue;
         if (Math.abs(kt.y - lastY) >= 0.5) { moved = true; same = 0; } else same++;
@@ -532,16 +638,28 @@ export async function openSession(o) {
   /** Finish: collect everything, close the browser (always), write the take. */
   S.finish = async ({ scenario = 'adhoc', target = o.target ? o.target.id : 'fixture', extra = {}, write = true } = {}) => {
     let tail = {};
+    S.finishing = true;
     try {
+      if (spool && !write) throw new Error('a streamed take lives on disk: finish it with write: true');
       await S.drain();
       tail = await evRetry(() => {
         const W = window.__WR;
-        let gl = null; try { gl = W.glInfo ? W.glInfo() : null; } catch (e) { gl = { error: String(e && e.message).slice(0, 200) }; }
+        let gl = null; try { gl = W.glInfo ? W.glInfo() : null; if (gl && W.glBuffers) gl.bufferStore = W.glBuffers(); } catch (e) { gl = { error: String(e && e.message).slice(0, 200) }; }
         return { pageInputs: W.inputs || [], pix: window.__WR_PIX ? window.__WR_PIX.status() : null, gl, c: W.c, errors: W.errors, escapes: W.escapes, els: W.elDescs(0), watch: [...W.watch].map(([id, w]) => [id, w.why]), selectors: W.selectors([...W.watch.keys()]),
           rtDt: W.rtDt || null, marks: W.marks, env: { innerWidth, innerHeight, dpr: devicePixelRatio, reducedMotion: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'reduce' : 'no-preference',
             colorScheme: matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light',
             ua: navigator.userAgent, docUrl: location.href, readback: W.readbackFloor() } };
       });
+      // a worker's WebGL joins the page's: its contexts (the canvas it was given, by transfer order), its programs (ids from 1001), its rows
+      if (S.workers?.list.length && !(tail.gl && tail.gl.error)) {
+        try {
+          const ws = await S.workers.finish(), gl = tail.gl || (tail.gl = { contexts: [], programs: [], counters: {} }), xfer = [...(gl.transferred || [])];
+          for (const w of ws) for (const c of w.contexts || []) { const t = xfer.shift() || null; gl.contexts.push({ id: c.id, webgl2: c.webgl2, el: t ? t.el : null, offscreen: true, worker: w.index, width: c.width, height: c.height }); }
+          for (const w of ws) for (const p of w.programs || []) gl.programs.push(p);
+          gl.workers = ws.map(({ contexts, programs, ...w }) => ({ ...w, contexts: (contexts || []).length, programs: (programs || []).length }));
+          tail.glWorkerRows = S.workers.rows;
+        } catch (e) { if (tail.gl) tail.gl.workers = [{ error: String(e.message).slice(0, 200) }]; }
+      }
       if (o.target && o.target.archive) {
         try { tail.buildId = JSON.parse(fs.readFileSync(path.join(o.target.archive, 'version.json'), 'utf8')).version; } catch {}
       }
@@ -566,10 +684,17 @@ export async function openSession(o) {
       extra: keepalive ? { ...extra, frameClock: { keepalive: true, args: KEEPALIVE_ARGS, note: 'real-frame keepalive (src/record/keepalive.js)' } } : extra,
     };
     if (!write) return { take };
-    const dir = writeTake(take);
-    return { take, dir };
+    try {
+      const dir = writeTake(take, o.writeDir ? { root: o.writeDir } : {});
+      return { take, dir };
+    } finally { dropSpool(); delete S.data.spool; }
   };
-  S.close = async () => { if (S.closed) return; S.closed = true; await h.close(); };
+  S.close = async () => {
+    if (S.closed) return;
+    S.closed = true; S.stopWatch?.();
+    if (!S.finishing) dropSpool();
+    await h.close();
+  };
   return S;
 }
 

@@ -10,9 +10,30 @@ import { defaultEngine } from '../browser/engines.js';
 import { blockTrackers, isTrackerFailure } from '../freeze/trackers.js';
 import { installFuzzyFallback } from '../freeze/fuzzy.js';
 
-export async function wireReplay(ctx, hars, { blockRegex = null, catchAll = true, trackers = true, fuzzy = true, ownUrl = null } = {}) {
-  const net = { misses: [], blocked: [], trackers: [], fuzzy: [] };
-  if (catchAll) await ctx.route('**/*', r => { net.misses.push(`${r.request().method()} ${r.request().url()}`); r.abort('internetdisconnected'); });
+/** A document for the page itself. A link that opens a new window has no frame yet: Playwright throws, and that is no leaving. */
+function isMainDocument(q) {
+  if (!q.isNavigationRequest()) return false;
+  try { return !q.frame().parentFrame(); } catch { return false; }
+}
+
+export async function wireReplay(ctx, hars, { blockRegex = null, catchAll = true, trackers = true, fuzzy = true, ownUrl = null, onMiss = null } = {}) {
+  // net.stay (a caller sets it once the page is up): the page asks to leave for a document the archive does not hold. A 204
+  // keeps it where it is; refused, Chrome goes to its error page and the renderer dies with nothing said to the recorder
+  // onMiss (read-through, DESIGN 3.7, off unless a caller passes it): a miss may be answered from outside. net.own counts those
+  // answers still out, so the network gate keeps the virtual clock still and a slow answer stays invisible to the page.
+  const net = { misses: [], blocked: [], trackers: [], fuzzy: [], left: [], stay: false, own: 0, answered: [] };
+  if (catchAll) await ctx.route('**/*', async r => {
+    const q = r.request();
+    if (onMiss && !(net.stay && isMainDocument(q))) {
+      net.own++;
+      let a = null;
+      try { a = await onMiss(q); } catch { a = null; } finally { net.own--; }
+      if (a) { net.answered.push(q.url()); return r.fulfill(a).catch(() => {}); }
+    }
+    net.misses.push(`${q.method()} ${q.url()}`);
+    if (net.stay && isMainDocument(q)) { net.left.push(q.url()); return r.fulfill({ status: 204 }); }
+    return r.abort('internetdisconnected');
+  });
   if (catchAll && fuzzy) net.fuzzy = await installFuzzyFallback(ctx, hars); // volatile-URL variants of archived entries (F10); logged
   for (const h of hars) await ctx.routeFromHAR(h, { notFound: catchAll ? 'fallback' : 'abort' });
   if (trackers) await blockTrackers(ctx, net.trackers, { ownUrl }); // analytics beacons: aborted and logged (F21)

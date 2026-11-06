@@ -27,8 +27,12 @@ test('resolveEngine returns real explicit paths for both engines', () => {
   assert.throws(() => resolveEngine('chrome'), /unknown engine/);
 });
 
-test('mandatory args include the keychain-skipping flags', () => {
-  assert.deepEqual(MANDATORY_ARGS, ['--use-mock-keychain', '--password-store=basic']);
+test('mandatory args: the keychain-skipping flags first, then the GL backend (Metal on a Mac unless REVA_GL=software, f171b4b)', () => {
+  assert.deepEqual(MANDATORY_ARGS.slice(0, 2), ['--use-mock-keychain', '--password-store=basic']);
+  const metal = process.platform === 'darwin' && process.env.REVA_GL !== 'software';
+  assert.equal(MANDATORY_ARGS.includes('--use-angle=metal'), metal);
+  assert.equal(MANDATORY_ARGS.includes('--disable-audio-output'), process.env.REVA_NO_AUDIO_OUTPUT === '1');
+  assert.equal(MANDATORY_ARGS.length, 2 + (metal ? 1 : 0) + (process.env.REVA_NO_AUDIO_OUTPUT === '1' ? 1 : 0));
 });
 
 test('default engine: chs when only the headless shell is in the cache (what doctor --install installs); a missing cft names the fix', async () => {

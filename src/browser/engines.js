@@ -19,7 +19,10 @@ export const SUPPORTED_PLATFORMS = Object.keys(PINS.platforms);
 // sites play sound; dozens of test browsers wedged coreaudiod (owner lost audio). Media clocks still run (measured: <audio>
 // and AudioContext advance; outputLatency 0.016 s fake vs 0.168 s on the owner's AirPods, so timing no longer depends on
 // the owner's output device). Off by default: `reva look` is unchanged.
-export const MANDATORY_ARGS = ['--use-mock-keychain', '--password-store=basic', ...(process.env.REVA_NO_AUDIO_OUTPUT === '1' ? ['--disable-audio-output'] : [])];
+// GL backend (2 Nov): on a Mac the headless shell falls back to SwiftShader (software GL: 0.72 s per WebGL frame, 1,277 % CPU);
+// --use-angle=metal puts WebGL on the real GPU (about 0.06 s per frame). REVA_GL=software keeps the old software path.
+export const GL_ARGS = process.platform === 'darwin' && process.env.REVA_GL !== 'software' ? ['--use-angle=metal'] : [];
+export const MANDATORY_ARGS = ['--use-mock-keychain', '--password-store=basic', ...GL_ARGS, ...(process.env.REVA_NO_AUDIO_OUTPUT === '1' ? ['--disable-audio-output'] : [])];
 
 /** The Puppeteer cache, reused when it already holds the pinned build (a developer machine). */
 export function puppeteerCache() { return path.join(os.homedir(), '.cache', 'puppeteer'); }

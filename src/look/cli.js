@@ -18,7 +18,7 @@ export const LOOK_HELP = `reva look <url | archive> [--el <selector> | --pick [k
           [--rate 120|60] [--hold <ms>] [--press <ms>] [--wheels <n>] [--json] [--code [css,gsap,motion,lenis,raf,react-spring]] [--card] [--verbose] [--no-keepalive] [--no-design] [--no-retake]
           [--engine chs|cft] [--color-scheme light|dark] [--ignore-robots] [--allow-net <host,...>] [--allow-cdn]
 
-  Records just that element during just that action (hx lane: virtual 120 Hz clock), fits how it moves and prints it in
+  Records just that element during just that action (on a virtual 120 Hz clock), fits how it moves and prints it in
   plain words. Every number is labelled exact (read from the page's CSS), fitted (measured and fitted) or unknown.
   --el      the element(s) to look at (CSS selector). Without it: the top elements by visual weight (area × travel × time).
   --pick    rank the moving elements and choose one: by its key (a printed selector or descriptor, stable between runs),
@@ -266,7 +266,9 @@ export function formatLook(r, { code = null, verbose = false } = {}) {
 
 export async function runLookCommand(f) {
   const input = f._[1];
-  if (!input || f.help) { console.error(LOOK_HELP); return input ? 0 : 2; }
+  // asked for help: help on stdout, exit 0; no URL at all: a usage error (as reva scan)
+  if (f.help) { process.stdout.write(LOOK_HELP + '\n'); return 0; }
+  if (!input) { console.error(LOOK_HELP); return 2; }
   const action = f.do || 'load';
   if (!ACTIONS.includes(action)) { console.error(`unknown --do ${action} (use ${ACTIONS.join(', ')})`); return 2; }
   if (f.el && f.pick) { console.error('use --el or --pick, not both'); return 2; }

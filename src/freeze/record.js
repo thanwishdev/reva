@@ -43,34 +43,44 @@ export async function openRecordBrowser(cfg, cls, { harPath, engine = defaultEng
  *   evidence: write a live above-the-fold screenshot (<dir>/<cls>.jpg) and a DOM digest into log.live (after consent clicks, before the sweep)
  *   fetchOnly: completion pass: load the page, fetch extraUrls (concurrency, deadline), no clicks/sweep/inner pages
  *   pool: a BrowserPool with recordArgs(cfg) (freeze shareBrowser): the class records in a fresh context of it
+ *   policy: reva scan's live-visit rules (src/scan/polite.js): every request paced per host, robots.txt for every URL of the
+ *     site, the navigation guard, the stop rules on every answer. A stop ends the class where it is: what was loaded stays in
+ *     the HAR, nothing more is sent. Without it (reva freeze, own pages) the class records as before.
  * @returns {Promise<{finalUrl:string, docStatus:number, blocked:string[], extra:Array<[string,number|string,number]>, pageerrors:string[], requests:number, wheelSteps:number}>}
  */
-export async function recordClass(cfg, cls, { harPath, extraUrls = [], engine = defaultEngine(), evidence = null, fetchOnly = false, fetchBudgetMs = 0, fetchConcurrency = 1, pool = null }) {
+export async function recordClass(cfg, cls, { harPath, extraUrls = [], engine = defaultEngine(), evidence = null, fetchOnly = false, fetchBudgetMs = 0, fetchConcurrency = 1, pool = null, policy = null }) {
   fs.mkdirSync(path.dirname(harPath), { recursive: true });
   const log = { cls, blocked: [], trackers: [], extra: [], pageerrors: [], requests: 0, wheelSteps: 0, clicked: [] };
   const block = cfg.block ? new RegExp(cfg.block) : null;
+  const halted = () => !!policy?.stopped;
   let h;
   // Safety net: closing the context makes every pending page call throw, so `finally` still runs (no process.exit that would skip the close).
-  const guard = setTimeout(() => { console.error('freeze record: 10 min limit, closing the browser'); h?.close(); }, 600000);
+  // A paced visit loads a page at the site's pace (500 ms per request to a host), so its limit grows with the pages it visits.
+  const limitMs = policy ? 600000 * (2 + (fetchOnly ? 0 : (cfg.pages?.length || 0))) : 600000;
+  const loadMs = (ms) => (policy ? Math.max(ms, 600000) : ms);
+  const guard = setTimeout(() => { console.error(`freeze record: ${Math.round(limitMs / 60000)} min limit, closing the browser`); h?.close(); }, limitMs);
   try {
     h = await openRecordBrowser(cfg, cls, { harPath, engine, pool });
     const { context: ctx, page } = h;
     log.browser = { engine: h.engine, version: h.version, toolkit: h.toolkit, playwright: h.playwrightVersion };
+    // the live-visit rules first: routes registered later run first, so the block regex and the tracker block abort before a request takes a turn
+    if (policy) await policy.attach(ctx, page);
     if (block) await ctx.route(block, r => { log.blocked.push(r.request().method() + ' ' + r.request().url()); r.abort(); });
     if (cfg.blockTrackers !== false) await blockTrackers(ctx, log.trackers, { ownUrl: cfg.startUrl }); // F21: beacons never go live and never enter the HAR
     await ctx.addInitScript(seedScript(cfg.seed));
     page.on('pageerror', e => log.pageerrors.push(String(e).slice(0, 300)));
     ctx.on('request', () => { log.requests++; });
     const navAt = Date.now();
-    const resp = await page.goto(cfg.startUrl, { waitUntil: 'load', timeout: 60000 });
+    const resp = await page.goto(cfg.startUrl, { waitUntil: 'load', timeout: loadMs(60000) });
     log.docStatus = resp.status(); log.finalUrl = page.url();
-    await sleep(cfg.settleMs);
+    if (policy) await policy.judgePage(cfg.startUrl, resp, { start: true });
+    if (!halted()) await sleep(cfg.settleMs);
     // C1 (1 Nov): a loader overlay / counter / one-colour screen still showing: wait until it is gone (or the cap), so the
     // evidence shot, the sweep and the recording see the real page; the outcome goes into the log (and live.json)
-    if (cfg.preloaderWait !== false && !fetchOnly) {
+    if (cfg.preloaderWait !== false && !fetchOnly && !halted()) {
       log.preloader = await waitForPreloader(page, { capMs: cfg.preloaderCapMs ?? 20000 }).catch(e => ({ state: 'error', error: String(e.message || e).split('\n')[0].slice(0, 200) }));
     }
-    for (const sel of (fetchOnly ? [] : cfg.clicks)) { // declared record-time interactions (e.g. open a menu so its lazy content loads)
+    for (const sel of (fetchOnly || halted() ? [] : cfg.clicks)) { // declared record-time interactions (e.g. open a menu so its lazy content loads)
       try { await page.click(sel, { timeout: 3000 }); log.clicked.push(sel); await sleep(300); } catch { log.clicked.push(sel + ' (not found)'); }
     }
     if (evidence) { // live evidence (C-PLAN-v2-CHECK §4): what the live page showed, so a wall or empty page can never pass later
@@ -91,12 +101,12 @@ export async function recordClass(cfg, cls, { harPath, extraUrls = [], engine = 
         log.live = { docStatus: log.docStatus, finalUrl: log.finalUrl, ...d, text: undefined, textSha1: crypto.createHash('sha1').update(d.text).digest('hex'), textHead: d.text.replace(/\s+/g, ' ').slice(0, 300), screenshot: `${cls}.jpg`, ...(log.preloader ? { preloader: log.preloader } : {}), at: new Date().toISOString() };
       } catch (e) { log.live = { docStatus: log.docStatus, finalUrl: log.finalUrl, error: String(e.message || e).split('\n')[0].slice(0, 200) }; }
     }
-    if (cfg.sweep && !fetchOnly) { // a slow wheel pass mounts lazy content; stop at the bottom (or when the page stops moving: a latch, an end-of-scroll)
+    if (cfg.sweep && !fetchOnly && !halted()) { // a slow wheel pass mounts lazy content; stop at the bottom (or when the page stops moving: a latch, an end-of-scroll)
       const vs = page.viewportSize();
       await page.mouse.move(vs.width >> 1, vs.height >> 1);
       const { down, up } = cfg.sweep;
       let last = -1, still = 0, bottom = 0;
-      for (let i = 0; i < down.n; i++) {
+      for (let i = 0; i < down.n && !halted(); i++) {
         await page.mouse.wheel(0, down.dy); log.wheelSteps++; await sleep(down.gapMs);
         if (i % 4 === 3) {
           const [y, atEnd] = await page.evaluate(() => [scrollY, scrollY + innerHeight >= document.documentElement.scrollHeight - 2]);
@@ -106,7 +116,7 @@ export async function recordClass(cfg, cls, { harPath, extraUrls = [], engine = 
         }
       }
       await sleep(600);
-      for (let i = 0; i < up.n; i++) { await page.mouse.wheel(0, up.dy); await sleep(up.gapMs); if (i % 4 === 3 && await page.evaluate(() => scrollY) < 1) break; }
+      for (let i = 0; i < up.n && !halted(); i++) { await page.mouse.wheel(0, up.dy); await sleep(up.gapMs); if (i % 4 === 3 && await page.evaluate(() => scrollY) < 1) break; }
       await sleep(400);
     }
     // Inner pages (corpus, CORPUS-PLAN §5): visited by navigation after the home sweep so their subresources enter the
@@ -116,20 +126,26 @@ export async function recordClass(cfg, cls, { harPath, extraUrls = [], engine = 
       log.pages = [];
       let lastNav = navAt;
       for (const u of cfg.pages) {
-        const wait = (cfg.pageGapMs ?? 10000) - (Date.now() - lastNav);
+        if (halted()) { log.pages.push([u, `not visited: ${policy.stopped.why}`, null]); continue; }
+        // with a policy its shared queue keeps documents apart (across viewports too); without one, this loop does
+        const wait = policy ? 0 : (cfg.pageGapMs ?? 10000) - (Date.now() - lastNav);
         if (wait > 0) await sleep(wait);
         lastNav = Date.now();
         try {
-          const r = await page.goto(u, { waitUntil: 'load', timeout: 45000 });
+          const r = await page.goto(u, { waitUntil: 'load', timeout: loadMs(45000) });
+          const v = policy ? await policy.judgePage(u, r) : null;
+          if (v && v.verdict !== 'ok') { log.pages.push([u, `${v.verdict}: ${v.why}`, page.url()]); continue; } // a wall page is not swept
           await sleep(cfg.settleMs);
-          for (let i = 0; i < 40; i++) { await page.mouse.wheel(0, 240); await sleep(60); if (i % 4 === 3 && await page.evaluate(() => scrollY + innerHeight >= document.documentElement.scrollHeight - 2)) break; }
+          for (let i = 0; i < 40 && !halted(); i++) { await page.mouse.wheel(0, 240); await sleep(60); if (i % 4 === 3 && await page.evaluate(() => scrollY + innerHeight >= document.documentElement.scrollHeight - 2)) break; }
           await sleep(400);
           log.pages.push([u, r ? r.status() : 0, page.url()]);
         } catch (e) { log.pages.push([u, 'ERR ' + String(e.message).split('\n')[0].slice(0, 120), null]); }
       }
     }
     // Explicit fetches of what code analysis derived (URL completion) or the config declared: they enter the HAR like any request.
-    if (extraUrls.length) {
+    if (extraUrls.length && halted()) log.extra = extraUrls.map((u) => [u, `not-fetched:stopped`, 0]);
+    else if (extraUrls.length) {
+      policy?.markExplicit(extraUrls);
       // fetchConcurrency workers share one queue; requests to the page's own host keep the gap (robots crawl-delay);
       // past the deadline the rest is logged as not-fetched:budget (the caller's miss log), never silently dropped.
       log.extra = await page.evaluate(async ([urls, gap, conc, budgetMs]) => {
@@ -150,6 +166,7 @@ export async function recordClass(cfg, cls, { harPath, extraUrls = [], engine = 
       }, [extraUrls, cfg.extraGapMs || 0, fetchConcurrency, fetchBudgetMs]);
     }
     await sleep(300);
+    if (policy?.stopped) log.stopped = policy.stopped;
   } finally {
     // closing the context writes the HAR zip. A pooled handle's close() gives up after 15 s; the HAR of a big site can take
     // longer, so the context close is awaited in full first (a launched handle's close() awaits it anyway)

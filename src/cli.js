@@ -22,10 +22,18 @@ const HELP = `reva <command>
   compare <url-a> <url-b> [--do load|hover|click|scroll] [--el <selector>] [--on <selector>] [--card]
                                       look at two pages the same way and say how their motion differs
                                       (e.g. the original site vs your rebuild)
+  scan <url> [--out <dir>] [--one-page] [--keep-archive] [--all]
+                                      capture a site in depth, one page per template: both viewports, every moment (load, idle,
+                                      scroll down and up, hover, focus, press, menus, page changes), every moving element, a picture
+                                      of every frame, and a ledger of what was and was not captured; ends in a card of the site's moves;
+                                      "scan --help" says exactly what it does to the site
+  scan moves <dir> [--json] [--id m-...]
+                                      the moves of a finished scan for you or an agent: one line each, or one move in full
+  scan open <dir> [--all]             the scan's card with its Study view, fitting a motion when it is clicked (a server on this machine only)
   doctor [--json] [--install [--force] [--from file.zip]]
                                       check this machine; --install first downloads the headless browser into ~/.reva (no sudo)
   mcp [--allow-local]                 serve the same tools to an AI agent such as Claude Code (stdio)
-  tools | tool <name> [...]           list those tools / run one on the command line (look, motions, design, code, curve, card, unknowns, compare, doctor)
+  tools | tool <name> [...]           list those tools / run one on the command line (look, motions, design, code, curve, card, unknowns, compare, doctor, scan_moves, scan_move)
   --version, -v                       print the version
 `;
 
@@ -70,6 +78,7 @@ export async function main(argv) {
     case 'demo': return (await import('./demo/cli.js')).runDemoCommand(f);
     case 'look': return (await import('./look/cli.js')).runLookCommand(f);
     case 'card': return (await import('./card/index.js')).runCardCommand(f);
+    case 'scan': return (await import('./scan/cli.js')).runScanCommand(f);
     case 'compare': return (await import('./compare/cli.js')).runCompareCommand(f);
     case 'design': return (await import('./design/cli.js')).designMain(sub, f);
     default: break;

@@ -178,7 +178,7 @@ test('card CLI: card <look.json> writes card.html next to it; bad input exits 2'
   assert.equal(r.status, 0, r.stderr);
   assert.match(r.stdout, /card: .*card\.html/);
   const html = fs.readFileSync(path.join(d, 'card.html'), 'utf8');
-  assert.match(html, /<title>REVA card<\/title>/); assert.ok(!html.includes('__DATA__'));
+  assert.match(html, /<title>REVA card: [^<]+<\/title>/); assert.ok(!html.includes('__DATA__'));
   const out = path.join(d, 'x', 'c.html');
   assert.equal(spawnSync(process.execPath, [BIN, 'card', path.join(d, 'look.json'), '--out', out]).status, 0);
   assert.ok(fs.existsSync(out));
@@ -348,4 +348,33 @@ test('card footer: the network miss count shows only for an archive replay; a li
       assert.doesNotMatch(footer(renderCard(d)), /network miss/, `${source.url} ${net.misses}`);
     }
   }
+});
+
+test('card screens: with no tool to resample, a screen up to twice its budget is kept (not dropped, Linux), a bigger one is left out and said', async () => {
+  const { trimScreens } = await import('../../src/card/build.js');
+  const fsx = await import('node:fs'), osx = await import('node:os'), pathx = await import('node:path');
+  const dir = fsx.mkdtempSync(pathx.join(osx.tmpdir(), 'reva-screens-'));
+  const jpg = (n) => Buffer.concat([Buffer.from([0xff, 0xd8, 0xff, 0xe0]), Buffer.alloc(n)]);
+  fsx.writeFileSync(pathx.join(dir, 'a.jpg'), jpg(1.6e6)); fsx.writeFileSync(pathx.join(dir, 'b.jpg'), jpg(3e6));
+  const savedPath = process.env.PATH; process.env.PATH = dir;   // neither sips nor magick is found
+  try {
+    const kept = trimScreens({ viewport: { file: 'a.jpg', w: 1440, h: 900 } }, dir);
+    assert.ok(kept.viewport && kept.viewport.data.startsWith('data:image/jpeg'), 'kept as it is');
+    const out = trimScreens({ viewport: { file: 'b.jpg', w: 1440, h: 900 } }, dir);
+    assert.ok(out.dropped && /no tool to resample/.test(out.dropped[0]), JSON.stringify(out.dropped));
+  } finally { process.env.PATH = savedPath; fsx.rmSync(dir, { recursive: true, force: true }); }
+});
+
+test('card evidence: recorded frames as dots on the curve, a second-run verdict, below-noise channels left out', async () => {
+  const { dotsOf, realGaps, trimLook } = await import('../../src/card/build.js');
+  const rec = tweenRec(); const look = lookOf(rec);
+  const d = dotsOf(look.motions[0], rowsFor(), null);
+  assert.ok(d && d.pts.length <= 48 && d.pts.length >= 40, 'about 48 dots');
+  assert.equal(d.frames, 80); assert.ok(d.gapPct < 0.1, `gap ${d.gapPct}`);
+  assert.equal(dotsOf(look.motions[0], null, null), null, 'no take on disk: no dots');
+  assert.deepEqual(realGaps([{ channel: 'ren:sx', kind: 'below noise', reason: 'changes only below the read-back noise floor' }, { channel: 'ren:x', kind: 'no model', reason: 'no family explains it' }]).map((u) => u.channel), ['ren:x']);
+  const t = trimLook({ ...look, stability: { ran: true, motions: [{ rank: 1, verdict: 'varies', channels: [{ channel: 'ren:ty', verdict: 'varies', deltas: { durationMs: { first: 500, second: 560 } }, varies: [{ what: 'duration', text: 'duration 500 → 560 ms' }] }] }] }, notFitted: [{ el: 3, desc: 'DIV.hero', channel: 'ren:rz', reason: 'channel budget 24' }] }, null);
+  assert.deepEqual(t.motions[0].stable.duration, [500, 560]);
+  assert.ok(t.motions[0].gaps.some((g) => g.kind === 'not fitted') && t.motions[0].gaps.some((g) => g.kind === 'no model'), JSON.stringify(t.motions[0].gaps));
+  assert.equal(t.notFitted.length, 1); assert.equal(t.easings.easeOutQuint.join(), '0.22,1,0.36,1');
 });

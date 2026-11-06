@@ -164,8 +164,9 @@ function typography(V, tokens, maxStyles) {
   const list = [...groups.values()].sort((a, b) => b.rows - a.rows);
   // body size: the size most text elements use (headings and controls aside)
   // (paragraphs and list items first: a page of display spans has no body copy in them)
-  const sizeBy = (re) => { const m = new Map(); for (const g of list) { const n = [...g.tags].filter(([t]) => re.test(t)).reduce((x, [, c]) => x + c, 0); if (n) tally(m, pxOf(g.k.split('|')[1]), n); } return [...m].sort((a, b) => b[1] - a[1])[0]?.[0] ?? null; };
-  const bodyPx = sizeBy(/^(p|li|dd|blockquote)$/) ?? sizeBy(/^(?!h[1-6]$|a$|button$|input$|select$|textarea$|label$|summary$|option$)/);
+  const sizeBy = (re, below = Infinity) => { const m = new Map(); for (const g of list) { if (!(pxOf(g.k.split('|')[1]) < below)) continue; const n = [...g.tags].filter(([t]) => re.test(t)).reduce((x, [, c]) => x + c, 0); if (n) tally(m, pxOf(g.k.split('|')[1]), n); } return [...m].sort((a, b) => b[1] - a[1])[0]?.[0] ?? null; };
+  // (a giant display line set in a <p> is not reading text: sizes of 40 px and up count only when nothing smaller exists)
+  const bodyPx = sizeBy(/^(p|li|dd|blockquote)$/, 40) ?? sizeBy(/^(p|li|dd|blockquote)$/) ?? sizeBy(/^(?!h[1-6]$|a$|button$|input$|select$|textarea$|label$|summary$|option$)/);
   // which styles are kept: the display end of the scale and the h1-h3 styles first (one hero h1 is the most telling style
   // of a page and the rarest), then the most used; listed largest first (ids t1, t2 ... in that order)
   const sizeOf = (g) => pxOf(g.k.split('|')[1]) ?? -1;

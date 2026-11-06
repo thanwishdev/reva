@@ -1,0 +1,620 @@
+<style>
+/* The stage of a scan card. Same system as the card (one sans, one blue, tone not borders); the page's left list becomes one
+   quiet row on top so the picture gets the room. The picture is the object; nothing else is framed. */
+.scan .shell{display:block;max-width:none;padding:0}
+.scan .side{position:sticky;top:0;z-index:5;height:auto;display:flex;flex-direction:row;align-items:center;gap:12px;padding:20px 40px;background:var(--bg);overflow:visible}
+.scan .side .site{margin:0;font-size:16px}
+.scan .side nav{flex-direction:row;gap:28px;margin:0 0 0 auto}
+.scan .side nav a{padding:0}
+.scan .side nav a.sub{display:none!important}
+.scan .findbtn{display:none}
+.st-pagesel{height:32px;max-width:280px;border:0;border-radius:8px;padding:0 8px;background:var(--surface);color:var(--ink);font:inherit;font-size:15px}
+.scan main{max-width:1120px;margin:0 auto;padding:0 40px 96px}
+.scan.on-stage main{max-width:none;padding:0}
+.scan.on-stage{overflow:hidden}
+.st{display:grid;grid-template-columns:minmax(0,1fr) 420px;gap:40px;height:calc(100dvh - 68px);padding:4px 40px 28px}
+.st-left{display:flex;flex-direction:column;min-width:0;min-height:0}
+.st-pic{position:relative;flex:1;min-height:0;display:flex;align-items:center;justify-content:center;touch-action:none}
+.st-frame{position:relative;line-height:0;overflow:hidden;border-radius:12px;background:var(--surface);cursor:crosshair}
+.st-frame canvas{display:block}
+.st-frame #st-ov{position:absolute;inset:0}
+.st-tip{position:absolute;z-index:3;pointer-events:none;max-width:320px;padding:6px 10px;border-radius:8px;background:var(--ink);color:var(--bg);font-size:15px;line-height:20px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:0;transition:opacity var(--t1) var(--ease)}
+.st-tip.on{opacity:1}
+.st-hint{position:absolute;left:50%;bottom:24px;transform:translateX(-50%);padding:8px 14px;border-radius:10px;background:var(--ink);color:var(--bg);font-size:15px;line-height:20px;pointer-events:none;opacity:0;transition:opacity 320ms var(--ease)}
+.st-hint.on{opacity:1}
+.st-bar{display:flex;align-items:flex-end;gap:24px;padding-top:24px}
+.st-play{flex:none;width:44px;height:44px;border:0;border-radius:50%;background:var(--ink);color:var(--bg);display:grid;place-items:center}
+.st-play svg{width:16px;height:16px;fill:currentColor}
+.st-track{position:relative;flex:1;min-width:0;height:44px;cursor:pointer;touch-action:none}
+.st-chap{position:absolute;bottom:8px;height:4px;border-radius:2px;background:var(--surface2);transition:background var(--t1) var(--ease)}
+.st-chap b{position:absolute;left:0;bottom:12px;font-weight:400;font-size:15px;line-height:20px;color:var(--ink2);white-space:nowrap;transition:color var(--t1) var(--ease)}
+.st-chap.on b{color:var(--ink);font-weight:500}
+.st-chap b.off{visibility:hidden}
+.st-span{position:absolute;bottom:8px;height:4px;border-radius:2px;background:var(--accent)}
+.st-head{position:absolute;bottom:2px;width:2px;height:16px;border-radius:1px;background:var(--ink);transform:translateX(-1px)}
+.st-clock{flex:none;display:flex;flex-direction:column;align-items:flex-end;width:148px;font-size:15px;line-height:24px;color:var(--ink2)}
+#st-now{max-width:100%;min-height:24px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--ink)}
+.st-speed{flex:none;height:44px;border:0;background:none;padding:0;color:var(--ink2);font-size:15px;transition:color var(--t1) var(--ease)}
+.st-speed:hover,.st-speed[aria-pressed="true"]{color:var(--ink)}
+.st-right{min-width:0;min-height:0;display:flex;flex-direction:column}
+.st-top{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:44px}
+.st-top h1{font-size:20px;line-height:28px;letter-spacing:-.015em}
+.st-scroll{flex:1;min-height:0;overflow-y:auto;margin:16px -16px 0;padding:0 16px 24px;scrollbar-width:thin}
+.st-list{list-style:none;margin:0;padding:0}
+.st-list button{display:flex;align-items:baseline;gap:12px;width:100%;padding:9px 0;border:0;background:none;text-align:left;color:var(--ink2);font-size:16px;line-height:24px;transition:color var(--t1) var(--ease)}
+.st-list button:hover,.st-list button.hov{color:var(--ink)}
+.st-list button.live{color:var(--accent)}
+.st-list .nm{min-width:0;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.st-list .n{flex:none;color:var(--faint)}
+.st-list .st-list{margin-left:16px}
+.st-fam .nm svg{width:10px;height:10px;margin-left:8px;transition:transform var(--t1) var(--ease)}
+.st-fam>button[aria-expanded="true"] .nm svg{transform:rotate(90deg)}
+.st-back{border:0;background:none;padding:0;color:var(--ink2);font-size:16px;line-height:44px}
+.st-back:hover{color:var(--ink)}
+.st-scroll .selrow{margin-top:16px;overflow-wrap:anywhere}
+.st-title{font-size:24px;line-height:30px;font-weight:600;letter-spacing:-.018em;overflow-wrap:anywhere}
+.st-moments{display:flex;flex-wrap:wrap;gap:4px 20px;margin-top:12px}
+.st-moments button{border:0;background:none;padding:4px 0;color:var(--ink2);font-size:16px;line-height:24px}
+.st-moments button[aria-pressed="true"]{color:var(--ink);font-weight:600}
+.st-state{margin-top:20px;font-size:16px;line-height:24px;color:var(--ink2)}
+.st-state code{font-size:14px}
+.st-plot{display:block;width:100%;height:150px;margin-top:20px;overflow:visible}
+.st-legend{display:flex;flex-wrap:wrap;gap:4px 20px;margin-top:10px;font-size:15px;line-height:22px;color:var(--ink2)}
+.st-vals{margin:16px 0 0;font-size:15px;line-height:24px;color:var(--ink2)}
+.st-kvs{margin-top:24px}
+.st-kv{display:flex;justify-content:space-between;gap:24px;padding:8px 0;font-size:16px;line-height:24px}
+.st-kv span:first-child{flex:none;color:var(--ink2)}
+.st-kv span:last-child{text-align:right;overflow-wrap:anywhere}
+.st-here{margin-top:16px}
+.st-here>summary{cursor:pointer;font-size:16px;line-height:24px;color:var(--ink2)}
+.st-here .st-list{max-height:240px;overflow-y:auto;margin-top:8px}
+.st-rec{margin-top:32px}
+.st-rec>summary{cursor:pointer;font-size:16px;line-height:24px;color:var(--ink2)}
+.st-fit .mpanel{margin-top:24px}
+.st-fit .mpanel .sentence{font-size:20px;line-height:27px;letter-spacing:-.015em}
+.st-fit .bench.solo{--sh:300px}
+.st-fit .bench .pctl{display:none}
+.st-fit .nums{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 24px}
+.st-fit .pctl{flex-wrap:wrap}
+.st-fit .know dl{grid-template-columns:1fr;gap:2px}
+.st-fit .know dd{margin-bottom:12px}
+.st-gl{list-style:none;margin:20px 0 0;padding:0}
+.st-gl button{display:block;width:100%;border:0;background:none;padding:8px 0;text-align:left;color:var(--ink2);font-size:16px;line-height:24px}
+.st-gl button[aria-pressed="true"]{color:var(--ink);font-weight:600}
+.st-site{padding-top:48px;max-width:720px}
+.st-site h1{font-size:32px;line-height:38px;letter-spacing:-.022em}
+.st-site .big{margin-top:20px;font-size:20px;line-height:30px}
+.st-site h2{margin-top:56px;font-size:20px;line-height:28px}
+.st-site ul{list-style:none;margin:16px 0 0;padding:0}
+.st-site li{padding:6px 0;line-height:26px}
+.st-site li span{color:var(--ink2)}
+.st-pages a{text-decoration:underline;text-underline-offset:3px}
+@media (max-width:1080px){
+  .scan.on-stage{overflow:auto}
+  .st{grid-template-columns:minmax(0,1fr);height:auto;gap:32px;padding:4px 16px 40px}
+  .st-pic{height:min(72dvh,560px);flex:none}
+  .st-bar{flex-wrap:wrap;align-items:center;gap:12px 20px}
+  .st-clock{margin-left:auto;width:auto;max-width:60%}
+  .st-track{order:5;flex:1 0 100%}
+  .st-scroll{overflow:visible;margin:12px 0 0;padding:0}
+  .scan .side{padding:16px;flex-wrap:wrap}
+  .scan .side nav{gap:20px;margin:0;width:100%}
+  .scan main{padding:0 16px 64px}
+  .st-pagesel{max-width:116px}
+}
+@media (prefers-reduced-motion:reduce){.st-tip,.st-hint,.st-chap,.st-chap b,.st-fam .nm svg{transition:none}}
+</style>
+<script>
+/* The stage of a scan card (PLAN §8). Runs after the card's own script and shares its globals: the panel of a motion is the
+   card's own panelHTML / initPanel, fed with the fit of one motion. Everything else on this page is pictures, boxes and time.
+   Data files are plain scripts, so the card works from disk: stage/<page>-<viewport>.js, its values files and
+   fits/<chapter>/<lead>.js. With `reva scan open` the local server fits a motion when that same script is asked for. */
+(() => {
+  const SC = DATA.scan; let BASE = L;
+  const docs = {}, values = {}, fits = {}, waiting = {};
+  const ST = { page: SC.pages[0], vp: null, open: new Set(), listTop: 0, d: null, pos: 0, target: 0, playing: false, speed: 1, clockT: 0, sel: null, moment: 0, hover: null, seen: false, stack: [], at: -1, elOf: {}, imgs: {}, drawn: null, scale: 1, loose: null };
+  sceneFor = () => null;   // the picture on the left is the replay, so the panel needs no second one
+  const SERVER = location.protocol === 'http:' && SC.server !== false;
+  document.documentElement.classList.add('scan');
+  VIEWNAME.overview = 'Stage'; VIEWNAME.timeline = 'Site';
+  const nav = $('#secnav');
+  $$('a.sub, a[data-s="motion"]', nav).forEach(a => a.remove());
+  const ov = $('a[data-s="overview"]', nav), tl = $('a[data-s="timeline"]', nav), rec = $('a[data-s="recording"]', nav);
+  ov.textContent = 'Stage'; tl.textContent = 'Site'; if (rec) rec.remove();
+  if (!(BASE.design)) { const a = $('a[data-s="design"]', nav); if (a) a.remove(); }
+  if (!(BASE.libraries || BASE.read)) { const a = $('a[data-s="libraries"]', nav); if (a) a.remove(); }
+  const si = $('#site'); if (si) si.textContent = SC.host;
+
+  /* ---------- data ---------- */
+  const script = (src) => new Promise((ok, no) => { const s = document.createElement('script'); s.src = src; s.onload = () => { s.remove(); ok(); }; s.onerror = () => { s.remove(); no(new Error(src)); }; document.head.append(s); });
+  window.__stage = (vp, doc) => { docs[vp] = doc; };
+  window.__stageValues = (k, v) => { values[k] = v; };
+  const tables = {};
+  window.__stageTable = (k, t) => { tables[k] = t; };
+  window.__fit = (c, lead, f) => { fits[c + '|' + lead] = f; };
+  const fitFailed = {};
+  window.__fitFailed = (c, lead, why) => { fitFailed[c + '|' + lead] = why; };
+  const safeId = (id) => String(id).replace(/[^\w-]+/g, '-');
+  const fitSrc = (c, lead) => `fits/${safeId(c)}/${lead}.js`;
+  async function fitOf(c, lead) {
+    const k = c + '|' + lead;
+    if (fits[k]) return fits[k];
+    if (waiting[k]) return waiting[k];
+    return (waiting[k] = (async () => {
+      try { await script(fitSrc(c, lead) + (SERVER ? `?c=${encodeURIComponent(c)}` : '')); } catch (e) { if (SERVER) throw new Error('the local server did not answer'); }
+      if (fitFailed[k]) { const why = fitFailed[k]; delete fitFailed[k]; throw new Error(why); }
+      return fits[k] || null;
+    })().finally(() => { delete waiting[k]; }));
+  }
+
+  /* ---------- time ---------- */
+  const chAt = (g) => { const cs = ST.d.chapters; for (let i = cs.length - 1; i >= 0; i--) if (g >= cs[i].at) return cs[i]; return cs[0]; };
+  const frameAt = (g) => { const c = chAt(g), t = ST.d.takes[c.take]; return { c, t, i: c.from + (g - c.at) }; };
+  const clampG = (g) => Math.max(0, Math.min(ST.d.total - 1, g));
+  const chById = (id) => ST.d.chapters.find(c => c.id === id);
+  const toX = (g) => { const c = chAt(g); return c.x0 + (c.x1 - c.x0) * (g - c.at) / Math.max(1, c.to - c.from); };
+  const fromX = (x) => { const cs = ST.d.chapters; const c = cs.find(q => x < q.x1) || cs[cs.length - 1]; return c.at + (x - c.x0) / Math.max(1e-6, c.x1 - c.x0) * (c.to - c.from); };
+
+  /* ---------- pictures: one video per take (any frame is one seek away), or JPEG files when this machine could not encode ---------- */
+  const vids = new Map();
+  function vidOf(take) {
+    let V = vids.get(take);
+    if (V) { vids.delete(take); vids.set(take, V); return V; }
+    V = document.createElement('video'); V.muted = true; V.playsInline = true; V.preload = 'auto'; V.src = ST.d.takes[take].dir + ST.d.takes[take].v;
+    V.addEventListener('loadeddata', () => draw());
+    V.addEventListener('seeked', () => {
+      V.busy = false;
+      if (V.want != null && Math.abs(V.currentTime - V.want) > 1e-4) { V.busy = true; V.currentTime = V.want; return; }
+      if (V.wantKey && ST.vidKey === V.wantKey) paintVideo(V, V.wantKey);
+    });
+    vids.set(take, V);
+    while (vids.size > 6) { const k = vids.keys().next().value, old = vids.get(k); vids.delete(k); old.removeAttribute('src'); old.load(); }
+    return V;
+  }
+  function paintVideo(V, key) {
+    const v = ST.d.clip, p = picC().getContext('2d');
+    p.imageSmoothingQuality = 'high'; p.drawImage(V, 0, 0, v.width * ST.scale, v.height * ST.scale); ST.drawn = key; ST.painted = (ST.painted || 0) + 1;
+  }
+  function showVideo(take, i, f) {
+    const key = take + '/' + f; ST.vidKey = key;
+    if (ST.drawn === key) return;
+    const V = vidOf(take); if (V.readyState < 1) return;
+    V.want = (i + 0.2) / 60; V.wantKey = key;
+    if (!V.busy) { V.busy = true; V.currentTime = V.want; }
+  }
+  function img(take, f) {
+    const k = take + '/' + f; let m = ST.imgs[k];
+    if (!m) { m = ST.imgs[k] = new Image(); m.decoding = 'async'; m.onload = () => { m.ok = 1; const a = frameAt(Math.round(ST.pos)); if (a.c.take === take && a.t.f[a.i] === f) draw(); }; m.src = ST.d.takes[take].dir + String(f).padStart(5, '0') + '.jpg'; }
+    return m;
+  }
+  let preloadRun = 0;
+  function preload() {
+    const run = ++preloadRun, order = [];
+    for (const c of ST.d.chapters) { const t = ST.d.takes[c.take]; if (t.v) continue; for (let i = c.from; i < c.to; i++) order.push([c.take, t.f[i]]); }
+    let n = 0; const step = () => { if (run !== preloadRun) return; for (let k = 0; k < 10 && n < order.length; k++, n++) if (order[n][1] >= 0) img(order[n][0], order[n][1]); if (n < order.length) setTimeout(step, 12); };
+    step();
+  }
+
+  /* ---------- boxes: the run of an element at a frame ---------- */
+  function boxOf(e, t, i) {
+    const a = e.t; let lo = 0, hi = a.length / 5 - 1, r = -1;
+    while (lo <= hi) { const m = (lo + hi) >> 1; if (a[m * 5] <= i) { r = m; lo = m + 1; } else hi = m - 1; }
+    if (r < 0) return null;
+    const w = a[r * 5 + 3], h = a[r * 5 + 4]; if (w < 4 || h < 4) return null;
+    return { x: a[r * 5 + 1], y: a[r * 5 + 2] - (e.m === 'p' ? t.y[i] : 0), w, h };
+  }
+  function glowOf(e, i) {
+    const s = e.s; let best = 99;
+    for (let k = 0; k < s.length; k += 2) { const d = i < s[k] ? s[k] - i : i > s[k + 1] ? i - s[k + 1] : 0; if (d < best) best = d; if (!d) break; }
+    return best >= 14 ? 0 : 1 - best / 14;
+  }
+  function liveBoxes(t, i) {
+    const v = ST.d.clip, out = [];
+    for (const id in t.els) { const e = t.els[id]; if (/^(HTML|BODY)\b/.test(e.d)) continue; const b = boxOf(e, t, i); if (!b || b.x >= v.width || b.y >= v.height || b.x + b.w <= 0 || b.y + b.h <= 0) continue; out.push({ id: +id, e, ...b }); }
+    return out;
+  }
+
+  /* ---------- drawing ---------- */
+  const picC = () => $('#st-pic'), ovC = () => $('#st-ov');
+  function size() {
+    const host = $('.st-pic'); if (!host || !ST.d) return;
+    const v = ST.d.clip;
+    // in one column the picture's own shape sets the height, so a wide page leaves no gap around it
+    host.style.height = matchMedia('(max-width:1080px)').matches ? `${Math.round(Math.min(innerHeight * .72, host.clientWidth * v.height / v.width))}px` : '';
+    const s = host.getBoundingClientRect();
+    ST.scale = Math.min(s.width / v.width, s.height / v.height);
+    const w = Math.round(v.width * ST.scale), h = Math.round(v.height * ST.scale), r = devicePixelRatio || 1;
+    for (const c of [picC(), ovC()]) { c.width = w * r; c.height = h * r; c.style.width = w + 'px'; c.style.height = h + 'px'; c.getContext('2d').setTransform(r, 0, 0, r, 0, 0); }
+    ST.drawn = null; draw();
+  }
+  const memberSet = () => { if (ST.sel == null) return null; const m = ST.d.motions[ST.sel]; const mo = m.moments[ST.moment]; return new Set(mo ? mo.ids : []); };
+  function draw() {
+    if (!ST.d || !picC()) return;
+    const g = Math.round(ST.pos), a = frameAt(g), v = ST.d.clip, k = ST.scale, p = picC().getContext('2d'), o = ovC().getContext('2d');
+    const f = a.t.f[a.i];
+    if (f >= 0 && a.t.v) showVideo(a.c.take, a.t.f.indexOf(f), f);
+    else if (f >= 0) { const m = img(a.c.take, f), key = a.c.take + '/' + f; if (m.ok && ST.drawn !== key) { p.imageSmoothingQuality = 'high'; p.drawImage(m, 0, 0, v.width * k, v.height * k); ST.drawn = key; } }
+    o.clearRect(0, 0, v.width * k, v.height * k);
+    const boxes = liveBoxes(a.t, a.i), set = memberSet(), inCh = ST.sel != null && ST.d.motions[ST.sel].moments[ST.moment]?.c === a.c.id;
+    ST.boxes = boxes;
+    const big = v.width * v.height * .55, dim = ST.sel != null ? .4 : 1;
+    o.lineWidth = 1;
+    for (const b of boxes) {
+      if (b.w * b.h > big) continue;
+      const q = glowOf(b.e, a.i) * dim; if (!q) continue;
+      o.fillStyle = `rgba(92,132,255,${.045 * q})`; o.strokeStyle = `rgba(92,132,255,${.32 * q})`;
+      const r = [b.x * k, b.y * k, b.w * k, b.h * k]; o.fillRect(...r); o.strokeRect(r[0] + .5, r[1] + .5, r[2] - 1, r[3] - 1);
+    }
+    const stroke = (b, w, c) => { o.lineWidth = w; o.strokeStyle = c; o.strokeRect(b.x * k + .5, b.y * k + .5, b.w * k - 1, b.h * k - 1); };
+    if (set && inCh) for (const b of boxes) if (set.has(b.id)) { stroke(b, 3, 'rgba(255,255,255,.55)'); stroke(b, 1.5, '#2a5bff'); }
+    if (ST.loose && ST.loose.take === a.c.take) for (const b of boxes) if (b.id === ST.loose.id) { stroke(b, 3, 'rgba(255,255,255,.55)'); stroke(b, 1.5, '#2a5bff'); }
+    const hv = ST.hover && boxes.find(b => b.id === ST.hover.id);
+    if (hv) { stroke(hv, 3, 'rgba(0,0,0,.45)'); stroke(hv, 1.5, '#fff'); }
+    if (ST.still) { stroke(ST.still, 3, 'rgba(0,0,0,.35)'); stroke(ST.still, 1, 'rgba(255,255,255,.9)'); }
+    if (ST.chosen) { const c = ST.chosen, y = c.q[6] ? c.q[3] : c.q[3] - a.t.y[a.i]; stroke({ x: c.q[2], y, w: c.q[4], h: c.q[5] }, 3, 'rgba(255,255,255,.55)'); stroke({ x: c.q[2], y, w: c.q[4], h: c.q[5] }, 1.5, '#2a5bff'); }
+    const T = a.t.T[a.i], base = a.c.fromT == null ? a.t.T[a.c.from] : a.c.fromT;
+    $('#st-clock').textContent = nf((T - base) / 1000, 2) + ' s';
+    $('#st-head').style.left = (toX(g) * 100) + '%';
+    if (ST.at !== a.c.id) {
+      ST.at = a.c.id;
+      $$('.st-chap').forEach(x => x.classList.toggle('on', x.dataset.c === a.c.id || (a.c.group && x.dataset.g === a.c.group)));
+      const lab = $(`.st-chap[data-c="${CSS.escape(a.c.id)}"] b`);
+      $('#st-now').textContent = a.c.group ? partName(a.c) : lab && lab.classList.contains('off') ? a.c.name : '';
+    }
+    markLive(a);
+    drawPlayhead(a);
+  }
+  /* "Hover a.nav-link" as a person says it */
+  function partName(c) { const m = /^(\S+) (.+)$/.exec(c.name); if (!m || !/[.#]/.test(m[2])) return c.name; const d = /^[a-z]/.test(m[2]) ? m[2].replace(/^[a-z0-9-]+/, x => x.toUpperCase()) : m[2]; return `${m[1]}: ${humanName(d, null)}`; }
+  let liveTick = 0;
+  function markLive(a) {
+    if (++liveTick % 6 || ST.sel != null) return;
+    const els = a.t.els, map = ST.elOf[a.c.id] || {}, live = new Set();
+    for (const id in map) { const s = els[id]?.s || []; for (let k = 0; k < s.length; k += 2) if (a.i >= s[k] && a.i <= s[k + 1]) { live.add(map[id]); break; } }
+    $$('.st-list button[data-m]').forEach(b => b.classList.toggle('live', live.has(+b.dataset.m)));
+    $$('.st-fam').forEach(f => f.firstElementChild.classList.toggle('live', !!$('button.live', f.lastElementChild)));
+  }
+
+  /* ---------- the clock: real time on the recording's own clock, or the wheel with a soft follow ---------- */
+  let lastNow = 0;
+  function tick(now) {
+    const dt = Math.min(64, now - (lastNow || now)); lastNow = now;
+    if (ST.d) {
+      if (ST.playing) {
+        const a = frameAt(Math.round(ST.pos));
+        const T0 = a.t.T[a.i], T1 = a.t.T[Math.min(a.c.to - 1, a.i + 1)] || T0;
+        const step = (dt * ST.speed) / Math.max(1, T1 - T0 || 16.7);
+        ST.pos = Math.min(ST.d.total - 1, ST.pos + step); ST.target = ST.pos;
+        if (ST.stopAt != null && ST.pos >= ST.stopAt) { ST.pos = ST.target = ST.stopAt; ST.stopAt = null; setPlay(false); hint(); }
+        if (ST.pos >= ST.d.total - 1) setPlay(false);
+        draw();
+      } else if (Math.abs(ST.target - ST.pos) > .02) {
+        ST.pos += (ST.target - ST.pos) * (REDUCED ? 1 : Math.min(1, dt / 70));
+        draw();
+      }
+    }
+    requestAnimationFrame(tick);
+  }
+  function setPlay(on) { ST.playing = on; const b = $('#st-play'); if (b) { b.innerHTML = on ? '<svg viewBox="0 0 16 16"><rect x="3" y="2" width="3.6" height="12" rx="1"/><rect x="9.4" y="2" width="3.6" height="12" rx="1"/></svg>' : '<svg viewBox="0 0 16 16"><path d="M4 2.4v11.2a.6.6 0 0 0 .9.5l9-5.6a.6.6 0 0 0 0-1l-9-5.6a.6.6 0 0 0-.9.5z"/></svg>'; b.setAttribute('aria-label', on ? 'Pause' : 'Play'); } if (!on) ST.stopAt = null; }
+  function seek(g, hard) { if (ST.stopAt != null) setPlay(false); ST.target = clampG(g); if (hard) ST.pos = ST.target; draw(); }
+  function hint() { const h = $('#st-hint'); if (!h || ST.seen) return; const c = ST.d.chapters.find(x => x.phase === 'scroll-down'); if (!c) return; h.classList.add('on'); }
+  function hideHint() { ST.seen = true; const h = $('#st-hint'); if (h) h.classList.remove('on'); }
+
+  /* The wheel moves the page as a person's scroll would: in a scroll chapter one wheel pixel is one page pixel, and scrolling
+     up in "Scroll back up" runs it forward, so the page always follows the hand. */
+  function wheel(e) {
+    e.preventDefault(); hideHint(); setPlay(false);
+    const d = ST.d, a = frameAt(Math.round(ST.target));
+    const load = d.chapters.find(c => c.phase === 'load'), down = d.chapters.find(c => c.phase === 'scroll-down');
+    const span = (c) => { const t = d.takes[c.take]; return Math.abs(t.y[c.to - 1] - t.y[c.from]) / Math.max(1, c.to - c.from); };
+    let px = /scroll/.test(a.c.phase) ? Math.max(6, span(a.c)) : 8, dir = a.c.phase === 'scroll-up' ? -1 : 1;
+    let lo = a.c.at, hi = a.c.at + (a.c.to - a.c.from) - 1;
+    if (load && down && (a.c === load || a.c === down)) { lo = load.at; hi = down.at + (down.to - down.from) - 1; }
+    ST.target = Math.max(lo, Math.min(hi, ST.target + dir * e.deltaY / px));
+  }
+
+  /* ---------- hit test ---------- */
+  function under(ev) {
+    const r = ovC().getBoundingClientRect(), x = (ev.clientX - r.left) / ST.scale, y = (ev.clientY - r.top) / ST.scale;
+    // what moves in this part comes first, the smallest of it on top, so a pile of still or hidden elements does not bury it
+    const c = frameAt(Math.round(ST.pos)).c, moves = (b) => { const m = b.e.s || []; for (let k = 0; k < m.length; k += 2) if (m[k] < c.to && m[k + 1] >= c.from) return 0; return 1; };
+    return (ST.boxes || []).filter(b => x >= b.x && y >= b.y && x <= b.x + b.w && y <= b.y + b.h).sort((p, q) => moves(p) - moves(q) || p.w * p.h - q.w * q.h);
+  }
+  const nameOfEl = (e, b) => humanName(e.d, b);
+  /* the elements that do not move: the table of the page at rest, smallest first, in place for the frame on screen */
+  function stillUnder(ev, a) {
+    const tb = tables[`${ST.page.id}/${ST.vp}`]; if (!tb) return [];
+    const r = ovC().getBoundingClientRect(), x = (ev.clientX - r.left) / ST.scale, y = (ev.clientY - r.top) / ST.scale, sy = a.t.y[a.i], out = [];
+    for (const q of tb.rows) { const top = q[6] ? q[3] : q[3] - sy; if (x >= q[2] && x <= q[2] + q[4] && y >= top && y <= top + q[5]) out.push({ q, x: q[2], y: top, w: q[4], h: q[5] }); }
+    return out.sort((p, q) => p.w * p.h - q.w * q.h);
+  }
+  const TAGS = { a: 'Link', button: 'Button', img: 'Image', video: 'Video', svg: 'Drawing', path: 'Drawing part', h1: 'Heading', h2: 'Heading', h3: 'Heading', h4: 'Heading', p: 'Text', span: 'Text', li: 'List item', ul: 'List', input: 'Field', canvas: 'Canvas', section: 'Section', nav: 'Navigation', footer: 'Footer', header: 'Header' };
+  const stillName = (q) => (q[7] ? q[7] : (q[1] ? humanName(q[0].toUpperCase() + '.' + (String(q[1]).split('.').pop() || '').split(/[ >:]/)[0], null) : '') || TAGS[q[0]] || 'Element');
+  function onMove(ev) {
+    const list = under(ev), tip = $('#st-tip'), b = list[0];
+    const was = ST.hover && ST.hover.id, wasS = ST.still; ST.hover = b ? { id: b.id } : null; ST.still = null;
+    if (!b) {
+      const s = stillUnder(ev, frameAt(Math.round(ST.pos)))[0];
+      if (s) {
+        ST.still = s; tip.textContent = stillName(s.q);
+        const r = $('.st-frame').getBoundingClientRect(), x = ev.clientX - r.left + 14, y = ev.clientY - r.top + 16;
+        tip.classList.add('on'); tip.style.transform = `translate(${Math.min(x, r.width - tip.offsetWidth - 8)}px,${Math.min(y, r.height - 40)}px)`;
+        if (!wasS || wasS.q !== s.q) draw();
+        return;
+      }
+    }
+    if (b) {
+      const a = frameAt(Math.round(ST.pos)), mi = (ST.elOf[a.c.id] || {})[b.id], m = mi != null ? ST.d.motions[mi] : null;
+      tip.textContent = m ? nameM(m) + (m.count > 1 ? ` ×${m.count}` : '') : nameOfEl(b.e, b);
+      const r = $('.st-frame').getBoundingClientRect(), x = ev.clientX - r.left + 14, y = ev.clientY - r.top + 16;
+      tip.classList.add('on'); tip.style.transform = `translate(${Math.min(x, r.width - tip.offsetWidth - 8)}px,${Math.min(y, r.height - 40)}px)`;
+    } else tip.classList.remove('on');
+    if (was !== (b && b.id) || wasS) draw();
+  }
+  function onClick(ev) {
+    const list = under(ev); ST.stackN = 0; ST.stack = list;
+    if (!list.length) { const s = stillUnder(ev, frameAt(Math.round(ST.pos)))[0]; if (s) showStill(s.q); else toList(); return; }
+    const key = list.map(b => b.id).join();
+    if (ST.stackKey === key) ST.stackAt = (ST.stackAt + 1) % list.length; else { ST.stackKey = key; ST.stackAt = 0; }
+    ST.stackN = list.length; pickEl(list[ST.stackAt]);
+  }
+  /* elements lie on top of each other: the same spot walks through them, smallest first */
+  const stackLine = () => {
+    if (!(ST.stackN > 1)) return '';
+    const a = frameAt(Math.round(ST.pos)), name = (b) => { const mi = (ST.elOf[a.c.id] || {})[b.id]; return mi != null ? nameM(ST.d.motions[mi]) : nameOfEl(b.e, b); };
+    return `<details class="st-here"${ST.hereOpen ? ' open' : ''}><summary>${nf(ST.stackN)} elements on this spot</summary><ul class="st-list">${ST.stack.map((b, i) => `<li><button type="button" data-here="${i}" class="${i === ST.stackAt ? 'live' : ''}"><span class="nm">${esc(name(b))}</span></button></li>`).join('')}</ul></details>`;
+  };
+  function pickEl(b) {
+    const a = frameAt(Math.round(ST.pos)), mi = (ST.elOf[a.c.id] || {})[b.id];
+    if (mi == null) { showLoose(b, a); return; }
+    const k = ST.d.motions[mi].moments.findIndex(x => x.c === a.c.id);
+    pick(mi, k, false, true);
+  }
+
+  /* ---------- the side: motions, then one motion ---------- */
+  /* a part with a plain name but its own words on the page goes by those words */
+  const wordsOf = (m) => { const t = ST.textBy && m.selector && ST.textBy.get(m.selector); return t && t.length > 2 ? `“${t.length > 36 ? t.slice(0, 35).trimEnd() + '…' : t}”` : null; };
+  const nameM = (m) => { if (m.page) return 'Page scroll'; if (m.gl) return 'WebGL scene'; const n = humanName(m.desc, m.box); return /^(Block|Text|Paragraph|Link|List item)\b/.test(n) ? wordsOf(m) || n : n; };
+  function toList() {
+    ST.sel = null; ST.loose = null; ST.chosen = null; panelGen++;
+    L = BASE; for (const k in panelPlayers) { panelPlayers[k].pause(); delete panelPlayers[k]; }
+    const ms = ST.d.motions, fam = new Map();
+    ms.forEach((m, i) => { const n = nameM(m), f = fam.get(n) || { n, ids: [] }; f.ids.push(i); fam.set(n, f); });
+    const row = (i, name) => { const m = ms[i]; return `<li><button type="button" data-m="${i}"><span class="nm">${esc(name)}</span>${m.count > 1 ? `<span class="n">${m.count}</span>` : ''}</button></li>`; };
+    // what shares a name shares one row, in rank order; it opens to its members, which may move differently
+    const rows = [...fam.values()].map((f) => {
+      if (f.ids.length === 1) return row(f.ids[0], f.n);
+      const on = ST.open.has(f.n), total = f.ids.reduce((a, i) => a + ms[i].count, 0);
+      return `<li class="st-fam"><button type="button" data-f="${esc(f.n)}" aria-expanded="${on}"><span class="nm">${esc(f.n)}<svg viewBox="0 0 10 10" aria-hidden="true"><path d="M3 1.5 6.5 5 3 8.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="n">${nf(total)}</span></button><ul class="st-list"${on ? '' : ' hidden'}>${f.ids.map((i, k) => row(i, `${f.n} ${k + 1}`)).join('')}</ul></li>`;
+    }).join('');
+    const total = ms.reduce((a, m) => a + (m.page || m.gl ? 0 : m.count), 0);
+    $('#st-side').innerHTML = `<div class="st-top"><h1>${ms.length ? `${nf(total)} ${total === 1 ? 'element moves' : 'elements move'}` : 'Nothing moves here'}</h1>${vpSwitch()}</div>
+      <div class="st-scroll"><ul class="st-list">${rows}</ul></div>`;
+    wireVp();
+    const sc = $('.st-scroll', $('#st-side')); sc.scrollTop = ST.listTop || 0; sc.addEventListener('scroll', () => { ST.listTop = sc.scrollTop; }, { passive: true });
+    $$('.st-list button[data-m]').forEach(b => {
+      b.addEventListener('click', () => pick(+b.dataset.m, 0, true));
+      b.addEventListener('mouseenter', () => { const m = ms[+b.dataset.m], mo = m.moments.find(x => x.c === frameAt(Math.round(ST.pos)).c.id); ST.hover = mo && mo.ids[0] != null ? { id: mo.ids[0] } : null; draw(); });
+      b.addEventListener('mouseleave', () => { ST.hover = null; draw(); });
+    });
+    $$('.st-list button[data-f]').forEach(b => b.addEventListener('click', () => {
+      const on = b.getAttribute('aria-expanded') !== 'true', n = b.dataset.f;
+      b.setAttribute('aria-expanded', String(on)); b.nextElementSibling.hidden = !on;
+      if (on) ST.open.add(n); else ST.open.delete(n);
+    }));
+    showSpans(); draw();
+  }
+  const vpSwitch = () => (ST.page.viewports.length > 1 ? `<span class="seg" role="group" aria-label="Screen">${ST.page.viewports.map(v => `<button type="button" data-vp="${v}" aria-pressed="${v === ST.vp}">${v === 'desktop' ? 'Desktop' : 'Phone'}</button>`).join('')}</span>` : '');
+  const wireVp = () => $$('[data-vp]').forEach(b => b.addEventListener('click', () => { if (b.dataset.vp !== ST.vp) openVp(b.dataset.vp); }));
+
+  let panelGen = 0;
+  async function pick(mi, k, jump, fromPic) {
+    const m = ST.d.motions[mi]; ST.sel = mi; ST.moment = Math.max(0, k); ST.loose = null; ST.chosen = null; hideHint();
+    const gen = ++panelGen, mo = m.moments[ST.moment], c = chById(mo.c);
+    if (jump && mo.span) {
+      // to the first moment one of its elements moves where it can be seen; a few frames early, so the motion is seen from its start
+      const t = ST.d.takes[c.take], v = ST.d.clip; let at = null;
+      for (let i = c.from + mo.span[0]; i <= c.from + mo.span[1] && at == null; i += 2) for (const id of mo.ids.slice(0, 24)) { const e = t.els[id], b = e && boxOf(e, t, i); if (b && b.y < v.height - 8 && b.y + b.h > 8 && b.x < v.width && b.x + b.w > 0) { at = i - c.from; break; } }
+      seek(c.at + Math.max(0, (at ?? mo.span[0]) - 8));
+    } else if (jump) seek(c.at);
+    // the page's own moments by name; every hover or press of it folds into one word, and clicking that word walks through them
+    const curGroup = c.group; const seenG = new Set(), btn = [];
+    m.moments.forEach((x, j) => { const ch = chById(x.c); if (ch.group) { if (seenG.has(ch.group)) return; seenG.add(ch.group); const all = m.moments.map((q, i) => [q, i]).filter(([q]) => chById(q.c).group === ch.group).map(([, i]) => i); const on = ch.group === curGroup; const next = all[(all.indexOf(ST.moment) + 1) % all.length]; btn.push(`<button type="button" data-k="${on ? next : all[0]}" aria-pressed="${on}">${esc(ch.group)}${all.length > 1 ? ` ${on ? `${all.indexOf(ST.moment) + 1} of ${all.length}` : all.length}` : ''}</button>`); } else btn.push(`<button type="button" data-k="${j}" aria-pressed="${j === ST.moment}">${esc(ch.name)}</button>`); });
+    const moments = (btn.length > 1 || m.moments.length > 1 ? `<div class="st-moments">${btn.join('')}</div>` : '') + (fromPic ? stackLine() : '');
+    $('#st-side').innerHTML = `<div class="st-top"><button type="button" class="st-back" id="st-back">All moving elements</button></div>
+      <div class="st-scroll"><h2 class="st-title">${esc(nameM(m))}${m.count > 1 ? ` ×${m.count}` : ''}</h2>${moments}<div class="st-fit" id="st-fit"></div><div id="st-rec"></div></div>`;
+    $('#st-back').addEventListener('click', toList);
+    $$('.st-moments button').forEach(b => b.addEventListener('click', () => pick(mi, +b.dataset.k, true)));
+    showSpans(); draw();
+    recorded(mo, c, $('#st-rec'), false);
+    const box = $('#st-fit');
+    if (mo.recorded) { box.innerHTML = '<p class="st-state">It changes here but never shows a box on screen, so there is nothing to click and no curve to fit. Its recorded values are below.</p>'; return; }
+    box.innerHTML = `<p class="st-state">${SERVER || fits[mo.c + '|' + mo.lead] ? 'Reading this motion. The recorded values are below already.' : ''}</p>`;
+    let f = null, err = null;
+    const t0 = performance.now();
+    try { f = await fitOf(mo.c, mo.lead); } catch (e) { err = e; }
+    if (gen !== panelGen) return;
+    window.__lastFitMs = performance.now() - t0;
+    if (err) { box.innerHTML = `<p class="st-state">This motion could not be fitted: ${esc(err.message)}. The recorded values below are exact.</p>`; return; }
+    if (!f) { box.innerHTML = `<p class="st-state">The recorded values below are exact. Curves and code are under Moves. To read this part on its own, open this card with <code>reva scan open ${esc(SC.dirName)}</code>.</p>`; return; }
+    showFit(f, box); recorded(mo, c, $('#st-rec'), true);
+    if ((f.cut || []).length) box.insertAdjacentHTML('beforeend', `<p class="st-state">The quick fit stopped at its budget, so part of this motion has no model yet. <code>reva scan open ${esc(SC.dirName)} --all</code> takes the time for it.</p>`);
+  }
+  function showFit(f, box) {
+    for (const k in panelPlayers) { panelPlayers[k].pause(); delete panelPlayers[k]; }
+    L = { ...BASE, ...f.look, design: BASE.design, screens: null };
+    M = buildMotions(L); AX = axisEnd(); S.sel = 0;
+    if (!M.length) { box.innerHTML = `<p class="st-state">${esc(f.note || 'Nothing here could be fitted: the recorded values below are the record.')}</p>`; return; }
+    const paint = (i) => {
+      S.sel = i;
+      const list = M.length > 1 ? `<ul class="st-gl">${M.map((m, j) => `<li><button type="button" data-g="${j}" aria-pressed="${j === i}">${esc(m.name)}</button></li>`).join('')}</ul>` : '';
+      box.innerHTML = list + panelHTML(M[i]);
+      initPanel(M[i], $('.mpanel', box));
+      $$('.st-gl button', box).forEach(b => b.addEventListener('click', () => paint(+b.dataset.g)));
+    };
+    paint(0);
+  }
+  /* an element left out of every motion: it either only rides the page, or moved too little or too briefly to read as one */
+  function looseWords(b, a) {
+    const s = b.e.s || []; let moves = false;
+    for (let k = 0; k < s.length && !moves; k += 2) moves = s[k] < a.c.to && s[k + 1] >= a.c.from;
+    return `${moves ? 'It moves a little in this part, too little to read as a motion of its own; its recorded values are below.' : 'It rides along with the page and has no motion of its own in this part.'} It measures ${nf(b.w)} by ${nf(b.h)} px.`;
+  }
+  async function showLoose(b, a) {
+    ST.sel = null; ST.loose = { id: b.id, take: a.c.take }; ST.chosen = null; panelGen++; hideHint();
+    const gen = panelGen;
+    $('#st-side').innerHTML = `<div class="st-top"><button type="button" class="st-back" id="st-back">All moving elements</button></div>
+      <div class="st-scroll"><h2 class="st-title">${esc(nameOfEl(b.e, b))}</h2>${stackLine()}<p class="st-state">${looseWords(b, a)}</p>${b.e.c ? `<p class="st-state"><code>${esc(b.e.c)}</code></p>` : ''}<div id="st-rec"></div></div>`;
+    $('#st-back').addEventListener('click', toList);
+    showSpans(); draw();
+    if (gen === panelGen) recorded({ lead: b.id, ids: [b.id], c: a.c.id }, a.c, $('#st-rec'), false);
+  }
+
+  /* an element that does not move: what it is, at rest */
+  function showStill(q) {
+    ST.sel = null; ST.loose = null; ST.chosen = { q }; panelGen++; hideHint();
+    const tb = tables[`${ST.page.id}/${ST.vp}`], [font, size, weight, line, tracking, color, bg, radius, shadow, display, position] = tb.styles[q[8]].split('|');
+    const row = (a, b) => (b ? `<div class="st-kv"><span>${esc(a)}</span><span>${esc(b)}</span></div>` : '');
+    const clear = /rgba\(0, 0, 0, 0\)|transparent/.test(bg), zero = radius === '0px';
+    $('#st-side').innerHTML = `<div class="st-top"><button type="button" class="st-back" id="st-back">All moving elements</button></div>
+      <div class="st-scroll"><h2 class="st-title">${esc(stillName(q))}</h2><p class="st-state">This element does not move. These are its values with the page at rest.</p>
+      <div class="st-kvs">${row('Size', `${nf(q[4])} by ${nf(q[5])} px`)}${row('Place on the page', `${nf(q[2])} across, ${nf(q[3])} down${q[6] ? ', fixed to the screen' : ''}`)}${row('Font', q[7] ? `${font}, ${size}, weight ${weight}` : '')}${row('Line height', q[7] ? line : '')}${row('Letter spacing', q[7] && tracking !== 'normal' ? tracking : '')}${row('Text colour', q[7] ? color : '')}${row('Background', clear ? '' : bg)}${row('Corner radius', zero ? '' : radius)}${row('Shadow', shadow)}</div>
+      ${q[1] ? `<p class="selrow">Selector <code>${esc(q[1])}</code></p>` : ''}</div>`;
+    $('#st-back').addEventListener('click', toList);
+    showSpans(); draw();
+  }
+
+  /* recorded values, at once and with no fit: the numbers the page really had on each frame of this chapter */
+  const LINE = ['var(--accent)', 'var(--good)', 'var(--bad)', 'var(--warn)'];
+  async function recorded(mo, c, host, folded) {
+    if (mo.lead === 'page' || mo.lead === 'gl' || !host) { if (host) host.innerHTML = ''; return; }
+    const key = `${ST.page.id}/${ST.vp}/${c.take}`;
+    if (!values[key]) { try { await script(`stage/${ST.page.id}-${ST.vp}-${safeId(c.take)}.values.js`); } catch (e) { return; } }
+    const v = (values[key] || {})[mo.lead]; if (!v || !host.isConnected) { if (host.isConnected) host.innerHTML = ''; return; }
+    const n = c.to - c.from, W = 372, H = 150;
+    const ser = Object.entries(v).map(([ch, a]) => {
+      const pts = []; let cur = null;
+      for (let i = 0; i < a.length; i += 2) { const f = a[i], y = a[i + 1]; if (f < c.from) { cur = y; continue; } if (f >= c.to) break; if (cur != null && !pts.length) pts.push([0, cur]); pts.push([f - c.from, y]); cur = y; }
+      if (cur != null && !pts.length) pts.push([0, cur]);
+      if (pts.length) pts.push([n - 1, pts[pts.length - 1][1]]);
+      const ys = pts.map(p => p[1]), lo = Math.min(...ys), hi = Math.max(...ys);
+      return { ch, pts, lo, hi };
+    }).filter(s => s.pts.length > 2 && s.hi - s.lo > 1e-3).slice(0, 4);
+    if (!ser.length) { host.innerHTML = ''; return; }
+    const paths = ser.map((s, j) => { const d = s.pts.map((p, i) => { const x = p[0] / Math.max(1, n - 1) * W, y = H - 6 - (p[1] - s.lo) / (s.hi - s.lo) * (H - 12); return `${i ? 'L' : 'M'}${x.toFixed(1)} ${y.toFixed(1)}`; }).join(''); return `<path d="${d}" fill="none" stroke="${LINE[j]}" stroke-width="1.6" vector-effect="non-scaling-stroke"/>`; }).join('');
+    const body = `<svg class="st-plot" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" aria-label="Recorded values over this part">${paths}<line id="st-ph" x1="0" x2="0" y1="0" y2="${H}" stroke="var(--ink)" stroke-width="1" vector-effect="non-scaling-stroke"/></svg>
+      <div class="st-legend">${ser.map((s, j) => `<span style="color:${LINE[j]}">${esc(cap1(chWord(s.ch)))}</span>`).join('')}</div>
+      <div class="st-vals">${ser.map(s => `<div>${esc(cap1(chWord(s.ch)))} goes from ${nf(s.pts[0][1], 2)} to ${nf(s.pts[s.pts.length - 1][1], 2)}, between ${nf(s.lo, 2)} and ${nf(s.hi, 2)}.</div>`).join('')}</div>`;
+    host.innerHTML = folded ? `<details class="st-rec"><summary>Recorded values, frame by frame</summary>${body}</details>` : `<div class="st-rec">${body}</div>`;
+    ST.ph = { c, n, W };
+  }
+  function drawPlayhead(a) { const l = $('#st-ph'); if (!l || !ST.ph) return; const x = a.c.id === ST.ph.c.id ? (a.i - ST.ph.c.from) / Math.max(1, ST.ph.n - 1) * ST.ph.W : -9; l.setAttribute('x1', x); l.setAttribute('x2', x); }
+
+  function showSpans() {
+    $$('.st-span').forEach(x => x.remove());
+    if (ST.sel == null) return;
+    const m = ST.d.motions[ST.sel], tr = $('#st-track');
+    for (const mo of m.moments) { if (!mo.span) continue; const c = chById(mo.c), s = document.createElement('div'), a = toX(c.at + mo.span[0]), b = toX(c.at + mo.span[1]); s.className = 'st-span'; s.style.left = (a * 100) + '%'; s.style.width = `max(2px, ${(b - a) * 100}%)`; tr.insertBefore(s, $('#st-head')); }
+  }
+
+  /* ---------- one viewport ---------- */
+  async function openVp(vp) {
+    const key = `${ST.page.id}/${vp}`;
+    if (!docs[key]) await script(`stage/${ST.page.id}-${vp}.js`);
+    if (docs[key].table && !tables[key]) await script(`stage/${ST.page.id}-${vp}.table.js`).catch(() => {});
+    setPlay(false); { const h = $('#st-hint'); if (h) h.classList.remove('on'); } ST.vp = vp; ST.d = docs[key]; ST.open = new Set(); ST.listTop = 0; ST.pos = ST.target = 0; ST.sel = null; ST.imgs = {}; ST.drawn = null; ST.at = -1; ST.elOf = {}; ST.chosen = null; ST.still = null; for (const V of vids.values()) { V.removeAttribute('src'); V.load(); } vids.clear();
+    ST.textBy = new Map(((tables[key] || {}).rows || []).filter(q => q[1] && q[7]).map(q => [q[1], q[7]]));
+    ST.d.motions.forEach((m, i) => { for (const mo of m.moments) { const o = ST.elOf[mo.c] || (ST.elOf[mo.c] = {}); for (const id of mo.ids) o[id] = i; } });
+    layoutTrack();
+    size(); toList(); preload();
+    const c = ST.d.chapters[0];
+    if (!REDUCED && CUR.view === 'overview' && c) { ST.stopAt = c.to - c.from - 1; setPlay(true); } else hint();
+  }
+
+  /* The one row: a family of short chapters (every hover, every menu) shares one label and at most a third of the row, so the row
+     stays a few words; every part keeps room for its word; each chapter is still linear inside. */
+  const SHORT = { 'Page load': 'Load', 'Entry screen': 'Entry', 'Scroll back up': 'Scroll up', 'At rest': 'Rest', 'Hover and press': 'Hover', Menus: 'Menus', 'Page changes': 'Page change' };
+  function layoutTrack() {
+    const cs = ST.d.chapters, W = $('#st-track').clientWidth || 600;
+    const main = cs.filter(c => !c.group).reduce((a, c) => a + c.to - c.from, 0) || 1, fam = ST.d.total - main;
+    const squeeze = fam ? Math.min(1, (main * .5) / fam) : 1;
+    const parts = new Map(), keyOf = (c) => c.group || c.id;
+    for (const c of cs) { const p = parts.get(keyOf(c)) || { n: 0, w: 0, need: ((SHORT[c.group || c.name] || c.name).length * 8 + 18) / W }; p.n += c.to - c.from; p.w += (c.to - c.from) * (c.group ? squeeze : 1); parts.set(keyOf(c), p); }
+    let free = [...parts.values()], left = 1;
+    for (let round = 0; round < 4; round++) {
+      const sum = free.reduce((a, p) => a + p.w, 0) || 1, tight = free.filter(p => (p.w / sum) * left < p.need);
+      if (!tight.length) break;
+      for (const p of tight) { p.share = p.need; left -= p.need; }
+      free = free.filter(p => !tight.includes(p));
+    }
+    { const sum = free.reduce((a, p) => a + p.w, 0) || 1; for (const p of free) p.share = (p.w / sum) * Math.max(0, left); }
+    const all = [...parts.values()].reduce((a, p) => a + p.share, 0) || 1;
+    let x = 0, lastGroup = null;
+    for (const c of cs) { const p = parts.get(keyOf(c)); c.x0 = x; x += (p.share / all) * (c.to - c.from) / Math.max(1, p.n); c.x1 = x; }
+    $('#st-track').innerHTML = cs.map(c => { const w = (c.x1 - c.x0) * 100, first = c.group && c.group !== lastGroup; lastGroup = c.group; const label = c.group ? (first ? SHORT[c.group] : '') : (SHORT[c.name] || c.name); return `<div class="st-chap" data-c="${esc(c.id)}"${first ? ` data-g="${esc(c.group)}"` : ''} title="${esc(c.name)}" style="left:${c.x0 * 100}%;width:calc(${w}% - ${c.group ? 1 : 3}px)">${label ? `<b>${esc(label)}</b>` : ''}</div>`; }).join('') + '<div class="st-head" id="st-head"></div>';
+    fitLabels(); showSpans();
+  }
+
+  /* a label with no room stays out of the row; the current one is then said beside the clock */
+  function fitLabels() {
+    const end = $('#st-track').getBoundingClientRect().right; let right = -1e9;
+    for (const b of $$('.st-chap b')) {
+      b.classList.remove('off'); b.style.transform = '';
+      let r = b.getBoundingClientRect();
+      if (r.right > end) { b.style.transform = `translateX(${end - r.right}px)`; r = b.getBoundingClientRect(); }
+      if (r.left < right + 14) b.classList.add('off'); else right = r.right;
+    }
+    ST.at = -1;
+  }
+
+  /* ---------- the page ---------- */
+  function stageHTML() {
+    return `<div class="st"><div class="st-left">
+      <div class="st-pic"><div class="st-frame"><canvas id="st-pic" role="img" aria-label="The recorded page, frame by frame"></canvas><canvas id="st-ov"></canvas><div class="st-tip" id="st-tip"></div><div class="st-hint" id="st-hint">Scroll over the picture</div></div></div>
+      <div class="st-bar"><button type="button" class="st-play" id="st-play" aria-label="Play"></button><button type="button" class="st-speed" id="st-speed" aria-pressed="false" aria-label="Play at a quarter of the speed">¼×</button><div class="st-track" id="st-track"></div><div class="st-clock"><span id="st-now"></span><span id="st-clock"></span></div></div>
+    </div><div class="st-right" id="st-side"></div></div>`;
+  }
+  function siteHTML() {
+    const s = SC.site || {};
+    return `<div class="vin st-site"><h1 id="h-timeline" tabindex="-1">${esc(SC.host)}</h1>${(s.lead || []).map(p => `<p class="big">${esc(p)}</p>`).join('')}
+      ${SC.pages.length > 1 ? `<h2>Pages</h2><ul class="st-pages">${SC.pages.map((p, i) => `<li><a href="#overview" data-page="${i}">${esc(p.label)}</a></li>`).join('')}</ul>` : ''}
+      ${(s.missing || []).length ? `<h2>Not captured, and why</h2><ul>${s.missing.map(p => `<li>${esc(p)}</li>`).join('')}</ul>` : ''}</div>`;
+  }
+  $('#overview').innerHTML = stageHTML();
+  $('#st-side').addEventListener('click', (e) => { const b = e.target.closest('[data-here]'); if (b) { ST.stackAt = +b.dataset.here; pickEl(ST.stack[ST.stackAt]); } });
+  $('#st-side').addEventListener('toggle', (e) => { if (e.target.matches('.st-here')) ST.hereOpen = e.target.open; }, true);
+  $('#timeline').innerHTML = siteHTML();
+  function openPage(i) {
+    ST.page = SC.pages[i]; const pk = $('#st-pages'); if (pk) pk.value = String(i);
+    if (SC.looks && SC.looks[ST.page.id]) { BASE = SC.looks[ST.page.id]; L = BASE; renderDesign(); renderLibraries(); }
+    openVp(ST.page.viewports.includes(ST.vp) ? ST.vp : ST.page.viewports[0]);
+  }
+  if (SC.pages.length > 1 && si) { si.insertAdjacentHTML('afterend', `<select id="st-pages" class="st-pagesel" aria-label="Page">${SC.pages.map((p, i) => `<option value="${i}">${esc(p.label)}</option>`).join('')}</select>`); $('#st-pages').addEventListener('change', (e) => openPage(+e.target.value)); }
+  $$('[data-page]').forEach(a => a.addEventListener('click', () => openPage(+a.dataset.page)));
+  const syncView = () => { document.documentElement.classList.toggle('on-stage', CUR.view === 'overview'); if (CUR.view === 'overview') { if (ST.d) layoutTrack(); size(); } else setPlay(false); };
+  addEventListener('hashchange', syncView); addEventListener('resize', () => { if (ST.d) layoutTrack(); size(); });
+  $('#st-speed').addEventListener('click', (e) => { ST.speed = ST.speed === 1 ? .25 : 1; e.currentTarget.setAttribute('aria-pressed', String(ST.speed !== 1)); });
+  $('#st-play').addEventListener('click', () => { hideHint(); ST.stopAt = null; if (!ST.playing && ST.pos >= ST.d.total - 1.5) seek(0, true); setPlay(!ST.playing); });
+  $('.st-pic').addEventListener('wheel', wheel, { passive: false });
+  ovC().addEventListener('mousemove', onMove);
+  ovC().addEventListener('mouseleave', () => { ST.hover = null; $('#st-tip').classList.remove('on'); draw(); });
+  ovC().addEventListener('click', onClick);
+  $('#st-track').addEventListener('pointerdown', (ev) => {
+    const t = $('#st-track').getBoundingClientRect(), mv = (e) => { setPlay(false); hideHint(); seek(fromX(Math.max(0, Math.min(1, (e.clientX - t.left) / t.width))), true); };
+    mv(ev); addEventListener('pointermove', mv); addEventListener('pointerup', () => removeEventListener('pointermove', mv), { once: true });
+  });
+  addEventListener('keydown', (e) => {
+    if (CUR.view !== 'overview' || /INPUT|TEXTAREA/.test(e.target.tagName)) return;
+    if (e.key === ' ' && e.target.tagName !== 'BUTTON') { e.preventDefault(); $('#st-play').click(); }
+    else if (e.key === 'ArrowRight') { setPlay(false); seek(Math.round(ST.target) + 1, true); }
+    else if (e.key === 'ArrowLeft') { setPlay(false); seek(Math.round(ST.target) - 1, true); }
+    else if (e.key === 'Escape') toList();
+  });
+  syncView(); setPlay(false);
+  window.STAGE = ST; window.__pick = pick; window.__seek = seek;
+  // with moves the stage is Study, not the first screen: it opens its data and pictures when first asked for
+  let booted = false;
+  const boot = () => { if (booted || CUR.view !== 'overview') return; booted = true; openVp(ST.page.viewports[0]).then(() => requestAnimationFrame(tick)); };
+  addEventListener('hashchange', boot); boot();
+})();
+</script>

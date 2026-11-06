@@ -1,6 +1,23 @@
 // robots.txt policy: parse, per-agent rule match, and the verdict REVA uses before it opens a page.
 // Shared by `reva` (look) and the corpus runner; nothing here is corpus-specific.
-export const UA = 'REVA/0.1 (measures how a page moves and is designed; checks robots.txt first)';
+/** Where a site owner reads what REVA is and how to opt out (named in every user agent REVA sends). */
+export const PROJECT_URL = 'https://github.com/thanwishdev/reva';
+export const UA = `REVA/0.1 (+${PROJECT_URL}; measures how a page moves and is designed; checks robots.txt first)`;
+/**
+ * The user agent of reva scan's browser on a live site (owner go 3 Nov): what Chrome itself sends for that device (the
+ * reduced UA string), then REVA's product token and the project URL, as crawlers that render pages do. The token is the one
+ * robots.txt groups match ("User-agent: REVA"), so the name a site owner sees in a log is the name that opts out.
+ * Phone: Chrome on Android, so a site serves its phone version (the context is also mobile, touch, DPR 2).
+ * @param {'desktop'|'phone'} kind
+ * @param {string|number} chromeVersion  e.g. "147.0.7727.57" (only the major is sent, as Chrome does)
+ */
+export function browserUserAgent(kind, chromeVersion) {
+  const major = String(chromeVersion).split('.')[0];
+  const base = kind === 'phone'
+    ? `Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/${major}.0.0.0 Mobile Safari/537.36`
+    : `Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/${major}.0.0.0 Safari/537.36`;
+  return `${base} (compatible; REVA/0.1; +${PROJECT_URL})`;
+}
 /** The product token REVA obeys in robots.txt ("User-agent: REVA"), matched case-insensitively, any version suffix ignored. */
 export const PRODUCT_TOKEN = 'REVA';
 /** RFC 9309 2.5: a parser may ignore content past 500 KiB. Longer rule paths are ignored (no real rule is that long). */
