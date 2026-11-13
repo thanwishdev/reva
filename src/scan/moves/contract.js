@@ -126,18 +126,53 @@ const EXACT_FROM = { gsap: "Read from the site's own GSAP code.", lottie: "Read 
  *   line: how the values were read, in one sentence (for Pictures only, that the clip is what there is); note: what Copy gives, when it is less than the whole move; reason: why there are no values
  *   (Pictures only); clip: why there is no clip, when the gap says that and nothing about the values
  */
+/** Past this error (% of the travel, the worst frame) a move's code is said to be reproduced roughly, with no number beside it. */
+export const ROUGH_PCT = 10;
+const ROUGH_LINE = 'Reproduced roughly: the path is too uneven for the points the code keeps, so the code follows the clip only loosely.';
 export function moveStatus(m) {
   const p = m?.proof || {}, gap = empty(m?.gap) ? null : m.gap;
+  // 11 Nov (U5): a worst frame off by 66 % or 112 % must not stand under a confident word; the clip is the truth there
+  const rough = Number.isFinite(p.errorPct) && p.errorPct > ROUGH_PCT;
   const aboutValues = gap != null && gap !== GAPS.morph && Object.values(GAPS).some((g) => gap.startsWith(g));
   const clip = gap != null && !aboutValues && gap !== GAPS.morph ? gap : null;
   const note = gap === GAPS.morph ? 'Copy gives the timing and the movement. The change of shape itself is in the clip.' : null;
-  if (p.source === 'declared') return { key: 'exact', word: STATUS.exact, line: EXACT_FROM[p.via] ?? EXACT_FROM.css, note, reason: null, clip };
+  // the label is the lead part's; when other parts are known another way, the line says how many, and each part says its own
+  const rest = mixLine(p);
+  if (p.source === 'declared') return { key: 'exact', word: STATUS.exact, line: `${EXACT_FROM[p.via] ?? EXACT_FROM.css}${rest}${rough ? ' Its recorded parts are reproduced only roughly.' : ''}`, note, reason: null, clip, ...(p.mix ? { mix: p.mix } : {}) };
   if (p.source === 'fitted') {
+    if (rough) return { key: 'measured', word: STATUS.measured, line: `${ROUGH_LINE.replace('the points the code keeps', 'one curve')}${rest}`, note, reason: null, clip, rough: true, ...(p.mix ? { mix: p.mix } : {}) };
     const err = Number.isFinite(p.errorPct) ? `, within ${+(+p.errorPct).toFixed(p.errorPct < 1 ? 2 : 1)} %` : '';
-    return { key: 'measured', word: STATUS.measured, line: `Fitted to ${p.frames ? `all ${p.frames} recorded frames` : 'the recorded frames'}${err}.`, note, reason: null, clip };
+    const ease = p.ease ? ` The curve is the site's own declared ease, ${p.ease}.` : '';
+    return { key: 'measured', word: STATUS.measured, line: `Fitted to ${p.frames ? `all ${p.frames} recorded frames` : 'the recorded frames'}${err}.${ease}${rest}`, note, reason: null, clip, ...(p.mix ? { mix: p.mix } : {}) };
   }
-  if (p.source === 'sampled') return { key: 'recorded', word: STATUS.recorded, line: 'No simple curve fits, so the values are kept as recorded.', note: note ?? 'Copy replays the recorded path frame by frame.', reason: null, clip };
+  if (p.source === 'sampled') return { key: 'recorded', word: STATUS.recorded, line: `${rough ? ROUGH_LINE : 'No simple curve fits, so the values are kept as recorded.'}${rest}`, note: note ?? (rough ? 'Copy replays the recorded path roughly; the clip shows how it really runs.' : 'Copy replays the recorded path frame by frame.'), ...(rough ? { rough: true } : {}), reason: null, clip, ...(p.mix ? { mix: p.mix } : {}) };
   return { key: 'pictures', word: STATUS.pictures, line: m?.frame?.clip ? 'The clip shows it as it ran.' : null, note: null, reason: gap ?? GAPS.noRows, clip: null };
+}
+
+/** " That is the lead part. Of the other parts, 2 are measured and 1 is recorded." Empty when every part is known the same way. */
+function mixLine(p) {
+  const mix = p?.mix; if (!mix) return '';
+  const lead = p.source === 'declared' ? 'exact' : p.source === 'fitted' ? 'measured' : p.source === 'sampled' ? 'recorded' : null;
+  const others = { ...mix }; if (lead && others[lead]) others[lead]--;
+  const bits = ['exact', 'measured', 'recorded'].filter((k) => others[k] > 0).map((k) => `${others[k]} ${others[k] === 1 ? 'is' : 'are'} ${k === 'exact' ? 'exact' : k === 'measured' ? 'measured' : 'recorded frame by frame'}`);
+  return bits.length ? ` That is the lead part. Of the other parts, ${bits.length > 1 ? `${bits.slice(0, -1).join(', ')} and ${bits.at(-1)}` : bits[0]}.` : '';
+}
+
+// ---------------------------------------------------------------- consent banners (6 Nov review: "Agree", "Cookie Settings" among the moves)
+const CONSENT_SELECTOR = /(^|[^a-z0-9])(cookies?|consent|gdpr|onetrust|ot-sdk|optanon|cookiebot|cybot|didomi|usercentrics|truste|osano|iubenda|qc-cmp|klaro|termly|cookieyes|cky-|cmplz|borlabs)([^a-z0-9]|$)/i;
+const CONSENT_TEXT = /^(?:(?:accept|agree|allow|reject|decline|deny|refuse)(?: all)?(?: cookies)?|i agree|ok(?:ay)?, ?got it|(?:cookie|privacy) (?:settings|preferences)|manage (?:cookies|preferences|consent)|more options)$/i;
+/**
+ * A move that is the site's consent banner, or a control of it, says nothing of how the site moves: the card leaves it out and REVA
+ * never presses it. Read from the selectors of every group and the text of the element that set it off. "More options" counts only
+ * beside a consent selector.
+ * @returns {string|null} why, or null
+ */
+export function consentOf({ selectors = [], text = null } = {}) {
+  const sel = selectors.find((x) => CONSENT_SELECTOR.test(String(x || '')));
+  if (sel) return 'a consent banner';
+  const t = String(text || '').replace(/\s+/g, ' ').trim();
+  if (t && CONSENT_TEXT.test(t) && !/^more options$/i.test(t)) return 'a consent banner control';
+  return null;
 }
 
 export const RANK = Object.freeze({ groupsBoost: 0.25, countBoost: 0.15, topMin: 6, topMax: 12, topPerGroup: 3, topMustHave: Object.freeze(['arriving', 'scrolling', 'hover', 'between']) });

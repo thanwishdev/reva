@@ -1,4 +1,4 @@
-// S14 deep mode ก (26 Oct): the capture step's verdict is the pure verdictOf(r, mode). Data mode needs no rebuild,
+// S14 deep data mode (26 Oct): the capture step's verdict is the pure verdictOf(r, mode). Data mode needs no rebuild,
 // never claims acceptance, and is ok only with complete data + a passing noise check; any gap or a noise failure makes it
 // partial with the reason. The replays are issued data first in every mode (captureRunPlan). No browser.
 import test from 'node:test';

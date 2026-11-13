@@ -5,6 +5,7 @@ import { axisParts, clipParts, colorParts, numOf, positionParts, rotateDeg } fro
 import { rdpVertical, round } from '../../export/curves.js';
 import { familyOf, FIT } from './contract.js';
 import { GLM, glLayerClause, glLeads, isGlGroup } from './glmove.js';
+import { subjectOfGroup } from './name.js';
 
 // ---------------------------------------------------------------- channels as numbers
 const BOX_FAMILY = { 'ren:bw': 'box', 'ren:bh': 'box', 'ren:bx': 'move', 'ren:by': 'move' };
@@ -85,6 +86,33 @@ export function percentOfBox(travel, size) {
   return s !== 0 && Math.abs(pct - s) <= Math.max(0.5, Math.abs(pct) * 0.01) ? s : null;
 }
 
+/**
+ * A declared value as the site wrote it. The first recorded frame is already a little way into the tween (9.9931 px of a 10 px
+ * rise, opacity 0.1087 one frame into a 250 ms ease-out), so the caller passes the ends the declared curve extrapolates to, and this
+ * keeps the coarsest round number within 0.5 % of the travel: 10, not 9.9931 (6 Nov review).
+ */
+export function tidyDeclared(v, travel) {
+  if (!Number.isFinite(v)) return v;
+  const tol = Math.max(Math.abs(travel) * 0.005, 1e-3);
+  for (const d of [0, 1, 2]) { const r = round(v, d); if (Math.abs(r - v) <= tol) return r; }
+  return round(v, 4);
+}
+/** The numbers inside a declared value's text, tidied the same way: blur(9.99338px) is blur(10px). */
+export const tidyDeclaredText = (s) => (typeof s !== 'string' ? s : s.replace(/-?\d*\.\d+|-?\d+/g, (x) => { const v = +x; return String(tidyDeclared(v, Math.max(1, Math.abs(v)))); }));
+/** A value with at most two decimals, to a hair: what a person types. */
+export const isRound = (v) => Number.isFinite(v) && Math.abs(v * 100 - Math.round(v * 100)) < 1e-3;
+/** The ends a declared curve extrapolates to, used only when they sit near what was recorded (within a quarter of the travel). */
+function declaredEnds(t, a, b) {
+  const e = t.ends, travel = Math.abs(b - a) || t.amp || 0;
+  if (!e || !Number.isFinite(e.from) || !Number.isFinite(e.to)) return [a, b];
+  // a recorded end that is already a round number (1, 0.45) is the value itself, sampled at rest: the extrapolation only corrects one
+  // that the first frame caught part way (9.9931); a fit's own ends can be off by a little and would turn 1 into 0.995
+  const near = (x, y) => Math.abs(x - y) <= 0.25 * travel, use = (x, y) => !isRound(y) && near(x, y);
+  let from = use(e.from, a) ? e.from : a, to = use(e.to, b) ? e.to : b;
+  if (t.family === 'fade') { from = Math.min(1, Math.max(0, from)); to = Math.min(1, Math.max(0, to)); }
+  return [from, to];
+}
+
 const rawAt = (t, i) => t.raw[i];
 /** One change: what a track did, from its first frame to its last. `box` is [x, y, w, h] at onset. */
 export function changeOf(t, { box = null, exact = false } = {}) {
@@ -92,22 +120,75 @@ export function changeOf(t, { box = null, exact = false } = {}) {
   const unit = unitOf(t.channel, t.family), property = propertyOf(t.channel);
   const out = { property, channel: t.channel, family: t.family, unit };
   if (TEXTY.has(t.family)) {
-    out.from = rawAt(t, 0); out.to = rawAt(t, n - 1); out.raw = { from: out.from, to: out.to };
+    out.raw = { from: rawAt(t, 0), to: rawAt(t, n - 1) };
+    out.from = exact ? tidyDeclaredText(out.raw.from) : out.raw.from; out.to = exact ? tidyDeclaredText(out.raw.to) : out.raw.to;
     if (out.from === out.to && range > 0) out.back = true;   // went somewhere and came back: a hover colour, a scramble that settles
     return out;
   }
   const within = Math.abs(travel) || range;   // a track that goes out and back must not round its ends by the width of the trip
-  out.from = exact ? round(a, 4) : snap(a, within); out.to = exact ? round(b, 4) : snap(b, within);
+  const [da, db] = exact ? declaredEnds(t, a, b) : [a, b];
+  out.from = exact ? tidyDeclared(da, within) : snap(a, within); out.to = exact ? tidyDeclared(db, within) : snap(b, within);
   out.raw = { from: round(a, 4), to: round(b, 4) };
+  // the declared curve's own ends, before rounding: what the code's value error is measured against (raw is the first recorded frame)
+  if (exact && (da !== a || db !== b)) out.ends = { from: round(da, 4), to: round(db, 4) };
   // out and back: it ends near where it began but went somewhere on the way; the furthest point is what a person sees
-  if (range > 0 && Math.abs(travel) < OUT_BACK * range) { const far = t.y.reduce((m, y) => (Math.abs(y - a) > Math.abs(m - a) ? y : m), a); out.peak = exact ? round(far, 4) : snap(far, range); }
+  if (range > 0 && Math.abs(travel) < OUT_BACK * range) { const far = t.y.reduce((m, y) => (Math.abs(y - a) > Math.abs(m - a) ? y : m), a); out.peak = exact ? tidyDeclared(far, range) : snap(far, range); }
   if (t.family === 'move' && box) {
-    const size = property === 'y' ? box[3] : box[2], rest = Math.abs(b) < Math.abs(a) ? b : a, pct = percentOfBox(travel, size);
-    if (pct != null && Math.abs(pct) <= PERCENT_MAX && Math.abs(rest) < 0.5) { out.percent = { from: Math.abs(a) < 0.5 ? 0 : Math.round((a / size) * 100), to: Math.abs(b) < 0.5 ? 0 : Math.round((b / size) * 100) }; }
+    // a declared tween's percent is read from its own ends, not the first frame (16 px of a 285 px box is not 5 %)
+    const [pa, pb] = exact ? [da, db] : [a, b];
+    const size = property === 'y' ? box[3] : box[2], rest = Math.abs(pb) < Math.abs(pa) ? pb : pa, pct = percentOfBox(pb - pa, size);
+    if (pct != null && Math.abs(pct) <= PERCENT_MAX && Math.abs(rest) < 0.5) { out.percent = { from: Math.abs(pa) < 0.5 ? 0 : Math.round((pa / size) * 100), to: Math.abs(pb) < 0.5 ? 0 : Math.round((pb / size) * 100) }; }
   }
   return out;
 }
 
+/**
+ * What the card may state as travel and time (ZD, 11 Nov). A part is measured when its values were checked against the recorded frames:
+ * a law fitted to them, or one the site declares and a fit confirms. A part recorded frame by frame (sampled), an instant step and a
+ * part with no law are not: their two ends may hold a jump (a carousel re-layout, a ticker reset, a layout shift) the card cannot tell
+ * from travel. Their numbers stay in the details, marked as recorded; the headline says only what changes. A group with no provenance
+ * (built by hand, before the fit) is not judged here.
+ */
+export const isMeasured = (g) => !!g?.law && g.provenance !== 'sampled' && g.provenance !== 'seen' && g.law.class !== 'steps';
+/**
+ * A jump, not travel (ZC truth.mjs): a track whose recorded samples cannot show it travelling. Fewer than 3 samples, or one gap between
+ * two neighbouring samples holds over half of the track's whole range.
+ */
+export const JUMP = Object.freeze({ minSamples: 3, share: 0.5 });
+/** @returns {{n:number, share:number, gapMs:number|null, at:number, side:'out'|'back', jump:boolean}} the largest one-gap step as a share of the range */
+export function travelOf(T, y) {
+  const n = y?.length ?? 0, range = n ? Math.max(...y) - Math.min(...y) : 0;
+  if (!(range > 0)) return { n, share: 0, gapMs: null, at: 0, side: 'out', jump: false };
+  let worst = 0, at = 0;
+  for (let i = 1; i < n; i++) { const d = Math.abs(y[i] - y[i - 1]); if (d > worst) { worst = d; at = i; } }
+  // which leg the step is: 'out' leaves the start (it jumps away, then glides back), 'back' returns to it (a marquee's reset)
+  const side = at && Math.abs(y[at] - y[0]) < Math.abs(y[at - 1] - y[0]) ? 'back' : 'out';
+  return { n, share: round(worst / range, 3), gapMs: at ? round(T[at] - T[at - 1], 1) : null, at, side, jump: n < JUMP.minSamples || worst / range > JUMP.share };
+}
+/**
+ * The samples show the track moving: no jump, or, with one, the other leg glides over at least half the range on 3 or more samples
+ * (a FLIP jumps out and glides back; a drift glides out and its reset jumps back).
+ */
+export function travels(T, y) {
+  const v = travelOf(T, y);
+  if (!v.jump) return v.share > 0;
+  if (!v.at) return false;
+  const [t, w] = v.side === 'out' ? [T.slice(v.at), y.slice(v.at)] : [T.slice(0, v.at), y.slice(0, v.at)];
+  const l = travelOf(t, w), range = Math.max(...y) - Math.min(...y), legRange = w.length ? Math.max(...w) - Math.min(...w) : 0;
+  return !l.jump && l.n >= JUMP.minSamples && legRange * 2 >= range;
+}
+/**
+ * The time a move shows (ZD): of its first measured part. With none, the recording's window, unless no change in it travels (the law
+ * says stretched: the window belongs to a jump); then no time. Null for no part with a law.
+ * @returns {{g:object, ms:number|null, measured:boolean, withheld:boolean}|null}
+ */
+export function spanOf(groups) {
+  const dom = (groups || []).filter((g) => g?.law && !isGlGroup(g) && !g.state);
+  const m = dom.find(isMeasured);
+  if (m) return { g: m, ms: m.law.class === 'map' ? null : m.law.ms ?? null, measured: true, withheld: false };
+  const g = dom[0]; if (!g) return null;
+  return g.law.stretched ? { g, ms: null, measured: false, withheld: true } : { g, ms: g.law.class === 'map' ? null : g.law.ms ?? null, measured: false, withheld: false };
+}
 /** Changes of a group, scale x and y of one size read as one scale. */
 export function changesOf(tracks, opts = {}) {
   const list = tracks.map((t) => ({ ...changeOf(t, opts), follows: t.follows !== false }));
@@ -116,23 +197,67 @@ export function changesOf(tracks, opts = {}) {
   return list;
 }
 
+/** At most `max` of `pts` ({x, y}, ends kept): each next one the frame furthest from the line between the keys around it. */
+function worstFirst(pts, max) {
+  const keep = new Uint8Array(pts.length); keep[0] = keep[pts.length - 1] = 1;
+  const worstIn = (i0, i1) => {
+    const a = pts[i0], b = pts[i1]; let d = -1, at = -1;
+    for (let i = i0 + 1; i < i1; i++) { const p = pts[i], y = a.y + ((b.y - a.y) * (p.x - a.x)) / (b.x - a.x || 1), e = Math.abs(p.y - y); if (e > d) { d = e; at = i; } }
+    return { d, at, i0, i1 };
+  };
+  const segs = [worstIn(0, pts.length - 1)];
+  for (let n = 2; n < max; n++) {
+    let k = -1;
+    for (let s = 0; s < segs.length; s++) if (segs[s].at >= 0 && (k < 0 || segs[s].d > segs[k].d)) k = s;
+    if (k < 0 || segs[k].d <= 0) break;
+    const { at, i0, i1 } = segs[k]; keep[at] = 1;
+    segs.splice(k, 1, worstIn(i0, at), worstIn(at, i1));
+  }
+  return pts.filter((_, i) => keep[i]);
+}
+
 /** The stops of a recorded curve: at most `max` points, within `share` of the range (DESIGN 4.3). [[ms since start, value]] */
 export function reduceTrack(xs, ys, { max = FIT.keyframesMax, share = FIT.keyframesShare } = {}) {
   const pts = xs.map((x, i) => ({ x, y: ys[i] })), range = (Math.max(...ys) - Math.min(...ys)) || 1;
-  let tol = range * share, kept = rdpVertical(pts, tol);
-  while (kept.length > max) { tol *= 1.3; kept = rdpVertical(pts, tol); }
-  return { keys: kept.map((p) => [round(p.x, 1), round(p.y, 4)]), errorPct: round((tol / range) * 100, 2) };
+  let kept = rdpVertical(pts, range * share);
+  // over the cap: the worst frame joins the keys, one at a time, until the cap. Growing the tolerance instead jumped from 25 keys to 2
+  // on a jagged track (a 13 s equaliser bar) and replayed it as one straight line
+  if (kept.length > max) kept = worstFirst(pts, max);
+  // the error the replayed keys really make, every recorded frame against the straight line between its two keys (the code plays them
+  // linear). It used to be the search's tolerance: 1 % × 1.3 per try, a bound and not a measure (66.54 % = 1.3^16 on two sites, 11 Nov)
+  let worst = 0, j = 0;
+  for (const p of pts) {
+    while (j < kept.length - 2 && kept[j + 1].x < p.x) j++;
+    const a = kept[j], b = kept[Math.min(j + 1, kept.length - 1)], y = b.x > a.x ? a.y + ((b.y - a.y) * (p.x - a.x)) / (b.x - a.x) : a.y;
+    worst = Math.max(worst, Math.abs(p.y - y));
+  }
+  return { keys: kept.map((p) => [round(p.x, 1), round(p.y, 4)]), errorPct: round((worst / range) * 100, 2) };
 }
 
 // ---------------------------------------------------------------- words
 const PLAIN = (s) => String(s || '').replace(/[\u0000-\u001f\u007f]/g, ' ').replace(/\s+/g, ' ').trim();
 const num = (x) => String(round(Math.abs(x), 1));
 const VAR_NAME = /^--[A-Za-z0-9_-]{1,40}$/;
+/** Past this growth a scale is said by its two sizes, not as a share (11 Nov, U4: 420 % to 1800 % on two sites). */
+const SCALE_SAID_PCT = 300;
+/**
+ * "drops 138 px, slides left 122 px and scales down 75 %, then returns": when every clause of one subject goes and comes back, the
+ * return is said once (11 Nov, U4: "and back, … and back and … and back" chains); with two or more that come back, those lead and the rest follow.
+ */
+export function backOnce(clauses, { many = false } = {}) {
+  const backs = clauses.filter((c) => / and back$/.test(c)), rest = clauses.filter((c) => !/ and back$/.test(c));
+  if (backs.length < 2) return null;
+  const list = (l) => (l.length < 2 ? l[0] : `${l.slice(0, -1).join(', ')} and ${l.at(-1)}`);
+  // the ones that come back first, the return said once, then what stays: "rises 58 px and slides right 27 px, then returns, and rounds"
+  return `${list(backs.map((c) => c.replace(/ and back$/, '')))}, then return${many ? '' : 's'}${rest.length ? `, and ${list(rest)}` : ''}`;
+}
+/** ", 0.6 s" after a sentence; under half a frame it is no time a person sees ("0 s" on 11 moves, 11 Nov): "at once". */
+export const spanWords = (ms) => (ms < 8.5 ? ', at once' : `, ${seconds(ms)}`);
 /**
  * One clause for one change: "scales up 6 %", "fades in". Null when nothing visible can be said: a change under what the eye sees (SEEN),
  * or a channel with no family. `screen`: the group's motion on the screen when its own transform says otherwise (group.js screenOf).
  */
-export function clauseOf(c, { many = false, screen = null } = {}) {
+export function clauseOf(c, { many = false, screen = null, bare = false } = {}) {
   const s = many ? '' : 's', { property: p, from, to } = c, family = c.family ?? (c.channel ? familyOf(c.channel) : null);
   const nums = typeof from === 'number' && typeof to === 'number', back = nums && Number.isFinite(c.peak) ? c.peak : null;
   const end = back ?? to, up = end > from, and = back != null ? ' and back' : '';
@@ -141,25 +266,30 @@ export function clauseOf(c, { many = false, screen = null } = {}) {
     case 'move': {
       const axis = p === 'y' || (p === 'translate' && c.part === 'y') ? 'y' : 'x';
       if (screen && screen.axis === axis && Math.abs(screen.px) >= SEEN.px) {
-        const d = screen.px > 0, n = `${num(screen.px)} px`;
-        if (screen.counter) return `wipe${s} ${axis === 'x' ? (d ? 'right' : 'left') : d ? 'down' : 'up'} ${n}`;
-        return axis === 'x' ? `slide${s} ${d ? 'right' : 'left'} ${n}` : `${d ? 'drop' : 'rise'}${s} ${n}`;
+        const d = screen.px > 0, n = bare ? '' : ` ${num(screen.px)} px`;
+        if (screen.counter) return `wipe${s} ${axis === 'x' ? (d ? 'right' : 'left') : d ? 'down' : 'up'}${n}`;
+        return axis === 'x' ? `slide${s} ${d ? 'right' : 'left'}${n}` : `${d ? 'drop' : 'rise'}${s}${n}`;
       }
       if (px != null && px < SEEN.px && !c.percent) return null;
-      const size = c.percent && back == null ? `${Math.abs(c.percent.to - c.percent.from)} %` : `${num(px ?? 0)} px`;
-      return axis === 'x' ? `slide${s} ${up ? 'right' : 'left'} ${size}${and}` : `${up ? 'drop' : 'rise'}${s} ${size}${and}`;
+      const size = bare ? '' : c.percent && back == null ? ` ${Math.abs(c.percent.to - c.percent.from)} %` : ` ${num(px ?? 0)} px`;
+      return axis === 'x' ? `slide${s} ${up ? 'right' : 'left'}${size}${and}` : `${up ? 'drop' : 'rise'}${s}${size}${and}`;
     }
     case 'scale': {
       if (!nums) return null;
+      // a sign change is a flip, not a size change (scaleY 1 -> -1 read as "scales down 200 %", 11 Nov)
+      if ((from > 0 && end < 0) || (from < 0 && end > 0)) return `flip${s}${and}`;
       if (!(from > 0)) return end > from ? `scale${s} up${and}` : null;
       const pct = round((Math.abs(end - from) / from) * 100, 0);
-      return pct < SEEN.scalePct ? null : `scale${s} ${up ? 'up' : 'down'} ${pct} %${and}`;
+      if (pct < SEEN.scalePct) return null;
+      if (bare) return `scale${s} ${up ? 'up' : 'down'}${and}`;
+      // from a small start a share reads as broken ("scales up 1800 %", a line at scale 0.05): past 3 times its size, the two sizes
+      return pct > SCALE_SAID_PCT ? `scale${s} ${up ? 'up' : 'down'} from ${value(from)} to ${value(end)}${and}` : `scale${s} ${up ? 'up' : 'down'} ${pct} %${and}`;
     }
-    case 'rotate': return px != null && px < SEEN.deg ? null : `turn${s} ${num(px ?? 0)}°${and}`;
+    case 'rotate': return px != null && px < SEEN.deg ? null : bare ? `turn${s}${and}` : `turn${s} ${num(px ?? 0)}°${and}`;
     case 'fade': {
       if (!nums || px < SEEN.opacity) return null;
-      if (back != null) return from > 0.5 && back < 0.05 ? `fade${s} out and back in` : from < 0.05 && back > 0.5 ? `flash${many ? '' : 'es'} in and out` : `fade${s} to ${round(back * 100, 0)} % and back`;
-      return from < 0.05 && to > 0.5 ? `fade${s} in` : from > 0.5 && to < 0.05 ? `fade${s} out` : `fade${s} from ${round(from * 100, 0)} % to ${round(to * 100, 0)} %`;
+      if (back != null) return from > 0.5 && back < 0.05 ? `fade${s} out and back in` : from < 0.05 && back > 0.5 ? `flash${many ? '' : 'es'} in and out` : bare ? `fade${s} and back` : `fade${s} to ${round(back * 100, 0)} % and back`;
+      return from < 0.05 && to > 0.5 ? `fade${s} in` : from > 0.5 && to < 0.05 ? `fade${s} out` : bare ? `fade${s}` : `fade${s} from ${round(from * 100, 0)} % to ${round(to * 100, 0)} %`;
     }
     case 'colour': return from === to && !c.back ? null : `change${s} colour${c.back ? ' and back' : ''}`;
     case 'clip': return from === to && !c.back ? null : `wipe${s}`;
@@ -190,10 +320,10 @@ const PART_WORD = { hover: 'On hover', press: 'On press', focus: 'On focus', cli
 /** "the image scales up 6 % and fades in" */
 function groupClause(g, { lone }) {
   const many = (g.count || 1) > 1;
-  const name = PLAIN(g.name).toLowerCase();
-  const subject = lone && !many ? 'it' : many ? `the ${/s$/.test(name) ? name : `${name}s`}` : `the ${name}`;
-  const clauses = (g.changes || []).map((c) => clauseOf(c, { many, screen: g.screen })).filter(Boolean).filter((x, i, l) => l.indexOf(x) === i).slice(0, 2);
-  return clauses.length ? `${subject} ${clauses.join(' and ')}` : null;
+  // a counted plural or one named element: "20 letters of the heading blur", "3 elements fade in", never "the block, bottom lefts"
+  const subject = lone && !many ? 'it' : PLAIN(subjectOfGroup(g));
+  const clauses = (g.changes || []).map((c) => clauseOf(c, { many, screen: g.screen, bare: !isMeasured(g) && !!g.provenance })).filter(Boolean).filter((x, i, l) => l.indexOf(x) === i).slice(0, 2);
+  return clauses.length ? `${subject} ${backOnce(clauses, { many }) ?? clauses.join(' and ')}` : null;
 }
 const seconds = (ms) => `${round(ms / 1000, ms >= 10000 ? 0 : ms < 1000 ? 2 : 1)} s`;
 const value = (v) => (typeof v === 'number' ? String(round(v, Math.abs(v) >= 10 ? 1 : 3)) : PLAIN(v));
@@ -203,7 +333,7 @@ function glClause(g) {
   const where = cover >= GLM.full ? 'a full-screen WebGL layer' : `a WebGL layer over ${Math.round(cover * 100)} % of the screen`;
   const how = g.gl?.technique ? ` (${PLAIN(g.gl.technique)})` : '';
   const ease = law.class === 'tween' ? law.named ?? law.declared ?? null : law.class === 'spring' ? 'a spring' : law.class === 'keyframes' ? 'as recorded' : null;
-  const span = Number.isFinite(law.ms) && law.ms > 0 ? ` over ${seconds(law.ms)}` : '';
+  const span = Number.isFinite(law.ms) && law.ms >= 8.5 ? ` over ${seconds(law.ms)}` : '';
   return `${where}${how} runs ${PLAIN(c.property)} ${value(c.from)} → ${value(c.to)}${span}${ease ? `, ${ease}` : ''}`;
 }
 
@@ -219,11 +349,12 @@ export function sentenceOf(move, groups) {
   // set at once, is no motion and never leads; a WebGL layer that does not lead stays in the spec, out of the line.
   const list = all.filter((g) => !isGlGroup(g) && !g.state);
   if (all[0] && glLeads(all[0])) {
-    const dom = list[0], ms = dom?.law?.class === 'map' ? null : dom?.law?.ms, rest = dom ? groupClause(dom, { lone: false }) : null;
-    return `${first} ${glClause(all[0])}${rest ? `; ${rest}${Number.isFinite(ms) && ms > 0 ? `, ${seconds(ms)}` : ''}` : ''}.`;
+    // the time of the DOM rest: the move's first measured page part (ZD), not the first page part
+    const dom = list[0], ms = dom ? spanOf(list)?.ms : null, rest = dom ? groupClause(dom, { lone: false }) : null;
+    return `${first} ${glClause(all[0])}${rest ? `; ${rest}${Number.isFinite(ms) && ms > 0 ? spanWords(ms) : ''}` : ''}.`;
   }
   if (!list.length) return null;
-  if (kind === 'cursor') { const ms = list.find((g) => g.law?.ms > 0)?.law.ms; return `It follows the pointer${ms ? ` and catches up in ${seconds(ms)}` : ''}.`; }
+  if (kind === 'cursor') { const ms = list.find((g) => g.law?.ms > 0 && (isMeasured(g) || !g.provenance))?.law.ms; return `It follows the pointer${ms ? ` and catches up in ${seconds(ms)}` : ''}.`; }
   const parts = kind === 'touch' ? [...new Set(list.map((g) => g.part).filter((p) => p && p !== 'out'))] : [];
   const layer = glLayerClause(move.glLayer);
   if (parts.length > 1) {
@@ -234,18 +365,21 @@ export function sentenceOf(move, groups) {
   const top = list.filter((g, i) => list.findIndex((x) => PLAIN(x.name) === PLAIN(g.name)) === i).slice(0, 2), lone = top.length === 1;
   const clauses = top.map((g) => groupClause(g, { lone })).filter(Boolean);
   if (!clauses.length) return null;
-  const law = top[0].law, ms = law?.class === 'map' ? null : law?.ms;
-  const when = law?.class === 'map' ? ', tied to scroll' : Number.isFinite(ms) && ms > 0 ? `, ${seconds(ms)}` : '';
+  // the time: of the move's first measured part (ZD), in rank order, said or not; else the window, when no jump stretches it
+  const span = spanOf(groups), law = span?.g.law ?? top[0].law, ms = span ? span.ms : law?.class === 'map' ? null : law?.ms;
+  const when = law?.class === 'map' ? ', tied to scroll' : Number.isFinite(ms) && ms > 0 ? spanWords(ms) : '';
   const how = move.technique ? ` (${PLAIN(move.technique)})` : '';
   // the largest visible layer is a canvas no uniform of which leads (a skinned-mesh WebGL site: a full-screen three.js scene under the DOM): said first
   if (layer) return `${first} ${layer}; ${clauses.join(' and ')}${how}${when}.`;
-  return `${first} ${clauses.join(' and ')}${how}${when}.`;
+  // a clause that starts with a count reads after a comma: "On load, 20 letters of the heading blur", not "On load 20 letters"
+  return `${first}${/^\d/.test(clauses[0]) ? ',' : ''} ${clauses.join(' and ')}${how}${when}.`;
 }
 
 /** Why a move is no motion a person sees, or null when something visible moves (or REVA cannot tell: then it is never hidden). */
 export const NOT_A_MOVE = Object.freeze({
   state: "only a new page's state, set at once: nothing moves",
   unseen: 'nothing visible moves: every change is under what the eye sees',
+  placement: 'only an instant jump into place or the drift of something that is always moving: no motion of its own',
 });
 /**
  * A move is not a move when every group it says is a new page's state, or changes nothing a person can see (clauseOf is null for each

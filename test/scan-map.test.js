@@ -2,7 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import http from 'node:http';
-import { mapSite, pagesToRecord, pathShape, structureOf } from '../src/scan/map.js';
+import { linksOf, mapSite, pagesToRecord, pathShape, structureOf } from '../src/scan/map.js';
 
 const layoutA = (t) => `<html><body><header><nav><ul><li>x</li></ul></nav></header><main><section><div><article><h1>${t}</h1></article></div></section></main><footer><div></div></footer></body></html>`;
 const layoutB = (t) => `<html><body><div><form><fieldset><table><tbody><tr><td>${t}</td></tr></tbody></table></fieldset></form></div><aside><dl><dt>a</dt></dl></aside></body></html>`;
@@ -57,4 +57,18 @@ test('unreadable robots stops the map', async () => {
   const fake = async () => ({ status: 503, text: async () => '', headers: new Headers(), url: 'x' });
   const m = await mapSite('https://example.invalid/', { gapMs: 0, fetchImpl: fake });
   assert.equal(m.robots.unreadable, true); assert.equal(m.pages.length, 0);
+});
+
+test('linksOf: only real links in the markup; script, style and comment text is never a link (13 Nov showcase scan)', () => {
+  const html = `<html><head><style>a[href="/from-css"] { color: red }</style></head><body>
+    <a href="/one">1</a><a href='/two?x=1&amp;y=2#part'>2</a><a href=/three>3</a>
+    <!-- <a href="/commented">c</a> -->
+    <a href="#top">t</a><a href="mailto:x@example.invalid">m</a><a href="javascript:void(0)">j</a><a href="tel:1">p</a>
+    <a href="/tpl/\${id}">bad</a><a href="{{url}}">bad</a>
+    <script>const card = (m) => \`<a href="\${esc(cubicLink(m.bz))}" target="_blank">x</a>\`; const s = '<a href="/in-script">';</script>
+    <script type="module">el.innerHTML = '<a href="/module">'</script>
+    <a href="https://other.example/page">o</a><a href="/one">dup</a></body></html>`;
+  assert.deepEqual(linksOf(html, 'https://site.example/dir/'), [
+    'https://site.example/one', 'https://site.example/two?x=1&y=2', 'https://site.example/three', 'https://other.example/page',
+  ]);
 });

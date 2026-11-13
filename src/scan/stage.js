@@ -239,7 +239,15 @@ export function buildViewport(out, page, vp, { log = () => {} } = {}) {
   const atOf = new Map(chapters.map((c) => [c.id, c.at]));
   const motions = [...folded.values()].sort((a, b) => a.rank - b.rank || b.weight - a.weight);
   for (const m of motions) m.moments.sort((a, b) => atOf.get(a.c) - atOf.get(b.c));
-  const doc = { schema: STAGE_SCHEMA, page: page.id, vp, table: !!tf, clip, pic, total: at, chapters, takes, motions };
+  // each take's element boxes are a file of their own, read when Study first shows that take (6 Nov review: 50 MB at open; one site's
+  // home on desktop was one 21.6 MB file, 4.2 M numbers of boxes in 23 takes). The doc says so with `split`.
+  const lean = {};
+  for (const [name, t] of Object.entries(takes)) {
+    const { els, ...rest } = t;
+    fs.writeFileSync(path.join(out, 'stage', `${page.id}-${vp}-${safeId(name)}.els.js`), `window.__stageEls(${JSON.stringify(`${page.id}/${vp}/${name}`)},${JSON.stringify(els)});\n`);
+    lean[name] = rest;
+  }
+  const doc = { schema: STAGE_SCHEMA, page: page.id, vp, table: !!tf, split: true, clip, pic, total: at, chapters, takes: lean, motions };
   const file = path.join(out, 'stage', `${page.id}-${vp}.js`);
   fs.writeFileSync(file, `window.__stage(${JSON.stringify(`${page.id}/${vp}`)},${JSON.stringify(doc)});\n`);
   return { file, chapters: chapters.length, elements, motions: motions.length, bytes: fs.statSync(file).size };

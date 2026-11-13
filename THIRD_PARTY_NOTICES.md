@@ -1,6 +1,6 @@
 # Third-party notices
 
-REVA is licensed `MIT OR Apache-2.0` (PLAN H3). This file lists third-party code that is **vendored (copied) into
+REVA is licensed under the MIT licence (`LICENSE`). This file lists third-party code that is **vendored (copied) into
 this repository**, with its licence and upstream, and the separate dependencies the project installs.
 
 ## Vendored code

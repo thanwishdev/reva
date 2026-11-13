@@ -90,7 +90,7 @@ export function readRuns(dir, { keepPoints = false, pinRange = null } = {}) {
         if (pinning) { const o = rest.get(id) || rest.set(id, { a: null, b: null, px: 0, best: null, flow: 0 }).get(id); const still = a === b || a['ren:by'] === b['ren:by']; if (still) { if (o.a == null) o.a = row.sy; o.b = row.sy; o.px += Math.abs(dsy); if (!o.best || o.px > o.best.px) o.best = { px: o.px, from: o.a, to: o.b, by: a['ren:by'] }; } else { o.a = null; o.px = 0; o.flow += Math.abs(dsy); } }
         if (a === b) continue;
         let e = ch.get(id);
-        if (!e) ch.set(id, e = { ks: [], ser: {}, bks: [], onset: new Map(), ends: [], unions: [], lastBox: null, union: null, lastK: -Infinity });
+        if (!e) ch.set(id, e = { ks: [], ser: {}, bks: [], bbox: [], onset: new Map(), ends: [], unions: [], lastBox: null, union: null, lastK: -Infinity });
         let any = false, boxed = false;
         for (const c of Object.keys(a)) {
           const x = a[c], y = b[c];
@@ -108,7 +108,8 @@ export function readRuns(dir, { keepPoints = false, pinRange = null } = {}) {
           if (K - e.lastK > QUIET) { closeStretch(e); e.onset.set(K, bx); }
           e.lastK = K; e.ks.push(K); e.lastBox = bx; e.union = grow(e.union, bx);
         }
-        if (boxed) e.bks.push(K);
+        // the box before and after this frame, the page's scroll added to y: a box-only run's own ends (fit.js ownEnds)
+        if (boxed) { e.bks.push(K); e.bbox.push([b['ren:bx'], (b['ren:by'] ?? 0) + (prev.sy ?? 0), b['ren:bw'], b['ren:bh'], a['ren:bx'], (a['ren:by'] ?? 0) + (row.sy ?? 0), a['ren:bw'], a['ren:bh']]); }
       }
     }
     prev = row;
@@ -134,7 +135,7 @@ export function readRuns(dir, { keepPoints = false, pinRange = null } = {}) {
     const bornIn = (k0, k1) => bs.some((b) => b.k <= k1 && b.k >= k0 - BIRTH_BEFORE_FRAMES);
     const stretchList = stretches(e.ks);
     stretchList.forEach(([k0, k1], i) => {
-      const fams = new Set(), channels = [], spans = {};
+      const fams = new Set(), channels = [], spans = {}, ends = {};
       let lead = null, leadPart = null, leadAmp = -1, shape = null, from = null, to = null, nums0 = null;
       for (const [c, s] of Object.entries(e.ser)) {
         const inr = s.filter((p) => p[0] >= k0 && p[0] <= k1);
@@ -142,19 +143,25 @@ export function readRuns(dir, { keepPoints = false, pinRange = null } = {}) {
         fams.add(familyOf(c)); channels.push(c); spans[c] = inr[inr.length - 1][0] - inr[0][0] + 1;
         for (const [p, nums] of seriesOf(c, inr)) {
           const v = nums.map((q) => q[1]), start = nums[0][2];
+          // every channel's own ends, not the lead's alone: a group that rises 50 px while its class's exemplar rose 20 px says 50 (fit.js ownEnds)
+          ends[p ? `${c}.${p}` : c] = [Math.round(start * 1e4) / 1e4, Math.round(v[v.length - 1] * 1e4) / 1e4];
           const amp = Math.max(...v, start) - Math.min(...v, start), n = pxEquivalent(c, amp);
           if (n > leadAmp) { leadAmp = n; lead = c; leadPart = p || null; from = start; to = v[v.length - 1]; shape = shapeOf(nums, k0, k1, start, to, amp); nums0 = nums; }
         }
       }
       if (!fams.size) return;
-      const run = { id, key, gone, desc, k0, k1, T0: tAt.get(k0), T1: tAt.get(k1), sy0: syAt.get(k0) ?? 0, sy1: syAt.get(k1) ?? 0, doc: doc(k0), fams: [...fams].sort(), lead, leadPart, channels, spans, amp: leadAmp, from, to, shape, box: e.onset.get(k0) || null, boxEnd: e.ends[i] || null, union: e.unions[i] || null, wrote: wroteIn(k0, k1), born: bornIn(k0, k1) };
+      const run = { id, key, gone, desc, k0, k1, T0: tAt.get(k0), T1: tAt.get(k1), sy0: syAt.get(k0) ?? 0, sy1: syAt.get(k1) ?? 0, doc: doc(k0), fams: [...fams].sort(), lead, leadPart, channels, spans, ends, amp: leadAmp, from, to, shape, box: e.onset.get(k0) || null, boxEnd: e.ends[i] || null, union: e.unions[i] || null, wrote: wroteIn(k0, k1), born: bornIn(k0, k1) };
       if (keepPoints && nums0) run.points = nums0.map((q) => [syAt.get(q[0]) ?? 0, q[1]]);
       runs.push(run);
     });
     // box-only runs: the box changed and no own channel did in that stretch. A ride-along, unless the element itself was touched
     for (const [k0, k1] of stretches(e.bks)) {
       if (e.ks.some((k) => k >= k0 && k <= k1)) continue;
-      runs.push({ id, key, gone, desc, k0, k1, T0: tAt.get(k0), T1: tAt.get(k1), sy0: syAt.get(k0) ?? 0, doc: doc(k0), fams: ['box'], lead: 'box', leadPart: null, channels: [], spans: {}, amp: 0, boxOnly: true, from: null, to: null, shape: null, box: null, boxEnd: null, union: null, wrote: wroteIn(k0, k1), born: bornIn(k0, k1) });
+      // a box read for its motion counts x and y from where it stood (intent.js readTracks); width and height are its own
+      const i0 = e.bks.indexOf(k0), i1 = e.bks.lastIndexOf(k1), b0 = e.bbox[i0], b1 = e.bbox[i1], ends = {};
+      const r4 = (v) => Math.round(v * 1e4) / 1e4;
+      if (b0 && b1) [['ren:bx', 0], ['ren:by', 1], ['ren:bw', 2], ['ren:bh', 3]].forEach(([c, j]) => { const a0 = b0[j], a1 = b1[j + 4]; if (!Number.isFinite(a0) || !Number.isFinite(a1)) return; ends[c] = j < 2 ? [0, r4(a1 - a0)] : [r4(a0), r4(a1)]; });
+      runs.push({ id, key, gone, desc, k0, k1, T0: tAt.get(k0), T1: tAt.get(k1), sy0: syAt.get(k0) ?? 0, doc: doc(k0), fams: ['box'], lead: 'box', leadPart: null, channels: [], spans: {}, ends, amp: 0, boxOnly: true, from: null, to: null, shape: null, box: null, boxEnd: null, union: null, wrote: wroteIn(k0, k1), born: bornIn(k0, k1) });
     }
   }
   const toK3 = walker(offsets);

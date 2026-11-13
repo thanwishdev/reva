@@ -18,11 +18,14 @@ import { asExportRecord, anchorMapToSamples } from '../../look/exportword.js';
 import { guardPhysical } from '../../look/physical.js';
 import { familyKind, declaredEasing, exportRecord } from '../../export/index.js';
 import { round } from '../../export/curves.js';
-import { agentPrompt, curveOfLaw, followGroup, glSpecOf, leadGroup, pickEase, proofOf, timingLine } from '../../export/move.js';
+import { agentPrompt, curveOfLaw, easeGap, followGroup, glSpecOf, lawEase, leadGroup, pickEase, proofOf, timingLine } from '../../export/move.js';
 import { closeMove } from './close.js';
 import { evaluator, holds, lawError, pickInstances, slimRecord } from './lawcheck.js';
-import { changesOf, notAMove, reduceTrack, readTracks, sentenceOf } from './intent.js';
+import { changesOf, clauseOf, isRound, NOT_A_MOVE, notAMove, reduceTrack, readTracks, sentenceOf, spanOf, spanWords, tidyDeclared, travels } from './intent.js';
 import { feelOf } from './feel.js';
+import { rerank } from './rank.js';
+import { renamePrompts, siteMoves } from './same.js';
+import { systemOf } from './system.js';
 import { FIT, GAPS, indexProblems, MODEL, moveFileProblems, pxEquivalent, selectorGroup } from './contract.js';
 import { LAWS_FILE } from './index.js';
 import crypto from 'node:crypto';
@@ -85,6 +88,11 @@ const framesFor = (ms) => Math.round(ms / DT);
 function tracksOf(rows, s, box = false) {
   const start = rows.find((r) => r.T >= s.T0 - T_SLACK), i = rows.indexOf(start), T0 = rows[Math.max(0, i - 1)]?.T ?? s.T0;
   return readTracks(rows, s.el, { T0, T1: s.T1 + T_SLACK }, { box });
+}
+/** The exemplar's own recorded tracks as the fit reads them, nothing fitted: read only, for the truth check (runs/…/verifyZC/truth.mjs). */
+export function exemplarTracks({ dir, s, lead }) {
+  const t = take(dir), rows = rowsAround(t, s, framesFor(AFTER_MS + BEFORE_MS)), all = tracksOf(rows, s, lead === 'box');
+  return { all, lead: all.find((x) => x.channel === lead) || all[0] || null };
 }
 const rowAt = (rows, s) => rows.find((r) => r.T >= s.T0 - T_SLACK) || rows[0];
 function boxAt(rows, s) {
@@ -175,7 +183,9 @@ export function fitExemplar({ dir, s, lead, noMap = false }) {
     const from = (tr) => { const i = tr.T.findIndex((t) => t >= onset); return i <= 0 ? tr : { ...tr, T: tr.T.slice(i), y: tr.y.slice(i), sy: tr.sy.slice(i), raw: tr.raw.slice(i) }; };
     const leadOn = from(leadTrack), pts = pointsOf(leadOn, best.ev, best.e), law = lawOf(best.rec, best.ev, pts);
     if (law) {
-      const others = tracks.map((tr) => { const t1 = from(tr); if (tr === leadTrack) return { ...t1, follows: true }; const e = lawError(best.ev, tr); return { ...t1, follows: holds(e) }; });
+      // a declared law gives each following track the ends its curve extrapolates to: the first frame is already into the tween
+      const endsOf = (e) => (exact && e ? { from: e.from, to: e.to } : null);
+      const others = tracks.map((tr) => { const t1 = from(tr); if (tr === leadTrack) return { ...t1, follows: true, ends: endsOf(best.e) }; const e = lawError(best.ev, tr); return { ...t1, follows: holds(e), ends: holds(e) ? endsOf(e) : null }; });
       const changes = changesOf(others, { box, exact }).map((c) => { if (c.follows) return c; const tr = others.find((x) => x.channel === c.channel); return { ...c, keys: ownKeys(tr) }; });
       const span = law.class === 'map' ? law.s1 - law.s0 : law.ms;
       const mapScroll = law.class === 'map' && box ? { start: `top ${Math.round(((box[1] + sy0 - law.s0) / vh) * 100)}%`, end: `top ${Math.round(((box[1] + sy0 - law.s1) / vh) * 100)}%` } : null;
@@ -185,6 +195,9 @@ export function fitExemplar({ dir, s, lead, noMap = false }) {
   const changes = changesOf(tracks.map((tr) => ({ ...tr, follows: false })), { box }).map((c) => { const tr = tracks.find((x) => x.channel === (c.channels?.[0] ?? c.channel)); return { ...c, keys: ownKeys(tr) }; });
   if (stepRec ? leadTrack.T.length <= STEP_FRAMES + 1 : leadTrack.T.length <= STEP_FRAMES) return { ...base, law: { class: 'steps', ms: 0, delayMs: 0 }, changes: changesOf(tracks, { box }), pts: [], dots: [], curve: [], provenance: 'fitted', errorPct: 0, rec: null, axis: null, t0: leadTrack.T[0], leadChannel: leadTrack.channel };
   const law = sampledLaw(leadTrack), start = leadTrack.T[0], span = leadTrack.y.at(-1) - leadTrack.y[0];
+  // ZD: a window no visible change travels through is a jump's, not a motion's: its time is not said (intent.js spanOf)
+  const moving = changes.some((c) => { const tr = tracks.find((x) => x.channel === (c.channels?.[0] ?? c.channel)); return tr && clauseOf(c, {}) != null && travels(tr.T, tr.y); });
+  if (!moving) law.stretched = true;
   const pts = leadTrack.T.map((t1, i) => [round(t1 - start, 2), round((leadTrack.y[i] - leadTrack.y[0]) / (span || leadTrack.amp), 5)]);
   return { ...base, law, changes, pts, dots: thin(pts, FIT.dotsMax), curve: law.points.slice(0, FIT.curveMax), provenance: 'sampled', errorPct: law.errorPct, rec: null, axis: null, t0: start, leadChannel: leadTrack.channel };
 }
@@ -253,6 +266,7 @@ function fitGlTrack(L, rows, c) {
     if (law) return { ev: best.ev, res: { law, provenance: best.rec.tier === 'declared' ? 'declared' : 'fitted', pts, dots: thin(pts, FIT.dotsMax), curve: curveOf(best.ev, law.ms), errorPct: round(best.e.errorPct, 2), t0: best.ev.t0 + best.e.shift, family: best.rec.model.family, cut, failed } };
   }
   const law = sampledLaw(track), start = track.T[0], span = track.y.at(-1) - track.y[0];
+  if (!travels(track.T, track.y)) law.stretched = true;
   const pts = track.T.map((t1, i) => [round(t1 - start, 2), round((track.y[i] - track.y[0]) / (span || track.amp), 5)]);
   return { ev: null, res: { law, provenance: 'sampled', pts, dots: thin(pts, FIT.dotsMax), curve: law.points.slice(0, FIT.curveMax), errorPct: law.errorPct, t0: start, family: best?.rec.model.family ?? recs[0]?.model?.family ?? null, rejectedPct: best ? round(best.e.errorPct, 1) : null, cut, failed } };
 }
@@ -366,6 +380,66 @@ async function runAll(jobs, { workers, limitMs = JOB_LIMIT_MS, heapMb = WORKER_H
   return out;
 }
 
+// ---------------------------------------------------------------- the site's own eases
+/** A fitted curve within this share of the range of a declared ease of the same site is that ease (the bar a named ease meets). */
+export const SNAP_SHARE = FIT.namedEaseShare * 100;
+/** A fitted duration within this share of a declared one on the same ease may be that duration, when the ease fits there too. */
+const SNAP_MS_SHARE = 0.05;
+/** How far the onset of a fitted curve may move to meet a declared one, ms: up to one frame either way. */
+const SNAP_SHIFTS = [0, -DT / 2, DT / 2, -DT, DT];
+/**
+ * The eases the site declares (CSS, WAAPI) as read by this fit, with the durations it declares them at.
+ * @returns {{text:string, fn:function, ms:number[]}[]}
+ */
+export function siteEases(results) {
+  const by = new Map();
+  for (const r of results) {
+    const l = r?.law; if (r?.provenance !== 'declared' || l?.class !== 'tween' || !l.declared || l.declared === 'linear') continue;
+    const fn = lawEase(l); if (!fn) continue;
+    const e = by.get(l.declared) || by.set(l.declared, { text: l.declared, fn, ms: [] }).get(l.declared);
+    if (l.ms > 0 && !e.ms.includes(l.ms)) e.ms.push(l.ms);
+  }
+  return [...by.values()];
+}
+/**
+ * A fitted tween whose recorded frames a declared ease of the same site also explains, within SNAP_SHARE % of the range, takes that
+ * ease: (0.6058, 0, 0.0565, 0.9884) is the site's cubic-bezier(0.6, 0, 0.05, 1). The duration follows a declared one on that ease when
+ * it is within 3 % and still fits. `law.snapped` keeps what the fitter found, and the error is the declared ease's own on these frames.
+ * Changes results in place; returns how many took a site ease.
+ */
+export function snapToSite(results) {
+  const eases = siteEases(results); if (!eases.length) return 0;
+  let n = 0;
+  for (const r of results) {
+    const l = r?.law; if (r?.provenance !== 'fitted' || l?.class !== 'tween' || l.declared || !(l.ms > 0) || !(r.pts?.length >= 3)) continue;
+    // the declared ease nearest these frames: on the fitted duration or a declared one on that ease (within 5 %), with the onset
+    // free to move by up to a frame, as the frame grid leaves it (a 590 ms fit of the site's 600 ms tween, 6 Nov review). A declared
+    // duration and no shift win a near tie: they are what the site wrote.
+    let best = null;
+    for (const e of eases) {
+      const durations = [l.ms, ...e.ms.filter((m) => m !== l.ms && Math.abs(m - l.ms) <= SNAP_MS_SHARE * l.ms)];
+      for (const ms of durations) for (const shift of SNAP_SHIFTS) {
+        const gap = easeGap(e.fn, shift ? r.pts.map(([x, p]) => [x + shift, p]) : r.pts, ms);
+        if (gap > SNAP_SHARE) continue;
+        const score = gap + (e.ms.includes(ms) ? 0 : 0.25) + Math.abs(shift) / DT * 0.2;
+        if (!best || score < best.score) best = { e, ms, shift, gap, score };
+      }
+    }
+    if (!best) continue;
+    // a stock ease the fitter named stays only when it is clearly nearer than the site's own
+    if (l.named && Number.isFinite(l.namedErrorPct) && l.namedErrorPct + 0.5 < best.gap) continue;
+    const was = { ...(l.bezier ? { bezier: l.bezier } : {}), ...(l.named ? { named: l.named } : {}), ms: l.ms, errorPct: r.errorPct };
+    const { bezier, key, named, namedErrorPct, runnerUp, ...rest } = l;
+    r.law = { ...rest, ms: round(best.ms, 1), declared: best.e.text, snapped: { ...was, ...(best.shift ? { shiftMs: round(best.shift, 1) } : {}) } };
+    r.errorPct = round(best.gap, 2);
+    if (best.shift) { r.pts = r.pts.map(([x, p]) => [round(x + best.shift, 2), p]); r.dots = (r.dots || []).map(([x, p]) => [round(x + best.shift, 2), p]); if (Number.isFinite(r.t0)) r.t0 -= best.shift; }
+    const N = FIT.curveMax - 1;
+    r.curve = Array.from({ length: N + 1 }, (_, i) => { const x = (best.ms * i) / N; return [round(x, 2), round(best.e.fn(i / N), 4)]; });
+    n++;
+  }
+  return n;
+}
+
 // ---------------------------------------------------------------- one move, in full
 /** Which part of a test a group answers, and when it starts: from the run of this group the fit list holds, when it holds one. */
 function placeGroup(doc, g, law) {
@@ -376,17 +450,56 @@ function placeGroup(doc, g, law) {
   const k = s.k0, part = !marks ? null : marks.out != null && k >= marks.out ? 'out' : marks.press != null && k >= marks.press ? 'press' : 'in';
   return { part, k0: k };
 }
-/** The class's law on this group's own ends: the lead channel keeps what this group's lead run did. */
-function ownEnds(changes, g, res) {
-  const lead = g.lead; if (!lead || lead.from == null || lead.to == null || !res.leadChannel) return changes;
-  return changes.map((c) => {
-    if ((c.channels?.[0] ?? c.channel) !== res.leadChannel && !c.channels?.includes(res.leadChannel)) return { ...c, fromExemplar: true };
-    if (typeof c.from !== 'number' || typeof c.to !== 'number' || (lead.part && lead.part !== '')) return c;
+/**
+ * The class's law on this group's own ends. The lead channel keeps what this group's lead run did; every other channel that went
+ * plainly from one value to another takes this group's own ends too (runs.js `ends`), so a group that rose 50 px never reads the 20 px
+ * of its class's exemplar (11 Nov: 50 px on 6 Nov, 20 px today, for the same 75 elements). A change that goes out and back keeps the
+ * exemplar's stops and says so (`fromExemplar`): its own run holds no peak to put there.
+ */
+export function ownEnds(changes, g, res) {
+  const lead = g.lead; if (!lead || !res.leadChannel) return changes;
+  const leadOk = lead.from != null && lead.to != null, own = lead.ends || null;
+  // the ends of one change's channel in this group's lead run: by its part when it has one, else its only part
+  const endsOf = (c) => {
+    if (!own) return null;
+    const ch = c.channels?.[0] ?? c.channel;
+    if (c.part != null && c.part !== '' && own[`${ch}.${c.part}`]) return own[`${ch}.${c.part}`];
+    if (own[ch]) return own[ch];
+    const keys = Object.keys(own).filter((k) => k.startsWith(`${ch}.`));
+    return keys.length === 1 ? own[keys[0]] : null;
+  };
+  // a change moved onto the ends [f, t]: the exemplar's stops scaled with it, a declared law's first frame as far into the tween
+  const onto = (c, f, t) => {
     const a = c.raw?.from ?? c.from, b = c.raw?.to ?? c.to;
-    if (Math.abs(a - lead.from) <= 1e-2 * Math.abs(b - a) && Math.abs(b - lead.to) <= 1e-2 * Math.abs(b - a)) return c;
-    const scale = (v) => (b === a ? v : round(lead.from + ((v - a) * (lead.to - lead.from)) / (b - a), 4));
-    return { ...c, from: lead.from, to: lead.to, raw: { from: lead.from, to: lead.to }, percent: undefined, ...(c.keys ? { keys: c.keys.map(([x, v]) => [x, typeof v === 'number' ? scale(v) : v]) } : {}) };
-  });
+    // the same ends: what the change says is already these (within 1 % of the travel and a quarter px; 55 is no reading of 55.55)
+    const tol = Math.min(1e-2 * Math.abs(b - a), 0.25);
+    if (Math.abs(a - f) <= tol && Math.abs(b - t) <= tol && Math.abs(c.from - f) <= Math.max(tol, 5e-3 * Math.abs(t - f)) && Math.abs(c.to - t) <= Math.max(tol, 5e-3 * Math.abs(t - f))) return c;
+    const scale = (v) => (b === a ? v : round(f + ((v - a) * (t - f)) / (b - a), 4));
+    // a declared law: this group's first frame is as far into the tween as the exemplar's, so its start moves out by the same share
+    // of the travel the exemplar's did, then reads as the site wrote it (src/scan/moves/intent.js tidyDeclared)
+    if (res.provenance === 'declared' && b !== a) {
+      const k = (c.to - c.from) / (b - a), travel = t - f, to = t;
+      let from = to - travel * k;
+      if (isRound(f) || Math.abs(from - f) > 0.25 * Math.abs(travel)) from = f;
+      if (c.family === 'fade') from = Math.min(1, Math.max(0, from));
+      return { ...c, from: tidyDeclared(from, travel), to: tidyDeclared(to, travel), raw: { from: f, to: t }, ends: { from: round(from, 4), to: round(to, 4) }, percent: undefined };
+    }
+    return { ...c, from: f, to: t, raw: { from: f, to: t }, percent: undefined, ...(c.keys ? { keys: c.keys.map(([x, v]) => [x, typeof v === 'number' ? scale(v) : v]) } : {}) };
+  };
+  return changes.map((c) => {
+    if (typeof c.from !== 'number' || typeof c.to !== 'number') return (c.channels?.[0] ?? c.channel) !== res.leadChannel && !c.channels?.includes(res.leadChannel) ? { ...c, fromExemplar: true } : c;
+    if (((c.channels?.[0] ?? c.channel) === res.leadChannel || c.channels?.includes(res.leadChannel)) && (leadOk || !own)) {
+      if (!leadOk || (lead.part && lead.part !== '')) return c;
+      return onto(c, lead.from, lead.to);
+    }
+    // not the lead channel: a plain from -> to takes this group's own ends, even when they are equal (it did not move there)
+    const e = endsOf(c);
+    if (!e) return own && !Object.keys(own).some((k) => k === (c.channels?.[0] ?? c.channel) || k.startsWith(`${c.channels?.[0] ?? c.channel}.`)) ? null : { ...c, fromExemplar: true };
+    if (c.peak == null && !c.back && c.from !== c.to) return e[0] === e[1] ? { ...c, from: e[0], to: e[1], raw: { from: e[0], to: e[1] }, percent: undefined, ...(c.keys ? { keys: c.keys.map(([x, v]) => [x, typeof v === 'number' ? e[0] : v]) } : {}) } : onto(c, e[0], e[1]);
+    // out and back: its own ends, and the exemplar's furthest point moved with them (no run keeps its own peak)
+    const a = c.raw?.from ?? c.from, shift = e[0] - a;
+    return { ...c, from: e[0], to: e[1], raw: { from: e[0], to: e[1] }, ...(Number.isFinite(c.peak) ? { peak: round(c.peak + shift, 4) } : {}), percent: undefined, peakFromExemplar: true };
+  }).filter(Boolean);
 }
 
 function groupFor(entry, doc, g, res, lawDoc, stats) {
@@ -424,9 +537,41 @@ function glGroupDocs(gl) {
   });
 }
 
-/** The moves entry and file of one move, finished. */
-function finishMove(entry, doc, laws, stats, gl = null) {
-  const dom = (doc.groups || []).filter((g) => !isGlGroup(g)).map((g) => { const res = laws.get(g.lawClass); return res ? groupFor(entry, doc, g, res, res.doc, stats) : { ...g, provenance: 'seen', law: null, checked: null }; });
+/** Under this a law is no time a person sees: the move is a jump, at once (intent.js spanWords). */
+const INSTANT_MS = 8.5;
+/** A recorded group this long, on the selector of the page's always-running move, is that move's drift caught in another's window. */
+const DRIFT_MS = 2000;
+/**
+ * Groups that are no part of this move (11 Nov): (a) a jump at once across at least half the screen, a ticker or a carousel wrapping
+ * round (1142 to 3360 px in one frame); (b) a recorded group of 2 s or more on an element the same page and screen's always-running move
+ * holds: its drift, caught while this move ran ("Close banner, opens ... 16 s"). Returns the groups dropped, with why.
+ */
+export function strayGroups(entry, groups, { width = null, ambient = null } = {}) {
+  const out = new Map();
+  const instant = (g) => g.law && (g.law.class === 'steps' || (Number.isFinite(g.law.ms) && g.law.ms < INSTANT_MS));
+  const travel = (g) => Math.max(0, Math.abs(g.screen?.px || 0), ...(g.changes || []).filter((c) => (c.family ?? familyOfChange(c)) === 'move' && typeof c.from === 'number' && typeof c.to === 'number').map((c) => Math.abs((Number.isFinite(c.peak) ? c.peak : c.to) - c.from)));
+  for (const g of groups) {
+    if (isGlGroup(g)) continue;
+    if (width > 0 && instant(g) && travel(g) >= width / 2) { out.set(g, 'wrap'); continue; }
+    if (ambient && entry.kind !== 'ambient' && g.law?.class === 'keyframes' && g.law.ms >= DRIFT_MS && [g.selector, ...(g.selectors || [])].some((x) => ambient.has(x))) out.set(g, 'drift');
+  }
+  return out;
+}
+const familyOfChange = (c) => (/^ren:(tx|ty|bx|by)$/.test(c.channel || '') || ['x', 'y'].includes(c.property) ? 'move' : null);
+
+/** The moves entry and file of one move, finished. `place`: the screen's width and the always-running move's selectors (strayGroups). */
+function finishMove(entry, doc, laws, stats, gl = null, place = {}) {
+  let dom = (doc.groups || []).filter((g) => !isGlGroup(g)).map((g) => { const res = laws.get(g.lawClass); return res ? groupFor(entry, doc, g, res, res.doc, stats) : { ...g, provenance: 'seen', law: null, checked: null }; });
+  const stray = strayGroups(entry, dom, place);
+  let placement = false;
+  if (stray.size) {
+    const wasLead = leadGroup(dom);
+    doc = { ...doc, dropped: [...stray].map(([g, why]) => ({ name: g.name, selector: g.selector, why, law: g.law?.class ?? null, ms: g.law?.ms ?? null })) };
+    dom = dom.filter((g) => !stray.has(g));
+    // what is left is nothing, or only more of the always-running element once the lead went: no motion of its own
+    const left = dom.filter((g) => g.part !== 'out' && g.part !== 'close');
+    placement = !(gl?.groups?.length) && (!left.length || (stray.has(wasLead) && !!place.ambient && left.every((g) => [g.selector, ...(g.selectors || [])].some((x) => place.ambient.has(x)))));
+  } else if (doc.dropped) { const { dropped, ...rest } = doc; doc = rest; }
   // a page change sets the new page at once: those groups are its state, kept as data, never its motion
   if (entry.kind === 'change') for (const g of dom) { if (g.law?.class === 'steps') g.state = 'new page'; else delete g.state; }
   // the largest visible layer leads: a WebGL pass over most of the screen comes before the DOM
@@ -451,11 +596,22 @@ function finishMove(entry, doc, laws, stats, gl = null) {
   const glExtra = { ...(glLeft ? { glLeft } : {}), ...(glClocks ? { glClocks } : {}), ...(glPasses ? { glPasses } : {}),
     ...(gl?.layer ? { glLayer: gl.layer } : {}), ...(gl?.values?.length ? { glValues: gl.values } : {}), ...(gl?.sources?.length ? { glSources: gl.sources } : {}), ...(gl?.events ? { glEvents: gl.events } : {}), ...(gl?.canvases?.length ? { glCanvases: gl.canvases } : {}), ...(gl?.geometry ? { glGeometry: gl.geometry } : {}) };
   if (sentence) entry.sentence = sentence;
+  // the plain words of the runs (name.js plainSentence) keep their recording window's time: the rule of the sentence holds (ZD,
+  // intent.js spanOf): a measured part's time, the window only when no jump stretches it, else none
+  else if (typeof entry.sentence === 'string' && !(lead && isGlGroup(lead))) {
+    const live = spec.groups.filter((g) => g.law && !leaving(g)), span = spanOf(live.length ? live : spec.groups), ms = span?.ms;
+    entry.sentence = entry.sentence.replace(/, [\d.]+ s\.( It also|$)/, (_, rest) => `${span?.g.law.class === 'map' ? ', tied to scroll' : Number.isFinite(ms) && ms > 0 ? spanWords(ms) : ''}.${rest}`);
+  }
+  // what each part does, in the words and numbers of the sentence (clauseOf, the screen's motion when there is one): the card's
+  // Changes reads these, so the sentence and Changes never give two numbers for one change (6 Nov review: 626 px beside 98 px)
+  for (const g of groups) { if (isGlGroup(g)) continue; const said = [...new Set((g.changes || []).map((c) => clauseOf(c, { screen: g.screen })).filter(Boolean))]; if (said.length) g.said = said; else delete g.said; }
   // nothing a person sees: kept in moves.json and its file, left off the card (card/moves.js cardIndex)
-  const not = notAMove(spec.groups.filter((g) => !leaving(g)));
+  const not = placement ? NOT_A_MOVE.placement : notAMove(spec.groups.filter((g) => !leaving(g)));
   if (not) entry.notMove = not; else delete entry.notMove;
   if (!lead?.law) {
     entry.curve = { kind: 'none' }; entry.proof = proofOf({ source: 'seen' }); entry.gap = entry.gap ?? GAPS.noRows;
+    // no part with a law: nothing measured, and no samples say the window is no jump's (ZD): its time is not said
+    if (entry.time?.ms > 0) { entry.time = { ...entry.time, windowMs: entry.time.ms }; delete entry.time.ms; }
     return { entry, doc: { ...doc, groups: groups.map(persist), ...glExtra } };
   }
   const { code, timing, prompt, proofLine: line } = closeMove(entry, spec, { frames: lead.pts?.length || null, gl: glSpecOf(glExtra) });
@@ -486,7 +642,13 @@ function finishPageLevel(entry, doc, extras) {
     return { ...doc, gl: { ...(doc.gl || {}), ...(g && !g.none && !g.error ? { lines: g.lines, camera: g.camera, programs: g.programs, notRead: g.notRead } : {}) } };
   }
   const p = extras.get(entry.id), tau = p?.tauMs;
-  if (tau == null) { entry.curve = { kind: 'none' }; entry.proof = proofOf({ source: 'seen' }); entry.gap = entry.time?.ms == null ? GAPS.wheel : GAPS.page; return doc; }
+  if (tau == null) {
+    entry.curve = { kind: 'none' }; entry.proof = proofOf({ source: 'seen' }); entry.gap = entry.time?.ms == null ? GAPS.wheel : GAPS.page;
+    // no fitted smoothing: the lag is an estimate from the scroll positions, not measured, so neither the sentence nor the time says it (ZD)
+    if (entry.time?.ms > 0) { entry.time = { ...entry.time, windowMs: entry.time.ms }; delete entry.time.ms; }
+    if (typeof entry.sentence === 'string') entry.sentence = entry.sentence.replace(/ about [\d.]+ s after the wheel/, ' after the wheel');
+    return doc;
+  }
   const law = { class: 'smoothing', ms: round(tau * 5, 1), tauMs: tau, delayMs: 0 };
   const code = { css: '/* CSS cannot smooth the page scroll: it needs JS. */', gsap: p.gsap ?? '// GSAP has no snippet for this law.', motion: p.raf ?? '// Motion has no snippet for this law.', form: 'relative', errorPct: { css: null, gsap: null, motion: null }, notes: [...(p.lenis ? [`With Lenis: ${p.lenis.split('\n').pop()}`] : [])] };
   entry.curve = curveOfLaw(law); entry.proof = proofOf({ source: 'fitted' }); entry.time = { ...entry.time, ms: law.ms };
@@ -501,6 +663,17 @@ function finishPageLevel(entry, doc, extras) {
  * @param {{workers?:number, limitMs?:number, log?:function}} [o]  workers: 0 runs in this thread
  * @returns {Promise<{ms:number, fitMs:number, medianFitMs:number|null, classes:number, files:number, ledger:object[], problems:string[]}>}
  */
+/**
+ * The page scroll's mode for the site's feel: the mode its scroll law found (pageScroll.mode: smoothed or wheel-consumed).
+ * Never from the time: a smoothed page with no fitted smoothing has its lag moved to windowMs (an estimate, not said), so a
+ * missing time.ms does not mean the document stood still. (A Lenis page was once called "the wheel drives a scene".)
+ */
+export function pageScrollFeel(ps, extras = new Map()) {
+  if (!ps) return null;
+  const mode = ps.pageScroll?.mode ?? (ps.time?.ms == null ? 'wheel-consumed' : 'smoothed');
+  return { mode, lagMs: mode !== 'smoothed' || extras.get(ps.id)?.tauMs ? null : ps.time?.ms ?? null };
+}
+
 export async function fitMoves(out, { workers = defaultWorkers(), limitMs = JOB_LIMIT_MS, heapMb = WORKER_HEAP_MB, log = () => {} } = {}) {
   const t0 = Date.now(), index = JSON.parse(fs.readFileSync(path.join(out, 'moves.json'), 'utf8')), files = readFiles(out);
   const laws = JSON.parse(fs.readFileSync(path.join(out, LAWS_FILE), 'utf8')).laws.filter((l) => l.sample?.length);
@@ -539,6 +712,8 @@ export async function fitMoves(out, { workers = defaultWorkers(), limitMs = JOB_
   const doneExtra = await runAll(extra, { workers, limitMs, heapMb });
   extra.forEach((e, i) => { if (!doneExtra[i] || doneExtra[i].error) return; const r = results.get(e.lawId); (r.extra ||= []).push({ selector: e.selector, take: e.take, res: doneExtra[i] }); });
   for (const l of laws) { const r = results.get(l.id); if (r) r.doc = l; }
+  const snapped = snapToSite([...results.values(), ...[...results.values()].flatMap((r) => (r?.extra || []).map((x) => x.res))]);
+  if (snapped) log(`${snapped} fitted curves are the site's own declared ease`);
 
   // 4. the page's own scroll and the canvases
   const sideJobs = [];
@@ -562,26 +737,46 @@ export async function fitMoves(out, { workers = defaultWorkers(), limitMs = JOB_
   const glOf = new Map(glJobs.map((j, i) => [j.id, glDone[i]?.error || glDone[i]?.none ? null : glDone[i]]));
   log(`WebGL in move windows: ${[...glOf.values()].filter((g) => g?.groups?.length).length} of ${glJobs.length} moves`);
 
-  // 5. every move, then the site
+  // 5. every move, then the site. What each page and screen's always-running move holds, and each screen's width, for strayGroups
+  const ambient = new Map(), widths = new Map();
+  for (const m of index.moves) {
+    if (m.kind !== 'ambient') continue;
+    const d = files.get(m.id); if (!d) continue;
+    const sels = (d.groups || []).flatMap((g) => [g.selector, ...(g.selectors || [])]).filter(Boolean);
+    for (const w of [...(d.where || []), ...(d.instances || [])]) { const k = `${w.page}|${w.viewport}`; const set = ambient.get(k) || ambient.set(k, new Set()).get(k); for (const x of sels) set.add(x); }
+  }
+  for (const d of files.values()) {
+    const i = d.instances?.[0]; if (!i?.take || widths.has(i.viewport)) continue;
+    try { const env = loadTake(takeDir(out, i), []).take.env || {}, v = (x) => (x && typeof x === 'object' && 'value' in x ? x.value : x); const w = v(env.viewport)?.width ?? v(env.innerWidth); if (w > 0) widths.set(i.viewport, w); } catch { /* no take: no wrap rule on this screen */ }
+  }
+  const placeOf = (doc) => { const i = doc.instances?.[0]; return { width: widths.get(i?.viewport) ?? null, ambient: i ? ambient.get(`${i.page}|${i.viewport}`) ?? null : null }; };
   const perView = new Map(), statsOf = (vp) => perView.get(vp) || perView.set(vp, { fitted: 0, sampled: 0, split: 0, cut: 0, seen: new Set() }).get(vp);
-  const fitted = [], seen = new Set();
+  const fitted = [], seen = new Set(), finished = new Map();
   const finish = (entry, doc) => {
     const vp = entry.viewport ?? doc.instances?.[0]?.viewport ?? 'desktop', stats = statsOf(vp);
     if (['scene', 'media', 'page-scroll'].includes(entry.kind)) { const d = finishPageLevel(entry, doc, extras); writeDoc(out, d); return d; }
-    const r = finishMove(entry, doc, results, stats, glOf.get(entry.id) ?? null);
+    const r = finishMove(entry, doc, results, stats, glOf.get(entry.id) ?? null, placeOf(doc));
     writeDoc(out, r.doc); return r.doc;
   };
-  for (const entry of index.moves) { const doc = files.get(entry.id); if (!doc) continue; seen.add(entry.id); const d = finish(entry, doc); fitted.push({ kind: entry.kind, groups: d.groups || [] }); }
+  for (const entry of index.moves) { const doc = files.get(entry.id); if (!doc) continue; seen.add(entry.id); const d = finish(entry, doc); finished.set(entry.id, d); fitted.push({ kind: entry.kind, groups: d.groups || [] }); }
   // a phone file with no entry of its own: the same work, with an entry that is only written into the file
   for (const [id, doc] of files) {
     if (seen.has(id)) continue;
     const twin = index.moves.find((m) => m.phone?.id === id);
-    finish({ id, kind: twin?.kind ?? 'ambient', trigger: twin?.trigger ?? { kind: 'time', parts: [] }, time: {}, name: doc.groups?.[0]?.name ?? '', technique: null, viewport: 'phone' }, doc);
+    finished.set(id, finish({ id, kind: twin?.kind ?? 'ambient', trigger: twin?.trigger ?? { kind: 'time', parts: [] }, time: {}, name: doc.groups?.[0]?.name ?? '', technique: null, viewport: 'phone' }, doc));
   }
   for (const r of results.values()) if (r?.checks?.split) statsOf(r.doc?.sample?.[0]?.viewport ?? 'desktop').split += r.checks.split;
 
+  // the rank again, with what the fit knows: a long hover, an answer off the screen, a move with no values is no highlight
+  rerank(index);
   const ps = index.moves.find((m) => m.kind === 'page-scroll');
-  index.site.feel = feelOf(fitted, { scroll: ps ? { mode: ps.time?.ms == null ? 'wheel-consumed' : 'smoothed', lagMs: extras.get(ps.id)?.tauMs ? null : ps.time?.ms ?? null } : null, smoother: ps?.technique ?? null });
+  index.site.feel = feelOf(fitted, { scroll: pageScrollFeel(ps, extras), smoother: ps?.technique ?? null });
+  // names from what each move does, repeated moves as one pattern, and the site's motion system (same.js, system.js)
+  const folded = siteMoves(index, finished);
+  index.site.system = systemOf(index, finished, index.site.feel);
+  // the prompts were written before the names were final: each says the name the list shows (11 Nov: 49 differed)
+  renamePrompts(index, finished, (d) => writeDoc(out, d));
+  if (folded.patterns) log(`${folded.folded} moves repeat ${folded.patterns} patterns`);
   write(path.join(out, 'moves.json'), JSON.stringify(index));
   const written = [...files.keys()].map((id) => JSON.parse(fs.readFileSync(path.join(out, 'moves', `${id}.json`), 'utf8')));
   const problems = [...indexProblems(index, { stage: 'fit' }), ...written.flatMap((d) => moveFileProblems(d, { stage: 'fit' }))];

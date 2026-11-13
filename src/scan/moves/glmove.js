@@ -573,8 +573,8 @@ export function glLayerClause(layer) {
   if (!layer || !(layer.cover >= GLM.cover)) return null;
   const where = layer.cover >= GLM.full ? 'a full-screen WebGL layer' : `a WebGL layer over ${Math.round(layer.cover * 100)} % of the screen`;
   const what = layer.engine ? ` (${layer.engine})` : '';
-  const sw = layer.switchAtMs != null ? ` and switches programs at ${Math.round(layer.switchAtMs / 100) / 10} s` : '';
-  return `${where}${what} keeps drawing${sw}`;
+  // which programs it switches between is the spec's (programSwitches), not a thing a person sees: the sentence leaves it out (11 Nov)
+  return `${where}${what} keeps drawing`;
 }
 
 /**

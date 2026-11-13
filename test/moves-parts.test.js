@@ -270,7 +270,7 @@ test('humanName keeps the rules of the card', () => {
 test('a plain sentence: agrees with its noun, and says nothing twice', () => {
   const g = (o, count = 1) => ({ lead: run(o), count, frames: 36 });
   const words = g({ desc: 'SPAN.word', lead: 'ren:ty', from: 40, to: 0 }, 5);
-  assert.equal(plainSentence({ kind: 'load', groups: [words, words], viewport }), 'On load the words rise, 0.6 s.');
+  assert.equal(plainSentence({ kind: 'load', groups: [words, words], viewport }), 'On load, 5 words rise, 0.6 s.');
   assert.equal(plainSentence({ kind: 'touch', parts: ['hover', 'press'], groups: [g({ desc: 'IMG.photo', lead: 'ren:sx', from: 1, to: 1.06, fams: ['scale'] })], viewport }), 'On hover the photo image scales up 6 %, 0.6 s. It also answers a press.');
 });
 

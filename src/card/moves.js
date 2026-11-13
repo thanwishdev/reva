@@ -228,18 +228,23 @@ const pick = (o, keys) => { const r = {}; if (o) for (const k of keys) if (o[k] 
  * The inline index: everything the first screen, Find, the open view's first paint and Site read, and nothing else. Instances fold
  * into the viewports and pages a move ran on, plus the first one with a video, for See it in the page.
  * @param {object} index  moves.json
- * @param {{coverage?:object, missing?:string[]}} [o]  from siteWords; moves.json may hold no coverage yet
+ * @param {{coverage?:object, missing?:string[], prompt?:string|null}} [o]  coverage, missing: from siteWords; moves.json may hold no
+ *   coverage yet. prompt: the whole-card For my agent text (siteAgentPrompt in src/export/move.js)
  */
-export function cardIndex(index, { coverage = null, missing = [] } = {}) {
+export function cardIndex(index, { coverage = null, missing = [], prompt = null, finale = null } = {}) {
   const pageAt = new Map(index.site.pages.map((p, i) => [p.id, i]));
   // a move whose every change is under what the eye sees, or only a new page's state, stays in moves.json and off the card
-  const moves = index.moves.filter((m) => !m.notMove).map((m) => {
+  // a consent banner's moves too (contract.js consentOf): they say nothing of how the site moves
+  const keep = new Set(index.moves.filter((m) => !m.notMove && !m.consent).map((m) => m.id));
+  const moves = index.moves.filter((m) => keep.has(m.id)).map((m) => {
     const inst = m.instances || [];
     const vp = [...new Set(inst.map((i) => i.viewport))];
     const pg = [...new Set(inst.map((i) => pageAt.get(i.page)))].filter((i) => i != null);
     const seen = inst.find((i) => i.video);
     return {
-      ...pick(m, ['id', 'kind', 'group', 'name', 'sentence', 'technique', 'time', 'n', 'variants', 'gap']),
+      ...pick(m, ['id', 'kind', 'group', 'name', 'sentence', 'technique', 'time', 'n', 'variants', 'gap', 'doubt', 'same', 'own']),
+      // a pattern's places, pages and moves (src/scan/moves/same.js); only the moves the card holds
+      ...(m.uses ? { uses: { n: m.uses.n, pages: m.uses.pages, moves: m.uses.moves.filter((id) => keep.has(id)) } } : {}),
       status: moveStatus(m),
       ...sizeOf(m),
       trigger: pick(m.trigger, ['kind', 'word', 'lagMs', 'parts', 'scroll']),
@@ -251,14 +256,46 @@ export function cardIndex(index, { coverage = null, missing = [] } = {}) {
       ...(seen ? { seen: { ...seen.video, viewport: seen.viewport } } : {}),
     };
   });
+  const kept = new Set(moves.map((m) => m.id));
+  // every record in moves.json is on the card, folded into a pattern's tile, or kept off (not a move, or a consent banner's)
+  const folded = moves.filter((m) => m.same && kept.has(m.same)).length;
+  const records = { all: index.moves.length, offCard: index.moves.length - moves.length, folded, onCard: moves.length - folded };
   return {
-    site: { host: index.site.host, url: index.site.url, pages: index.site.pages.map((p) => pick(p, ['id', 'label', 'url', 'hero'])), viewports: index.site.viewports, built: index.site.built, feel: index.site.feel ?? null },
+    records,
+    site: { host: index.site.host, url: index.site.url, pages: index.site.pages.map((p) => pick(p, ['id', 'label', 'url', 'hero'])), viewports: index.site.viewports, built: index.site.built, feel: index.site.feel ?? null, system: index.site.system ? pick(index.site.system, ['sentences', 'tokens']) : null },
     scan: index.scan ?? null,
     coverage: coverage ?? index.coverage ?? null,
     missing,
+    prompt,
+    // the finale at the end of Moves (src/export/spec.js motionSpec): the one file, its lines and the site's own arrival motion
+    finale: finale ? { file: finale.file, md: finale.md, lines: finale.lines.filter((l) => kept.has(l.id)), motion: finale.motion } : null,
     tally: index.tally ?? null,
-    groups: index.groups, top: index.top, moves,
+    // the groups and highlights name only moves the card holds
+    groups: (index.groups || []).map((g) => ({ ...g, moves: g.moves.filter((id) => kept.has(id)) })).filter((g) => g.moves.length), top: (index.top || []).filter((id) => kept.has(id)), moves,
   };
+}
+
+/**
+ * Which elements of Study belong to a move on the card: per page and screen, per take, the move each selector or element
+ * description leads to (a folded repeat leads to its pattern, the tile the card shows). Study lists these by default.
+ * @param {object} index  moves.json
+ * @param {(id:string)=>object|null} docOf  a move's own file, for its groups' selectors and element descriptions
+ * @returns {Object<string, Object<string, Object<string, string>>>}  "page/viewport" -> take -> selector or description -> move id
+ */
+export function studyMoves(index, docOf = () => null) {
+  const byId = new Map((index.moves || []).map((m) => [m.id, m])), out = {};
+  for (const m of index.moves || []) {
+    if (m.notMove || m.consent) continue;
+    const doc = docOf(m.id); if (!doc) continue;
+    const to = m.same && byId.has(m.same) && !byId.get(m.same).notMove ? m.same : m.id;
+    const keys = new Set((doc.groups || []).flatMap((g) => [g.selector, ...(g.selectors || []), ...(g.elements || [])]).filter((k) => typeof k === 'string' && k));
+    for (const i of m.instances || []) {
+      if (!i.take || !i.page || !i.viewport) continue;
+      const t = ((out[`${i.page}/${i.viewport}`] ||= {})[i.take] ||= {});
+      for (const k of keys) if (!(k in t)) t[k] = to;
+    }
+  }
+  return out;
 }
 
 /** The section the screens live in, the page's style in the head, its script after the stage's. */

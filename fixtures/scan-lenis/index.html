@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lenis page (REVA fixture)</title>
+<style>
+  html.lenis, html.lenis body { height: auto; }
+  .lenis.lenis-smooth { scroll-behavior: auto !important; }
+  body { margin: 0; font: 18px/1.5 system-ui, sans-serif; color: #111; background: #fff; }
+  section { min-height: 90vh; padding: 10vh 8vw; border-top: 1px solid #ddd; }
+  h1 { font-size: 64px; margin: 0; }
+</style>
+</head>
+<body>
+  <!-- A smooth-scrolled page with REVA's own vendored Lenis (lerp 0.1): the document itself scrolls, late of the wheel. -->
+  <section><h1>Smooth page</h1><p>The wheel moves this document through Lenis.</p></section>
+  <section><h2>Two</h2><p>More to scroll.</p></section>
+  <section><h2>Three</h2><p>More to scroll.</p></section>
+  <section><h2>Four</h2><p>More to scroll.</p></section>
+  <section><h2>Five</h2><p>The end.</p></section>
+  <script type="module">
+    import Lenis from '../lab/lab-scroll/vendor/lenis.mjs';
+    const lenis = new Lenis({ lerp: 0.1, smoothWheel: true });
+    window.lenis = lenis;
+    function raf(t) { lenis.raf(t); requestAnimationFrame(raf); }
+    requestAnimationFrame(raf);
+  </script>
+</body>
+</html>

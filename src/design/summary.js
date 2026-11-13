@@ -413,10 +413,13 @@ function palette(V, tokens, maxColours, page) {
 
 const MEDIA_TAGS = /^(img|video|canvas|picture|svg|iframe|embed|object)$/;
 /** Text colour against the background it sits on (DOM ancestors' background colours). */
-function contrast(V, maxPairs) {
-  const pairs = new Map(); let overImage = 0, overMedia = 0, noBackground = 0, overlapped = 0, hidden = 0, checked = 0;
-  // seen: opacity above 0 and visibility not hidden, up the ancestor chain (text faded out for a later reveal is not graded)
+export function contrast(V, maxPairs) {
+  const pairs = new Map(); let overImage = 0, overMedia = 0, noBackground = 0, overlapped = 0, hidden = 0, faded = 0, checked = 0;
+  // seen: opacity above 0 and visibility not hidden, up the ancestor chain. Text faded out for a later reveal (opacity 0, visibility
+  // not hidden) is graded all the same: its colours are the ones it shows once revealed. A page that reveals every text on load had
+  // none graded, and the card said "No pair fails AA" over 0 pairs (6 Nov review). Only visibility: hidden text stays out.
   const seen = seenOf(V);
+  const shown = (r) => { for (let c = r; c; c = c.parent != null ? V.byId.get(c.parent) : null) if (V.get(c, 'visibility') === 'hidden') return false; return true; };
   // boxes that can sit under text without being its ancestor (positioned media, a hero block, an overlay): media,
   // CSS background images and opaque background colours of visible, rendered elements
   const under = [];
@@ -443,7 +446,7 @@ function contrast(V, maxPairs) {
   for (const r of V.rows) {
     if (!r.rendered || r.pseudo || !r.text) continue;
     const fg = parseColor(V.get(r, 'color')); if (!fg || fg.a === 0) continue;
-    if (!seen(r)) { hidden++; continue; }
+    if (!seen(r)) { if (!shown(r)) { hidden++; continue; } faded++; }
     const layers = []; let img = false;
     for (let cur = r; cur; cur = cur.parent != null ? V.byId.get(cur.parent) : null) {
       const bi = V.get(cur, 'background-image'); if (bi && bi !== 'none') { img = true; break; }
@@ -469,8 +472,8 @@ function contrast(V, maxPairs) {
   const failing = all.filter((p) => p.grade === 'fails AA');
   const top = all.sort((a, b) => b.count - a.count).slice(0, maxPairs);
   for (const f of failing.sort((a, b) => b.count - a.count)) if (!top.includes(f) && top.length < maxPairs + 4) top.push(f);
-  return { pairs: top, more: Math.max(0, all.length - top.length), textElements: checked, failingPairs: failing.length, failingElements: failing.reduce((n, p) => n + p.count, 0), overImage, overMedia, overlapped, noBackground, hidden,
-    note: 'WCAG 2 contrast of the text colour over the background colours of its DOM ancestors; graded only where an ancestor sets a background colour and nothing else lies under the text. Not graded, only counted: text over a CSS background image or gradient, its own or another box\'s under at least half of the text (overImage); text at least half over an img, video, canvas, svg or iframe box (overMedia); text at least half over another element\'s opaque background of a different colour, e.g. a positioned hero or header (overlapped); text with no background colour on any ancestor (noBackground); text at opacity 0 or visibility hidden (hidden). Not detected: mix-blend-mode, filters, a text shadow that carries the contrast' };
+  return { pairs: top, more: Math.max(0, all.length - top.length), textElements: checked, failingPairs: failing.length, failingElements: failing.reduce((n, p) => n + p.count, 0), overImage, overMedia, overlapped, noBackground, hidden, faded,
+    note: 'WCAG 2 contrast of the text colour over the background colours of its DOM ancestors; graded only where an ancestor sets a background colour and nothing else lies under the text. Not graded, only counted: text over a CSS background image or gradient, its own or another box\'s under at least half of the text (overImage); text at least half over an img, video, canvas, svg or iframe box (overMedia); text at least half over another element\'s opaque background of a different colour, e.g. a positioned hero or header (overlapped); text with no background colour on any ancestor (noBackground); text at visibility hidden (hidden). Text at opacity 0 (faded out for a later reveal) is graded, and counted in faded. Not detected: mix-blend-mode, filters, a text shadow that carries the contrast' };
 }
 
 function spacing(tokens, maxValues) {

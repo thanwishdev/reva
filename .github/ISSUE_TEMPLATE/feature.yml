@@ -1,0 +1,22 @@
+name: Feature request
+description: Something REVA should read, measure or print
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What are you trying to do?
+      description: The motion or design question you couldn't answer with REVA today.
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: What would help?
+    validations:
+      required: true
+  - type: textarea
+    id: example
+    attributes:
+      label: An example
+      description: A public page or a small snippet that shows it, if you have one.

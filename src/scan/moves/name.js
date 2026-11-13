@@ -74,6 +74,51 @@ export function nearestHeading(box, sy, table) {
   return best ? best.w : null;
 }
 
+/**
+ * How a group's text was cut up to move it: one span per letter, word or line of a heading or paragraph, read from the table's own
+ * text of each element (a slide-tool site's hero: 20 one-letter spans under the h1, so letters, not words). Null when the group is no split text.
+ * @returns {{unit:'letter'|'word'|'line', n:number, in:'heading'|'paragraph'|'text'}|null}
+ */
+export function splitOf(runs, table, count = null) {
+  if (!table?.rows || !runs?.length) return null;
+  const keys = new Set(runs.map((r) => r.key)), texts = [];
+  for (const r of table.rows) if (keys.has(r[1]) && r[7] && String(r[7]).trim()) texts.push(String(r[7]).trim());
+  if (texts.length < 2 || texts.length < 0.8 * keys.size) return null;
+  const host = /^(h[1-6]|p)\b/i.exec(runs[0].key || '')?.[1]?.toLowerCase(), tag = /^([a-z0-9]+)/i.exec(runs[0].desc || '')?.[1]?.toLowerCase();
+  const letters = texts.every((t) => [...t].length === 1), words = texts.every((t) => !/\s/.test(t));
+  if (!letters && !words && !host) return null;          // a list of links is no split text
+  if (!host && tag !== 'span' && tag !== 'div') return null;
+  return { unit: letters ? 'letter' : words ? 'word' : 'line', n: count ?? keys.size, in: host === 'p' ? 'paragraph' : host ? 'heading' : 'text' };
+}
+
+// a person's noun for what a group moves, in the singular and the plural, so no sentence ever guesses a plural ("block, bottom lefts")
+const TAG_NOUN = { a: ['link', 'links'], li: ['list item', 'list items'], img: ['image', 'images'], picture: ['image', 'images'], video: ['video', 'videos'], p: ['paragraph', 'paragraphs'], button: ['button', 'buttons'], svg: ['graphic', 'graphics'], path: ['line', 'lines'], line: ['line', 'lines'], circle: ['circle', 'circles'], article: ['card', 'cards'], figure: ['figure', 'figures'], h1: ['heading', 'headings'], h2: ['heading', 'headings'], h3: ['heading', 'headings'], h4: ['heading', 'headings'], h5: ['heading', 'headings'], h6: ['heading', 'headings'], canvas: ['canvas', 'canvases'], input: ['field', 'fields'], label: ['label', 'labels'], span: ['text', 'pieces of text'] };
+/**
+ * The noun of a group, both numbers: its split text, its own name when that is a real word, its tag's noun, else "element".
+ * @param {{name?:string, elements?:string[], split?:object|null, count?:number}} g  a group of a move file
+ * @returns {{one:string, many:string}}
+ */
+export function groupNoun(g) {
+  if (g?.split) return { one: g.split.unit, many: `${g.split.unit}s` };
+  const tag = /^([a-z0-9]+)/i.exec((g?.elements || [])[0] || '')?.[1]?.toLowerCase(), name = String(g?.name || '').split(',')[0].trim();
+  const t = TAG_NOUN[tag];
+  // a real word of the element's own: its plural from a list of known nouns or its tag's ("read more link" -> "read more links"), else
+  // counted as elements; "Block" and "Div block" say nothing, so the tag's noun stands in
+  if (name && !/^(Block|Element|Main area)$/.test(name) && !/^[A-Za-z0-9]+ block$/.test(name) && !/^(Hero|Footer)\b/.test(name)) {
+    const one = lower(name), last = one.split(' ').pop(), head = one.slice(0, one.length - last.length);
+    const many = PLURAL[last] ? `${head}${PLURAL[last]}` : t && one.endsWith(t[0]) ? `${one.slice(0, -t[0].length)}${t[1]}` : `${one} elements`;
+    return { one, many };
+  }
+  return t ? { one: t[0], many: t[1] } : { one: 'element', many: 'elements' };
+}
+const PLURAL = Object.fromEntries(['word', 'letter', 'line', 'image', 'photo', 'picture', 'label', 'card', 'item', 'link', 'menu', 'button', 'icon', 'heading', 'paragraph', 'logo', 'title', 'testimonial', 'arrow', 'dot', 'slide', 'tab', 'tile', 'panel', 'shape', 'circle', 'graphic', 'video', 'section', 'avatar', 'badge', 'chip', 'tag', 'quote', 'number', 'stat', 'field', 'figure', 'caption', 'thumbnail', 'background', 'overlay', 'cursor', 'marker', 'bar', 'column', 'row', 'block'].map((w) => [w, `${w}s`]).concat([['text', 'pieces of text'], ['list item', 'list items'], ['box', 'boxes'], ['glass', 'glasses']]));
+/** The subject of a clause about a group: "the main heading", "20 letters of the heading", "7 elements". Agreement follows `count`. */
+export function subjectOfGroup(g) {
+  const n = g?.count || 1, w = groupNoun(g);
+  if (n > 1) return g.split ? `${n} ${w.many} of the ${g.split.in}` : `${n} ${w.many}`;
+  return `the ${w.one}`;
+}
+
 const placeOf = (key) => (/(^|[\s>.])(header|nav|navigation|menu)\b/i.test(key) ? 'Menu' : /(^|[\s>.])footer\b/i.test(key) ? 'Footer' : null);
 const CARD_TAG = /^(ARTICLE|LI|A)\b/i;
 const CLOSER = { load: 'on load', gate: 'on entry', scroll: 'on scroll', 'scroll-up': 'on the way back up', ambient: 'always running', cursor: 'follows the pointer', open: 'opens', change: 'page change' };
@@ -83,25 +128,95 @@ const NEAR_KINDS = ['load', 'scroll', 'scroll-up', 'touch', 'open'];
 const WEAK = /^(Block|Line|Word|Text|Graphic|Shape|Circle|Section|Link|List|Image$|Main area|Label)/;
 
 /**
- * @param {{kind:string, lead:object, parts?:string[], inside?:boolean, repeated?:boolean, testText?:?string, table?:object, viewport:object, changeTo?:?string}} o
- * @returns {string}
+ * What a move's name is about, before the fit says what it does: the control's or the element's own words, a role, the hero, the menu,
+ * the footer, or the section under the nearest heading. `plural` says how a verb after it agrees, so no name guesses a plural, and
+ * `noun` is the plain word a merged pattern of several moves can say (src/scan/moves/same.js).
+ * @param {{kind:string, lead:object, inside?:boolean, repeated?:boolean, testText?:?string, table?:object, viewport:object, split?:object|null}} o
+ * @returns {{text:string, plural:boolean, quoted:boolean, noun:{one:string, many:string}}}
  */
-export function nameOf({ kind, lead, parts = [], inside = false, repeated = false, testText = null, table = null, viewport, changeTo = null }) {
-  if (kind === 'change') return changeTo ? `Page change to ${changeTo}` : 'Page change';
-  const r = lead?.lead, runs = lead?.runs || [];
+export function subjectOf({ kind, lead, inside = false, repeated = false, testText = null, table = null, viewport, split = null }) {
+  const r = lead?.lead, runs = lead?.runs || [], count = lead?.count || 1;
   const words = fewWords(testText) || (kind === 'touch' || kind === 'open' || kind === 'load' || kind === 'scroll' ? visibleWords(runs, table) : null);
   const firstScreen = r?.box && r.box[1] < viewport.height && (r.sy0 ?? 0) < 1;
-  let part;
-  if (words) part = `"${words}"`;
+  const noun = groupNoun({ name: r ? humanName(r.desc) : '', elements: r ? [r.desc] : [], split });
+  if (words) return { text: `"${words}"`, plural: false, quoted: true, noun };
+  let part, plural = false;
+  // split text moves as one heading: "Hero headline", not "Hero text" (its letters are the recipe's business)
+  if (split && split.in !== 'text') part = /^h1\b/i.test(r?.key || '') ? 'Main heading' : split.in === 'paragraph' ? 'Paragraph' : 'Heading';
   else if (kind === 'open' && !inside && /menu|burger|toggle|nav/i.test(r?.desc || '')) part = 'Menu';
   else if (repeated && CARD_TAG.test(r?.desc || '')) part = `${humanName(r.desc).replace(/ (link|item)$/i, '')} card`.replace(/^Link card$/, 'Card').replace(/^List item card$/, 'Card');
   else part = r ? humanName(r.desc, r.box, viewport) : 'The page';
-  if (!words && inside) part = `Menu ${lower(part)}`;
-  else if (!words && kind === 'load' && firstScreen && /^(Main heading|Block|Section|Text)/.test(part)) part = `Hero ${lower(part)}`.replace('Hero main heading', 'Hero headline').replace(/^Hero block.*/, 'Hero');
-  else if (!words && r && placeOf(r.key) === 'Footer') part = `Footer ${lower(part)}`;
-  else if (!words && r && NEAR_KINDS.includes(kind) && WEAK.test(part)) { const near = nearestHeading(r.box, r.sy0, table); if (near) part = `"${near}" section`; }
+  if (inside) part = `Menu ${lower(part)}`;
+  else if (kind === 'load' && firstScreen && /^(Main heading|Heading|Block|Section|Text)/.test(part)) part = `Hero ${lower(part)}`.replace('Hero main heading', 'Hero headline').replace(/^Hero block.*/, 'Hero');
+  else if (r && placeOf(r.key) === 'Footer') part = `Footer ${lower(part)}`;
+  else if (r && NEAR_KINDS.includes(kind) && WEAK.test(part)) {
+    const near = nearestHeading(r.box, r.sy0, table);
+    // several alike elements under a heading are its items: "\"OUR WORK\" items", never "Block, bottoms"
+    if (near && count > 1 && !split) { part = `"${near}" ${noun.one === 'element' ? 'items' : noun.many}`; plural = true; }
+    else if (near) part = `"${near}" section`;
+  }
+  return { text: part, plural, quoted: false, noun };
+}
+
+/**
+ * @param {{kind:string, lead:object, parts?:string[], inside?:boolean, repeated?:boolean, testText?:?string, table?:object, viewport:object, changeTo?:?string, split?:object|null}} o
+ * @returns {string}
+ */
+export function nameOf(o) {
+  const { kind, parts = [], changeTo = null } = o;
+  if (kind === 'change') return changeTo ? `Page change to ${changeTo}` : 'Page change';
+  return composeName(kind, subjectOf(o), parts);
+}
+/** A name from its subject and what sets the move off: "\"Product\", hover", "Menu, opens". A whole-name subject is the name. */
+export function composeName(kind, subject, parts = []) {
+  if (subject?.whole) return subject.text;
+  const part = subject?.text || 'The page';
   const closer = kind === 'touch' ? (PART_WORD[parts.find((p) => p === 'hover') || parts[0]] || 'hover') : CLOSER[kind];
   return closer ? `${part}, ${closer}` : part;
+}
+
+// what the lead's first visible change makes of a name, one verb a person says, both numbers: "rise in" / "rises in"
+const NAME_VERB = [
+  [/^(rise|drop)s? [\d.]+ (px|%)$/, (m) => [`${m[1]} in`, `${m[1]}s in`]],
+  [/^slides? (left|right) [\d.]+ (px|%)$/, () => ['slide in', 'slides in']],
+  [/^scales? up/, (m, c) => (c.from != null && c.from < 0.05 ? ['scale in', 'scales in'] : ['grow', 'grows'])],
+  [/^scales? down/, () => ['shrink', 'shrinks']],
+  [/^turns? /, () => ['turn', 'turns']],
+  [/^wipes?( |$)/, () => ['wipe in', 'wipes in']],
+  [/^draws?$/, () => ['draw on', 'draws on']],
+  [/^fades? in$/, () => ['fade in', 'fades in']],
+  [/^fades? out$/, () => ['fade out', 'fades out']],
+  [/^blurs?$/, () => ['come into focus', 'comes into focus']],
+  [/^changes? colour$/, () => ['change colour', 'changes colour']],
+];
+const FAMILY_ORDER = ['move', 'scale', 'rotate', 'clip', 'dash', 'fade', 'filter', 'colour'];
+const NAME_TAIL = { load: ' on load', gate: ' on entry', scroll: ' on scroll', 'scroll-up': ' on the way back up' };
+/** Moves whose name says what they do once the fit knows it: they arrive, on load or on scroll. */
+export const VERB_KINDS = new Set(Object.keys(NAME_TAIL));
+/**
+ * The verb of a lead group for a name, or null when its first change says nothing a name can carry (a recording that goes and comes
+ * back, a CSS variable). `clause` is clauseOf from intent.js, passed in so this module needs no fit code.
+ * @returns {{one:string, many:string}|null}
+ */
+export function nameVerb(group, clause) {
+  const law = group?.law; if (!law || !['tween', 'spring', 'map'].includes(law.class)) return null;
+  const changes = (group.changes || []).filter((c) => c.peak == null && !c.back);
+  for (const fam of FAMILY_ORDER) for (const c of changes) {
+    if (c.family !== fam) continue;
+    const said = clause(c, { screen: group.screen }); if (!said) continue;
+    for (const [re, f] of NAME_VERB) { const m = re.exec(said); if (m) { const [many, one] = f(m, c); return { one, many }; } }
+  }
+  return null;
+}
+/**
+ * A name that says what the move does: "\"OUR WORK\" items rise in on scroll", "Hero headline rises in on load". Tied to the scroll it
+ * says "with the scroll". Null keeps the name the move has.
+ */
+export function doingName(entry, lead, clause) {
+  if (!VERB_KINDS.has(entry.kind) || !entry.subject?.text) return null;
+  const v = nameVerb(lead, clause); if (!v) return null;
+  const tail = lead.law.class === 'map' || entry.trigger?.kind === 'scroll-linked' ? ' with the scroll' : NAME_TAIL[entry.kind];
+  return `${entry.subject.text} ${entry.subject.plural ? v.many : v.one}${tail}`;
 }
 
 const RISE_MIN_PX = 2, MAX_SAID_PCT = 300;
@@ -134,14 +249,10 @@ const OPENER = { load: 'On load', gate: 'On entry', scroll: 'While scrolling', '
 const secs = (frames) => `${(Math.round((frames / 60) * 10) / 10).toFixed(1).replace(/\.0$/, '')} s`;
 const lower = (s) => s.charAt(0).toLowerCase() + s.slice(1);
 
-/** The noun of a group, for a sentence: no place words, plural when the group holds several. */
-function nounOf(g, viewport) {
-  const n = lower(humanName(g.lead.desc, null, viewport).split(',')[0]).replace(/ block$/, ' element').replace(/^block$/, 'element');
-  return g.count > 1 && !/s$/.test(n) ? `${n}s` : n;
-}
 /** A verb phrase agrees with its noun: "the words rise", "the word rises". */
-const agree = (verb, plural) => (plural ? verb.replace(/^(\w+?)s\b/, '$1') : verb);
-const clause = (g, viewport) => `the ${nounOf(g, viewport)} ${agree(verbOf(g.lead), g.count > 1)}`;
+const agree = (verb, plural) => (plural ? verb.replace(/^(\w+?)s\b/, '$1').replace(/\bits\b/g, 'their') : verb);
+/** "7 elements rise", "the main heading fades in": a counted plural or one named element, never a guessed plural. */
+const clause = (g, viewport) => { const many = g.count > 1, w = groupNoun({ name: humanName(g.lead.desc, null, viewport), elements: [g.lead.desc] }); return `${many ? `${g.count} ${w.many}` : `the ${w.one}`} ${agree(verbOf(g.lead), many)}`; };
 
 /** One plain line from runs, so a move that was never fitted still has words. S8 writes the final one (DESIGN 2.7). */
 export function plainSentence({ kind, groups, parts = [], viewport }) {
@@ -150,7 +261,8 @@ export function plainSentence({ kind, groups, parts = [], viewport }) {
   const opener = kind === 'touch' && !parts.includes('hover') ? (parts.includes('press') || parts.includes('click') ? 'On press' : parts.includes('focus') ? 'On focus' : 'On hover') : OPENER[kind];
   const longest = Math.max(...said.map((x) => x.g.frames));
   const extra = kind === 'touch' && parts.includes('hover') && parts.includes('press') ? ' It also answers a press.' : '';
-  return `${opener} ${said.map((x) => x.c).join(' and ')}, ${secs(longest)}.${extra}`;
+  // under a tenth of a second rounds to "0 s" (11 Nov, U4): a change in a frame or two is said to happen at once
+  return `${opener}${/^\d/.test(said[0].c) ? ',' : ''} ${said.map((x) => x.c).join(' and ')}${longest < 3 ? ', at once' : `, ${secs(longest)}`}.${extra}`;
 }
 
 /** Tonight's one rule for a technique that needs no shader: a part revealed through a clip or a mask. */

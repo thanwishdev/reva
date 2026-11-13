@@ -249,6 +249,7 @@ export function wrRuntime(CFG, rowEncoder, scanTracker) {
   };
   const watch = (el, why, idArg) => {
     if (!el || el.nodeType !== 1) return; const id = idArg != null ? idArg : idOf(el); if (W.watch.has(id)) return;
+    if (el.closest && el.closest('[data-reva-hidden]')) return; // a consent banner the scan took out (src/safety/banner.js): no motion of the site
     if (W.watch.size < cap || (why === 'selector' && CFG.capPolicy) || evictFor(el)) { W.watch.set(id, { el, why }); over.delete(id); if (W.selQ) W.selQ.push(id); return; }
     if (over.size < 1e6) over.add(id); W.c.watchOverflow = over.size;
   };

@@ -14,6 +14,9 @@ import { round } from '../../export/curves.js';
 import { LOTTIE_FILE, lottieList } from '../lottie.js';
 import { moveScript } from './fit.js';
 import { closeMove } from './close.js';
+import { rerank } from './rank.js';
+import { renamePrompts, siteMoves } from './same.js';
+import { systemOf } from './system.js';
 import { FIT, GAPS, MODEL, indexProblems, moveFileProblems, selectorGroup } from './contract.js';
 import { LAWS_FILE } from './index.js';
 
@@ -115,10 +118,11 @@ const leadOf = (groups) => leadGroup(groups);
 function rebuild(entry, doc) {
   const lead = (entry.kind === 'cursor' ? followGroup(doc.groups) : null) ?? leadOf(doc.groups); if (!lead?.law) return;
   const scroll = entry.trigger?.scroll?.start ? entry.trigger.scroll : null;
-  const groups = [lead, ...doc.groups.filter((g) => g !== lead)].map((g) => ({ ...g, pts: g.dots }));
+  const src = [lead, ...doc.groups.filter((g) => g !== lead)], groups = src.map((g) => ({ ...g, pts: g.dots }));
   const spec = { kind: entry.kind, trigger: entry.trigger, scroll, groups, name: entry.name, technique: entry.technique };
   // the same last step as the fit's (close.js); the WebGL clocks, passes and the rest of the GL spec the fit kept go back into the agent spec
   const { code, timing, prompt, proofLine: line } = closeMove(entry, spec, { frames: entry.proof?.frames ?? null, gl: glSpecOf(doc) });
+  src.forEach((g, i) => { if (groups[i].recipe) g.recipe = groups[i].recipe; else delete g.recipe; });   // closeMove wrote them on the copies
   doc.timing = timing; doc.code = code; doc.notes = [...code.notes, ...(doc.notes || []).filter((n) => !code.notes.includes(n) && n === WORDS.morph)];
   doc.prompt = prompt;
   if (line) doc.proofLine = line; else delete doc.proofLine;
@@ -175,9 +179,11 @@ export function joinDeclared(out, { log = () => {} } = {}) {
   const lottie = readJson(path.join(out, LOTTIE_FILE)), links = lottieElements(takes, lottie?.files || []);
   const stats = { gsap: { found: !!version, version, tweens, takes: takes.filter((d) => d.tweens.length).length }, groups: 0, noted: 0, moves: 0, lottie: 0, morphs: 0, problems: [] };
 
+  const docs = new Map();
   for (const entry of index.moves) {
     const file = path.join(out, 'moves', `${entry.id}.json`), doc = readJson(file);
     if (!doc?.groups) continue;
+    docs.set(entry.id, doc);
     let laws0 = false, noted = false;
     for (const g of doc.groups) {
       const sample = sampleOf.get(g.lawClass); if (!sample || !g.law) continue;
@@ -202,6 +208,14 @@ export function joinDeclared(out, { log = () => {} } = {}) {
     if (at < 0) built.unshift(one); else built[at] = one;
   }
   if (lottie?.files?.length) index.site.lottie = lottieList(lottie);
+  if (stats.moves) {
+    rerank(index);   // a law now read from GSAP weighs as declared
+    siteMoves(index, docs);   // and may now name, fold and set the system otherwise
+    index.site.system = systemOf(index, docs, index.site.feel);
+    // and each prompt says the name the list shows, a phone file the name of its move
+    for (const m of index.moves) { const id = m.phone?.id; if (id && id !== m.id && !docs.has(id)) { const d = readJson(path.join(out, 'moves', `${id}.json`)); if (d) docs.set(id, d); } }
+    renamePrompts(index, docs, (d) => { write(path.join(out, 'moves', `${d.id}.json`), JSON.stringify(d)); write(path.join(out, 'moves', `${d.id}.js`), moveScript(d.id, d)); });
+  }
   write(path.join(out, 'moves.json'), JSON.stringify(index));
   stats.problems.push(...indexProblems(index, { stage: 'fit' }));
   log(`join: ${stats.groups} groups from GSAP${version ? ` ${version}` : ''}, ${stats.moves} moves changed, ${stats.lottie} from Lottie files`);

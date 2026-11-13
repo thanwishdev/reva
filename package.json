@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "Measure how any website moves and how it's designed — real springs, easing, scroll links, type and spacing, as numbers you can learn from.",
   "type": "module",
-  "license": "MIT OR Apache-2.0",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/thanwishdev/reva.git"
@@ -58,8 +58,7 @@
     "!src/static/{dembrandt.js,index.js,run.js}",
     "!src/static/README.md",
     "README.md",
-    "LICENSE-MIT",
-    "LICENSE-APACHE",
+    "LICENSE",
     "THIRD_PARTY_NOTICES.md"
   ],
   "scripts": {

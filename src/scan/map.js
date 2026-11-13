@@ -11,6 +11,23 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const host = (u) => new URL(u).hostname.replace(/^www\./, '');
 
 /** One URL, no hash, no query, no trailing slash: the identity of a page for listing. */
+/**
+ * The links of a page's HTML: the href of each <a> in the markup itself. Script, style and comment text is not markup, so
+ * an "<a href=" written inside JavaScript (a template string such as `<a href="${url}">`) is never taken for a link; nor is a
+ * href that is not a page address (javascript:, mailto:, tel:, data:, blob:) or still holds template syntax.
+ * @returns {string[]} absolute URLs, in page order, without duplicates
+ */
+export function linksOf(html, base) {
+  const markup = String(html || '').replace(/<!--[\s\S]*?-->/g, ' ').replace(/<(script|style)\b[^>]*>[\s\S]*?<\/\1\s*>/gi, ' ');
+  const out = new Set();
+  for (const m of markup.matchAll(/<a\b[^>]*?\bhref\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>"']+))/gi)) {
+    const raw = (m[1] ?? m[2] ?? m[3] ?? '').replace(/&amp;/g, '&').trim();
+    if (!raw || raw.startsWith('#') || /^(javascript|mailto|tel|data|blob):/i.test(raw) || /\$\{|\{\{|<%/.test(raw)) continue;
+    try { const u = new URL(raw, base); if (/^https?:$/.test(u.protocol)) { u.hash = ''; out.add(u.href); } } catch { /* not a URL */ }
+  }
+  return [...out];
+}
+
 export function urlKey(u) { const x = new URL(u); x.hash = ''; x.search = ''; return x.href.replace(/\/$/, '') || x.origin; }
 
 // Path shape: first segment kept, every deeper segment becomes a star.
@@ -88,7 +105,7 @@ export async function mapSite(startUrl, opts = {}) {
     p.status = 'sampled';
     if (r.s !== 200 || !/html/.test(r.ct)) { p.httpStatus = r.s; p.sh = new Set(); return; }
     p.httpStatus = 200; p.sh = structureOf(r.t); p.bytes = r.t.length; sampled.push(p);
-    for (const m of r.t.matchAll(/<a\b[^>]*?\bhref\s*=\s*["']([^"'#]+)/gi)) { try { add(new URL(m[1].replace(/&amp;/g, '&'), r.url).href); } catch { /* bad href */ } }
+    for (const u of linksOf(r.t, r.url)) add(u);
   };
   // order: home, then one per shape (so every shape is seen once), then more per shape, spread across its list
   await visit(found.get(start));

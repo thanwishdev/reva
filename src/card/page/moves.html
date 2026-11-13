@@ -3,26 +3,36 @@
    space, never a border. The accent is the playhead on a curve and the focus ring, nowhere else. Nothing here is under 14 px, and
    nothing moves on scroll: the motion on this page belongs to the site. */
 html.mvc{--mve:cubic-bezier(.22,1,.36,1);--bar:68px;--mvw:min(calc(100vw - 80px),1320px)}
+/* a jump inside the card stops under the sticky bar, not behind it */
+html.mvc{scroll-padding-top:var(--barpx,var(--bar))}
 .mvc body{background:var(--bg)}
-.mvc .side{position:sticky;top:0;z-index:30;display:flex;flex-wrap:nowrap;align-items:center;gap:32px;height:var(--bar);padding:0 40px;background:color-mix(in srgb,var(--bg) 80%,transparent);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px)}
+.mvc .side{position:sticky;top:0;z-index:30;display:flex;flex-wrap:nowrap;align-items:center;gap:32px;height:var(--bar);padding:0 40px;background:transparent;-webkit-backdrop-filter:none;backdrop-filter:none;transition:background-color .24s var(--mve)}
+/* The bar's frosted glass sits on its own layer. A backdrop blur is drawn again on every frame the page moves under it (PF: about half
+   the GPU time of a scroll), so while the page scrolls the glass steps aside for a near-solid fill and comes back softly once it rests. */
+.mvc .side::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:color-mix(in srgb,var(--bg) 80%,transparent);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);transition:opacity .24s var(--mve)}
+.mvc.mv-moving .side{background:var(--bg);transition:none}
+.mvc.mv-moving .side::before{opacity:0;visibility:hidden;transition:none}
 .mvc .side .brand{display:none}
 .mvc .side .site{display:block;flex:none;margin:0;font-size:16px;font-weight:500;color:var(--ink)}
 .mvc .side .site a{color:inherit;text-decoration:none}
 .mv-built{min-width:0;flex:0 1 auto;font-size:15px;color:var(--ink2);text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:color var(--t1) var(--ease)}
 .mv-built:hover{color:var(--ink)}
 .mv-sp{flex:1 1 0;min-width:0}
-.mv-vps{flex:none;display:flex;gap:18px}
+.mv-vps{flex:none;display:flex;gap:18px;margin-left:16px}
 .mv-vps button,.mvc .side nav a,.mv-findw{border:0;background:none;padding:0;font:inherit;font-size:15px;line-height:44px;color:var(--ink2);text-decoration:none;transition:color var(--t1) var(--ease)}
 .mv-vps button:hover,.mvc .side nav a:hover,.mv-findw:hover{color:var(--ink)}
 .mv-vps button[aria-pressed="true"],.mvc .side nav a[aria-current]{color:var(--ink);font-weight:600}
-.mvc .side nav{flex:none;flex-direction:row;gap:24px;width:auto;margin:0}
+.mvc .side nav{flex:none;flex-direction:row;gap:24px;width:auto;margin:0;-webkit-mask-image:none;mask-image:none}
 .mv-findw{flex:none;cursor:pointer}
 .mv-q{flex:none;width:0;height:32px;padding:0;border:0;border-radius:8px;background:var(--surface);color:var(--ink);font:inherit;font-size:15px;opacity:0;transition:width 220ms var(--mve),opacity 120ms linear,padding 220ms var(--mve)}
 .mvc.mv-finding .mv-q{width:200px;padding:0 10px;opacity:1}
 .mvc.mv-finding .mv-findw{display:none}
-.mvc .st-pagesel{display:none}
-.mvc.mv-other .st-pagesel{display:block}
-.mvc.mv-other .mv-vps,.mvc.mv-other .mv-q,.mvc.mv-other .mv-findw{display:none}
+.mv-vps button:disabled{opacity:.45;cursor:default}
+.mv-vps button:disabled:hover{color:var(--ink2)}
+/* the page picker of Design and Study sits on the page it picks for, so the bar above stays the same on every tab */
+.st-pagepick{display:flex;align-items:center;gap:10px;font-size:16px;line-height:24px;color:var(--ink2)}
+.st-pagepick .st-pagesel{max-width:280px}
+#design>.st-pagepick{margin-top:24px}
 html.mvc:not(.mv-other) main,.mvc.on-stage main{max-width:none;padding:0}
 :focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 
@@ -33,10 +43,40 @@ html.mvc:not(.mv-other) main,.mvc.on-stage main{max-width:none;padding:0}
 .mv-page{position:relative;display:block;width:100%;height:min(68dvh,calc(var(--mvw) * .625));padding:0;border:0;border-radius:14px;overflow:hidden;background:var(--surface);cursor:pointer}
 .mv-few .mv-page{height:calc(100dvh - var(--bar) - 96px)}
 .mv-page video,.mv-page img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top center}
+/* a phone recording is tall: it sits whole in the wide frame (centred on the surface), never cropped */
+.mv-page.ph video,.mv-page.ph img{object-fit:contain;object-position:center}
+.mv-clear{margin-left:8px;border:0;background:none;padding:0;font:inherit;color:var(--ink);text-decoration:underline;text-underline-offset:4px;cursor:pointer;min-height:44px}
 .mv-cap{display:flex;align-items:center;gap:20px;margin-top:14px;font-size:16px;line-height:24px;color:var(--ink2)}
 .mv-cap button{border:0;background:none;padding:0;font:inherit;color:var(--ink);transition:color var(--t1) var(--ease)}
 .mv-cap select{field-sizing:content;height:32px;max-width:280px;border:0;padding:0;background:none;color:var(--ink2);font:inherit;font-size:16px;cursor:pointer}
 
+/* The site's motion system first: what a person came for, in sentences, the page beside it (6 Nov review: the answer sat at the
+   bottom, under 180 moves). Text and space, no box; the tokens are a quiet row of words and one Copy. */
+.mv-top{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:56px;align-items:start}
+.mv-top.solo{display:block}
+.mv-top.solo .mv-sys{display:none}
+.mv-sys{min-width:0;padding-top:4px}
+.mv-sys h1{font-size:28px;line-height:34px;font-weight:600;letter-spacing:-.02em}
+.mv-sys p{margin-top:14px;font-size:18px;line-height:28px;letter-spacing:-.005em;color:var(--ink)}
+.mv-sys p:first-of-type{margin-top:20px}
+.mv-tok{display:flex;flex-wrap:wrap;align-items:center;gap:8px 20px;margin-top:28px}
+.mv-tok .cp{height:44px;padding:0 16px;border:0;border-radius:10px;background:var(--surface);font:inherit;font-size:15px;color:var(--ink);transition:background var(--t1) var(--ease)}
+.mv-tok .cp:hover{background:var(--surface2)}
+.mv-tok [data-tok]{border:0;background:none;padding:0;font:inherit;font-size:15px;line-height:44px;color:var(--ink2);transition:color var(--t1) var(--ease)}
+.mv-tok [data-tok]:hover,.mv-tok [data-tok][aria-pressed="true"]{color:var(--ink)}
+.mv-tok [data-tok][aria-pressed="true"]{font-weight:600}
+.mv-tokd{margin-top:10px}
+.mv-tokd summary{cursor:pointer;font-size:15px;line-height:36px;color:var(--ink2)}
+.mv-tokd pre{max-height:280px;overflow:auto;margin:6px 0 0;padding:16px;border-radius:10px;background:var(--surface);font-family:var(--mono);font-size:14px;line-height:21px;color:var(--ink);white-space:pre}
+.mv-tokd pre.prose{max-height:420px;white-space:pre-wrap;overflow-wrap:anywhere}
+.mv-top:not(.solo) .mv-page,.mv-top:not(.solo) .mv-few .mv-page,.mv-few .mv-top:not(.solo) .mv-page{height:auto;aspect-ratio:16/10}
+.mv-u{display:block;margin-top:2px;font-size:15px;line-height:20px;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mv-recipe p+p{margin-top:8px}
+.mv-recipe details{margin-top:8px}
+.mv-recipe summary{cursor:pointer;color:var(--ink2)}
+.mv-uses p+p{margin-top:2px}
+.mv-code .mv-partsel{display:flex;align-items:center;gap:10px;margin-bottom:4px;font-size:15px;color:var(--ink2)}
+.mv-code .mv-partsel select{max-width:100%;height:36px;border:0;padding:0;background:none;color:var(--ink);font:inherit;font-size:15px;cursor:pointer}
 .mv-sec{margin-top:88px}
 .mv-sec.first{margin-top:72px}
 .mv-sec h1{font-size:28px;line-height:34px;font-weight:600;letter-spacing:-.02em}
@@ -51,6 +91,8 @@ html.mvc:not(.mv-other) main,.mvc.on-stage main{max-width:none;padding:0}
 .mv-f{position:absolute;inset:0;display:block;border-radius:14px;overflow:hidden;background:var(--surface);will-change:transform}
 .mv-f img,.mv-v{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
 .mv-v{opacity:0;transition:opacity 120ms linear;background:transparent}
+.mv-miss img{visibility:hidden}
+.mv-miss::after{content:"The picture did not load";position:absolute;inset:0;display:grid;place-items:center;padding:12px;font-size:15px;line-height:20px;color:var(--ink2);text-align:center}
 .mv-v.on{opacity:1}
 .mv-t[data-play="scrub"] .mv-f{cursor:ew-resize}
 .mv-n{display:block;margin-top:12px;font-size:16px;line-height:22px;font-weight:500;color:var(--ink);overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
@@ -65,7 +107,7 @@ html.mvc:not(.mv-other) main,.mvc.on-stage main{max-width:none;padding:0}
 .mv-end p+p{margin-top:12px}
 .mv-end p.cov{margin-top:32px;color:var(--ink2)}
 .mv-end a{color:inherit;text-underline-offset:3px}
-.mvc.mv-searching .mv-page,.mvc.mv-searching .mv-cap,.mvc.mv-searching .mv-end,.mvc.mv-searching .mv-sec[data-g="top"]{display:none}
+.mvc.mv-searching .mv-top,.mvc.mv-searching .mv-end,.mvc.mv-searching .mv-sec[data-g="top"]{display:none}
 .mvc.mv-searching .mv-sec{margin-top:48px}
 .mv-fading{opacity:0}
 #mv-lists{transition:opacity 120ms linear}
@@ -73,8 +115,12 @@ html.mvc:not(.mv-other) main,.mvc.on-stage main{max-width:none;padding:0}
 /* One motion: grows out of its frame, over the gallery, which stays where it was. */
 .mv-one{position:fixed;inset:var(--bar) 0 0 0;z-index:20;overflow-y:auto;background:var(--bg);overscroll-behavior:contain}
 .mv-one[hidden]{display:none}
+/* the way out, in plain sight: a bare cross with a 44 px touch area (Esc, and a click outside, work as well) */
+.mv-x{position:fixed;top:calc(var(--barpx,var(--bar)) + 8px);right:16px;z-index:6;width:44px;height:44px;padding:0;border:0;border-radius:50%;background:none;color:var(--ink2);cursor:pointer;display:grid;place-items:center;transition:color var(--t1) var(--ease),background-color var(--t1) var(--ease)}
+.mv-x:hover{color:var(--ink);background:var(--surface)}
+.mv-x svg{width:18px;height:18px;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;fill:none}
 .mvc.mv-lock{overflow:hidden}
-.mvc.mv-solid .side{background:var(--bg);-webkit-backdrop-filter:none;backdrop-filter:none}
+.mvc.mv-solid .side{background:var(--bg);-webkit-backdrop-filter:none;backdrop-filter:none}.mvc.mv-solid .side::before{display:none}
 .mv-onew{display:grid;grid-template-columns:minmax(0,58fr) minmax(0,42fr);gap:64px;width:min(calc(100vw - 80px),1480px);min-height:100%;margin:0 auto;padding:12px 0 96px}
 .mv-left{position:sticky;top:12px;align-self:start;min-width:0}
 .mv-big{position:relative;width:100%;max-height:calc(100dvh - var(--bar) - 104px);margin:0 auto}
@@ -89,7 +135,7 @@ html.mvc:not(.mv-other) main,.mvc.on-stage main{max-width:none;padding:0}
 .mv-track i{position:absolute;left:0;right:0;top:21px;height:2px;border-radius:2px;background:var(--surface2);transition:height 120ms linear,top 120ms linear}
 .mv-track b{position:absolute;left:0;right:0;top:21px;height:2px;border-radius:2px;background:var(--ink);transform:scaleX(0);transform-origin:0 50%;transition:height 120ms linear,top 120ms linear}
 .mv-track:hover i,.mv-track:hover b,.mv-track.drag i,.mv-track.drag b{top:20px;height:4px}
-.mv-right{max-width:520px;min-width:0;padding-top:4px}
+.mv-right{max-width:560px;min-width:0;padding-top:4px}
 .mv-right.in{animation:mv-rise 240ms var(--mve) 120ms both}
 @keyframes mv-rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 .mv-right h1{font-size:28px;line-height:34px;font-weight:600;letter-spacing:-.02em;overflow-wrap:anywhere}
@@ -110,21 +156,27 @@ html.mvc:not(.mv-other) main,.mvc.on-stage main{max-width:none;padding:0}
 .mv-parts svg{display:block;width:100%;height:auto;aspect-ratio:160/104;overflow:visible}
 .mv-parts figcaption{margin-top:10px;font-size:15px;line-height:21px;color:var(--ink);overflow-wrap:anywhere}
 .mv-parts figcaption span{display:block;color:var(--ink2)}
+.mv-parts figcaption .mv-pv{font-size:14px;line-height:20px}
 .mv-why{max-width:440px}
 .mv-status{margin-top:20px;font-size:16px;line-height:24px;color:var(--ink2)}
 .mv-status b{font-weight:600;color:var(--ink)}
 .mv-gap{margin-top:32px;font-size:16px;line-height:24px;color:var(--ink)}
-.mv-copy{display:flex;flex-wrap:wrap;gap:8px;margin-top:28px}
-.mv-copy button{height:44px;padding:0 16px;border:0;border-radius:10px;background:var(--surface);font:inherit;font-size:15px;color:var(--ink);transition:background var(--t1) var(--ease)}
-.mv-copy button:hover,.mv-copy button[aria-expanded="true"]{background:var(--surface2)}
+/* Timing, Code and For my agent are tabs: each shows what it copies before the one Copy takes it (6 Nov review) */
+.mv-use{margin-top:36px}
+.mv-ttabs{display:flex;flex-wrap:wrap;align-items:center;gap:4px 22px}
+.mv-ttabs [role="tab"]{border:0;background:none;padding:0;font:inherit;font-size:16px;line-height:44px;color:var(--ink2);transition:color var(--t1) var(--ease)}
+.mv-ttabs [role="tab"]:hover,.mv-ttabs [role="tab"][aria-selected="true"]{color:var(--ink)}
+.mv-ttabs [role="tab"][aria-selected="true"]{font-weight:600}
+.mv-ttabs .cp{margin-left:auto;height:44px;padding:0 16px;border:0;border-radius:10px;background:var(--surface);font:inherit;font-size:15px;color:var(--ink);transition:background var(--t1) var(--ease)}
+.mv-ttabs .cp:hover{background:var(--surface2)}
+.mv-usepanel pre{max-height:320px;overflow:auto;margin:8px 0 0;padding:16px;border-radius:10px;background:var(--surface);font-family:var(--mono);font-size:14px;line-height:21px;color:var(--ink);white-space:pre}
+.mv-usepanel pre.prose{white-space:pre-wrap;overflow-wrap:anywhere}
 .mv-claim{margin-top:14px;font-size:15px;line-height:22px;color:var(--ink2)}
 .mv-claim+.mv-claim{margin-top:4px}
-.mv-code{margin-top:16px}
+.mv-code{margin-top:8px}
 .mv-tabs{display:flex;gap:18px;align-items:center}
 .mv-tabs button{border:0;background:none;padding:0;font:inherit;font-size:15px;line-height:36px;color:var(--ink2)}
 .mv-tabs button[aria-pressed="true"]{color:var(--ink);font-weight:600}
-.mv-tabs .cp{margin-left:auto}
-.mv-code pre{max-height:320px;overflow:auto;margin:8px 0 0;padding:16px;border-radius:10px;background:var(--surface);font-family:var(--mono);font-size:14px;line-height:21px;color:var(--ink);white-space:pre}
 .mv-note{margin-top:10px;font-size:15px;line-height:22px;color:var(--ink2)}
 .mv-rest{margin-top:48px}
 .mv-rest>div,.mv-rest>details{margin-top:18px}
@@ -160,24 +212,37 @@ html.mvc:not(.mv-other) main,.mvc.on-stage main{max-width:none;padding:0}
 .mv-site details{margin-top:12px}
 .mv-site summary{cursor:pointer;font-size:16px;line-height:26px;color:var(--ink2)}
 .mv-site p.q{margin-top:16px;font-size:16px;line-height:26px;color:var(--ink2)}
+.mv-site p.gap{margin-top:12px;font-size:16px;line-height:26px;color:var(--ink)}
+.mv-site .log{margin-top:20px}
 
 @media (max-width:1180px){.mv-built{display:none}.mvc .side{gap:24px}}
 @media (max-width:980px){
+  .mv-top{display:block}
+  .mv-top .mv-pagecol{margin-top:32px}
   .mv-onew{display:block;width:calc(100vw - 80px)}
   .mv-left{position:static}
   .mv-right{max-width:640px;margin-top:24px}
 }
 @media (max-width:760px){
   html.mvc{--bar:auto;--mvw:calc(100vw - 32px)}
+  .mv-sys{padding-top:20px}
+  .mv-sys p{font-size:17px;line-height:26px}
+  /* two rows, the same on every tab: the site, Desktop / Phone and Find; then the tabs, the whole width (6 Nov review: Study cut off) */
   .mvc .side{position:sticky;height:auto;flex-wrap:wrap;gap:0 16px;padding:4px 16px}
-  .mvc .side .site{order:1;flex:1 1 auto;line-height:44px}
-  .mv-findw,.mv-q{order:2}
+  .mvc .side .site{order:1;flex:1 1 0;min-width:0;line-height:44px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .mv-vps{order:2;gap:14px;margin-left:0}
+  .mv-findw,.mv-q{order:3}
   .mvc.mv-finding .mv-q{width:150px}
-  .mvc .side nav{order:3;flex:1 1 auto;gap:16px}
-  .mv-vps{order:4;gap:14px}
+  .mvc.mv-finding .mv-vps{display:none}
+  .mvc .side nav{order:4;flex:1 0 100%;gap:20px;-webkit-mask-image:none;mask-image:none}
+  .st-pagepick{min-width:0}
+  .st-pagepick .st-pagesel{min-width:0;flex:1 1 auto}
+  .st-top{flex-wrap:wrap}
   .mv-sp{display:none}
   .mv-wrap{padding-bottom:72px}
   .mv-page{height:calc(var(--mvw) * .625)}
+  .mv-onew{padding-top:52px}
+  .mv-x{right:8px}
   .mv-few .mv-page{height:calc(var(--mvw) * .625)}
   .mv-r,.mv-sec.small .mv-r{display:block;margin-top:0}
   .mv-t{width:100%!important;margin-top:28px}
@@ -192,6 +257,52 @@ html.mvc:not(.mv-other) main,.mvc.on-stage main{max-width:none;padding:0}
 @media (prefers-reduced-motion:reduce){
   .mv-v,.mv-right.in,#moves.enter,#mv-lists{transition:none;animation:none}
 }
+
+/* The finale (owner 11 Nov): plays once as it comes into view. The real move pictures of the card above leave their own places,
+   shrink and travel into one box at the centre of the screen, where they fold into a pile and the box closes: the whole card as one
+   object, on the scanned site's own ease. The box says only what matters and hands over the one file. */
+.fin{position:relative;display:grid;place-items:center;min-height:calc(100dvh - var(--barpx,68px));padding:clamp(8px,calc((100dvh - var(--barpx,68px) - var(--finh,0px)) / 2),72px) 16px}
+.fin-box{position:relative;width:min(640px,100%);padding:64px 64px 56px;border-radius:32px;background:var(--surface);text-align:center;transform-origin:50% 50%}
+.fin-deck{position:relative;width:288px;height:180px;margin:0 auto 52px}
+.fin-card{position:absolute;inset:0;border-radius:12px;overflow:hidden;background:var(--surface2);transform:rotate(var(--r,0deg));box-shadow:0 1px 2px rgb(0 0 0/.05),0 10px 22px -14px rgb(0 0 0/.26)}
+.fin-card img,.fin-piece img{display:block;width:100%;height:100%;object-fit:cover;object-position:top center}
+.fin-box h2{font-size:52px;line-height:56px;font-weight:600;letter-spacing:-.03em;overflow-wrap:anywhere}
+.fin-box h2.long{font-size:40px;line-height:46px}
+.fin-box p{margin:18px auto 0;max-width:440px;font-size:18px;line-height:28px;color:var(--ink2);text-wrap:balance}
+.fin-ease{color:var(--ink);white-space:nowrap}
+.fin-act{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-top:36px}
+.fin-act a,.fin-act button{display:inline-flex;align-items:center;justify-content:center;height:52px;padding:0 24px;border:0;border-radius:14px;font:inherit;font-size:16px;font-weight:500;text-decoration:none;cursor:pointer;transition:background var(--t1) var(--ease),transform var(--t1) var(--ease)}
+.fin-act a{background:var(--ink);color:var(--bg)}
+.fin-act button{background:var(--bg);color:var(--ink)}
+.fin-act button:hover{background:var(--surface2)}
+.fin-act a:active,.fin-act button:active{transform:scale(.98)}
+.fin-fly{position:fixed;inset:0;z-index:25;pointer-events:none;overflow:hidden;overflow:clip}
+.fin-piece{position:absolute;left:0;top:0;border-radius:12px;overflow:hidden;background:var(--surface2);transform-origin:50% 50%;will-change:transform,opacity;box-shadow:0 1px 2px rgb(0 0 0/.05),0 10px 22px -14px rgb(0 0 0/.26)}
+/* E2: the count of moves counts up; the site's arrival ease draws itself, a dot runs it once at the site's time; one soft light
+   crosses the box as it closes. Transforms, opacity and the curve's stroke only. */
+.fin-n{display:inline-block;font-variant-numeric:tabular-nums;text-align:right}
+.fin-curve{display:block;margin:28px auto 0;overflow:visible}
+.fin-curve path{fill:none;stroke:var(--ink2);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1 1;stroke-dashoffset:0}
+.fin-curve circle{fill:var(--ink)}
+.fin-sweep{position:absolute;inset:0;border-radius:inherit;overflow:hidden;pointer-events:none;opacity:0}
+.fin-sweep i{position:absolute;top:-10%;bottom:-10%;left:0;width:55%;background:linear-gradient(90deg,transparent,var(--sweep,rgb(255 255 255/.7)) 50%,transparent);transform:translate3d(-100%,0,0) skewX(-14deg)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .fin{--sweep:rgb(255 255 255/.07)}}
+:root[data-theme="dark"] .fin{--sweep:rgb(255 255 255/.07)}
+/* before it plays the box is not there yet; with no motion it is simply there */
+.fin.run .fin-box,.fin.run .fin-card,.fin.run .fin-say>*,.fin.run .fin-curve circle{opacity:0}
+.fin.run .fin-curve path{stroke-dashoffset:1}
+.mvc.mv-searching .fin{display:none}
+@media (max-width:600px){
+  .fin{padding:clamp(8px,calc((100dvh - var(--barpx,68px) - var(--finh,0px)) / 2),56px) 16px}
+  .fin-box{padding:40px 24px 28px;border-radius:28px}
+  .fin-deck{width:184px;height:115px;margin-bottom:36px}
+  .fin-box h2{font-size:34px;line-height:40px}
+  .fin-box h2.long{font-size:28px;line-height:34px}
+  .fin-box p{font-size:17px;line-height:26px}
+  .fin-act{flex-direction:column;margin-top:28px}
+  .fin-act a,.fin-act button{width:100%}
+}
+@media print{.fin-fly,.fin-sweep{display:none}.fin{min-height:0}.mv-wrap{transform:none!important;opacity:1!important}.fin.run .fin-curve path{stroke-dashoffset:0!important}.fin.run .fin-box,.fin.run .fin-card,.fin.run .fin-say>*,.fin.run .fin-curve circle{opacity:1!important}.fin.run .fin-box,.fin.run .fin-say>*{transform:none!important}.fin.run .fin-card{transform:rotate(var(--r,0deg))!important}}
 </style>
 <script>
 /* The move card (DESIGN 5). Classic script over DATA.moves: no fetch and no module, so it opens from disk. A move's full record comes
@@ -289,7 +400,7 @@ function partsOf(groups) {
   if (!DATA.moves) return;
   const MV = DATA.moves, SC = DATA.scan, root = document.documentElement;
   const byId = new Map(MV.moves.map((m) => [m.id, m])), docs = {};
-  const S = { vp: MV.site.viewports.includes('desktop') ? 'desktop' : MV.site.viewports[0], page: null, q: '', shown: {}, screen: null, oneId: null, from: null, pageI: 0 };
+  const S = { vp: MV.site.viewports.includes('phone') && matchMedia('(max-width: 760px)').matches ? 'phone' : MV.site.viewports.includes('desktop') ? 'desktop' : MV.site.viewports[0], page: null, q: '', shown: {}, screen: null, oneId: null, from: null, pageI: 0 };
   const COARSE = matchMedia('(hover:none)').matches;
   root.classList.add('mvc');
 
@@ -299,9 +410,9 @@ function partsOf(groups) {
     nav.innerHTML = `<a href="#moves" data-s="moves">Moves</a><a href="#site" data-s="site">Site</a>${DATA.look.design ? '<a href="#design" data-s="design">Design</a>' : ''}<a href="#study" data-s="overview">Study</a>`;
     si.innerHTML = `<a href="#moves">${esc(MV.site.host)}</a>`;
     const names = [...new Set((MV.site.built || []).map((b) => b.name.replace(/\s*\(.*\)$/, '')))].slice(0, 4);
-    if (names.length) si.insertAdjacentHTML('afterend', `<a class="mv-built" href="#libraries">Built with ${esc(names.join(', '))}</a>`);
-    nav.insertAdjacentHTML('beforebegin', `<span class="mv-sp"></span>${MV.site.viewports.length > 1 ? `<div class="mv-vps" role="group" aria-label="Screen">${MV.site.viewports.map((v) => `<button type="button" data-vp="${esc(v)}" aria-pressed="${v === S.vp}">${v === 'desktop' ? 'Desktop' : 'Phone'}</button>`).join('')}</div>` : ''}`);
-    nav.insertAdjacentHTML('afterend', '<button type="button" class="mv-findw" id="mv-findw">Find</button><input class="mv-q" id="mv-q" type="search" placeholder="hover, scale, stagger" aria-label="Find a move" autocomplete="off">');
+    if (names.length) si.insertAdjacentHTML('afterend', `<span class="mv-built" title="Found in the page's own code">Built with ${esc(names.join(', '))}</span>`);
+    nav.insertAdjacentHTML('beforebegin', '<span class="mv-sp"></span>');
+    nav.insertAdjacentHTML('afterend', `${MV.site.viewports.length > 1 ? `<div class="mv-vps" role="group" aria-label="Screen">${MV.site.viewports.map((v) => `<button type="button" data-vp="${esc(v)}" aria-pressed="${v === S.vp}">${v === 'desktop' ? 'Desktop' : 'Phone'}</button>`).join('')}</div>` : ''}<button type="button" class="mv-findw" id="mv-findw">Find</button><input class="mv-q" id="mv-q" type="search" placeholder="hover, scale, stagger" aria-label="Find a move" autocomplete="off">`);
     const fb = $('#findbtn'); if (fb) fb.remove();
     bar.addEventListener('click', (e) => { const b = e.target.closest('[data-vp]'); if (b) setVp(b.dataset.vp); });
     if (typeof ResizeObserver === 'function') new ResizeObserver(() => root.style.setProperty('--barpx', bar.offsetHeight + 'px')).observe(bar);
@@ -317,6 +428,8 @@ function partsOf(groups) {
     return v;
   };
   const PAGE = mk(), RELAY = mk(), HAND = mk();
+  // Study borrows the page video when it reads the same file, so one file is opened once (6 Nov review: 7.1 MB loaded twice)
+  window.__sharedVideo = (src) => { try { const a = PAGE.getAttribute('src'); return a && new URL(a, location.href).href === new URL(src, location.href).href ? PAGE : null; } catch (e) { return null; } };
   const stops = new Map(); let raf = 0, playhead = null;
   function tick() {
     raf = 0;
@@ -412,11 +525,54 @@ function partsOf(groups) {
   }
 
   /* ---------- the gallery ---------- */
-  const inView = (m) => m.vp.includes(S.vp) && (S.page == null || m.pg.includes(S.page));
-  const hay = (m) => m.hay || (m.hay = [m.name, m.sentence, m.trigger.word, m.technique, m.kind, m.time && m.time.staggerMs ? 'stagger' : ''].filter(Boolean).join(' ').toLowerCase());
-  const matches = (m) => inView(m) && (!S.q || hay(m).includes(S.q));
+  // a move that repeats a pattern is shown once, as the pattern (src/scan/moves/same.js); Find reaches it through the pattern's words
+  const shownOnce = (m) => !m.same || !byId.has(m.same);
+  const inView = (m) => m.vp.includes(S.vp) && (S.page == null || m.pg.includes(S.page) || (m.uses && m.uses.moves.some((id) => byId.has(id) && byId.get(id).pg.includes(S.page))));
+  const hay = (m) => m.hay || (m.hay = [m.name, m.own, m.sentence, m.trigger.word, m.technique, m.kind, m.curve && m.curve.name, m.curve && m.curve.kind, m.time && m.time.staggerMs ? 'stagger' : '', ...((m.uses && m.uses.moves) || []).filter((id) => id !== m.id && byId.has(id)).map((id) => byId.get(id).name)].filter(Boolean).join(' ').toLowerCase());
+  const matches = (m) => shownOnce(m) && inView(m) && (!S.q || hay(m).includes(S.q));
   const ratio = (m) => (m.frame && m.frame.w && m.frame.h ? m.frame.w / m.frame.h : 1.6);
-  const frameOf = (m, big) => `<span class="mv-f">${m.frame && m.frame.poster ? `<img src="${esc(m.frame.poster)}" alt="" loading="${big ? 'eager' : 'lazy'}" decoding="async" draggable="false">` : ''}</span>`;
+  const frameOf = (m) => `<span class="mv-f">${m.frame && m.frame.poster ? `<img data-src="${esc(m.frame.poster)}" alt="" decoding="async" draggable="false">` : ''}</span>`;
+
+  /* ---------- pictures: a few at a time, near the screen first, asked again when one fails ----------
+     A gallery of 170 posters asked all at once starved the clips and Find's results, and a poster that failed stayed broken (6 Nov
+     review). Now at most IMG.max are in flight; one that fails is asked twice more, later, then its frame says so in words. */
+  const IMG = { max: 6, busy: 0, q: [], io: null, tries: 3 };
+  function pumpImg() {
+    while (IMG.busy < IMG.max && IMG.q.length) {
+      const img = IMG.q.shift();
+      if (!img.isConnected || img.dataset.state) continue;
+      loadImg(img);
+    }
+  }
+  function loadImg(img) {
+    const n = +(img.dataset.try || 0), src = img.dataset.src;
+    IMG.busy++; img.dataset.state = 'loading';
+    const done = (ok) => {
+      img.onload = img.onerror = null; IMG.busy--;
+      if (ok) img.dataset.state = 'ok';
+      else if (n + 1 < IMG.tries) { img.dataset.try = String(n + 1); delete img.dataset.state; setTimeout(() => { if (img.isConnected) { IMG.q.unshift(img); pumpImg(); } }, 400 * 3 ** n); }
+      else { img.dataset.state = 'missing'; const f = img.parentElement; if (f) f.classList.add('mv-miss'); }
+      pumpImg();
+    };
+    img.onload = () => done(true); img.onerror = () => done(false);
+    img.src = n ? `${src}${src.includes('?') ? '&' : '?'}try=${n}` : src;
+  }
+  /** Asks for a picture: `now` puts it first (the open move's frame), else it waits its turn. */
+  function wantImg(img, now) {
+    if (!img || !img.dataset.src || img.dataset.state) return;
+    if (IMG.io) IMG.io.unobserve(img);
+    const i = IMG.q.indexOf(img); if (i >= 0) IMG.q.splice(i, 1);
+    if (now) IMG.q.unshift(img); else IMG.q.push(img);
+    pumpImg();
+  }
+  /** The pictures of a list, asked for as they come near the screen. */
+  function watchImgs(host) {
+    const imgs = $$('img[data-src]', host).filter((x) => !x.dataset.state);
+    if (typeof IntersectionObserver !== 'function') { imgs.forEach((x) => wantImg(x)); return; }
+    if (IMG.io) IMG.io.disconnect();   // the list was drawn again: its old pictures are gone
+    if (!IMG.io) IMG.io = new IntersectionObserver((es) => { for (const e of es) if (e.isIntersecting) wantImg(e.target); }, { rootMargin: '600px 0px' });
+    imgs.forEach((x) => IMG.io.observe(x));
+  }
   function drawRows(el, list, heights, gap) {
     const W = el.clientWidth || el.parentElement.clientWidth;
     const k = Math.min(1, W / 1320), hs = heights.map((h) => h * Math.max(.72, k));
@@ -427,16 +583,23 @@ function partsOf(groups) {
       for (const t of r.items) {
         const a = document.createElement('a'); a.className = 'mv-t'; a.href = `#m/${t.m.id}`; a.dataset.id = t.m.id; a.dataset.play = t.m.frame ? t.m.frame.play : 'none'; a.m = t.m;
         a.style.width = `${t.w.toFixed(2)}px`; a.setAttribute('aria-label', t.m.name);
-        a.innerHTML = `<span class="mv-h" style="aspect-ratio:${ratio(t.m).toFixed(4)}">${frameOf(t.m, heights[0] > 250)}</span><span class="mv-n">${esc(t.m.name)}</span>`;
+        const u = usesLine(t.m);
+        a.innerHTML = `<span class="mv-h" style="aspect-ratio:${ratio(t.m).toFixed(4)}">${frameOf(t.m)}</span><span class="mv-n">${esc(t.m.name)}</span>${u ? `<span class="mv-u">${esc(u)}</span>` : ''}`;
         row.append(a);
       }
       el.append(row);
     }
   }
+  /** Under a name: how often a pattern is used, or the one page a move ran on when that is not the first page. A page is never in a name. */
+  function usesLine(m) {
+    if (m.uses && m.uses.n > 1) return `Used in ${m.uses.n} places${m.uses.pages > 1 ? ` on ${m.uses.pages} pages` : ''}`;
+    const pg = m.pg || [];
+    return pg.length === 1 && pg[0] > 0 && MV.site.pages[pg[0]] ? `On ${MV.site.pages[pg[0]].label}` : '';
+  }
   function topList() {
     const on = MV.top.map((id) => byId.get(id)).filter((m) => m && matches(m));
     if (on.length >= 6) return on;
-    const rest = MV.moves.filter(matches);   // moves are in rank order
+    const rest = MV.moves.filter(matches);   // moves are in rank order, a repeat shown once
     return rest.length >= 6 ? rest.slice(0, 10) : [];
   }
   function draw() {
@@ -455,22 +618,34 @@ function partsOf(groups) {
       parts.push({ g, list: list.slice(0, lim) });
       html += `<section class="mv-sec small" data-g="${esc(g.id)}"><h2>${esc(g.title)}</h2><div class="mv-g" data-list="${esc(g.id)}"></div>${n > lim ? `<button type="button" class="mv-more" data-more="${esc(g.id)}">Show ${Math.min(24, n - lim)} more</button>` : ''}</section>`;
     }
-    if (q && !parts.length) html += '<p class="mv-none">Nothing here moves like that.</p>';
+    if (q && !parts.length) html += '<p class="mv-none">Nothing here moves like that. <button type="button" class="mv-clear" data-clear>Clear search</button></p>';
     if (!q) html += closeHTML();
     lists.innerHTML = html;
     if (top.length) drawRows($('[data-list="top"]', lists), top, [430, 300, 360], 28);
     for (const p of parts) drawRows($(`[data-list="${p.g.id}"]`, lists), p.list, [180, 212], 20);
+    watchImgs(lists);
     relayWatch(top);
   }
   function closeHTML() {
-    const feel = (MV.site.feel && MV.site.feel.sentences) || [], line = coverageLine();
+    const feel = SYS ? [] : (MV.site.feel && MV.site.feel.sentences) || [], line = coverageLine();
     if (!feel.length && !line) return '';
     return `<div class="mv-end">${feel.map((s) => `<p>${esc(s)}</p>`).join('')}${line ? `<p class="cov">${esc(line)} <a href="#site">What could not be read</a></p>` : ''}</div>`;
   }
   const coverageLine = () => (MV.coverage && MV.coverage.line) || (SC.site && (SC.site.lead || [])[0]) || '';
+  const pressVp = () => { const pf = $('#mv-pagef'); if (pf) pf.classList.toggle('ph', S.vp === 'phone'); $$('.mv-vps [data-vp]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.vp === S.vp))); };
+  /** The bar is the same on every tab (6 Nov review); Desktop / Phone works where it changes what is shown: Moves and Study. */
+  function vpsFor(screen) {
+    const live = screen !== 'site' && !(screen === 'other' && CUR.view !== 'overview');
+    $$('.mv-vps [data-vp]').forEach((b) => { b.disabled = !live; if (live) b.removeAttribute('title'); else b.title = 'This tab is the same on desktop and phone'; });
+  }
+  // Study shows the screen it opened: the bar follows it
+  document.addEventListener('reva:screen', (e) => { if (e.detail && e.detail !== S.vp && MV.site.viewports.includes(e.detail)) { S.vp = e.detail; S.shown = {}; pressVp(); } });
   function setVp(vp) {
     if (vp === S.vp) return;
-    S.vp = vp; $$('[data-vp]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.vp === vp)));
+    S.vp = vp; pressVp();
+    if (S.screen === 'other' && CUR.view === 'overview' && typeof window.__stageVp === 'function') { window.__stageVp(vp); S.shown = {}; return; }
+    // an open move that does not run on this screen closes, so the toggle and the move never disagree
+    if (S.oneId && byId.has(S.oneId) && !byId.get(S.oneId).vp.includes(vp)) { S.shown = {}; location.hash = 'moves'; return; }
     S.shown = {}; draw(); heroStart();
   }
 
@@ -532,17 +707,270 @@ function partsOf(groups) {
     if (PG.segs.length && PG.visible && S.screen === 'home') { PG.on = true; heroSeg(); }
   }
 
+  /* ---------- the site's motion system ---------- */
+  const SYS = (MV.site.system && (MV.site.system.sentences || []).length) ? MV.site.system : null;
+  // the whole card's For my agent (the system and the moves that show it best, src/export/move.js siteAgentPrompt) is one more form
+  const TOK = [['css', 'CSS variables'], ['gsap', 'GSAP'], ['motion', 'Motion'], ['agent', 'For my agent']];
+  const tokTab = { k: 'css' };
+  const tokText = (k) => (k === 'agent' ? agentText(MV.prompt) : (SYS.tokens && SYS.tokens[k]) || '');
+  const tokWords = (k) => (k === 'agent' ? ['Copy for my agent', 'See the prompt'] : ['Copy as tokens', 'See the tokens']);
+  function systemHTML() {
+    if (!SYS) return '';
+    const tabs = TOK.filter(([k]) => (k === 'agent' ? MV.prompt : SYS.tokens && SYS.tokens[k]));
+    if (tabs.length && !tabs.some(([k]) => k === tokTab.k)) tokTab.k = tabs[0][0];
+    const [cw, sw] = tokWords(tokTab.k);
+    return `<h1 tabindex="-1" id="mv-h-sys">How ${esc(MV.site.host || 'this site')} moves</h1>${SYS.sentences.map((x) => `<p>${esc(x)}</p>`).join('')}
+      ${tabs.length ? `<div class="mv-tok"><button type="button" class="cp" data-tokcopy>${cw}</button><span role="group" aria-label="What to copy">${tabs.map(([k, w]) => `<button type="button" data-tok="${k}" aria-pressed="${k === tokTab.k}">${w}</button>`).join(' ')}</span></div>
+      <details class="mv-tokd"><summary id="mv-toksee">${sw}</summary><pre tabindex="0"${tokTab.k === 'agent' ? ' class="prose"' : ''}><code id="mv-tokcode">${esc(tokText(tokTab.k))}</code></pre></details>` : ''}`;
+  }
+  function wireSystem(box) {
+    box.addEventListener('click', (e) => {
+      const t = e.target.closest('[data-tok]');
+      if (t) {
+        tokTab.k = t.dataset.tok; $$('[data-tok]', box).forEach((b) => b.setAttribute('aria-pressed', String(b === t)));
+        const c = $('#mv-tokcode'), [cw, sw] = tokWords(tokTab.k), cp = $('[data-tokcopy]', box), see = $('#mv-toksee');
+        if (c) { c.textContent = tokText(tokTab.k); c.parentElement.classList.toggle('prose', tokTab.k === 'agent'); }
+        if (cp) { if (cp.dataset.word) cp.dataset.word = cw; else cp.textContent = cw; }
+        if (see) see.textContent = sw;
+        return;
+      }
+      const cp = e.target.closest('[data-tokcopy]'); if (cp) copy(tokText(tokTab.k), cp);
+    });
+  }
+
+  /* ---------- the finale: everything above folds into one file, on the site's own ease ---------- */
+  /** A CSS or GSAP ease as a function of 0..1: cubic-bezier(), the CSS keywords, linear(), GSAP's named eases. */
+  function easeFn(text, strict) {
+    const s = String(text || '').trim();
+    const K = { linear: [0, 0, 1, 1], ease: [0.25, 0.1, 0.25, 1], 'ease-in': [0.42, 0, 1, 1], 'ease-out': [0, 0, 0.58, 1], 'ease-in-out': [0.42, 0, 0.58, 1] };
+    const bez = (x1, y1, x2, y2) => {
+      const cx = 3 * x1, bx = 3 * (x2 - x1) - cx, ax = 1 - cx - bx, cy = 3 * y1, by = 3 * (y2 - y1) - cy, ay = 1 - cy - by;
+      const X = (t) => ((ax * t + bx) * t + cx) * t, Y = (t) => ((ay * t + by) * t + cy) * t, dX = (t) => (3 * ax * t + 2 * bx) * t + cx;
+      return (x) => {
+        if (x <= 0) return 0; if (x >= 1) return 1;
+        let t = x;
+        for (let i = 0; i < 8; i++) { const e = X(t) - x; if (Math.abs(e) < 1e-6) return Y(t); const d = dX(t); if (Math.abs(d) < 1e-6) break; t -= e / d; }
+        let a = 0, b = 1; t = x;
+        for (let i = 0; i < 40; i++) { if (X(t) < x) a = t; else b = t; t = (a + b) / 2; }
+        return Y(t);
+      };
+    };
+    let m = /^cubic-bezier\(([^)]+)\)$/.exec(s), b = m ? m[1].split(',').map(Number) : K[s];
+    if (b && b.length === 4 && b.every(Number.isFinite)) return bez(...b);
+    if ((m = /^linear\((.+)\)$/.exec(s))) {
+      const pts = []; m[1].split(',').forEach((p, i, all) => { const [v, at] = p.trim().split(/\s+/); pts.push([at != null ? parseFloat(at) / 100 : i / Math.max(1, all.length - 1), +v]); });
+      if (pts.length > 1 && pts.every((p) => Number.isFinite(p[0]) && Number.isFinite(p[1]))) return (x) => { for (let i = 1; i < pts.length; i++) if (x <= pts[i][0]) { const [x0, y0] = pts[i - 1], [x1, y1] = pts[i]; return x1 > x0 ? y0 + (y1 - y0) * (x - x0) / (x1 - x0) : y1; } return pts[pts.length - 1][1]; };
+    }
+    if ((m = /^(power([0-4])|quad|cubic|quart|quint|sine|expo|circ)\.(in|out|inOut)$/.exec(s))) {
+      const pw = { quad: 2, cubic: 3, quart: 4, quint: 5 }[m[1]] || (m[2] != null ? +m[2] + 1 : 0);
+      const inF = pw ? (t) => t ** pw : m[1] === 'sine' ? (t) => 1 - Math.cos(t * Math.PI / 2) : m[1] === 'expo' ? (t) => (t ? 2 ** (10 * t - 10) : 0) : (t) => 1 - Math.sqrt(1 - t * t);
+      return m[3] === 'in' ? inF : m[3] === 'out' ? (t) => 1 - inF(1 - t) : (t) => (t < 0.5 ? inF(2 * t) / 2 : 1 - inF(2 - 2 * t) / 2);
+    }
+    return strict ? null : bez(0.22, 1, 0.36, 1);
+  }
+  /** The site's arrival ease drawn as it is: a cubic-bezier as its own exact curve, any other ease read point by point. The dot rests
+   *  at the end; while it plays it runs the curve once, across at an even pace and up by the ease: the timing itself. */
+  const CW = 96, CH = 60, CP = 5;
+  function finCurve(text) {
+    const E = text && easeFn(text, true); if (!E) return null;
+    const K = { linear: [0, 0, 1, 1], ease: [0.25, 0.1, 0.25, 1], 'ease-in': [0.42, 0, 1, 1], 'ease-out': [0, 0, 0.58, 1], 'ease-in-out': [0.42, 0, 0.58, 1] };
+    const m = /^cubic-bezier\(([^)]+)\)$/.exec(text.trim()), b = m ? m[1].split(',').map(Number) : K[text.trim()];
+    const ys = Array.from({ length: 97 }, (_, i) => E(i / 96)), lo = Math.min(0, ...ys, ...(b ? [b[1], b[3]] : [])), hi = Math.max(1, ...ys, ...(b ? [b[1], b[3]] : []));
+    const H = CH - 2 * CP, X = (x) => (CP + x * (CW - 2 * CP)).toFixed(2), Y = (y) => (CP + (hi - y) / (hi - lo) * H).toFixed(2);
+    // a control point beyond the drawn range only bends the line, it is not drawn; the range above holds the curve itself
+    const d = b && b.length === 4 && b.every(Number.isFinite) ? `M${X(0)} ${Y(0)}C${X(b[0])} ${Y(b[1])} ${X(b[2])} ${Y(b[3])} ${X(1)} ${Y(1)}` : `M${ys.map((y, i) => `${X(i / 96)} ${Y(y)}`).join('L')}`;
+    return { E, X, Y, svg: `<svg class="fin-curve" id="mv-fincurve" width="${CW}" height="${CH}" viewBox="0 0 ${CW} ${CH}" aria-hidden="true"><path d="${d}" pathLength="1"/><circle r="3.5" transform="translate(${X(1)} ${Y(E(1))})"/></svg>` };
+  }
+  const FN = MV.finale && (MV.finale.md || '').length ? MV.finale : null;
+  const FCURVE = FN ? finCurve((FN.motion || {}).ease) : null;
+  const MAXP = 16;   // pieces that fly; more would only blur into each other and cost frames
+  const FX = { played: false, done: REDUCED, t0: 0, pieces: [], io: null, ease: (t) => t, T: 600, gap: 70, stg: 80, rise: 24, D: { w: 288, h: 180 } };
+  const clamp01 = (x) => (x < 0 ? 0 : x > 1 ? 1 : x);
+  /** A loose pile: each card a little turned, alternately; it tightens to 40 % when the box closes. */
+  const finRot = (k) => (((k * 7) % 9) - 4) * 1.1 + (k % 2 ? 0.7 : -0.7);
+  const finCard = (src, k) => `<span class="fin-card" style="--r:${(finRot(k) * 0.4).toFixed(2)}deg"><img src="${esc(src)}" alt="" loading="lazy" decoding="async" draggable="false"></span>`;
+  /** What the box says (owner 12 Nov): only what the button gives, no counts or numbers. */
+  function finFacts() {
+    return 'Its motion system, in one file.';
+  }
+  function finaleHTML() {
+    if (!FN) return '';
+    const host = MV.site.host || 'this site';
+    // the pile shown with no motion (and in print): the highlights' own pictures
+    const pics = (FN.lines || []).map((l) => { const m = byId.get(l.id); return m && m.frame && m.frame.poster; }).filter(Boolean).slice(0, 6);
+    return `<section class="fin${REDUCED ? '' : ' run'}" id="mv-fin" aria-labelledby="mv-fin-h"><div class="fin-box" id="mv-finbox">
+      <div class="fin-deck" id="mv-findeck" aria-hidden="true">${pics.map(finCard).join('')}</div>${REDUCED ? '' : '<span class="fin-sweep" id="mv-finsweep" aria-hidden="true"><i></i></span>'}
+      <div class="fin-say"><h2 id="mv-fin-h"${host.length > 16 ? ' class="long"' : ''}>${esc(host)}</h2>
+        <p>${finFacts()}</p>${FCURVE ? FCURVE.svg : ''}
+        <div class="fin-act"><a id="mv-findl" href="#" download="${esc(FN.file)}">Download motion file</a>${MV.prompt ? '<button type="button" id="mv-fincp">Copy prompt</button>' : ''}</div></div>
+    </div></section>`;
+  }
+  function finWire() {
+    const sec = $('#mv-fin'); if (!sec) return;
+    const dl = $('#mv-findl');
+    // the file is made when asked for: a Blob from the text the card carries, so it works from disk with no server
+    dl.addEventListener('click', () => { const u = URL.createObjectURL(new Blob([FN.md], { type: 'text/markdown' })); dl.href = u; setTimeout(() => URL.revokeObjectURL(u), 4000); });
+    const cp = $('#mv-fincp'); if (cp) cp.addEventListener('click', () => copy(agentText(MV.prompt), cp));
+    const mo = FN.motion || {};
+    // the site's own numbers: its arrival ease, its time (a long travel gets a little more of it), its stagger and rise
+    FX.ease = easeFn(mo.ease); FX.T = Math.max(450, Math.min(1000, mo.ms || 600));
+    FX.gap = Math.max(45, Math.min(90, (mo.stagger || 50) * 1.4)); FX.stg = Math.max(50, Math.min(120, mo.stagger || 80)); FX.rise = Math.max(16, Math.min(40, mo.rise || 24));
+    // the section pads the box by up to 72 px; when the box is nearly as tall as the screen the padding gives way, so the box stays centred at the end of the page
+    { const fs = $('#mv-fin'), fb = $('#mv-finbox'); if (fs && fb) { const fit = () => fs.style.setProperty('--finh', fb.offsetHeight + 'px'); fit(); if (typeof ResizeObserver === 'function') new ResizeObserver(fit).observe(fb); } }
+    if (REDUCED) return;
+    if (typeof IntersectionObserver !== 'function') { finEnd(); return; }
+    // plays once, when the box's top comes 15 % up the screen: the last pictures of the card are still on screen to lift off, and
+    // the reader's scroll carries the box to the middle meanwhile (every piece aims at where the box is on each frame)
+    FX.io = new IntersectionObserver((es) => { for (const e of es) if (!FX.played && e.isIntersecting && S.screen === 'home') finPlay(); }, { rootMargin: '0px 0px -15% 0px', threshold: 0 });
+    FX.io.observe($('#mv-finbox'));
+  }
+  /** The pictures that fly: the card's move pictures nearest the screen first, one per picture, at most MAXP. */
+  function finSources() {
+    const H = innerHeight, seen = new Set(), out = [];
+    for (const f of $$('#mv-lists .mv-f')) {
+      const img = $('img', f); if (!img || !img.dataset.src || img.dataset.state === 'missing' || seen.has(img.dataset.src)) continue;
+      const r = f.getBoundingClientRect(); if (!r.width || !r.height) continue;
+      seen.add(img.dataset.src);
+      out.push({ f, src: img.dataset.src, r, d: r.bottom < 0 ? -r.bottom : r.top > H ? r.top - H : 0 });
+    }
+    return out.sort((a, b) => a.d - b.d).slice(0, MAXP);
+  }
+  function finPlay() {
+    FX.played = true; if (FX.io) FX.io.disconnect();
+    const deck = $('#mv-findeck'), H = innerHeight, bar = parseFloat(getComputedStyle(root).getPropertyValue('--barpx')) || 68;
+    const src = finSources();
+    FX.D = { w: deck.offsetWidth, h: deck.offsetHeight };
+    // the pile gets the very pictures that fly, in landing order (the last one lands on top)
+    deck.innerHTML = src.map((s, k) => finCard(s.src, k)).join('');
+    const cards = $$('.fin-card', deck);
+    const fly = document.createElement('div'); fly.className = 'fin-fly'; fly.setAttribute('aria-hidden', 'true');
+    FX.pieces = src.map((s, k) => {
+      const el = document.createElement('div'); el.className = 'fin-piece'; el.style.width = `${FX.D.w}px`; el.style.height = `${FX.D.h}px`; el.style.zIndex = String(k + 1);
+      const im = document.createElement('img'); im.src = s.src; im.alt = ''; im.decoding = 'async'; im.draggable = false; el.appendChild(im); fly.appendChild(el);
+      // a picture up the page comes in at the top edge, half under the bar, the farther the higher: the page above, compressed into
+      // a band (and one below the screen at the bottom edge); it fades in there as its turn comes, so nothing waits off screen
+      const r = s.r, above = r.bottom < 0, below = r.top > H, far = 0.25 * r.height * Math.min(1, s.d / (H * 4));
+      const cy0 = above ? bar + r.height * 0.1 - far : below ? H - r.height * 0.1 + far : r.top + r.height / 2;
+      // one coming in from off screen starts no wider than 0.6 of the screen, so the band stays a band on a phone
+      const s0 = Math.min(Math.max(r.width / FX.D.w, r.height / FX.D.h), above || below ? (innerWidth * 0.6) / FX.D.w : Infinity);
+      // a picture of another shape than the pile fades over from its own frame instead of jumping into the new shape
+      const shape = Math.abs(Math.log((r.width / r.height) / (FX.D.w / FX.D.h))) > 0.15;
+      const fade = shape || s.d > 0; if (fade) el.style.opacity = '0';
+      return { el, card: cards[k], f: s.f, seen: s.d === 0, cx0: r.left + r.width / 2, cy0, s0, rot: finRot(k), shape, fade, landed: false };
+    });
+    document.body.appendChild(fly); FX.fly = fly;
+    // the card above steps back a little while the pictures fly, so the centre is the one stage (scale and opacity, no blur);
+    // it shrinks toward the middle of the screen, where the box is
+    const wrap = $('#mv-home > .mv-wrap');
+    if (wrap) { const wr = wrap.getBoundingClientRect(); wrap.style.transformOrigin = `${(innerWidth / 2 - wr.left).toFixed(0)}px ${(innerHeight / 2 - wr.top).toFixed(0)}px`; wrap.style.willChange = 'transform,opacity'; }
+    FX.wrap = wrap; FX.sy = scrollY; FX.back = 0;
+    FX.tilt = innerWidth < 600 ? 5 : 11; FX.bw = $('#mv-finbox').offsetWidth;
+    const nEl = $('#mv-finn'); FX.n = nEl ? +nEl.textContent : 0; FX.nShown = -1;
+    FX.curve = FCURVE && $('#mv-fincurve') ? { path: $('#mv-fincurve path'), dot: $('#mv-fincurve circle') } : null;
+    FX.DT = Math.max(250, Math.min(1000, (FN.motion || {}).ms || 600));   // the dot runs the curve at the site's own time
+    // the pictures on screen leave their places: the frame there is empty while its picture travels
+    FX.pieces.forEach((p) => { if (p.seen && !p.shape) p.f.style.opacity = '0'; });
+    FX.t0 = performance.now(); finTick();
+  }
+  /** One frame of the finale at time t: the box arrives, the pictures fly in one after another, the pile tightens, the words rise. */
+  function finFrame(t) {
+    const sec = $('#mv-fin'), box = $('#mv-finbox'), deck = $('#mv-findeck'), E = FX.ease, T = FX.T, n = FX.pieces.length;
+    const F = Math.max(800, Math.min(1400, T * 1.8)), A = Math.min(800, Math.max(500, T));
+    const land = n ? 40 + (n - 1) * FX.gap + F : A, C = Math.max(500, T);
+    // reads first (the pile's place, the box can be scrolled meanwhile), then writes: transforms and opacity only
+    // the box forms as the first pictures come near, so it is never an empty frame waiting
+    const ab = E(clamp01((t - F * 0.3) / A)), c = clamp01((t - land) / C);
+    box.style.opacity = ab.toFixed(3);
+    // the box arrives a little small and, as the last picture lands, closes with a small give
+    box.style.transform = `scale(${(0.9 + 0.1 * ab - 0.012 * Math.sin(Math.PI * c)).toFixed(4)})`;
+    const dr = deck.getBoundingClientRect(), sb = dr.width / FX.D.w, cx1 = dr.left + dr.width / 2, cy1 = dr.top + dr.height / 2, sy = scrollY;
+    // the reader scrolls back up meanwhile: the card above comes forward again at once
+    if (!FX.back && sy < FX.sy - 48) FX.back = t; FX.sy = Math.max(FX.sy, sy);
+    if (FX.wrap) {
+      const rin = E(clamp01(t / (F * 0.6))), rout = FX.back ? clamp01((t - FX.back) / 320) : E(clamp01((t - land) / C)), rv = rin * (1 - rout);
+      FX.wrap.style.transform = rv > 0.001 ? `scale(${(1 - 0.03 * rv).toFixed(4)})` : ''; FX.wrap.style.opacity = rv > 0.001 ? (1 - 0.65 * rv).toFixed(3) : '';
+    }
+    // as the box closes one soft light crosses it, once
+    const sw = $('#mv-finsweep'), sq = clamp01((t - land + C * 0.2) / 900);
+    if (sw) { sw.style.opacity = (Math.sin(Math.PI * sq)).toFixed(3); sw.firstChild.style.transform = `translate3d(${(-0.75 * FX.bw + E(sq) * 1.95 * FX.bw).toFixed(1)}px,0,0) skewX(-14deg)`; }
+    FX.pieces.forEach((p, k) => {
+      const q = clamp01((t - 40 - k * FX.gap) / F);
+      if (q >= 1) {
+        if (!p.landed) { p.landed = true; p.el.style.display = 'none'; p.card.style.opacity = '1'; }
+        p.card.style.transform = `rotate(${(p.rot * (1 - 0.6 * E(c))).toFixed(2)}deg)`;
+        return;
+      }
+      // the vertical rides the site's ease, the horizontal a step ahead, so the path bends; a small lift in the middle of the way
+      // and the path bows a little to one side, alternately, so the pieces do not all ride one line
+      const ey = E(q), ex = E(clamp01(q * 1.15)), dx = cx1 - p.cx0, dy = cy1 - p.cy0, L = Math.hypot(dx, dy) || 1, bow = (k % 2 ? 1 : -1) * Math.min(56, L * 0.12) * Math.sin(Math.PI * q);
+      const cx = p.cx0 + dx * ex - (dy / L) * bow, cy = p.cy0 + dy * ey + (dx / L) * bow;
+      const s = (p.s0 + (sb - p.s0) * ey) * (1 + 0.06 * Math.sin(Math.PI * q));
+      // a slight tilt in depth, leaning into the way it travels, the most mid-way; flat again as it lands
+      const w = Math.sin(Math.PI * ey) * FX.tilt, tx = (-dy / L) * w * 0.8, ty = (dx / L) * w;
+      p.el.style.transform = `translate3d(${(cx - FX.D.w / 2).toFixed(2)}px,${(cy - FX.D.h / 2).toFixed(2)}px,0) scale(${s.toFixed(4)}) perspective(900px) rotateX(${tx.toFixed(2)}deg) rotateY(${ty.toFixed(2)}deg) rotate(${(p.rot * ey).toFixed(2)}deg)`;
+      if (p.fade) { const o = clamp01((t - 40 - k * FX.gap) / 160); p.el.style.opacity = o.toFixed(3); if (p.seen) p.f.style.opacity = (1 - o).toFixed(3); }
+    });
+    // the words rise in as the box closes, one after another by the site's stagger
+    const say = $$('.fin-say > *', sec);
+    say.forEach((el, i) => {
+      const e = E(clamp01((t - land + C * 0.5 - i * FX.stg) / T));
+      el.style.opacity = e.toFixed(3); el.style.transform = e >= 1 ? '' : `translate3d(0,${((1 - e) * FX.rise).toFixed(2)}px,0)`;
+    });
+    // the count of moves counts up from 0 as the sentence rises, on the site's ease
+    const t1 = land - C * 0.5 + FX.stg;
+    if (FX.n > 1) { const v = Math.round(FX.n * E(clamp01((t - t1) / 750))); if (v !== FX.nShown) { FX.nShown = v; $('#mv-finn').textContent = String(v); } }
+    // the ease draws itself as it rises, then the dot runs it once at the site's own time
+    let tEnd = t1 + 750;
+    if (FX.curve) {
+      const t2 = land - C * 0.5 + 2 * FX.stg, Dd = Math.min(500, T * 0.7), dq = clamp01((t - t2) / Dd), pq = clamp01((t - t2 - Dd) / FX.DT);
+      FX.curve.path.style.strokeDashoffset = (1 - E(dq)).toFixed(4);
+      FX.curve.dot.style.opacity = clamp01((t - t2 - Dd) / 80).toFixed(3);
+      FX.curve.dot.setAttribute('transform', `translate(${FCURVE.X(pq)} ${FCURVE.Y(FCURVE.E(pq))})`);
+      tEnd = Math.max(tEnd, t2 + Dd + FX.DT + 120);
+    }
+    tEnd = Math.max(tEnd, land - C * 0.2 + 900, land - C * 0.5 + (say.length - 1) * FX.stg + T + 40);
+    return t > tEnd && c >= 1;
+  }
+  /** The end state, in the page's own flow: no inline motion left, the pictures back in their frames above. */
+  function finEnd() {
+    FX.done = true;
+    const sec = $('#mv-fin'); if (!sec) return;
+    if (FX.fly) { FX.fly.remove(); FX.fly = null; }
+    [$('#mv-finbox'), ...$$('.fin-card', sec), ...$$('.fin-say > *', sec)].forEach((el) => { el.style.opacity = ''; el.style.transform = ''; });
+    // the end in plain markup: the card above in place, the real count, the curve drawn with its dot at the end, no light
+    if (FX.wrap) { FX.wrap.style.transform = ''; FX.wrap.style.opacity = ''; FX.wrap.style.willChange = ''; FX.wrap.style.transformOrigin = ''; }
+    const nEl = $('#mv-finn'); if (nEl && FX.n) nEl.textContent = String(FX.n);
+    const sw = $('#mv-finsweep'); if (sw) sw.remove();
+    if (FX.curve) { FX.curve.path.style.strokeDashoffset = ''; FX.curve.dot.style.opacity = ''; FX.curve.dot.setAttribute('transform', `translate(${FCURVE.X(1)} ${FCURVE.Y(FCURVE.E(1))})`); }
+    sec.classList.remove('run'); sec.classList.add('settled');
+    FX.pieces.forEach((p) => { if (p.f.style.opacity !== '') { p.f.style.transition = 'opacity 600ms linear'; p.f.style.opacity = ''; setTimeout(() => { p.f.style.transition = ''; }, 700); } });
+  }
+  function finTick() {
+    if (FX.done) return;
+    // the card left Moves meanwhile: the end state, at once
+    if (S.screen !== 'home' || finFrame(performance.now() - FX.t0)) { finEnd(); return; }
+    requestAnimationFrame(finTick);
+  }
+  window.__finale = { state: () => ({ played: FX.played, done: FX.done, pieces: FX.pieces.length, landed: FX.pieces.filter((p) => p.landed).length, curve: !!FCURVE,
+    receded: !!(FX.wrap && FX.wrap.style.opacity !== '') }) };
+
   /* ---------- screens ---------- */
   function shell() {
     const sec = $('#moves');
+    const sys = systemHTML();
     sec.innerHTML = `<div id="mv-home"><div class="mv-wrap">
+      <section class="mv-top${sys ? '' : ' solo'}" id="mv-top" aria-label="How this site moves">${sys ? `<div class="mv-sys" id="mv-sys">${sys}</div>` : ''}<div class="mv-pagecol">
       <button type="button" class="mv-page" id="mv-pagef" aria-label="The recorded page, full window"></button>
-      <p class="mv-cap" id="mv-cap"><button type="button" id="mv-pagebtn">The page</button>${MV.site.pages.length > 1 ? `<select id="mv-pagesel" aria-label="Page">${MV.site.pages.map((p, i) => `<option value="${i}">${esc(p.label)}</option>`).join('')}</select>` : ''}</p>
-      <div id="mv-lists"></div></div></div>
+      <p class="mv-cap" id="mv-cap"><button type="button" id="mv-pagebtn">The page</button>${MV.site.pages.length > 1 ? `<select id="mv-pagesel" aria-label="Page">${MV.site.pages.map((p, i) => `<option value="${i}">${esc(p.label)}</option>`).join('')}</select>` : ''}</p></div></section>
+      <div id="mv-lists"></div></div>${finaleHTML()}</div>
       <div id="mv-sitescreen" hidden></div>
-      <div class="mv-one" id="mv-one" hidden></div>
+      <div class="mv-one" id="mv-one" role="dialog" aria-modal="true" aria-labelledby="mv-one-h" hidden></div>
       <div class="mv-full" id="mv-full" hidden></div>`;
     wireTiles($('#mv-lists'));
+    $('#mv-pagef').classList.toggle('ph', S.vp === 'phone');
+    $('#mv-lists').addEventListener('click', (e) => { if (e.target.closest('[data-clear]')) findClose(); });
+    if (sys) wireSystem($('#mv-sys'));
+    if (FN) finWire();
     $('#mv-pagef').addEventListener('click', () => { location.hash = 'page'; });
     $('#mv-pagebtn').addEventListener('click', () => { location.hash = 'page'; });
     const sel = $('#mv-pagesel'); if (sel) sel.addEventListener('change', () => { S.pageI = +sel.value; heroStart(); });
@@ -554,6 +982,15 @@ function partsOf(groups) {
     PG.io = new IntersectionObserver((es) => { PG.visible = es[es.length - 1].isIntersecting; if (S.screen !== 'home') return; if (PG.visible && !PG.on && !REDUCED) heroStart(); else if (!PG.visible) heroStop(); }, { threshold: .05 });
     PG.io.observe($('#mv-pagef'));
     $('#mv-one').addEventListener('click', onOneClick);
+    $('#mv-full').addEventListener('click', (e) => { if (e.target.closest('[data-close]')) location.hash = 'moves'; });
+    // the tabs: the arrows, Home and End move between them and show each (WAI-ARIA tabs, selection follows focus)
+    $('#mv-one').addEventListener('keydown', (e) => {
+      const t = e.target.closest && e.target.closest('[role="tab"]'); if (!t) return;
+      const all = $$('[role="tab"]', t.parentElement), i = all.indexOf(t);
+      const j = e.key === 'ArrowRight' ? (i + 1) % all.length : e.key === 'ArrowLeft' ? (i - 1 + all.length) % all.length : e.key === 'Home' ? 0 : e.key === 'End' ? all.length - 1 : -1;
+      if (j < 0) return;
+      e.preventDefault(); drawUse(all[j].dataset.use); all[j].focus();
+    });
     $('#mv-one').addEventListener('wheel', onOneWheel, { passive: false });
   }
   const parse = () => {
@@ -562,6 +999,8 @@ function partsOf(groups) {
     if (s === 'site') return { screen: 'site' };
     if (s === 'page') return { screen: 'page' };
     if (!s || s === 'moves') return { screen: 'home' };
+    // an unknown hash (e.g. #mv-fin) is the moves screen, as the page router reads it; never a blank card
+    if (typeof parseHash === 'function' && parseHash(location.hash).v === 'moves') return { screen: 'home' };
     return { screen: 'other' };
   };
   async function routeMoves() {
@@ -577,12 +1016,21 @@ function partsOf(groups) {
     const home = $('#mv-home'), site = $('#mv-sitescreen'), full = $('#mv-full');
     if (r.screen !== 'site') site.hidden = true;
     if (r.screen !== 'page') { full.hidden = true; pageOff(); }
-    if (r.screen !== 'one' && S.oneId) await closeOne();
+    const closed = r.screen !== 'one' && S.oneId ? await closeOne() : null;
+    vpsFor(r.screen);
+    // a new tab starts at its top (6 Nov review: Design opened half way down); closing a move or the page keeps the gallery where it was
+    const tab = (x) => (x === 'one' || x === 'page' ? 'home' : x);
+    if (was != null && tab(was) !== tab(r.screen)) scrollTo(0, 0);
     if (r.screen === 'other') { home.hidden = false; heroStop(); relayEnd(); return; }
-    if (r.screen === 'site') { home.hidden = true; heroStop(); renderSite(); site.hidden = false; scrollTo(0, 0); document.title = `Site, REVA card: ${MV.site.host}`; return; }
+    if (r.screen === 'site') { home.hidden = true; heroStop(); renderSite(); site.hidden = false; document.title = `Site, REVA card: ${MV.site.host}`; if (was != null) $('#mv-sitescreen h1')?.focus({ preventScroll: true }); return; }
     home.hidden = false;
     if (was !== 'home' && was !== 'one' && !$('#mv-lists').firstChild) draw();
-    if (r.screen === 'home') { document.title = `Moves, REVA card: ${MV.site.host}`; if (was !== 'one' && was !== 'home') { draw(); heroStart(); } else if (was === 'one') heroStart(); return; }
+    if (r.screen === 'home') {
+      document.title = `Moves, REVA card: ${MV.site.host}`;
+      if (was !== 'one' && was !== 'home') { draw(); heroStart(); } else if (was === 'one') heroStart();
+      if (closed) focusTile(closed);
+      return;
+    }
     heroStop();
     if (r.screen === 'page') return pageOn();
     return openOne(byId.get(r.id));
@@ -614,6 +1062,9 @@ function partsOf(groups) {
   }
   function changesText(d) {
     const out = [];
+    // the fit writes each part's clauses in the sentence's own words and numbers (g.said); an older file has none and is said here
+    const said = (d.groups || []).filter((g) => g.layer !== 'gl' && (g.said || []).length && g.part !== 'out' && g.part !== 'close');
+    if (said.length) return [...new Set(said.map((g) => `${g.name}${g.count > 1 ? ` (${g.count})` : ''}: ${g.said.slice(0, 3).join(', ')}.`))].slice(0, 3).join(' ');
     for (const g of (d.groups || []).slice(0, 3)) {
       const seen = new Set(), acts = [];
       for (const c of g.changes || []) { const w = changeWords(c); if (!seen.has(w) && !/ 0( |$)/.test(w)) { seen.add(w); acts.push(w); } }
@@ -643,7 +1094,8 @@ function partsOf(groups) {
   function lawWord(g, k) {
     const l = g.law || {};
     if (k.recorded || l.class === 'keyframes') return 'Recorded progress';
-    if (l.class === 'tween') return l.named || (l.bezier ? `cubic-bezier(${l.bezier.map((v) => +(+v).toFixed(2)).join(', ')})` : 'A tween');
+    // the same text the code prints (export/move.js): a declared or site ease by its own text, a fitted curve to 4 places
+    if (l.class === 'tween') return l.named || l.declared || (l.bezier ? `cubic-bezier(${l.bezier.map((v) => +(+v).toFixed(4)).join(', ')})` : 'A tween');
     return { spring: 'A spring', smoothing: 'Smoothing', map: `Mapped to scroll${l.shape ? `, ${l.shape}` : ''}`, steps: 'Instant' }[l.class] || '';
   }
   /** The curve area: the lead's curve, the curves of parts that move differently, or, for Pictures only, why there is none. */
@@ -658,31 +1110,43 @@ function partsOf(groups) {
     }
     // one time axis for all, so a part that takes longer looks longer; a scroll map is on scroll, not time, and keeps its own
     const span = parts.some((p) => (p.g.law || {}).class === 'map') ? null : Math.max(...parts.map((p) => p.k.c[p.k.c.length - 1][0]));
-    return `<div class="mv-parts">${parts.map((p, i) => `<figure>${curveSVG(p.k, { head: i === 0, span, label: `${p.g.name}: its curve` })}<figcaption>${esc(p.g.name)}<span>${esc(lawWord(p.g, p.k))}</span></figcaption></figure>`).join('')}</div>`;
+    return `<div class="mv-parts">${parts.map((p, i) => `<figure>${curveSVG(p.k, { head: i === 0, span, label: `${p.g.name}: its curve` })}<figcaption>${esc(p.g.name)}<span>${esc(lawWord(p.g, p.k))}</span><span class="mv-pv" data-pv="${esc(p.g.provenance || '')}">${esc(provWord(p.g))}</span></figcaption></figure>`).join('')}</div>`;
+  }
+  /** How one part is known: each part says its own, so the move's label never speaks for a part known another way. */
+  function provWord(g) {
+    const l = g.law || {};
+    if (g.provenance === 'declared') return l.via === 'gsap' ? "Exact, from the site's GSAP" : "Exact, from the site's CSS";
+    if (g.provenance === 'fitted') return l.snapped ? "Measured, on the site's own ease" : 'Measured';
+    if (g.provenance === 'sampled') return 'Recorded frame by frame, may include jumps';
+    return 'Seen, not measured';
   }
   /** The move's status, from the index (src/scan/moves/contract.js, moveStatus). An older index has none: its proof stands in. */
   const statusOf = (m) => m.status || ({ declared: { key: 'exact', word: 'Exact' }, fitted: { key: 'measured', word: 'Measured' }, sampled: { key: 'recorded', word: 'Recorded' } }[(m.proof || {}).source] || { key: 'pictures', word: 'Pictures only', reason: m.gap || 'Its values could not be read.' });
   const num = (n) => Number(n).toLocaleString('en-US');
-  /** The size of what moves, on the screen. Said for Pictures only, and for a whole-screen move whose parts reach far off the screen. */
-  function sizeText(m, st) {
-    const z = m.size; if (!z) return '';
-    const whole = z.w >= z.screen[0] - 1 && z.h >= z.screen[1] - 1;
-    const far = z.off && ['change', 'load', 'gate'].includes(m.kind);
-    if (st.key !== 'pictures' && !far) return '';
-    const here = whole ? `The whole screen, ${num(z.screen[0])} × ${num(z.screen[1])} px` : `${num(z.w)} × ${num(z.h)} px`;
-    return z.off ? `${here}. Some parts sit far off the screen, ${num(z.off[0])} × ${num(z.off[1])} px in all, so the frame shows the screen only.` : here;
+  /** One line per part, the lead first: how to build it, in the numbers its code has (src/scan/moves/close.js recipeOf). */
+  function recipeHTML(d) {
+    const gs = ((d && d.groups) || []).filter((g) => g.recipe);
+    if (!gs.length) return '';
+    const first = gs.slice(0, 3), rest = gs.slice(3);
+    return `<div class="mv-recipe">${first.map((g) => `<p>${esc(g.recipe)}</p>`).join('')}${rest.length ? `<details><summary>${rest.length === 1 ? 'One more part' : `${rest.length} more parts`}</summary>${rest.map((g) => `<p>${esc(g.recipe)}</p>`).join('')}</details>` : ''}</div>`;
   }
+  const pageOf = (x) => { const pg = x.pg || []; return pg.length === 1 && MV.site.pages[pg[0]] ? MV.site.pages[pg[0]].label : pg.length > 1 ? `${pg.length} pages` : ''; };
   function restHTML(m, d) {
     const rows = [];
     const where = (d && d.where) || [], places = where.reduce((a, w) => a + (w.count || 0), 0), pages = new Set(where.map((w) => w.page)).size;
-    if (places > 1) rows.push(`<div><h3>Where else</h3><p>${places} places, ${pages === 1 ? 'one page' : `${pages} pages`}</p>${((d && d.variants) || []).slice(0, 4).map((v) => `<p><a href="#m/${esc(v.id)}">${esc(sentencePart(v.differs || 'A variant'))}</a></p>`).join('')}</div>`);
+    // a pattern lists the moves it stands for; a move that repeats one points back to it
+    if (m.uses && m.uses.moves.length > 1) {
+      const others = m.uses.moves.filter((id) => id !== m.id && byId.has(id)).map((id) => byId.get(id));
+      rows.push(`<div class="mv-uses"><h3>Used in ${m.uses.n} places${m.uses.pages > 1 ? ` on ${m.uses.pages} pages` : ''}</h3>${m.own ? `<p>${esc(m.own)}${pageOf(m) ? `, ${esc(pageOf(m))}` : ''}</p>` : ''}${others.map((x) => `<p><a href="#m/${esc(x.id)}">${esc(x.name)}</a>${pageOf(x) ? `, ${esc(pageOf(x))}` : ''}</p>`).join('')}</div>`);
+    } else if (m.same && byId.has(m.same)) rows.push(`<div><h3>The same motion as</h3><p><a href="#m/${esc(m.same)}">${esc(byId.get(m.same).name)}</a></p></div>`);
+    else if (places > 1) rows.push(`<div><h3>Where else</h3><p>${places} places, ${pages === 1 ? 'one page' : `${pages} pages`}</p>${((d && d.variants) || []).filter((v) => byId.has(v.id)).slice(0, 4).map((v) => `<p><a href="#m/${esc(v.id)}">${esc(byId.get(v.id).name)}</a></p>`).join('')}</div>`);
     const ph = m.phone || {};
     const phoneBody = ph.status === 'none' ? '<p>Does not happen on phone</p>'
       : ph.status === 'not-recorded' ? '<p>Phone was not recorded here</p>'
-      : ph.clip ? `<div class="mv-pclip" style="aspect-ratio:${ph.w || 390}/${ph.h || 844}"><img src="${esc(ph.poster || '')}" alt="" loading="lazy"></div>`
+      : ph.clip ? `<div class="mv-pclip" style="aspect-ratio:${ph.w || 390}/${ph.h || 844}"><img data-src="${esc(ph.poster || '')}" alt=""></div>`
       : ph.status === 'own' && ph.id && byId.has(ph.id) ? `<p><a href="#m/${esc(ph.id)}">It moves differently there</a></p>`
       : ph.status === 'own' ? '<p>It moves differently there</p>' : ph.status === 'same' ? '<p>The same on phone</p>' : '';
-    if (!m.vp.includes('desktop')) rows.push('<div><h3>On phone</h3><p>Happens on phone only</p></div>');
+    if (!m.vp.includes('desktop')) rows.push('<div><h3>On desktop</h3><p>Not seen on desktop: this runs on phone only</p></div>');
     else if (phoneBody) rows.push(`<div><h3>On phone</h3>${phoneBody}</div>`);
     if (d) rows.push(`<details><summary>Details</summary><div class="mv-det">${detailsHTML(d)}</div></details>`);
     return `<div class="mv-rest">${rows.join('')}</div>`;
@@ -695,8 +1159,11 @@ function partsOf(groups) {
       if (law.class) bits.push(law.class);
       if (law.ms) bits.push(`${Math.round(law.ms)} ms`);
       if (law.delayMs) bits.push(`${Math.round(law.delayMs)} ms delay`);
+      bits.unshift(provWord(g));
       if (law.named) bits.push(law.named);
-      if (law.bezier) bits.push(`cubic-bezier(${law.bezier.join(', ')})`);
+      else if (law.declared) bits.push(law.declared);
+      else if (law.bezier) bits.push(`cubic-bezier(${law.bezier.join(', ')})`);
+      if (law.snapped && law.snapped.bezier) bits.push(`fitted alone: cubic-bezier(${law.snapped.bezier.join(', ')})${law.snapped.ms !== law.ms ? ` over ${Math.round(law.snapped.ms)} ms` : ''}`);
       if (fit.rmsPct != null) bits.push(`${fit.rmsPct} % off`);
       if (fit.runnerUp) bits.push(`next best ${fit.runnerUp}`);
       if (g.checked) bits.push(`checked on ${g.checked.instances} more, worst ${g.checked.worstPct} %`);
@@ -706,23 +1173,23 @@ function partsOf(groups) {
     return out.join('');
   }
   function oneHTML(m, d) {
-    const st = statusOf(m), changes = d ? changesText(d) : '', size = sizeText(m, st);
-    const facts = [['Sets it off', esc(setsOff(m))], ['Takes', esc(takes(m))], ['Curve', curveHTML(m, d, st)]];
+    const st = statusOf(m), recipe = recipeHTML(d), changes = d && !recipe ? changesText(d) : '';
+    // the recipe says each part's changes with its time, so it stands in for Changes: one set of numbers, said once
+    const facts = [['Sets it off', esc(setsOff(m))], ['Takes', esc(takes(m))], ...(recipe ? [['Recipe', recipe]] : []), ['Curve', curveHTML(m, d, st)]];
     if (changes) facts.push(['Changes', esc(changes)]);
-    if (size) facts.push(['Size', esc(size)]);
     const scene = d && d.gl;
     const glLine = scene ? `<p class="mv-gap">${esc([scene.technique, (scene.uniforms || []).slice(0, 4).map((u) => `${u.name} follows ${u.driver}`).join(', ')].filter(Boolean).join('. '))}</p>` : '';
-    const hasCode = d && d.code && (d.code.css || d.code.gsap || d.code.motion);
-    // the buttons show whenever there is something to copy; what it cannot carry is a note under them
-    const copy = d && (d.timing || hasCode || d.prompt);
+    // the tabs show whenever there is something to copy; what it cannot carry is a note under them
+    const uses = useTabs(d);
     return `<h1 tabindex="-1" id="mv-one-h">${esc(m.name)}</h1><p class="mv-sent">${esc(m.sentence || '')}</p>
-      <p class="mv-status" data-status="${esc(st.key)}"><b>${esc(st.word)}.</b>${st.line ? ` ${esc(st.line)}` : ''}</p>
+      <p class="mv-status" data-status="${esc(st.key)}"><b>${esc(st.word)}.</b>${st.line ? ` ${esc(st.line)}` : ''}</p>${m.doubt ? `<p class="mv-claim mv-doubt">${esc(m.doubt)}</p>` : ''}
       <dl class="mv-facts">${facts.filter((f) => f[1]).map(([a, b]) => `<div><dt>${esc(a)}</dt><dd>${b}</dd></div>`).join('')}</dl>
       ${glLine}
-      ${copy ? `<div class="mv-copy" id="mv-copy">${d.timing ? '<button type="button" data-copy="timing">Timing</button>' : ''}${hasCode ? '<button type="button" data-code aria-expanded="false">Code</button>' : ''}${d.prompt ? '<button type="button" data-copy="prompt">For my agent</button>' : ''}</div>${st.note ? `<p class="mv-claim">${esc(st.note)}</p>` : ''}${d.proofLine ? `<p class="mv-claim">${esc(d.proofLine)}</p>` : ''}<div class="mv-code" id="mv-code" hidden></div>` : ''}
+      ${uses.length ? `<div class="mv-use"><div class="mv-ttabs" role="tablist" aria-label="Take it with you">${uses.map(([k, w]) => `<button type="button" role="tab" id="mv-tab-${k}" data-use="${k}" aria-controls="mv-usepanel" aria-selected="false" tabindex="-1">${w}</button>`).join('')}<button type="button" class="cp" data-usecopy>Copy</button></div><div class="mv-usepanel" id="mv-usepanel" role="tabpanel"></div>${st.note ? `<p class="mv-claim">${esc(st.note)}</p>` : ''}${d.proofLine ? `<p class="mv-claim">${esc(d.proofLine)}</p>` : ''}</div>` : ''}
       ${restHTML(m, d)}`;
   }
   const PLAYI = '<svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 1l11 6-11 6z"/></svg>', PAUSEI = '<svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 1h4v12H2zM8 1h4v12H8z"/></svg>';
+  const CLOSEB = '<button type="button" class="mv-x" data-close aria-label="Close"><svg viewBox="0 0 18 18" aria-hidden="true"><path d="M3 3l12 12M15 3L3 15"/></svg></button>';
   function ctlHTML(m) {
     const K = m.frame ? marksOf(m.frame) : null, press = K && K.press != null;
     return `<button type="button" class="pl" id="mv-pl" aria-label="Play">${PLAYI}</button>
@@ -739,7 +1206,9 @@ function partsOf(groups) {
     clearTimeout(H.timer);
     const one = $('#mv-one'), first = S.oneId == null, d = await loadDoc(m.id);
     if (parse().id !== m.id) return;
-    O.m = m; O.d = d; O.press = false; O.inPage = false; O.curve = null; O.lead = null;
+    O.m = m; O.d = d; O.press = false; O.inPage = false; O.curve = null; O.lead = null; O.part = 0;
+    // the Desktop / Phone toggle always names the screen the open move is shown for (6 Nov review: Desktop pressed, a phone-only clip)
+    if (!m.vp.includes(S.vp)) { S.vp = m.vp[0]; pressVp(); S.shown = {}; draw(); }
     relayEnd();
     const r = m.frame ? m.frame.w / m.frame.h : 1.6;
     // the same element grows: the frame leaves its tile, and goes back there on the way out
@@ -748,11 +1217,16 @@ function partsOf(groups) {
     const source = first ? (S.from && S.from.m === m ? S.from : $(`.mv-t[data-id="${m.id}"]`)) : null;
     let rect = null, frame = null;
     if (source && !REDUCED) { const b = source.querySelector('.mv-h').getBoundingClientRect(); if (b.bottom > 0 && b.top < innerHeight) { rect = b; frame = source.querySelector('.mv-f'); O.holder = source.querySelector('.mv-h'); } }
-    if (!frame) { O.holder = null; const t = document.createElement('div'); t.innerHTML = frameOf(m, true); frame = t.firstChild; }
+    if (!frame) { O.holder = null; const t = document.createElement('div'); t.innerHTML = frameOf(m); frame = t.firstChild; }
     one.hidden = false; root.classList.add('mv-lock', 'mv-solid');
-    one.innerHTML = `<div class="mv-onew"><div class="mv-left"><div class="mv-big" id="mv-big"></div><div class="mv-ctl" id="mv-ctl">${ctlHTML(m)}</div></div><div class="mv-right${first ? ' in' : ''}" id="mv-right">${oneHTML(m, d)}</div></div>`;
+    one.innerHTML = `${CLOSEB}<div class="mv-onew"><div class="mv-left"><div class="mv-big" id="mv-big"></div><div class="mv-ctl" id="mv-ctl">${ctlHTML(m)}</div></div><div class="mv-right${first ? ' in' : ''}" id="mv-right">${oneHTML(m, d)}</div></div>`;
     one.scrollTop = 0;
-    const big = $('#mv-big'); fitBig(r); big.append(frame); O.frame = frame;
+    drawUse(O.use);
+    $$('.mv-pclip img', one).forEach((x) => wantImg(x));
+    $('#mv-home').inert = true;
+    // focus moves in at once (6 Nov review: Enter opened the move and focus stayed on the tile behind it), before the frame grows
+    { const h = $('#mv-one-h'); if (h) h.focus({ preventScroll: true }); }
+    const big = $('#mv-big'); fitBig(r); big.append(frame); O.frame = frame; wantImg(frame.querySelector('img'), true);
     if (!m.frame || !m.frame.clip) { const st = statusOf(m); big.insertAdjacentHTML('beforeend', `<div class="mv-noclip">${esc(st.clip || st.reason || 'No clip for this move.')}</div>`); }
     S.oneId = m.id;
     document.title = `${m.name}, REVA card: ${MV.site.host}`;
@@ -760,7 +1234,8 @@ function partsOf(groups) {
     if (rect) await flip(frame, rect, big.getBoundingClientRect(), 420);
     if (S.oneId !== m.id) return;
     startClip(m, frame);
-    const h = $('#mv-one-h'); if (h) h.focus({ preventScroll: true });
+    // a click during the growth may have moved focus to the gallery's body: it comes back into the move
+    const h = $('#mv-one-h'); if (h && !one.contains(document.activeElement)) h.focus({ preventScroll: true });
   }
   function flip(frame, from, to, ms) {
     const s = from.width / (to.width || 1), x = from.left - to.left, y = from.top - to.top;
@@ -772,9 +1247,11 @@ function partsOf(groups) {
     const a = frame.animate([{ transform: 'none', borderRadius: '14px', transformOrigin: '0 0' }, { transform: `translate(${x}px,${y}px) scale(${s})`, borderRadius: `${14 / s}px`, transformOrigin: '0 0' }], { duration: ms, easing: 'cubic-bezier(.22,1,.36,1)', fill: 'forwards' });
     return a.finished.catch(() => {}).then(() => a);
   }
+  /** Closes the open move; returns its id, so focus can go back to its tile. */
   async function closeOne() {
-    const one = $('#mv-one'), frame = O.frame, holder = O.holder;
+    const one = $('#mv-one'), frame = O.frame, holder = O.holder, id = S.oneId;
     S.oneId = null; playhead = null; H.tile = null; H.mode = null;
+    $('#mv-home').inert = false;
     $('#mv-right')?.classList.remove('in');
     if (S.y != null) { scrollTo(0, S.y); S.y = null; }
     if (holder && holder.isConnected && !REDUCED && frame) {
@@ -790,6 +1267,12 @@ function partsOf(groups) {
     if (HAND.parentNode) HAND.remove();
     one.getAnimations().forEach((a) => a.cancel());
     one.hidden = true; one.innerHTML = ''; root.classList.remove('mv-lock', 'mv-solid'); O.frame = null; O.m = null;
+    return id;
+  }
+  /** Focus back on the tile a move was opened from: the move's own, or its pattern's when it is shown folded into one. */
+  function focusTile(id) {
+    const m = byId.get(id), t = m && ($(`.mv-t[data-id="${m.id}"]`) || (m.same && $(`.mv-t[data-id="${m.same}"]`)));
+    if (t) t.focus({ preventScroll: true });
   }
   function startClip(m, frame) {
     if (!m.frame || !m.frame.clip) return;
@@ -859,36 +1342,57 @@ function partsOf(groups) {
     if (big) playAll();
   }
   function step(dir) {
-    const list = MV.moves.filter(matches), i = list.indexOf(O.m); if (i < 0) return;
+    const list = MV.moves.filter(matches), i = list.indexOf(O.m.same && byId.has(O.m.same) ? byId.get(O.m.same) : O.m); if (i < 0) return;
     const n = list[(i + dir + list.length) % list.length]; S.from = null; location.hash = `m/${n.id}`;
   }
   function onOneClick(e) {
+    if (e.target.closest('[data-close]')) { location.hash = 'moves'; return; }
     if (e.target.id === 'mv-one' || e.target.classList.contains('mv-onew')) { location.hash = 'moves'; return; }
-    const cp = e.target.closest('[data-copy]');
-    if (cp && O.d) { copy(cp.dataset.copy === 'timing' ? O.d.timing : agentText(O.d.prompt), cp); return; }
-    const c = e.target.closest('[data-code]');
-    if (c) { const on = c.getAttribute('aria-expanded') !== 'true'; c.setAttribute('aria-expanded', String(on)); const box = $('#mv-code'); box.hidden = !on; if (on) drawCode(O.tab || 'css'); return; }
+    const u = e.target.closest('[data-use]');
+    if (u) { drawUse(u.dataset.use); return; }
     const t = e.target.closest('[data-tab]');
     if (t) { drawCode(t.dataset.tab); return; }
-    if (e.target.closest('[data-copycode]') && O.d) copy(O.d.code[O.tab], e.target);
+    const cp = e.target.closest('[data-usecopy]');
+    if (cp && O.d) copy(useText(), cp);
   }
+  /** The tabs a move has, in the order a person reaches for them: the timing line, the code, the prompt. */
+  const useTabs = (d) => (d ? [d.timing && ['timing', 'Timing'], d.code && (d.code.css || d.code.gsap || d.code.motion) && ['code', 'Code'], d.prompt && ['agent', 'For my agent']].filter(Boolean) : []);
+  /** One tab on: the last one chosen when this move has it (a person who copies code keeps seeing code), else Code, else the first. */
+  function drawUse(k) {
+    const tabs = useTabs(O.d), keys = tabs.map((x) => x[0]); if (!keys.length) return;
+    if (!keys.includes(k)) k = keys.includes(O.use) ? O.use : keys.includes('code') ? 'code' : keys[0];
+    O.use = k;
+    $$('[data-use]', $('#mv-one')).forEach((b) => { const on = b.dataset.use === k; b.setAttribute('aria-selected', String(on)); b.tabIndex = on ? 0 : -1; });
+    const panel = $('#mv-usepanel'); panel.setAttribute('aria-labelledby', `mv-tab-${k}`);
+    if (k === 'code') { panel.innerHTML = '<div class="mv-code" id="mv-code"></div>'; drawCode(O.tab || 'css'); return; }
+    panel.innerHTML = `<pre class="prose" tabindex="0"><code>${esc(k === 'timing' ? O.d.timing : agentText(O.d.prompt))}</code></pre>`;
+  }
+  /** What Copy takes: exactly what the open tab shows. */
+  const useText = () => (O.use === 'code' ? codeSource()[O.tab] || '' : O.use === 'timing' ? O.d.timing : agentText(O.d.prompt));
+  /** The code a person sees and copies: one part (the lead by default) when the move has several, or all of them together. */
+  const codeSource = () => { const c = O.d.code, parts = c.parts || []; return parts.length > 1 && O.part !== 'all' ? parts[Math.min(O.part || 0, parts.length - 1)] : c; };
   function drawCode(tab) {
-    const code = O.d.code, tabs = [['css', 'CSS'], ['gsap', 'GSAP'], ['motion', 'Motion']].filter(([k]) => code[k]);
+    const code = O.d.code, parts = code.parts || [], src = codeSource(), tabs = [['css', 'CSS'], ['gsap', 'GSAP'], ['motion', 'Motion']].filter(([k]) => code[k]);
     if (!tabs.some(([k]) => k === tab)) tab = tabs[0] ? tabs[0][0] : 'css';
     O.tab = tab;
     const notes = (O.d.notes || []).filter((n) => !/^Selectors are placeholders/.test(n));
-    $('#mv-code').innerHTML = `<div class="mv-tabs">${tabs.map(([k, w]) => `<button type="button" data-tab="${k}" aria-pressed="${k === tab}">${w}</button>`).join('')}<button type="button" class="cp" data-copycode>Copy</button></div><pre tabindex="0"><code>${esc(code[tab] || '')}</code></pre>${notes.map((n) => `<p class="mv-note">${esc(n)}</p>`).join('')}`;
+    const sel = parts.length > 1 ? `<label class="mv-partsel">Part <select id="mv-part">${parts.map((p, i) => `<option value="${i}"${O.part === i ? ' selected' : ''}>${esc(p.name)}${p.count > 1 ? ` (${p.count})` : ''}${i ? '' : ', the lead'}</option>`).join('')}<option value="all"${O.part === 'all' ? ' selected' : ''}>All ${parts.length} parts together</option></select></label>` : '';
+    $('#mv-code').innerHTML = `${sel}<div class="mv-tabs" role="group" aria-label="Code for">${tabs.map(([k, w]) => `<button type="button" data-tab="${k}" aria-pressed="${k === tab}">${w}</button>`).join('')}</div><pre tabindex="0"><code>${esc(src[tab] || '')}</code></pre>${notes.map((n) => `<p class="mv-note">${esc(n)}</p>`).join('')}`;
+    const ps = $('#mv-part'); if (ps) ps.addEventListener('change', () => { O.part = ps.value === 'all' ? 'all' : +ps.value; drawCode(O.tab); $('#mv-part')?.focus(); });
   }
   /** The prompt names its poster relative to the folder; the folder may have moved, so the absolute path is worked out here. */
+  // a card opened from disk knows its folder, so the agent gets full paths; one served by `reva scan open` names the folder instead,
+  // since a server path (/<scan folder>/clips/...) is no file an agent can open (6 Nov review)
   function agentText(p) {
-    const dir = decodeURIComponent(location.pathname.replace(/[^/]*$/, ''));
-    return String(p || '').replace(/^(Reference frames|Shader sources \(not in this text\)): (\S+)/gm, (a, k, f) => (f === 'the' ? a : `${k}: ${dir}${f}`));
+    const local = location.protocol === 'file:', dir = decodeURIComponent(location.pathname.replace(/[^/]*$/, ''));
+    const where = (f) => (local ? `${dir}${f}` : `${f} (in the scan folder ${SC.dirName || 'this card sits in'})`);
+    return String(p || '').replace(/^(\s*)(Reference frames|Spec and code|Shader sources \(not in this text\)|WebGL tables \(not in this text\)): (\S+)/gm, (a, sp, k, f) => (f === 'the' ? a : `${sp}${k}: ${where(f)}`));
   }
   async function copy(text, btn) {
-    const word = btn.textContent;
+    const word = btn.dataset.word || btn.textContent; btn.dataset.word = word;
     try { await navigator.clipboard.writeText(text); }
-    catch (e) { const t = document.createElement('textarea'); t.value = text; document.body.append(t); t.select(); try { document.execCommand('copy'); } catch (x) { /* the text stays on screen under Code */ } t.remove(); }
-    btn.textContent = 'Copied'; setTimeout(() => { btn.textContent = word; }, 1200);
+    catch (e) { const t = document.createElement('textarea'); t.value = text; document.body.append(t); t.select(); try { document.execCommand('copy'); } catch (x) { /* the text stays on screen in its tab */ } t.remove(); }
+    btn.textContent = 'Copied'; clearTimeout(btn.copied); btn.copied = setTimeout(() => { btn.textContent = btn.dataset.word; delete btn.dataset.word; }, 1200);
   }
   function onOneWheel(e) {
     const m = O.m; if (!m || !m.frame || m.frame.play !== 'scrub' || !e.target.closest('#mv-big')) return;
@@ -901,9 +1405,9 @@ function partsOf(groups) {
   const F = { t: 0, a: 0, b: 0, ready: false };
   async function pageOn() {
     const full = $('#mv-full'), h = heroOf(); full.hidden = false; root.classList.add('mv-solid');
-    if (!h) { full.innerHTML = '<div class="box"><p>No recording of this page.</p></div>'; return; }
+    if (!h) { full.innerHTML = `${CLOSEB}<div class="box"><p>No recording of this page.</p></div>`; return; }
     const segs = heroSegs(h), r = S.vp === 'phone' ? 390 / 844 : 1.6, room = Math.min(innerWidth - 80, (innerHeight - $('.side').offsetHeight - 32) * r);
-    full.innerHTML = `<div class="box" id="mv-fbox" style="width:${Math.round(room)}px;height:${Math.round(room / r)}px"></div><p id="mv-fhint">Scroll to drive the recording.</p>`;
+    full.innerHTML = `${CLOSEB}<div class="box" id="mv-fbox" style="width:${Math.round(room)}px;height:${Math.round(room / r)}px"></div><p id="mv-fhint">Scroll to drive the recording.</p>`;
     PAGE.loop = false; PAGE.classList.add('on'); PAGE.style.position = 'static'; $('#mv-fbox').append(PAGE);
     document.title = `The page, REVA card: ${MV.site.host}`;
     const go = (s) => setSrc(PAGE, s.src).then(() => { F.a = s.a; F.b = s.b; F.t = s.a; F.ready = true; });
@@ -926,19 +1430,25 @@ function partsOf(groups) {
   /* ---------- Site ---------- */
   const CLASSES = { rule: "REVA's own rules", limit: 'Limits of this scan', notBuilt: 'Not built yet', broke: 'What broke', impossible: 'What no tool can read' };
   function renderSite() {
-    const feel = (MV.site.feel && MV.site.feel.sentences) || [], cov = MV.coverage || {}, sc = MV.scan || {};
-    const counts = MV.site.pages.map((_, i) => MV.moves.filter((m) => m.pg.includes(i)).length);
-    const reasons = (cov.reasons || []).filter((r) => (r.words || []).length);
-    const flat = reasons.length ? '' : `<ul>${(MV.missing || []).map((p) => `<li>${esc(p)}</li>`).join('')}</ul>`;
-    const made = [sc.date && `Recorded on ${sc.date}`, sc.engine && `With ${sc.engine === 'cft' ? 'Chrome for Testing' : sc.engine}`, sc.wallMs && `In ${Math.round(sc.wallMs / 60000)} minutes`, MV.tally && `${MV.tally.frames.toLocaleString('en-US')} frames recorded`].filter(Boolean);
-    const notOpened = cov.notOpened || [];
+    const feel = (SYS && SYS.sentences) || (MV.site.feel && MV.site.feel.sentences) || [], cov = MV.coverage || {}, sc = MV.scan || {};
+    // a tile once, both screens: a pattern counts on every page one of its moves ran on
+    const onPage = (m, i) => m.pg.includes(i) || (m.uses && m.uses.moves.some((id) => byId.has(id) && byId.get(id).pg.includes(i)));
+    const counts = MV.site.pages.map((_, i) => MV.moves.filter((m) => shownOnce(m) && onPage(m, i)).length);
+    const rc = MV.records, rec = rc && Number.isFinite(rc.all) ? `${rc.all.toLocaleString('en-US')} records: ${rc.onCard.toLocaleString('en-US')} shown on the card, ${rc.folded.toLocaleString('en-US')} folded into a pattern${rc.offCard ? `, ${rc.offCard.toLocaleString('en-US')} kept off (not a move, or a consent banner)` : ''}` : null;
+    const reasons = (cov.reasons || []).filter((r) => (r.words || []).length), summary = (cov.summary || []).slice(0, 4);
+    // what the gaps mean, in a few lines; the ledger's own lines fold under them (6 Nov review: an internal log on the Site page)
+    const flat = reasons.length || !(MV.missing || []).length ? '' : `<ul>${MV.missing.map((p) => `<li>${esc(p)}</li>`).join('')}</ul>`;
+    const made = [sc.date && `Recorded on ${sc.date}`, sc.engine && `With ${sc.engine === 'cft' ? 'Chrome for Testing' : sc.engine}`, sc.wallMs && `In ${Math.round(sc.wallMs / 60000)} minutes`, MV.tally && `${MV.tally.frames.toLocaleString('en-US')} frames recorded`, rec].filter(Boolean);
+    const notOpened = cov.notOpened || [], notN = Number.isFinite(cov.notOpenedN) ? Math.max(cov.notOpenedN, notOpened.length) : notOpened.length;
     const lead = coverageLine();
     $('#mv-sitescreen').innerHTML = `<div class="mv-site">
       <h1 tabindex="-1">How this site moves</h1>${feel.map((s) => `<p class="feel">${esc(s)}</p>`).join('')}
-      <h2>Pages</h2><ul>${MV.site.pages.map((p, i) => `<li><button type="button" data-fp="${i}">${esc(p.label)}</button> <span>${counts[i] === 1 ? 'one move' : `${counts[i]} moves`}</span></li>`).join('')}</ul>
-      ${notOpened.length ? `<details><summary>${notOpened.length === 1 ? 'One page' : `${notOpened.length} pages`} not opened</summary><ul>${notOpened.map((p) => `<li>${esc(p)}</li>`).join('')}</ul></details>` : ''}
+      <h2>Pages</h2><p class="q">A move on several pages counts on each of them.</p><ul>${MV.site.pages.map((p, i) => `<li><button type="button" data-fp="${i}">${esc(p.label)}</button> <span>${counts[i] === 1 ? 'one move' : `${counts[i]} moves`}</span></li>`).join('')}</ul>
+      ${notOpened.length ? `<details><summary>${notN === 1 ? 'One page' : `${notN.toLocaleString('en-US')} pages`} not opened${notN > notOpened.length ? `, the first ${notOpened.length} listed` : ''}</summary><ul>${notOpened.map((p) => `<li>${esc(p)}</li>`).join('')}</ul></details>` : ''}
       <h2>What could not be read</h2>${lead ? `<p class="q">${esc(lead)}</p>` : ''}
-      ${reasons.map((r) => `<h3>${esc(CLASSES[r.class] || r.class)}</h3><ul>${r.words.map((w) => `<li>${esc(w)}</li>`).join('')}</ul>`).join('')}${flat}
+      ${cov.consent ? `<p class="gap" id="mv-consent">${esc(cov.consent)}</p>` : ''}
+      ${summary.map((w) => `<p class="gap">${esc(w)}</p>`).join('')}
+      ${reasons.length || flat ? `<details class="log"><summary>Technical log</summary>${reasons.map((r) => `<h3>${esc(CLASSES[r.class] || r.class)}</h3><ul>${r.words.map((w) => `<li>${esc(w)}</li>`).join('')}</ul>`).join('')}${flat}</details>` : ''}
       <p class="q">Some things no recording can tell: what only a server knows, the original source and tokens, DRM video, how the site feels on your own machine, and pages nobody links to.</p>
       ${made.length ? `<h2>How this was made</h2><details><summary>Show</summary><ul>${made.map((w) => `<li>${esc(w)}</li>`).join('')}</ul></details>` : ''}
     </div>`;
@@ -962,10 +1472,12 @@ function partsOf(groups) {
     q.addEventListener('blur', () => { if (!q.value) root.classList.remove('mv-finding'); });
   }
   addEventListener('keydown', (e) => {
-    if (e.metaKey || e.ctrlKey || e.altKey || root.classList.contains('mv-other')) return;
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
     const t = e.target, typing = t && /^(input|textarea|select)$/i.test(t.tagName);
     if (e.key === '/' && !typing) { e.preventDefault(); e.stopImmediatePropagation(); if (S.screen !== 'home') location.hash = 'moves'; findOpen(); return; }
-    if (typing) return;
+    if (typing || root.classList.contains('mv-other')) return;
+    // the arrows belong to the control that has focus: the tabs, the clip's time
+    if ((e.key === 'ArrowLeft' || e.key === 'ArrowRight') && t && t.closest && t.closest('[role="tablist"],[role="slider"]')) return;
     if (e.key === 'Escape' && (S.screen === 'one' || S.screen === 'page')) { e.preventDefault(); location.hash = 'moves'; return; }
     if (S.screen === 'one') {
       if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') { e.preventDefault(); step(e.key === 'ArrowLeft' ? -1 : 1); }
@@ -973,8 +1485,90 @@ function partsOf(groups) {
     }
   }, true);
 
+  /* ---------- a light smooth wheel (owner 11 Nov) ----------
+     A mouse wheel's notches carry the window toward a target, 0.11 of the gap per 60 Hz frame (the feel of Lenis lerp 0.1), and
+     only the wheel: a trackpad, touch, the keys and the scrollbar stay native, and so does any wheel whose kind is unclear. It moves
+     the window itself (scrollTo each frame), so the sticky bar, the observers and the finale see a plain scroll. No frame loop while
+     still. Native inside anything that scrolls on its own, over a panel fixed above the page, with ctrl / meta (zoom) or a sideways
+     wheel. Off with reduced motion and in print. A jump inside the card (a Design part) glides the same way and stops under the bar. */
+  {
+    const mq = (q) => (typeof matchMedia === 'function' ? matchMedia(q) : { matches: false });
+    const RM = mq('(prefers-reduced-motion: reduce)'), PR = mq('print'), LERP = 0.11;
+    const W = { on: false, cur: 0, to: 0, t: 0, raf: 0, last: -1e9, kind: null, frames: 0 };
+    const off = () => RM.matches || PR.matches;
+    const max = () => Math.max(0, document.documentElement.scrollHeight - innerHeight);
+    const stop = () => { if (W.raf) cancelAnimationFrame(W.raf); W.raf = 0; W.on = false; };
+    const frame = (now) => {
+      W.raf = 0;
+      // something else moved the window meanwhile (a tab's jump to the top, the keys, the scrollbar): it wins, no jump back
+      if (Math.abs(scrollY - W.cur) > 2) { W.on = false; return; }
+      const dt = W.t ? Math.min(64, now - W.t) : 16.667; W.t = now;
+      W.to = Math.min(W.to, max());
+      W.cur += (W.to - W.cur) * (1 - Math.pow(1 - LERP, dt / 16.667));
+      if (Math.abs(W.to - W.cur) < 0.5) W.cur = W.to;
+      scrollTo(0, W.cur); W.frames++;
+      if (W.cur !== W.to) W.raf = requestAnimationFrame(frame); else W.on = false;
+    };
+    const go = (y) => {
+      y = Math.max(0, Math.min(max(), y));
+      if (!W.on) { W.cur = scrollY; W.t = 0; W.on = true; }
+      W.to = y; if (!W.raf) W.raf = requestAnimationFrame(frame);
+    };
+    // a wheel's notches: lines or pages (Firefox), or the legacy delta in whole 120s that is not three times the pixels (Chrome and
+    // Safari give a trackpad exactly -3 x); with no legacy delta, whole steps of 50 px or more; anything else counts as a trackpad
+    const kind = (e) => {
+      if (e.deltaMode === 1 || e.deltaMode === 2) return 'wheel';
+      const w = e.wheelDeltaY;
+      if (w) return w !== -3 * e.deltaY && Math.abs(w) % 120 === 0 ? 'wheel' : 'pad';
+      return Number.isInteger(e.deltaY) && Math.abs(e.deltaY) >= 50 ? 'wheel' : 'pad';
+    };
+    // something under the pointer scrolls on its own this way (a list, a code block, a dialog), or keeps its scroll to itself, or
+    // sits fixed above the page
+    const inner = (el, dy) => {
+      for (; el && el.nodeType === 1 && el !== document.body && el !== document.documentElement; el = el.parentElement) {
+        if (el.hasAttribute('data-native-scroll')) return true;
+        const cs = getComputedStyle(el);
+        if (cs.position === 'fixed') return true;
+        if (/auto|scroll|overlay/.test(cs.overflowY) && el.scrollHeight > el.clientHeight + 1) {
+          if (dy > 0 ? el.scrollTop + el.clientHeight < el.scrollHeight - 1 : el.scrollTop > 0) return true;
+          if (cs.overscrollBehaviorY !== 'auto') return true;
+        }
+      }
+      return false;
+    };
+    addEventListener('wheel', (e) => {
+      if (!e.isTrusted || e.defaultPrevented || e.ctrlKey || e.metaKey || off()) return;
+      // one gesture is one kind: a trackpad's stream stays native until it rests a quarter second
+      const k = kind(e), fresh = e.timeStamp - W.last > 250; W.last = e.timeStamp;
+      W.kind = !fresh && W.kind === 'pad' ? 'pad' : k;
+      const dy = e.deltaY;
+      if (W.kind !== 'wheel' || e.shiftKey || !dy || Math.abs(e.deltaX) > Math.abs(dy)) { if (W.on) stop(); return; }
+      if (inner(e.target, dy)) return;
+      if (max() < 1 || getComputedStyle(document.documentElement).overflowY === 'hidden' || getComputedStyle(document.body).overflowY === 'hidden') return;
+      e.preventDefault();
+      const px = e.deltaMode === 1 ? dy * 40 : e.deltaMode === 2 ? dy * innerHeight : dy;
+      go((W.on ? W.to : scrollY) + Math.max(-innerHeight, Math.min(innerHeight, px)));
+    }, { passive: false });
+    // the keys, the scrollbar, a touch, a print: native at once, from wherever the glide had got to
+    addEventListener('keydown', (e) => { if (W.on && /^( |Spacebar|PageUp|PageDown|ArrowUp|ArrowDown|Home|End)$/.test(e.key)) stop(); }, true);
+    addEventListener('pointerdown', () => { if (W.on) stop(); }, true);
+    addEventListener('touchstart', () => { if (W.on) stop(); }, { capture: true, passive: true });
+    addEventListener('beforeprint', stop);
+    if (RM.addEventListener) RM.addEventListener('change', stop);
+    /** A jump inside the card: the element's top under the bar (the page's scroll padding and its own scroll margin), gliding. */
+    const into = (el) => {
+      const y = scrollY + el.getBoundingClientRect().top - (parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 0) - (parseFloat(getComputedStyle(el).scrollMarginTop) || 0);
+      if (off()) { stop(); scrollTo(0, y); } else go(y);
+    };
+    window.__smoothInto = into;
+    window.__smooth = { state: () => ({ on: W.on, to: W.to, frames: W.frames, kind: W.kind }), kind, into };
+  }
+
   /* ---------- start ---------- */
   shell();
+  // the bar's glass rests while the page moves (see .side::before): one passive listener, one class on the way in, one timer out
+  { let mt = 0; const rest = () => { mt = 0; root.classList.remove('mv-moving'); };
+    addEventListener('scroll', () => { if (!mt) root.classList.add('mv-moving'); else clearTimeout(mt); mt = setTimeout(rest, 160); }, { passive: true }); }
   let lastW = 0, wt = 0;
   addEventListener('resize', () => {
     clearTimeout(wt);

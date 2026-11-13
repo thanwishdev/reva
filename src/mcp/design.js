@@ -65,7 +65,7 @@ function sectionRows(d, s) {
 function sectionMeta(d, s) {
   const pick = (o, keys) => Object.fromEntries(keys.filter((k) => o && o[k] !== undefined).map((k) => [k, o[k]]));
   return { fonts: pick(d.fonts, ['rendered', 'notLoaded', 'withheld', 'note']), type: pick(d.type, ['bodySize', 'scale', 'more']), palette: pick(d.palette, ['pageBackground', 'mainBackground', 'mostUsedBackground', 'mainText', 'notPainted', 'more', 'note']),
-    contrast: pick(d.contrast, ['textElements', 'failingPairs', 'failingElements', 'overImage', 'overMedia', 'overlapped', 'noBackground', 'hidden', 'more', 'note']), spacing: pick(d.spacing, ['base', 'negative', 'more', 'note']),
+    contrast: pick(d.contrast, ['textElements', 'failingPairs', 'failingElements', 'overImage', 'overMedia', 'overlapped', 'noBackground', 'hidden', 'faded', 'more', 'note']), spacing: pick(d.spacing, ['base', 'negative', 'more', 'note']),
     radii: pick(d.radii, ['more']), shadows: pick(d.shadows, ['more']), layout: {}, breakpoints: pick(d.breakpoints, ['reflowOnly', 'continuous', 'merged', 'range', 'note']),
     states: pick(d.states, ['elements', 'more', 'note']), custom_properties: pick(d.customProperties, ['count', 'byKind', 'withheld', 'label', 'unreadableSheets', 'note']),
     unknowns: { note: 'what the design pass could not read or left out, in our words, with a count' } }[s] || {};

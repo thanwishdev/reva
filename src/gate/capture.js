@@ -132,7 +132,7 @@ const exList = res => Object.fromEntries(Object.entries(res).filter(([, r]) => r
  * The replays of one capture suite, in the order they ask for the gate's session slots (FIFO, src/gate/limit.js).
  * 26 Oct S14, data first in every mode: orig1 (the snapshots and screenshots every reader uses), cap (the rule table) and
  * cov (its rule usage) are issued before the noise / verification replays, so a slow or stopped step has its data first.
- * verify 'data' (deep mode ก): orig1 + cap + cov + ONE noise replay (orig2; none for an inner page, noise=false), no T6
+ * verify 'data' (deep data mode): orig1 + cap + cov + ONE noise replay (orig2; none for an inner page, noise=false), no T6
  * dump, then no rebuild, audit or mutants. verify 'full': the lite knobs' origs (2) or all four, as before.
  * @param {{verify?:'full'|'data', lite?:{origs?:number, dump?:boolean}|null, noise?:boolean}} o
  * @returns {{origs:string[], dump:boolean, replays:string[], verification:string[]}}
@@ -146,7 +146,7 @@ export function captureRunPlan({ verify = 'full', lite = null, noise = true, dum
 // `lite` (corpus, CORPUS-PLAN §2 step 3): { origs: 2, dump: false, prune: true, minRebuildFrac: 0.8 }. Same capture code,
 // less verification: orig1+orig2 only (noise caps AND identity from that one pair), no T6 dump, mutants 0 skips the
 // mutant step, orig2/cov PNGs pruned after the verdict. Defaults (lite = null) are the unchanged FULL suite.
-// verify 'data' (26 Oct S14, deep mode ก): captureRunPlan above; the verdict says verification 'sampled-out' and never
+// verify 'data' (26 Oct S14, deep data mode): captureRunPlan above; the verdict says verification 'sampled-out' and never
 // claims acceptance (verdictOf(r, 'data')). capture-gate.json is written in every mode (design, truth, completeness and
 // the states step read it).
 export async function runCaptureSuite(site, { points, out, mutants = 20, mutantCls, excuse = [], log = console.log, lite = null, verify = 'full', noise = true, dump: dumpOpt = null }) {
@@ -236,7 +236,7 @@ export async function runCaptureSuite(site, { points, out, mutants = 20, mutantC
       dumpSkipped: [],
       unreadableSheets: [...new Set(Object.values(r.tables).flatMap(x => x.unreadableSheets || []))],
       archiveMisses: { ...r.archiveMisses, cap: r.captureSession.archiveMisses },
-      acceptance: null, // never claimed: rebuild, audit and mutants did not run (deep mode ก; full checks on the ~10 % sample)
+      acceptance: null, // never claimed: rebuild, audit and mutants did not run (deep data mode; full checks on the ~10 % sample)
     };
     const st = statusOf({ identityPass: v.identityPass !== false, acceptance: true, clockStalled: v.installStalled, skipped: skippedOf(v) });
     Object.assign(v, st.status === 'pass' ? { status: 'sampled-out', statusWhy: 'deep data mode: data + noise check; rebuild, audit and mutants run on the ~10 % sample only' } : { status: st.status, statusWhy: st.why });

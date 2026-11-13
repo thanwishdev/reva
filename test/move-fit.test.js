@@ -108,7 +108,7 @@ test('sentences read as a person says them', () => {
   const g = (name, changes, o = {}) => ({ name, changes, law: { class: 'tween', ms: 600 }, ...o });
   const up = { property: 'scale', family: 'scale', from: 1, to: 1.06 }, slide = { property: 'x', family: 'move', from: 12, to: 0 }, fade = { property: 'opacity', family: 'fade', from: 0, to: 1 };
   assert.equal(sentenceOf({ kind: 'touch', trigger: { kind: 'hover' } }, [g('Image', [up]), g('Label', [slide, fade])]), 'On hover the image scales up 6 % and the label slides left 12 px and fades in, 0.6 s.');
-  assert.equal(sentenceOf({ kind: 'load', trigger: { kind: 'load' } }, [g('Word', [{ property: 'y', family: 'move', from: 40, to: 0 }], { count: 8 })]), 'On load the words rise 40 px, 0.6 s.');
+  assert.equal(sentenceOf({ kind: 'load', trigger: { kind: 'load' } }, [g('Word', [{ property: 'y', family: 'move', from: 40, to: 0 }], { count: 8 })]), 'On load, 8 words rise 40 px, 0.6 s.');
   assert.equal(sentenceOf({ kind: 'touch', trigger: { kind: 'hover' } }, [g('Card', [{ property: 'y', family: 'move', from: 0, to: -4 }], { part: 'hover' }), g('Card', [{ property: 'y', family: 'move', from: -4, to: 0 }], { part: 'press' })]), 'On hover it rises 4 px; on press it drops 4 px.');
   assert.equal(sentenceOf({ kind: 'scroll', trigger: {} }, [{ name: 'Picture', changes: [{ property: 'y', family: 'move', from: 0, to: -120 }], law: { class: 'map' } }]), 'As you scroll it rises 120 px, tied to scroll.');
   assert.equal(sentenceOf({ kind: 'load', trigger: {} }, []), null);
@@ -173,4 +173,19 @@ test('a spring keeps a start speed the fit withheld, or its code runs late of it
   const rec = { model: { family: 'spring', params: { omega: { value: 15 }, zeta: { value: 0.8 }, v0: { withheld_value: 200 }, target: { withheld_value: 100 } } } };
   const law = lawOf(rec, { span: 500, x0: 0 }, []);
   assert.equal(law.class, 'spring'); assert.equal(law.v0, 200); assert.equal(law.v0n, 2);
+});
+
+test('page scroll feel: a smoothed page with no fitted smoothing is still smoothed, never "the document does not scroll"', async () => {
+  const { pageScrollFeel } = await import('../src/scan/moves/fit.js');
+  // the 13 Nov showcase scan (a Lenis page): the law said smoothed, the lag went to windowMs because no smoothing was fitted
+  const lenisPage = { id: 'm-01d9801f', kind: 'page-scroll', time: { delayMs: 0, staggerMs: null, count: 1, windowMs: 200 }, pageScroll: { mode: 'smoothed', lagMs: 200 } };
+  assert.deepEqual(pageScrollFeel(lenisPage), { mode: 'smoothed', lagMs: null });
+  const f = feelOf([], { scroll: pageScrollFeel(lenisPage), smoother: 'Lenis' });
+  assert.equal(f.scroll.kind, 'smoothed');
+  assert.ok(!f.sentences.some((s) => /does not scroll/.test(s)), f.sentences.join(' | '));
+  // a fitted smoothing keeps its time; a page whose document never moved stays wheel-consumed
+  assert.deepEqual(pageScrollFeel({ ...lenisPage, time: { ms: 830 } }, new Map([['m-01d9801f', { tauMs: 166 }]])), { mode: 'smoothed', lagMs: null });
+  assert.deepEqual(pageScrollFeel({ ...lenisPage, time: { ms: 300 } }), { mode: 'smoothed', lagMs: 300 });
+  assert.deepEqual(pageScrollFeel({ id: 'x', kind: 'page-scroll', time: {}, pageScroll: { mode: 'wheel-consumed', lagMs: null } }), { mode: 'wheel-consumed', lagMs: null });
+  assert.equal(pageScrollFeel(null), null);
 });

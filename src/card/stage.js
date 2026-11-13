@@ -8,7 +8,9 @@ import { buildViewport } from '../scan/stage.js';
 import { siteWords } from '../scan/words.js';
 import { Ledger } from '../scan/ledger.js';
 import { assertOutsideRepo } from '../util/paths.js';
-import { cardIndex, injectMoves } from './moves.js';
+import { cardIndex, injectMoves, studyMoves } from './moves.js';
+import { siteAgentPrompt } from '../export/move.js';
+import { motionSpec } from '../export/spec.js';
 
 const PAGE = path.join(path.dirname(fileURLToPath(import.meta.url)), 'page');
 const MARK = '/*__DATA__*/null';
@@ -48,8 +50,14 @@ export function writeScanCard(out, { log = () => {}, keepStage = false } = {}) {
   const site = siteWords(scan, ledger);
   // moves.json present: the card opens on the moves, the stage becomes Study. An older folder keeps the card it had.
   const movesFile = path.join(out, 'moves.json');
-  const moves = fs.existsSync(movesFile) ? cardIndex(JSON.parse(fs.readFileSync(movesFile, 'utf8')), { coverage: site.coverage ?? null, missing: site.missing ?? [] }) : null;
-  const data = { look: first, scan: { looks, host: scan.host, url: scan.url, dirName: path.basename(path.resolve(out)), pages: stages, site }, ...(moves ? { moves } : {}) };
+  const movesIndex = fs.existsSync(movesFile) ? JSON.parse(fs.readFileSync(movesFile, 'utf8')) : null;
+  // the whole-card For my agent text reads the chosen moves' own files for their timing and recipe lines
+  const docOf = (id) => { try { return JSON.parse(fs.readFileSync(path.join(out, 'moves', `${id}.json`), 'utf8')); } catch { return null; } };
+  const date = movesIndex?.scan?.date || (typeof scan.startedAt === 'string' ? scan.startedAt.slice(0, 10) : null);
+  const moves = movesIndex ? cardIndex(movesIndex, { coverage: site.coverage ?? null, missing: site.missing ?? [], prompt: siteAgentPrompt(movesIndex, docOf), finale: motionSpec(movesIndex, docOf, { date }) }) : null;
+  // Study lists the elements of the card's moves first; the rest of what moves is one press away
+  const onCard = movesIndex ? studyMoves(movesIndex, docOf) : null;
+  const data = { look: first, scan: { looks, host: scan.host, url: scan.url, dirName: path.basename(path.resolve(out)), pages: stages, site, ...(onCard ? { onCard } : {}) }, ...(moves ? { moves } : {}) };
   const tpl = fs.readFileSync(path.join(PAGE, 'template.html'), 'utf8');
   if (!tpl.includes(MARK)) throw new Error('card template has no data marker');
   // stage.html holds the stage's <style> and <script>: the style joins the head, the script runs after the card's own

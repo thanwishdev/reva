@@ -12,6 +12,7 @@ import { openSession } from '../record/session.js';
 import { BLACKHOLE_ARGS } from '../replay/target.js';
 import { quietBeforeStart, settle, noUdpPrefs } from '../look/index.js';
 import { clickRejectInPage } from '../safety/consent.js';
+import { CONSENT_HIDE_INIT, consentStateInPage, rejectHiddenInPage, mergeConsent } from '../safety/banner.js';
 import { frameRecorder } from './frames.js';
 import { passGate, gateProbe, findGate } from './gate.js';
 import { writeTable } from './table.js';
@@ -47,6 +48,7 @@ export { gateProbe };
  * @param {boolean} [o.dropLeft]  a page the unit's press left for is no miss: the test only touches it, one page per template
  * @param {number} [o.idleMs]      wall bound of a page-idle wait: 250 ms against 2 s, a sealed large marketing site, scroll, same settle: 22 of 19 M values differ
  * @param {boolean} [o.gate]       false: a picture of every frame, no shot gate
+ * @param {boolean} [o.hideConsent] false: leave cookie-consent banners on screen (default: hidden for the whole take, src/safety/banner.js)
  */
 /** Where the page went since `from`: the document it asked for outside the archive, or its own address when that moved. */
 export async function leftPage(S, from) {
@@ -56,7 +58,7 @@ export async function leftPage(S, from) {
   return now.split('#')[0] !== from.split('#')[0] ? now : null;
 }
 
-export async function recordUnit({ target, viewport, name, outDir, consentClicks = [], gatePlan = null, engine, log = () => {}, noFrames = false, args = [], init = null, write = true, dropLeft = false, onMiss = null, idleMs = IDLE_WAIT_MS, gate = true }, body) {
+export async function recordUnit({ target, viewport, name, outDir, consentClicks = [], gatePlan = null, engine, log = () => {}, noFrames = false, args = [], init = null, write = true, dropLeft = false, onMiss = null, idleMs = IDLE_WAIT_MS, gate = true, hideConsent = true }, body) {
   const { cls } = VIEWPORTS[viewport];
   const vp = target.classes[cls].viewport;
   const w0 = Date.now();
@@ -67,7 +69,7 @@ export async function recordUnit({ target, viewport, name, outDir, consentClicks
   const work = fs.mkdtempSync(path.join(outDir, '.take-'));
   const S = await openSession({
     writeDir: path.join(work, 'take'), lane: 'hx', rate: RATE, engine, cls, target, args: [...BLACKHOLE_ARGS, ...args], prefs: noUdpPrefs(), timerFlag: true, keepalive: true, discover: true,
-    maxElements: Infinity, capPolicy: null, netGate: true, streamRows: true, scan: true, idleMs, onMiss, scene: { init: [DECLARED_INIT, init].filter(Boolean).join('\n') },
+    maxElements: Infinity, capPolicy: null, netGate: true, streamRows: true, scan: true, idleMs, onMiss, scene: { init: [DECLARED_INIT, hideConsent ? CONSENT_HIDE_INIT : null, init].filter(Boolean).join('\n') },
   });
   const fr = noFrames || !write ? null : frameRecorder(S, { dir: frameDir, width: vp.width, height: vp.height, gate });
   /** One frame's picture: `opts` as frameRecorder's shot. Returns its read of the page, with no recorder only W.quiet. */
@@ -89,9 +91,16 @@ export async function recordUnit({ target, viewport, name, outDir, consentClicks
     const flight = new Map();
     S.page.on('request', (r) => flight.set(r, Date.now())); S.page.on('requestfinished', (r) => flight.delete(r)); S.page.on('requestfailed', (r) => flight.delete(r));
     const pending = S.netInFlight || (() => { const now = Date.now(); let n = 0; for (const t of flight.values()) if (now - t < 3000) n++; return n; });
+    // what the consent hider took out of this take (every document of it), and the reject it pressed, if any
+    let consent = null;
+    const readConsent = async () => { if (!hideConsent || S.closed || S.deadError) return; try { consent = mergeConsent(consent, await S.evRetry(consentStateInPage)); } catch { /* a page between documents: the next read has it */ } };
     const reject = async () => {
-      if (!consentClicks.length) return null;
-      try { const c = await S.evRetry(clickRejectInPage, consentClicks); if (c && c.length) await S.hold(400); return c; } catch { return null; }
+      let c = null;
+      if (consentClicks.length) try { c = await S.evRetry(clickRejectInPage, consentClicks); if (c && c.length) await S.hold(400); } catch { c = null; }
+      // a banner the hider took out may offer a clear "reject": pressed once, never "accept" (the banner stays hidden either way)
+      if (hideConsent && !(c && c.length)) try { if (await S.evRetry(rejectHiddenInPage)) await S.hold(400); } catch { /* none */ }
+      await readConsent();
+      return c;
     };
     /**
      * Up to n frames of a phase. { pictures } as wantShot. { quiet: q, min }: the phase ends once W.quiet(q) holds, never before
@@ -118,13 +127,15 @@ export async function recordUnit({ target, viewport, name, outDir, consentClicks
       if (S.net) S.net.stay = true;
     };
     await body({ S, shot, phaseFrames, ready, rest, reject, result });
+    await readConsent();
+    if (consent && (consent.hidden.length || consent.rejected.length || consent.unlocked?.length)) result.consent = consent;
     if (write) {
       const bare = (u) => u.split(/[?#]/)[0], left = new Set(dropLeft ? (S.net?.left || []).map(bare) : []);
       result.missList = [...new Set((S.net?.misses || []))].filter((m) => !left.has(bare(m.slice(m.indexOf(' ') + 1))));
       result.netGate = S.netGateStats?.() ?? null;
       // what the page declares, read at rest on the object the hook caught; a page that broke on the last step keeps its take
       if (!S.deadError) try { result.declared = await S.page.evaluate(restSource()); await S.evRetry(() => window.__WR.snapshotDeclared('take-end')); } catch (e) { result.declared = { error: String(e.message).split('\n')[0].slice(0, 200) }; }
-      const { take, dir } = await S.finish({ scenario: name, extra: { netGate: result.netGate } });
+      const { take, dir } = await S.finish({ scenario: name, extra: { netGate: result.netGate, ...(result.consent ? { consent: result.consent } : {}) } });
       const dest = path.join(takeRoot, name);
       fs.rmSync(dest, { recursive: true, force: true });
       fs.renameSync(dir, dest);

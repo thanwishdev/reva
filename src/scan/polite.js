@@ -25,8 +25,9 @@ export const OWN_GAP_MS = 500;
 export const OTHER_GAP_MS = 100;
 export const NAV_GAP_MS = 10000;
 /** Added to every gap: two requests a queue lets go exactly 500 ms apart can reach the server a few ms closer (a new
- *  connection for the first, a warm one for the second): 491-497 ms measured on the wire with no margin, 698 of 710 with 10 ms. */
-export const WIRE_MARGIN_MS = 25;
+ *  connection for the first, a warm one for the second): 491-497 ms measured on the wire with no margin, 698 of 710 with 10 ms;
+ *  a busy CI runner still landed 674-697 of 700 with 25 ms, so the margin is 60 ms: never below the site's own delay. */
+export const WIRE_MARGIN_MS = 60;
 
 /** Thrown by policy.fetch once the site asked REVA to stop: no request is sent. */
 export class SiteStopped extends Error {

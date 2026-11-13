@@ -156,7 +156,7 @@ test('a new page state is data in the spec, never the motion of a change', () =>
     { name: 'Wrap', count: 9, state: 'new page', provenance: 'fitted', law: { class: 'steps', ms: 0, delayMs: 0 }, changes: [{ property: 'color', family: 'colour', from: 'rgb(0, 0, 0)', to: 'rgb(9, 9, 9)', unit: '' }] },
     { name: 'Menu', count: 4, provenance: 'declared', law: { class: 'tween', ms: 1000, delayMs: 0 }, changes: [{ property: 'x', family: 'move', from: 0, to: -590, unit: 'px' }] },
   ];
-  assert.equal(sentenceOf({ kind: 'change', trigger: { kind: 'page' } }, groups), 'Between pages the menus slide left 590 px, 1 s.');
+  assert.equal(sentenceOf({ kind: 'change', trigger: { kind: 'page' } }, groups), 'Between pages, 4 menus slide left 590 px, 1 s.');
   const spec = JSON.parse(/Spec \(JSON\): (.*)/.exec(agentPrompt({ name: 'x', sentence: 'x', trigger: { kind: 'page' }, groups }))[1]);
   assert.equal(spec.groups[0].is, 'new page state, set at once: not a motion');
   assert.equal(spec.groups[0].law, undefined);
@@ -190,7 +190,9 @@ test('a value set while its program was hidden is a jump at its next draw, never
 test('a move whose largest layer is a canvas no uniform of which leads says so first (a hover over a three.js scene)', () => {
   const g = { name: 'Paragraph', count: 11, changes: [{ property: 'opacity', from: 1, to: 0, channel: 'ren:opacity', unit: '' }], law: { class: 'tween', ms: 650 } };
   const s = sentenceOf({ kind: 'touch', trigger: { kind: 'hover' }, glLayer: { cover: 1, engine: 'three.js', switchAtMs: 1000 } }, [g]);
-  assert.match(s, /^On hover a full-screen WebGL layer \(three\.js\) keeps drawing and switches programs at 1 s; /);
+  // the program switch stays in the spec (programSwitches), out of the sentence (11 Nov)
+  assert.match(s, /^On hover a full-screen WebGL layer \(three\.js\) keeps drawing; /);
+  assert.doesNotMatch(s, /switches programs/);
   assert.match(sentenceOf({ kind: 'touch', trigger: { kind: 'hover' }, glLayer: { cover: 0.6, engine: null } }, [g]), /a WebGL layer over 60 % of the screen keeps drawing; /);
   const two = sentenceOf({ kind: 'touch', trigger: { kind: 'hover' }, glLayer: { cover: 1, engine: null } }, [{ ...g, part: 'press' }, { ...g, name: 'Logo', part: 'hover' }]);
   assert.match(two, /^Over a full-screen WebGL layer that keeps drawing: on press /);

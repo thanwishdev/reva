@@ -7,7 +7,7 @@ const roundTo = (x, step) => Math.round(x / step) * step;
 const secs = (ms) => `${round(ms / 1000, 1)}`;
 
 /** The curve word of a law: a family a person can compare across moves, or null. */
-function curveFamily(law) {
+export function curveFamily(law) {
   if (!law) return null;
   if (law.class === 'spring') return 'spring';
   if (law.class !== 'tween') return null;
@@ -15,7 +15,8 @@ function curveFamily(law) {
   return law.bezier ? `cubic-bezier(${law.bezier.join(', ')})` : law.declared ?? null;
 }
 const FEEL_WORDS = [[/\.out$|^ease-out$|^easeOut/, 'an ease-out'], [/\.inOut$|^ease-in-out$|^easeInOut/, 'an ease-in-out'], [/\.in$|^ease-in$|^easeIn/, 'an ease-in'], [/^spring$/, 'a spring'], [/^none$|^linear$/, 'a straight line']];
-const easeWord = (name) => { for (const [re, w] of FEEL_WORDS) if (re.test(name)) return w; return 'its own curve'; };
+// a curve with no family word is said by its numbers: a site's own cubic-bezier is the thing to copy, "its own curve" says nothing
+const easeWord = (name) => { for (const [re, w] of FEEL_WORDS) if (re.test(name)) return w; return /^cubic-bezier\([^)]*\)$/.test(name) ? name : 'its own curve'; };
 
 /**
  * @param {{kind:string, groups:{law?:object, stagger?:{ms:number}|null}[], time?:object}[]} moves  fitted moves, lead group first

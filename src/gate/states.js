@@ -633,7 +633,7 @@ export function jsFailReason(e) {
  * The replays of the states suite per class, in order (26 Oct S14, data first in every mode): o1 (every state's values,
  * the clips, the pre-input snapshots) and cov (rule usage; state-coverage-<cls>.json is written right after it, L3) are
  * the data. o2/o3 (noise + identity), cap (the JS states' rule tables, read only by the rebuild) and rb (the rebuild) only
- * verify. verify 'data' (deep mode ก) stops after the data: plan + o1 + cov, no scoring.
+ * verify. verify 'data' (deep data mode) stops after the data: plan + o1 + cov, no scoring.
  * @param {'full'|'data'} verify
  * @returns {{data:string[], verification:string[]}}
  */

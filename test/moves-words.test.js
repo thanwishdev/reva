@@ -26,8 +26,8 @@ test('screenOf: an inner element moving against its parent reads as what the scr
 
 test('the sentence follows the screen: the menu wipes right, it does not slide left', () => {
   const g = { name: 'Menu', count: 4, screen: { axis: 'x', px: 590.39, counter: true }, changes: [{ property: 'x', channel: 'ren:tx', family: 'move', unit: 'px', from: 0, to: -590.39 }], law: { class: 'tween', ms: 1000 } };
-  assert.equal(sentenceOf({ kind: 'change' }, [g]), 'Between pages the menus wipe right 590.4 px, 1 s.');
-  assert.equal(sentenceOf({ kind: 'change' }, [{ ...g, screen: undefined }]), 'Between pages the menus slide left 590.4 px, 1 s.');
+  assert.equal(sentenceOf({ kind: 'change' }, [g]), 'Between pages, 4 menus wipe right 590.4 px, 1 s.');
+  assert.equal(sentenceOf({ kind: 'change' }, [{ ...g, screen: undefined }]), 'Between pages, 4 menus slide left 590.4 px, 1 s.');
   assert.equal(clauseOf(g.changes[0], { screen: { axis: 'x', px: -20, counter: false } }), 'slides left 20 px');
 });
 

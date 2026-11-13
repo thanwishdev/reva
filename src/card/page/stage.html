@@ -12,9 +12,21 @@
 .scan main{max-width:1120px;margin:0 auto;padding:0 40px 96px}
 .scan.on-stage main{max-width:none;padding:0}
 .scan.on-stage{overflow:hidden}
-.st{display:grid;grid-template-columns:minmax(0,1fr) 420px;gap:40px;height:calc(100dvh - 68px);padding:4px 40px 28px}
-.st-left{display:flex;flex-direction:column;min-width:0;min-height:0}
-.st-pic{position:relative;flex:1;min-height:0;display:flex;align-items:center;justify-content:center;touch-action:none}
+/* The picture is as large as the screen allows and the timeline sits right under it, the same width (6 Nov review: a small stage
+   in a wide dark area, the list beside it very long). The list takes what the picture leaves: wide beside a phone recording. */
+.st{display:grid;grid-template-columns:auto minmax(0,1fr);gap:40px;height:calc(100dvh - var(--barpx,68px));padding:16px 40px 24px}
+.st-left{display:flex;flex-direction:column;min-width:0;min-height:0;width:min(100%,960px)}
+.st-pic{position:relative;flex:none;height:60dvh;min-height:0;display:flex;align-items:center;justify-content:center;touch-action:none}
+.st-load{position:absolute;inset:0;z-index:2;display:grid;place-items:center;border-radius:12px;background:var(--surface);color:var(--ink2);font-size:16px;line-height:24px;transition:opacity 360ms var(--ease)}
+.st-load span{animation:st-breathe 1.4s ease-in-out infinite alternate}
+.st-load.off{opacity:0;pointer-events:none}
+@keyframes st-breathe{from{opacity:.4}to{opacity:1}}
+.st-only{display:flex;flex-wrap:wrap;gap:4px 20px;margin-top:4px}
+.st-only button{border:0;background:none;padding:0;font:inherit;font-size:15px;line-height:36px;color:var(--ink2);transition:color var(--t1) var(--ease)}
+.st-only button:hover,.st-only button[aria-pressed="true"]{color:var(--ink)}
+.st-only button[aria-pressed="true"]{font-weight:600}
+.st-open{display:inline-block;margin-top:14px;font-size:16px;line-height:24px;color:var(--ink);text-underline-offset:3px}
+.st-note{margin-top:8px;font-size:15px;line-height:22px;color:var(--ink2)}
 .st-frame{position:relative;line-height:0;overflow:hidden;border-radius:12px;background:var(--surface);cursor:crosshair}
 .st-frame canvas{display:block}
 .st-frame #st-ov{position:absolute;inset:0}
@@ -22,7 +34,7 @@
 .st-tip.on{opacity:1}
 .st-hint{position:absolute;left:50%;bottom:24px;transform:translateX(-50%);padding:8px 14px;border-radius:10px;background:var(--ink);color:var(--bg);font-size:15px;line-height:20px;pointer-events:none;opacity:0;transition:opacity 320ms var(--ease)}
 .st-hint.on{opacity:1}
-.st-bar{display:flex;align-items:flex-end;gap:24px;padding-top:24px}
+.st-bar{display:flex;align-items:flex-end;gap:24px;padding-top:16px}
 .st-play{flex:none;width:44px;height:44px;border:0;border-radius:50%;background:var(--ink);color:var(--bg);display:grid;place-items:center}
 .st-play svg{width:16px;height:16px;fill:currentColor}
 .st-track{position:relative;flex:1;min-width:0;height:44px;cursor:pointer;touch-action:none}
@@ -37,7 +49,7 @@
 .st-speed{flex:none;height:44px;border:0;background:none;padding:0;color:var(--ink2);font-size:15px;transition:color var(--t1) var(--ease)}
 .st-speed:hover,.st-speed[aria-pressed="true"]{color:var(--ink)}
 .st-right{min-width:0;min-height:0;display:flex;flex-direction:column}
-.st-top{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:44px}
+.st-top{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:4px 16px;min-height:44px}
 .st-top h1{font-size:20px;line-height:28px;letter-spacing:-.015em}
 .st-scroll{flex:1;min-height:0;overflow-y:auto;margin:16px -16px 0;padding:0 16px 24px;scrollbar-width:thin}
 .st-list{list-style:none;margin:0;padding:0}
@@ -92,6 +104,7 @@
 @media (max-width:1080px){
   .scan.on-stage{overflow:auto}
   .st{grid-template-columns:minmax(0,1fr);height:auto;gap:32px;padding:4px 16px 40px}
+  .st-left{width:auto!important}
   .st-pic{height:min(72dvh,560px);flex:none}
   .st-bar{flex-wrap:wrap;align-items:center;gap:12px 20px}
   .st-clock{margin-left:auto;width:auto;max-width:60%}
@@ -102,7 +115,7 @@
   .scan main{padding:0 16px 64px}
   .st-pagesel{max-width:116px}
 }
-@media (prefers-reduced-motion:reduce){.st-tip,.st-hint,.st-chap,.st-chap b,.st-fam .nm svg{transition:none}}
+@media (prefers-reduced-motion:reduce){.st-tip,.st-hint,.st-chap,.st-chap b,.st-fam .nm svg,.st-load{transition:none}.st-load span{animation:none}}
 </style>
 <script>
 /* The stage of a scan card (PLAN §8). Runs after the card's own script and shares its globals: the panel of a motion is the
@@ -116,11 +129,12 @@
   sceneFor = () => null;   // the picture on the left is the replay, so the panel needs no second one
   const SERVER = location.protocol === 'http:' && SC.server !== false;
   document.documentElement.classList.add('scan');
-  VIEWNAME.overview = 'Stage'; VIEWNAME.timeline = 'Site';
+  // one name for one tab (6 Nov review: the tab said Study, the page title Stage)
+  VIEWNAME.overview = DATA && DATA.moves ? 'Study' : 'Stage'; VIEWNAME.timeline = 'Site';
   const nav = $('#secnav');
   $$('a.sub, a[data-s="motion"]', nav).forEach(a => a.remove());
   const ov = $('a[data-s="overview"]', nav), tl = $('a[data-s="timeline"]', nav), rec = $('a[data-s="recording"]', nav);
-  ov.textContent = 'Stage'; tl.textContent = 'Site'; if (rec) rec.remove();
+  ov.textContent = VIEWNAME.overview; tl.textContent = 'Site'; if (rec) rec.remove();
   if (!(BASE.design)) { const a = $('a[data-s="design"]', nav); if (a) a.remove(); }
   if (!(BASE.libraries || BASE.read)) { const a = $('a[data-s="libraries"]', nav); if (a) a.remove(); }
   const si = $('#site'); if (si) si.textContent = SC.host;
@@ -128,6 +142,15 @@
   /* ---------- data ---------- */
   const script = (src) => new Promise((ok, no) => { const s = document.createElement('script'); s.src = src; s.onload = () => { s.remove(); ok(); }; s.onerror = () => { s.remove(); no(new Error(src)); }; document.head.append(s); });
   window.__stage = (vp, doc) => { docs[vp] = doc; };
+  // a split stage keeps each take's element boxes in a file of its own (src/scan/stage.js), read when that take is first shown
+  const elsWait = {};
+  window.__stageEls = (k, els) => { const [pg, vp, ...t] = k.split('/'), d = docs[`${pg}/${vp}`], take = d && d.takes[t.join('/')]; if (take) take.els = els; };
+  function elsOf(take) {
+    const t = ST.d.takes[take]; if (t.els) return t.els;
+    const key = `${ST.page.id}/${ST.vp}/${take}`, d = ST.d;
+    if (!elsWait[key]) elsWait[key] = script(`stage/${ST.page.id}-${ST.vp}-${safeId(take)}.els.js`).catch(() => { t.els = {}; }).then(() => { if (!t.els) t.els = {}; if (ST.d === d) { ST.drawn = null; draw(); if (ST.sel != null) showSpans(); } });
+    return null;
+  }
   window.__stageValues = (k, v) => { values[k] = v; };
   const tables = {};
   window.__stageTable = (k, t) => { tables[k] = t; };
@@ -159,21 +182,34 @@
   const vids = new Map();
   function vidOf(take) {
     let V = vids.get(take);
+    // a borrowed element the Moves page has since pointed at another file is not this take's any more
+    const abs = (u) => { try { return new URL(u, location.href).href; } catch (e) { return u; } };
+    if (V && V.shared && abs(V.getAttribute('src') || '') !== V.shared) { vids.delete(take); V = null; }
     if (V) { vids.delete(take); vids.set(take, V); return V; }
-    V = document.createElement('video'); V.muted = true; V.playsInline = true; V.preload = 'auto'; V.src = ST.d.takes[take].dir + ST.d.takes[take].v;
-    V.addEventListener('loadeddata', () => draw());
-    V.addEventListener('seeked', () => {
-      V.busy = false;
-      if (V.want != null && Math.abs(V.currentTime - V.want) > 1e-4) { V.busy = true; V.currentTime = V.want; return; }
-      if (V.wantKey && ST.vidKey === V.wantKey) paintVideo(V, V.wantKey);
-    });
+    const src = ST.d.takes[take].dir + ST.d.takes[take].v;
+    // the Moves page plays this same file as its page video: Study borrows that element instead of opening the file again
+    const shared = typeof window.__sharedVideo === 'function' ? window.__sharedVideo(src) : null;
+    if (shared) { V = shared; V.shared = abs(src); }
+    else { V = document.createElement('video'); V.muted = true; V.playsInline = true; V.preload = 'auto'; V.src = src; }
+    V.want = null; V.busy = false;
+    if (!V.stWired) {
+      V.stWired = true;
+      V.addEventListener('loadeddata', () => { if (CUR.view === 'overview') draw(); });
+      V.addEventListener('seeked', () => {
+        V.busy = false;
+        if (CUR.view !== 'overview') return;   // a seek of the Moves page's own, when the element is shared
+        if (V.want != null && Math.abs(V.currentTime - V.want) > 1e-4) { V.busy = true; V.currentTime = V.want; return; }
+        if (V.wantKey && ST.vidKey === V.wantKey) paintVideo(V, V.wantKey);
+      });
+    }
     vids.set(take, V);
-    while (vids.size > 6) { const k = vids.keys().next().value, old = vids.get(k); vids.delete(k); old.removeAttribute('src'); old.load(); }
+    while (vids.size > 6) { const k = vids.keys().next().value, old = vids.get(k); vids.delete(k); if (!old.shared) { old.removeAttribute('src'); old.load(); } }
     return V;
   }
   function paintVideo(V, key) {
     const v = ST.d.clip, p = picC().getContext('2d');
     p.imageSmoothingQuality = 'high'; p.drawImage(V, 0, 0, v.width * ST.scale, v.height * ST.scale); ST.drawn = key; ST.painted = (ST.painted || 0) + 1;
+    if (ST.loadingOn) loading(false);
   }
   function showVideo(take, i, f) {
     const key = take + '/' + f; ST.vidKey = key;
@@ -208,19 +244,37 @@
     for (let k = 0; k < s.length; k += 2) { const d = i < s[k] ? s[k] - i : i > s[k + 1] ? i - s[k + 1] : 0; if (d < best) best = d; if (!d) break; }
     return best >= 14 ? 0 : 1 - best / 14;
   }
-  function liveBoxes(t, i) {
-    const v = ST.d.clip, out = [];
-    for (const id in t.els) { const e = t.els[id]; if (/^(HTML|BODY)\b/.test(e.d)) continue; const b = boxOf(e, t, i); if (!b || b.x >= v.width || b.y >= v.height || b.x + b.w <= 0 || b.y + b.h <= 0) continue; out.push({ id: +id, e, ...b }); }
+  const NONE = new Set();
+  function liveBoxes(t, i, take) {
+    const v = ST.d.clip, out = [], els = t.els || elsOf(take) || {};
+    const only = ST.only && ST.onIds ? ST.onIds.get(take) || NONE : null;
+    // on: part of a move on the card. With "In the moves" on, only those glow, and they come first under the pointer
+    for (const id in els) { const e = els[id]; if (/^(HTML|BODY)\b/.test(e.d)) continue; const b = boxOf(e, t, i); if (!b || b.x >= v.width || b.y >= v.height || b.x + b.w <= 0 || b.y + b.h <= 0) continue; out.push({ id: +id, e, on: !only || only.has(+id), ...b }); }
     return out;
   }
+
+  /* ---------- loading: the words stay over the picture until its first frame is drawn (6 Nov review: 4 s of black) ---------- */
+  function loading(on) { const l = $('#st-load'); if (!l) return; ST.loadingOn = on; l.classList.toggle('off', !on); l.setAttribute('aria-hidden', String(!on)); }
 
   /* ---------- drawing ---------- */
   const picC = () => $('#st-pic'), ovC = () => $('#st-ov');
   function size() {
     const host = $('.st-pic'); if (!host || !ST.d) return;
-    const v = ST.d.clip;
-    // in one column the picture's own shape sets the height, so a wide page leaves no gap around it
-    host.style.height = matchMedia('(max-width:1080px)').matches ? `${Math.round(Math.min(innerHeight * .72, host.clientWidth * v.height / v.width))}px` : '';
+    const v = ST.d.clip, left = $('.st-left'), st = $('.st'), bar = $('.st-bar'), barH = (bar ? bar.offsetHeight : 60) + 4;
+    const top = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--barpx')) || 68;
+    if (matchMedia('(max-width:1080px)').matches) {
+      // one column: the picture's own shape sets the height, and with the timeline under it the two fit one screen
+      left.style.width = '';
+      const W = host.clientWidth || innerWidth - 32;
+      host.style.height = `${Math.round(Math.max(200, Math.min(innerHeight - top - barH - 24, W * v.height / v.width)))}px`;
+    } else {
+      const cs = getComputedStyle(st), side = Math.max(360, Math.min(460, innerWidth * 0.27));
+      const availW = st.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight) - side - parseFloat(cs.columnGap || 40);
+      const availH = st.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom) - barH;
+      const k = Math.max(0.05, Math.min(availW / v.width, availH / v.height));
+      left.style.width = `${Math.round(Math.min(availW, Math.max(v.width * k, 520)))}px`;
+      host.style.height = `${Math.round(v.height * k)}px`;
+    }
     const s = host.getBoundingClientRect();
     ST.scale = Math.min(s.width / v.width, s.height / v.height);
     const w = Math.round(v.width * ST.scale), h = Math.round(v.height * ST.scale), r = devicePixelRatio || 1;
@@ -234,13 +288,15 @@
     const f = a.t.f[a.i];
     if (f >= 0 && a.t.v) showVideo(a.c.take, a.t.f.indexOf(f), f);
     else if (f >= 0) { const m = img(a.c.take, f), key = a.c.take + '/' + f; if (m.ok && ST.drawn !== key) { p.imageSmoothingQuality = 'high'; p.drawImage(m, 0, 0, v.width * k, v.height * k); ST.drawn = key; } }
+    if (ST.loadingOn && (ST.drawn || f < 0)) loading(false);
     o.clearRect(0, 0, v.width * k, v.height * k);
-    const boxes = liveBoxes(a.t, a.i), set = memberSet(), inCh = ST.sel != null && ST.d.motions[ST.sel].moments[ST.moment]?.c === a.c.id;
+    // the chosen motion stays outlined on every part of its take (its element ids are the take's), not only the part it was picked in
+    const boxes = liveBoxes(a.t, a.i, a.c.take), set = memberSet(), selC = ST.sel != null ? chById(ST.d.motions[ST.sel].moments[ST.moment]?.c) : null, inCh = !!selC && selC.take === a.c.take;
     ST.boxes = boxes;
     const big = v.width * v.height * .55, dim = ST.sel != null ? .4 : 1;
     o.lineWidth = 1;
     for (const b of boxes) {
-      if (b.w * b.h > big) continue;
+      if (b.w * b.h > big || !b.on) continue;
       const q = glowOf(b.e, a.i) * dim; if (!q) continue;
       o.fillStyle = `rgba(92,132,255,${.045 * q})`; o.strokeStyle = `rgba(92,132,255,${.32 * q})`;
       const r = [b.x * k, b.y * k, b.w * k, b.h * k]; o.fillRect(...r); o.strokeRect(r[0] + .5, r[1] + .5, r[2] - 1, r[3] - 1);
@@ -269,7 +325,7 @@
   let liveTick = 0;
   function markLive(a) {
     if (++liveTick % 6 || ST.sel != null) return;
-    const els = a.t.els, map = ST.elOf[a.c.id] || {}, live = new Set();
+    const els = a.t.els || {}, map = ST.elOf[a.c.id] || {}, live = new Set();
     for (const id in map) { const s = els[id]?.s || []; for (let k = 0; k < s.length; k += 2) if (a.i >= s[k] && a.i <= s[k + 1]) { live.add(map[id]); break; } }
     $$('.st-list button[data-m]').forEach(b => b.classList.toggle('live', live.has(+b.dataset.m)));
     $$('.st-fam').forEach(f => f.firstElementChild.classList.toggle('live', !!$('button.live', f.lastElementChild)));
@@ -318,7 +374,7 @@
     const r = ovC().getBoundingClientRect(), x = (ev.clientX - r.left) / ST.scale, y = (ev.clientY - r.top) / ST.scale;
     // what moves in this part comes first, the smallest of it on top, so a pile of still or hidden elements does not bury it
     const c = frameAt(Math.round(ST.pos)).c, moves = (b) => { const m = b.e.s || []; for (let k = 0; k < m.length; k += 2) if (m[k] < c.to && m[k + 1] >= c.from) return 0; return 1; };
-    return (ST.boxes || []).filter(b => x >= b.x && y >= b.y && x <= b.x + b.w && y <= b.y + b.h).sort((p, q) => moves(p) - moves(q) || p.w * p.h - q.w * q.h);
+    return (ST.boxes || []).filter(b => x >= b.x && y >= b.y && x <= b.x + b.w && y <= b.y + b.h).sort((p, q) => (q.on - p.on) || moves(p) - moves(q) || p.w * p.h - q.w * q.h);
   }
   const nameOfEl = (e, b) => humanName(e.d, b);
   /* the elements that do not move: the table of the page at rest, smallest first, in place for the frame on screen */
@@ -358,11 +414,14 @@
     if (ST.stackKey === key) ST.stackAt = (ST.stackAt + 1) % list.length; else { ST.stackKey = key; ST.stackAt = 0; }
     ST.stackN = list.length; pickEl(list[ST.stackAt]);
   }
+  /* The recorder keeps each element's own opacity, not its parents', so an item of a closed menu still has a box here. It is said,
+     not guessed away: a box inside a hidden parent cannot be told from one that shows (2 Nov LATER.md, review H8). */
+  const HIDDEN = 'A box can belong to an element you cannot see, such as an item of a closed menu: the recording keeps each element’s own opacity, not its parents’.';
   /* elements lie on top of each other: the same spot walks through them, smallest first */
   const stackLine = () => {
     if (!(ST.stackN > 1)) return '';
     const a = frameAt(Math.round(ST.pos)), name = (b) => { const mi = (ST.elOf[a.c.id] || {})[b.id]; return mi != null ? nameM(ST.d.motions[mi]) : nameOfEl(b.e, b); };
-    return `<details class="st-here"${ST.hereOpen ? ' open' : ''}><summary>${nf(ST.stackN)} elements on this spot</summary><ul class="st-list">${ST.stack.map((b, i) => `<li><button type="button" data-here="${i}" class="${i === ST.stackAt ? 'live' : ''}"><span class="nm">${esc(name(b))}</span></button></li>`).join('')}</ul></details>`;
+    return `<details class="st-here"${ST.hereOpen ? ' open' : ''}><summary>${nf(ST.stackN)} elements on this spot</summary><p class="st-note">${HIDDEN}</p><ul class="st-list">${ST.stack.map((b, i) => `<li><button type="button" data-here="${i}" class="${i === ST.stackAt ? 'live' : ''}"><span class="nm">${esc(name(b))}</span></button></li>`).join('')}</ul></details>`;
   };
   function pickEl(b) {
     const a = frameAt(Math.round(ST.pos)), mi = (ST.elOf[a.c.id] || {})[b.id];
@@ -374,22 +433,35 @@
   /* ---------- the side: motions, then one motion ---------- */
   /* a part with a plain name but its own words on the page goes by those words */
   const wordsOf = (m) => { const t = ST.textBy && m.selector && ST.textBy.get(m.selector); return t && t.length > 2 ? `“${t.length > 36 ? t.slice(0, 35).trimEnd() + '…' : t}”` : null; };
+  const CARDMV = DATA && DATA.moves ? new Map(DATA.moves.moves.map((m) => [m.id, m])) : null;
+  const moveName = (id) => (CARDMV && CARDMV.get(id) ? CARDMV.get(id).name : null);
+  const tipOff = () => { const t = $('#st-tip'); if (t) t.classList.remove('on'); };
   const nameM = (m) => { if (m.page) return 'Page scroll'; if (m.gl) return 'WebGL scene'; const n = humanName(m.desc, m.box); return /^(Block|Text|Paragraph|Link|List item)\b/.test(n) ? wordsOf(m) || n : n; };
   function toList() {
-    ST.sel = null; ST.loose = null; ST.chosen = null; panelGen++;
+    ST.sel = null; ST.loose = null; ST.chosen = null; ST.hover = null; panelGen++; tipOff();
     L = BASE; for (const k in panelPlayers) { panelPlayers[k].pause(); delete panelPlayers[k]; }
-    const ms = ST.d.motions, fam = new Map();
-    ms.forEach((m, i) => { const n = nameM(m), f = fam.get(n) || { n, ids: [] }; f.ids.push(i); fam.set(n, f); });
+    const ms = ST.d.motions, fam = new Map(), only = !!ST.only, anyOn = ST.cardOf && ST.cardOf.some((x) => x != null);
+    // "In the moves": one row per move on the card, named as the card names it; "Everything that moves": one row per element name
+    ms.forEach((m, i) => {
+      const mv = ST.cardOf ? ST.cardOf[i] : null; if (only && mv == null) return;
+      const key = only ? 'm:' + mv : nameM(m), f = fam.get(key) || { key, n: only ? moveName(mv) || nameM(m) : nameM(m), ids: [] };
+      f.ids.push(i); fam.set(key, f);
+    });
     const row = (i, name) => { const m = ms[i]; return `<li><button type="button" data-m="${i}"><span class="nm">${esc(name)}</span>${m.count > 1 ? `<span class="n">${m.count}</span>` : ''}</button></li>`; };
+    const member = (f) => { const seen = {}; return f.ids.map((i) => { const n = only ? nameM(ms[i]) : f.n; seen[n] = (seen[n] || 0) + 1; return [i, n, seen[n]]; }).map(([i, n, k]) => [i, only && (seen[n] === 1) ? n : `${n} ${k}`]); };
     // what shares a name shares one row, in rank order; it opens to its members, which may move differently
     const rows = [...fam.values()].map((f) => {
       if (f.ids.length === 1) return row(f.ids[0], f.n);
-      const on = ST.open.has(f.n), total = f.ids.reduce((a, i) => a + ms[i].count, 0);
-      return `<li class="st-fam"><button type="button" data-f="${esc(f.n)}" aria-expanded="${on}"><span class="nm">${esc(f.n)}<svg viewBox="0 0 10 10" aria-hidden="true"><path d="M3 1.5 6.5 5 3 8.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="n">${nf(total)}</span></button><ul class="st-list"${on ? '' : ' hidden'}>${f.ids.map((i, k) => row(i, `${f.n} ${k + 1}`)).join('')}</ul></li>`;
+      const on = ST.open.has(f.key), total = f.ids.reduce((a, i) => a + ms[i].count, 0);
+      return `<li class="st-fam"><button type="button" data-f="${esc(f.key)}" aria-expanded="${on}"><span class="nm">${esc(f.n)}<svg viewBox="0 0 10 10" aria-hidden="true"><path d="M3 1.5 6.5 5 3 8.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="n">${nf(total)}</span></button><ul class="st-list"${on ? '' : ' hidden'}>${member(f).map(([i, n]) => row(i, n)).join('')}</ul></li>`;
     }).join('');
-    const total = ms.reduce((a, m) => a + (m.page || m.gl ? 0 : m.count), 0);
-    $('#st-side').innerHTML = `<div class="st-top"><h1>${ms.length ? `${nf(total)} ${total === 1 ? 'element moves' : 'elements move'}` : 'Nothing moves here'}</h1>${vpSwitch()}</div>
+    const total = ms.reduce((a, m, i) => a + (m.page || m.gl || (only && ST.cardOf[i] == null) ? 0 : m.count), 0), moves = only ? fam.size : 0;
+    const head = !ms.length ? 'Nothing moves here' : only ? `${nf(total)} ${total === 1 ? 'element' : 'elements'} in ${nf(moves)} ${moves === 1 ? 'move' : 'moves'}` : `${nf(total)} ${total === 1 ? 'element moves' : 'elements move'}`;
+    const all = ms.reduce((a, m) => a + (m.page || m.gl ? 0 : m.count), 0);
+    $('#st-side').innerHTML = `<div class="st-top"><h1>${head}</h1>${vpSwitch()}</div>
+      ${anyOn ? `<div class="st-only" role="group" aria-label="Which elements"><button type="button" data-only="1" aria-pressed="${only}">In the moves</button><button type="button" data-only="0" aria-pressed="${!only}">Everything that moves (${nf(all)})</button></div>` : ''}
       <div class="st-scroll"><ul class="st-list">${rows}</ul></div>`;
+    $$('[data-only]', $('#st-side')).forEach((b) => b.addEventListener('click', () => { const on = b.dataset.only === '1'; if (on === only) return; ST.only = on; ST.open = new Set(); ST.listTop = 0; ST.drawn = null; toList(); }));
     wireVp();
     const sc = $('.st-scroll', $('#st-side')); sc.scrollTop = ST.listTop || 0; sc.addEventListener('scroll', () => { ST.listTop = sc.scrollTop; }, { passive: true });
     $$('.st-list button[data-m]').forEach(b => {
@@ -404,17 +476,22 @@
     }));
     showSpans(); draw();
   }
-  const vpSwitch = () => (ST.page.viewports.length > 1 ? `<span class="seg" role="group" aria-label="Screen">${ST.page.viewports.map(v => `<button type="button" data-vp="${v}" aria-pressed="${v === ST.vp}">${v === 'desktop' ? 'Desktop' : 'Phone'}</button>`).join('')}</span>` : '');
-  const wireVp = () => $$('[data-vp]').forEach(b => b.addEventListener('click', () => { if (b.dataset.vp !== ST.vp) openVp(b.dataset.vp); }));
+  // a scan card with moves has Desktop / Phone in its bar, the same on every tab; the stage follows it and keeps no switch of its own
+  const BARVP = !!(DATA && DATA.moves);
+  const pagePick = () => (SC.pages.length > 1 ? `<label class="st-pagepick">Page <select class="st-pagesel" data-pages aria-label="Page">${SC.pages.map((p, i) => `<option value="${i}"${p === ST.page ? ' selected' : ''}>${esc(p.label)}</option>`).join('')}</select></label>` : '');
+  const vpSwitch = () => BARVP ? pagePick() : (ST.page.viewports.length > 1 ? `<span class="seg" role="group" aria-label="Screen">${ST.page.viewports.map(v => `<button type="button" data-vp="${v}" aria-pressed="${v === ST.vp}">${v === 'desktop' ? 'Desktop' : 'Phone'}</button>`).join('')}</span>` : '');
+  const wireVp = () => { $$('[data-vp]', $('#st-side')).forEach(b => b.addEventListener('click', () => { if (b.dataset.vp !== ST.vp) openVp(b.dataset.vp); })); wirePages($('#st-side')); };
+  const wirePages = (box) => $$('select[data-pages]', box).forEach(s => s.addEventListener('change', (e) => openPage(+e.target.value)));
 
   let panelGen = 0;
   async function pick(mi, k, jump, fromPic) {
-    const m = ST.d.motions[mi]; ST.sel = mi; ST.moment = Math.max(0, k); ST.loose = null; ST.chosen = null; hideHint();
+    // the row under the pointer is replaced, so its mouseleave never comes: the hover frame goes with it (6 Nov review: stuck highlight)
+    const m = ST.d.motions[mi]; ST.sel = mi; ST.moment = Math.max(0, k); ST.loose = null; ST.chosen = null; ST.hover = null; tipOff(); hideHint();
     const gen = ++panelGen, mo = m.moments[ST.moment], c = chById(mo.c);
     if (jump && mo.span) {
       // to the first moment one of its elements moves where it can be seen; a few frames early, so the motion is seen from its start
-      const t = ST.d.takes[c.take], v = ST.d.clip; let at = null;
-      for (let i = c.from + mo.span[0]; i <= c.from + mo.span[1] && at == null; i += 2) for (const id of mo.ids.slice(0, 24)) { const e = t.els[id], b = e && boxOf(e, t, i); if (b && b.y < v.height - 8 && b.y + b.h > 8 && b.x < v.width && b.x + b.w > 0) { at = i - c.from; break; } }
+      const t = ST.d.takes[c.take], v = ST.d.clip, els = t.els || {}; let at = null;
+      for (let i = c.from + mo.span[0]; i <= c.from + mo.span[1] && at == null; i += 2) for (const id of mo.ids.slice(0, 24)) { const e = els[id], b = e && boxOf(e, t, i); if (b && b.y < v.height - 8 && b.y + b.h > 8 && b.x < v.width && b.x + b.w > 0) { at = i - c.from; break; } }
       seek(c.at + Math.max(0, (at ?? mo.span[0]) - 8));
     } else if (jump) seek(c.at);
     // the page's own moments by name; every hover or press of it folds into one word, and clicking that word walks through them
@@ -422,7 +499,7 @@
     m.moments.forEach((x, j) => { const ch = chById(x.c); if (ch.group) { if (seenG.has(ch.group)) return; seenG.add(ch.group); const all = m.moments.map((q, i) => [q, i]).filter(([q]) => chById(q.c).group === ch.group).map(([, i]) => i); const on = ch.group === curGroup; const next = all[(all.indexOf(ST.moment) + 1) % all.length]; btn.push(`<button type="button" data-k="${on ? next : all[0]}" aria-pressed="${on}">${esc(ch.group)}${all.length > 1 ? ` ${on ? `${all.indexOf(ST.moment) + 1} of ${all.length}` : all.length}` : ''}</button>`); } else btn.push(`<button type="button" data-k="${j}" aria-pressed="${j === ST.moment}">${esc(ch.name)}</button>`); });
     const moments = (btn.length > 1 || m.moments.length > 1 ? `<div class="st-moments">${btn.join('')}</div>` : '') + (fromPic ? stackLine() : '');
     $('#st-side').innerHTML = `<div class="st-top"><button type="button" class="st-back" id="st-back">All moving elements</button></div>
-      <div class="st-scroll"><h2 class="st-title">${esc(nameM(m))}${m.count > 1 ? ` ×${m.count}` : ''}</h2>${moments}<div class="st-fit" id="st-fit"></div><div id="st-rec"></div></div>`;
+      <div class="st-scroll"><h2 class="st-title">${esc(nameM(m))}${m.count > 1 ? ` ×${m.count}` : ''}</h2>${ST.cardOf && ST.cardOf[mi] != null && moveName(ST.cardOf[mi]) ? `<a class="st-open" href="#m/${esc(ST.cardOf[mi])}">See its move: ${esc(moveName(ST.cardOf[mi]))}</a>` : ''}${moments}<div class="st-fit" id="st-fit"></div><div id="st-rec"></div></div>`;
     $('#st-back').addEventListener('click', toList);
     $$('.st-moments button').forEach(b => b.addEventListener('click', () => pick(mi, +b.dataset.k, true)));
     showSpans(); draw();
@@ -458,10 +535,10 @@
   function looseWords(b, a) {
     const s = b.e.s || []; let moves = false;
     for (let k = 0; k < s.length && !moves; k += 2) moves = s[k] < a.c.to && s[k + 1] >= a.c.from;
-    return `${moves ? 'It moves a little in this part, too little to read as a motion of its own; its recorded values are below.' : 'It rides along with the page and has no motion of its own in this part.'} It measures ${nf(b.w)} by ${nf(b.h)} px.`;
+    return `${moves ? 'It moves a little in this part, too little to read as a motion of its own; its recorded values are below.' : 'It rides along with the page and has no motion of its own in this part.'} It measures ${nf(b.w)} by ${nf(b.h)} px. ${HIDDEN}`;
   }
   async function showLoose(b, a) {
-    ST.sel = null; ST.loose = { id: b.id, take: a.c.take }; ST.chosen = null; panelGen++; hideHint();
+    ST.sel = null; ST.loose = { id: b.id, take: a.c.take }; ST.chosen = null; ST.hover = null; panelGen++; hideHint();
     const gen = panelGen;
     $('#st-side').innerHTML = `<div class="st-top"><button type="button" class="st-back" id="st-back">All moving elements</button></div>
       <div class="st-scroll"><h2 class="st-title">${esc(nameOfEl(b.e, b))}</h2>${stackLine()}<p class="st-state">${looseWords(b, a)}</p>${b.e.c ? `<p class="st-state"><code>${esc(b.e.c)}</code></p>` : ''}<div id="st-rec"></div></div>`;
@@ -472,7 +549,7 @@
 
   /* an element that does not move: what it is, at rest */
   function showStill(q) {
-    ST.sel = null; ST.loose = null; ST.chosen = { q }; panelGen++; hideHint();
+    ST.sel = null; ST.loose = null; ST.chosen = { q }; ST.hover = null; panelGen++; hideHint();
     const tb = tables[`${ST.page.id}/${ST.vp}`], [font, size, weight, line, tracking, color, bg, radius, shadow, display, position] = tb.styles[q[8]].split('|');
     const row = (a, b) => (b ? `<div class="st-kv"><span>${esc(a)}</span><span>${esc(b)}</span></div>` : '');
     const clear = /rgba\(0, 0, 0, 0\)|transparent/.test(bg), zero = radius === '0px';
@@ -520,11 +597,19 @@
   /* ---------- one viewport ---------- */
   async function openVp(vp) {
     const key = `${ST.page.id}/${vp}`;
+    loading(true);
     if (!docs[key]) await script(`stage/${ST.page.id}-${vp}.js`);
     if (docs[key].table && !tables[key]) await script(`stage/${ST.page.id}-${vp}.table.js`).catch(() => {});
-    setPlay(false); { const h = $('#st-hint'); if (h) h.classList.remove('on'); } ST.vp = vp; ST.d = docs[key]; ST.open = new Set(); ST.listTop = 0; ST.pos = ST.target = 0; ST.sel = null; ST.imgs = {}; ST.drawn = null; ST.at = -1; ST.elOf = {}; ST.chosen = null; ST.still = null; for (const V of vids.values()) { V.removeAttribute('src'); V.load(); } vids.clear();
+    setPlay(false); { const h = $('#st-hint'); if (h) h.classList.remove('on'); } ST.vp = vp;
+    document.dispatchEvent(new CustomEvent('reva:screen', { detail: vp })); ST.d = docs[key]; ST.open = new Set(); ST.listTop = 0; ST.pos = ST.target = 0; ST.sel = null; ST.imgs = {}; ST.drawn = null; ST.at = -1; ST.elOf = {}; ST.chosen = null; ST.still = null; for (const V of vids.values()) if (!V.shared) { V.removeAttribute('src'); V.load(); } vids.clear();
     ST.textBy = new Map(((tables[key] || {}).rows || []).filter(q => q[1] && q[7]).map(q => [q[1], q[7]]));
     ST.d.motions.forEach((m, i) => { for (const mo of m.moments) { const o = ST.elOf[mo.c] || (ST.elOf[mo.c] = {}); for (const id of mo.ids) o[id] = i; } });
+    // a motion belongs to a move on the card when its selector or element, in the same take, is one of that move's (card/moves.js studyMoves)
+    const oc = (SC.onCard || {})[key] || null;
+    ST.cardOf = ST.d.motions.map((m) => { if (!oc || m.page || m.gl) return null; for (const mo of m.moments) { const c = chById(mo.c), t = c && oc[c.take], id = t && ((m.selector && t[m.selector]) || t[m.desc]); if (id && (!CARDMV || CARDMV.has(id))) return id; } return null; });
+    ST.onIds = new Map();
+    ST.d.motions.forEach((m, i) => { if (ST.cardOf[i] == null) return; for (const mo of m.moments) { const c = chById(mo.c); if (!c) continue; const s = ST.onIds.get(c.take) || new Set(); for (const id of mo.ids) s.add(id); ST.onIds.set(c.take, s); } });
+    ST.only = ST.cardOf.some((x) => x != null);
     layoutTrack();
     size(); toList(); preload();
     const c = ST.d.chapters[0];
@@ -570,7 +655,7 @@
   /* ---------- the page ---------- */
   function stageHTML() {
     return `<div class="st"><div class="st-left">
-      <div class="st-pic"><div class="st-frame"><canvas id="st-pic" role="img" aria-label="The recorded page, frame by frame"></canvas><canvas id="st-ov"></canvas><div class="st-tip" id="st-tip"></div><div class="st-hint" id="st-hint">Scroll over the picture</div></div></div>
+      <div class="st-pic"><div class="st-load" id="st-load" role="status"><span>Opening the recording</span></div><div class="st-frame"><canvas id="st-pic" role="img" aria-label="The recorded page, frame by frame"></canvas><canvas id="st-ov"></canvas><div class="st-tip" id="st-tip"></div><div class="st-hint" id="st-hint">Scroll over the picture</div></div></div>
       <div class="st-bar"><button type="button" class="st-play" id="st-play" aria-label="Play"></button><button type="button" class="st-speed" id="st-speed" aria-pressed="false" aria-label="Play at a quarter of the speed">¼×</button><div class="st-track" id="st-track"></div><div class="st-clock"><span id="st-now"></span><span id="st-clock"></span></div></div>
     </div><div class="st-right" id="st-side"></div></div>`;
   }
@@ -585,11 +670,12 @@
   $('#st-side').addEventListener('toggle', (e) => { if (e.target.matches('.st-here')) ST.hereOpen = e.target.open; }, true);
   $('#timeline').innerHTML = siteHTML();
   function openPage(i) {
-    ST.page = SC.pages[i]; const pk = $('#st-pages'); if (pk) pk.value = String(i);
+    ST.page = SC.pages[i]; const pk = $('#st-pages'); if (pk) pk.value = String(i); $$('select[data-pages]').forEach(s => { s.value = String(i); });
     if (SC.looks && SC.looks[ST.page.id]) { BASE = SC.looks[ST.page.id]; L = BASE; renderDesign(); renderLibraries(); }
     openVp(ST.page.viewports.includes(ST.vp) ? ST.vp : ST.page.viewports[0]);
   }
-  if (SC.pages.length > 1 && si) { si.insertAdjacentHTML('afterend', `<select id="st-pages" class="st-pagesel" aria-label="Page">${SC.pages.map((p, i) => `<option value="${i}">${esc(p.label)}</option>`).join('')}</select>`); $('#st-pages').addEventListener('change', (e) => openPage(+e.target.value)); }
+  if (SC.pages.length > 1 && BARVP) { const d = $('#design'); if (d) { d.insertAdjacentHTML('afterbegin', pagePick()); wirePages(d); } }
+  else if (SC.pages.length > 1 && si) { si.insertAdjacentHTML('afterend', `<select id="st-pages" class="st-pagesel" aria-label="Page">${SC.pages.map((p, i) => `<option value="${i}">${esc(p.label)}</option>`).join('')}</select>`); $('#st-pages').addEventListener('change', (e) => openPage(+e.target.value)); }
   $$('[data-page]').forEach(a => a.addEventListener('click', () => openPage(+a.dataset.page)));
   const syncView = () => { document.documentElement.classList.toggle('on-stage', CUR.view === 'overview'); if (CUR.view === 'overview') { if (ST.d) layoutTrack(); size(); } else setPlay(false); };
   addEventListener('hashchange', syncView); addEventListener('resize', () => { if (ST.d) layoutTrack(); size(); });
@@ -614,7 +700,10 @@
   window.STAGE = ST; window.__pick = pick; window.__seek = seek;
   // with moves the stage is Study, not the first screen: it opens its data and pictures when first asked for
   let booted = false;
-  const boot = () => { if (booted || CUR.view !== 'overview') return; booted = true; openVp(ST.page.viewports[0]).then(() => requestAnimationFrame(tick)); };
+  // it opens on the screen the bar shows, when this page has it
+  const barVp = () => { const v = window.MOVES && window.MOVES.S && window.MOVES.S.vp; return ST.page.viewports.includes(v) ? v : ST.page.viewports[0]; };
+  const boot = () => { if (booted || CUR.view !== 'overview') return; booted = true; openVp(barVp()).then(() => requestAnimationFrame(tick), () => { const l = $('#st-load span'); if (l) { l.textContent = 'The recording could not be opened from this folder.'; l.style.animation = 'none'; } }); };
+  window.__stageVp = (vp) => { if (!booted) return; if (ST.page.viewports.includes(vp)) { if (vp !== ST.vp) openVp(vp); } else document.dispatchEvent(new CustomEvent('reva:screen', { detail: ST.vp })); };
   addEventListener('hashchange', boot); boot();
 })();
 </script>

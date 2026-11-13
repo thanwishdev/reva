@@ -25,6 +25,8 @@ import { planChanges, recordChange } from './changes.js';
 import { completeUnits } from './complete.js';
 import { sitePolicy } from './polite.js';
 import { SHOTS } from './moves/contract.js';
+import { stripControls } from '../report/untrusted.js';
+import { CONSENT_POLICY } from '../safety/banner.js';
 import os from 'node:os';
 
 const PKG_VERSION = (() => { try { return JSON.parse(fs.readFileSync(new URL('../../package.json', import.meta.url), 'utf8')).version; } catch { return null; } })();
@@ -136,11 +138,15 @@ function gateRow(ledger, page, viewport, gate, takeDir) {
 
 /** What every take of a page and viewport reported: what no row can reach, the canvases that drew, and the network gate's counts. */
 export function takeFacts(root, vp) {
-  const dir = path.join(root, 'takes', vp), out = { media: new Map(), frames: new Map(), workers: new Map(), gl: null, detached: 0, idleHits: 0 };
+  const dir = path.join(root, 'takes', vp), out = { media: new Map(), frames: new Map(), workers: new Map(), gl: null, detached: 0, idleHits: 0, consent: new Map(), unlocked: new Map() };
   let names = []; try { names = fs.readdirSync(dir); } catch { return out; }
   for (const n of names) {
     let t; try { t = JSON.parse(fs.readFileSync(path.join(dir, n, 'take.json'), 'utf8')); } catch { continue; }
     const net = t.extra?.netGate; out.detached += net?.detached || 0; out.idleHits += net?.idleHits || 0;
+    // a consent banner the take hid (src/safety/banner.js): one entry per layer, with the takes it was hidden in and any reject pressed
+    for (const h of t.extra?.consent?.hidden || []) { const k = `${h.sel}|${h.text}`, e = out.consent.get(k) || out.consent.set(k, { ...h, takes: [], rejected: null }).get(k); e.takes.push(n); }
+    for (const r of t.extra?.consent?.rejected || []) for (const e of out.consent.values()) if (e.sel === r.sel && !e.rejected) e.rejected = r.label;
+    for (const u of t.extra?.consent?.unlocked || []) { const k = `${u.what}|${u.kinds.join(' ')}`, e = out.unlocked.get(k) || out.unlocked.set(k, { ...u, takes: [] }).get(k); e.takes.push(n); }
     if (t.gl?.contexts?.length && !out.gl) out.gl = { take: n, gl: t.gl };
     const details = (k) => { const e = t.escapes?.[k]; return e ? (e.details?.length ? e.details : [`${k}-${e.first ?? 0}`]) : []; };
     for (const u of details('media-element')) if (!out.media.has(u)) out.media.set(u, n);
@@ -459,14 +465,20 @@ export async function scanPage(url, o = {}) {
       const rel = `${prefix}takes/${vp}/${ARRIVE_TAKE}`, framesRel = `${prefix}frames/${vp}/${ARRIVE_TAKE}`;
       scan.takes[key] = r.ok ? { dir: rel, rows: r.rows, moving: r.moving, frames: r.frames && { pictures: r.frames.files, frames: r.frames.frames, bytes: r.frames.bytes, shots: r.frames.shots ?? null }, wallMs: r.wallMs, valid: r.valid, misses: r.misses, flags: r.flags } : { error: r.error };
       const facts = takeFacts(pg.dir, vp);
+      if (facts.consent.size) {
+        scan.consent ||= { policy: CONSENT_POLICY, hidden: [], unlocked: [] };
+        for (const h of facts.consent.values()) scan.consent.hidden.push({ page, viewport: vp, layer: stripControls(h.sel), how: h.why, platform: h.cmp ?? null, text: stripControls(h.text || ''), rejected: h.rejected ? stripControls(h.rejected) : null, takes: h.takes.length, box: h.box });
+        for (const u of facts.unlocked.values()) scan.consent.unlocked.push({ page, viewport: vp, what: stripControls(u.what), undid: u.kinds, by: u.by, takes: u.takes.length });
+        log(`${vp}: a cookie-consent banner was hidden during capture (${[...facts.consent.values()].map((h) => h.cmp || h.sel).join(', ')})`);
+      }
       if (r.ok) {
         const seen = reachRows(ledger, facts, { page, viewport: vp, frames: framesRel });
         escapes.push(...seen.escapes); canvases.push(...seen.canvases);
         if (!interact) gateRow(ledger, page, vp, r.gate, rel); // the overlay probe runs after load has settled
       }
-      for (const [name, value, why] of [['detached-requests', facts.detached, 'requests of a frame that left the page no longer held a frame back'], ['idle-waits', facts.idleHits, 'page-idle waits ended at their 250 ms bound']]) {
+      for (const [name, value, one, many] of [['detached-requests', facts.detached, 'request of a frame that left the page no longer held a frame back', 'requests of a frame that left the page no longer held a frame back'], ['idle-waits', facts.idleHits, 'page-idle wait ended at its 250 ms bound', 'page-idle waits ended at their 250 ms bound']]) {
         if (!value) continue;
-        ledger.add({ unit: 'request', page, viewport: vp, id: name, status: 'limit', name, value, reason: `${value} ${why}` }); savings.add(name);
+        ledger.add({ unit: 'request', page, viewport: vp, id: name, status: 'limit', name, value, reason: `${value} ${value === 1 ? one : many}` }); savings.add(name);
       }
       if (interact) ledger.add(gateRowOf(slot.survey?.ok ? slot.survey.gatePlan : { failed: true, why: slot.survey?.error ? `the arrive take of the page failed: ${slot.survey.error}` : null }, { page, viewport: vp, take: rel }));
       // independent of the freeze's own check: the settled replay against the live page it was frozen from (live.json)

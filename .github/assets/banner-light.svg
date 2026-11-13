@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 320" width="1280" height="320" role="img" aria-label="REVA">
+<title>REVA</title>
+<style>
+.g{fill:none;stroke:#0a0b0d;stroke-width:1;stroke-opacity:.15;stroke-dasharray:1;animation:draw .64s cubic-bezier(.645,.045,.355,1) both,dim .8s 2s both}
+.o{fill:none;stroke:#0a0b0d;stroke-width:1.25;stroke-dasharray:1;opacity:0;animation:draw .78s cubic-bezier(.645,.045,.355,1) both,pen 2.3s linear both}
+.f{fill:#0a0b0d;animation:flood .56s 1.42s cubic-bezier(.645,.045,.355,1) both}
+.d{fill:none;stroke:#2b59ff;stroke-width:1.5;stroke-dasharray:1;animation:draw .7s 2.05s cubic-bezier(.645,.045,.355,1) both}
+.t{fill:none;stroke:#2b59ff;stroke-width:1.5;animation:tick .3s both}
+@keyframes draw{from{stroke-dashoffset:1}}
+@keyframes dim{from{stroke-opacity:.36}}
+@keyframes pen{0%,80%{opacity:1}100%{opacity:0}}
+@keyframes flood{from{transform:translateY(120px)}}
+@keyframes tick{from{opacity:0}}
+@media (prefers-reduced-motion:reduce){.g,.o,.f,.d,.t{animation:none}}
+</style>
+<defs>
+<pattern id="dots" width="32" height="32" patternUnits="userSpaceOnUse"><circle cx="16" cy="16" r="1.1" fill="#0a0b0d" fill-opacity=".2"/></pattern>
+<radialGradient id="fade" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#fff"/><stop offset=".55" stop-color="#fff" stop-opacity=".85"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
+<mask id="m"><rect width="1280" height="320" fill="url(#fade)"/></mask>
+<clipPath id="wm"><path d="M381.71 218L352 218L352 100L447.33 100Q460.04 100 468.2 105.15Q476.36 110.31 480.48 118.72Q484.6 127.14 484.6 137.44L484.6 137.44Q484.6 148.09 479.19 157.28Q473.78 166.47 462.79 171.8L462.79 171.8L487.35 218L454.03 218L433.24 177.12L381.71 177.12L381.71 218ZM381.71 123.36L381.71 153.76L438.57 153.76Q445.78 153.76 449.99 149.38Q454.2 145 454.2 138.13L454.2 138.13Q454.2 133.32 452.31 130.06Q450.42 126.79 446.98 125.08Q443.55 123.36 438.57 123.36L438.57 123.36L381.71 123.36ZM629.74 218L507.44 218L507.44 100L628.36 100L628.36 123.36L537.16 123.36L537.16 146.55L617.71 146.55L617.71 169.56L537.16 169.56L537.16 194.47L629.74 194.47L629.74 218ZM728.67 218L696.04 218L639.53 100L672.51 100L701.36 162.86Q703.25 166.82 705.23 171.71Q707.2 176.61 709.18 181.24Q711.15 185.88 712.36 189.32L712.36 189.32L713.73 189.32Q714.93 186.22 716.74 181.67Q718.54 177.12 720.69 172.23Q722.83 167.33 724.72 163.04L724.72 163.04L753.75 100L785.18 100L728.67 218ZM807.85 218L777.45 218L836.02 100L869.34 100L927.92 218L895.62 218L885.32 196.7L818.16 196.7L807.85 218ZM841.52 147.06L828.98 173.86L874.5 173.86L861.96 146.89Q861.27 145.17 859.73 141.74Q858.18 138.3 856.72 134.7Q855.26 131.09 854.06 128.17Q852.86 125.25 852.51 124.56L852.51 124.56L851.14 124.56Q849.76 128 847.87 132.29Q845.99 136.59 844.35 140.62Q842.72 144.66 841.52 147.06L841.52 147.06Z"/></clipPath>
+</defs>
+<rect width="1280" height="320" fill="url(#dots)" mask="url(#m)"/>
+<path class="g" pathLength="1" style="animation-delay:0s,2s" d="M276 218L1003.9155749636099 218"/>
+<path class="g" pathLength="1" style="animation-delay:0.09s,2s" d="M276 100L1003.9155749636099 100"/>
+<path class="g" pathLength="1" style="animation-delay:0.18s,2s" d="M352 52L352 266"/>
+<path class="g" pathLength="1" style="animation-delay:0.27s,2s" d="M927.92 52L927.92 266"/>
+<g clip-path="url(#wm)"><rect class="f" x="350" y="99" width="579.92" height="120"/></g>
+<path class="o" pathLength="1" style="animation-delay:0.3s,0s" d="M381.71 218L352 218L352 100L447.33 100Q460.04 100 468.2 105.15Q476.36 110.31 480.48 118.72Q484.6 127.14 484.6 137.44L484.6 137.44Q484.6 148.09 479.19 157.28Q473.78 166.47 462.79 171.8L462.79 171.8L487.35 218L454.03 218L433.24 177.12L381.71 177.12L381.71 218Z"/>
+<path class="o" pathLength="1" style="animation-delay:0.41s,0s" d="M381.71 123.36L381.71 153.76L438.57 153.76Q445.78 153.76 449.99 149.38Q454.2 145 454.2 138.13L454.2 138.13Q454.2 133.32 452.31 130.06Q450.42 126.79 446.98 125.08Q443.55 123.36 438.57 123.36L438.57 123.36L381.71 123.36Z"/>
+<path class="o" pathLength="1" style="animation-delay:0.52s,0s" d="M629.74 218L507.44 218L507.44 100L628.36 100L628.36 123.36L537.16 123.36L537.16 146.55L617.71 146.55L617.71 169.56L537.16 169.56L537.16 194.47L629.74 194.47L629.74 218Z"/>
+<path class="o" pathLength="1" style="animation-delay:0.63s,0s" d="M728.67 218L696.04 218L639.53 100L672.51 100L701.36 162.86Q703.25 166.82 705.23 171.71Q707.2 176.61 709.18 181.24Q711.15 185.88 712.36 189.32L712.36 189.32L713.73 189.32Q714.93 186.22 716.74 181.67Q718.54 177.12 720.69 172.23Q722.83 167.33 724.72 163.04L724.72 163.04L753.75 100L785.18 100L728.67 218Z"/>
+<path class="o" pathLength="1" style="animation-delay:0.74s,0s" d="M807.85 218L777.45 218L836.02 100L869.34 100L927.92 218L895.62 218L885.32 196.7L818.16 196.7L807.85 218Z"/>
+<path class="o" pathLength="1" style="animation-delay:0.85s,0s" d="M841.52 147.06L828.98 173.86L874.5 173.86L861.96 146.89Q861.27 145.17 859.73 141.74Q858.18 138.3 856.72 134.7Q855.26 131.09 854.06 128.17Q852.86 125.25 852.51 124.56L852.51 124.56L851.14 124.56Q849.76 128 847.87 132.29Q845.99 136.59 844.35 140.62Q842.72 144.66 841.52 147.06L841.52 147.06Z"/>
+<path class="d" pathLength="1" d="M352 262L927.92 262"/>
+<path class="t" style="animation-delay:2.05s" d="M352 256v12"/>
+<path class="t" style="animation-delay:2.7s" d="M927.92 256v12"/>
+</svg>

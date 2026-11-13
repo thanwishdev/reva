@@ -1,0 +1,40 @@
+name: Bug report
+description: REVA crashed, stopped, or printed something wrong
+labels: [bug]
+body:
+  - type: textarea
+    id: command
+    attributes:
+      label: The command you ran
+      description: The full command. Include the URL if the page is public.
+      render: sh
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+    validations:
+      required: true
+  - type: textarea
+    id: happened
+    attributes:
+      label: What happened
+      description: Paste the output. For a wrong number, say which value and what you believe it should be.
+    validations:
+      required: true
+  - type: textarea
+    id: doctor
+    attributes:
+      label: Output of `reva doctor`
+      description: It may contain paths on your machine. Trim them if you like.
+      render: text
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: REVA version
+      description: The output of `reva --version`
+    validations:
+      required: true

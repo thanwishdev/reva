@@ -41,7 +41,8 @@ export function detectConsent(html) {
  * (`text="..."` = a button / link whose own text is exactly that, any case). Never clicks anything else. Returns what it clicked.
  */
 export function clickRejectInPage(clicks) {
-  const visible = (el) => { const r = el.getBoundingClientRect(); const cs = getComputedStyle(el); return r.width > 0 && r.height > 0 && cs.visibility !== 'hidden' && cs.display !== 'none'; };
+  // a banner the scan's consent hider took out (src/safety/banner.js) is display: none; its reject button is still the answer
+  const visible = (el) => { if (el.closest && el.closest('[data-reva-hidden="consent"]')) return true; const r = el.getBoundingClientRect(); const cs = getComputedStyle(el); return r.width > 0 && r.height > 0 && cs.visibility !== 'hidden' && cs.display !== 'none'; };
   const done = [];
   for (const c of clicks || []) {
     let el = null;

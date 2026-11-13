@@ -352,7 +352,8 @@ pre{margin:0;background:var(--code);border-radius:12px;padding:16px 18px;overflo
 .tyhead{color:var(--ink2);font-size:15px;padding:0}
 .tyhead span{text-align:right}
 /* a sample wraps between words, never inside one; a single word wider than its column fades out at the edge */
-.tyrow .smp{line-height:1.1;white-space:normal;overflow-wrap:normal;overflow:hidden;min-width:0;-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 36px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 36px),transparent)}
+.tyrow .smp{line-height:1.1;white-space:normal;overflow-wrap:normal;overflow:hidden;min-width:0}
+.tyrow .smp.ovf{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 36px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 36px),transparent)}
 .tyrow .tm{font-size:15px;text-align:right;white-space:nowrap;color:var(--ink)}
 .tbl{width:100%;border-collapse:collapse;font-size:15px}
 .tbl th{font-weight:600;text-align:left;padding:8px 10px 8px 0;border-bottom:1px solid var(--line)}
@@ -1763,6 +1764,7 @@ function readHTML() {
 }
 function renderLibraries() {
   const el = $('#libraries');
+  if (MOVES_CARD) { el.innerHTML = ''; return; }
   const rd = readHTML(), gl = glHTML();   // read values first, then the code scan; what could not be read comes last
   const lb = L.libraries, names = lb && lb.list ? lb.list.map(x => x.name.replace(/\s*\(.*$/, '')) : [];
   const R = L.read || {}, readNames = [R.gsap && R.gsap.found && 'GSAP', R.lenis && R.lenis.found && 'Lenis', R.other && R.other.found && 'sliders and players'].filter(Boolean);
@@ -1819,7 +1821,10 @@ function leftOutFold() {
   const next = [L.alreadyMoving && act0 !== 'load' ? 'Record the page load to see the ones already moving.' : '', L.pointerDriven ? 'Record a hover to see the ones that follow the pointer.' : ''].filter(Boolean).join(' ');
   return fold(`${plu(n, 'element', 'elements')} left out of this recording`, `<div class="nm"><ul>${rows}</ul>${n > (L.leftOut || []).length ? `<p class="muted">The first ${(L.leftOut || []).length} of ${n}; the rest are in look.json.</p>` : ''}${next ? `<p style="margin-top:10px">${esc(next)}</p>` : ''}</div>`);
 }
-function renderRecording() { $('#recording').innerHTML = recordingHTML(); }
+// a scan card with moves has no Recording or Libraries page: they were the look card's, and on a scan they said "undefined at
+// undefined fps" and "this look recorded the page load only" (6 Nov review). Moves, Site, Design and Study say what a scan knows.
+const MOVES_CARD = !!(DATA && DATA.moves);
+function renderRecording() { if (MOVES_CARD) { $('#recording').innerHTML = ''; return; } $('#recording').innerHTML = recordingHTML(); }
 const fold = (title, body) => `<details class="fold"><summary>${title}</summary>${body}</details>`;
 
 function thumb(m) {
@@ -2820,7 +2825,7 @@ function statePatterns(d) {
 
 function renderDesign() {
   const el = $('#design-body'); const d = L.design;
-  if (!d || d.ok === false) { el.innerHTML = `${hd('h1', 'h-design', 'Design', 'ptitle')}<p class="lead">The design pass did not run for this look${d && d.error ? ': ' + esc(d.error) : ''}.</p>`; return; }
+  if (!d || d.ok === false) { el.innerHTML = `${hd('h1', 'h-design', 'Design', 'ptitle')}<p class="lead">The design pass did not run for this ${DATA && DATA.scan ? 'page' : 'look'}${d && d.error ? ': ' + esc(d.error) : ''}.</p>`; return; }
   const fams = d.fonts ? d.fonts.families : [];
   const bg = d.palette && d.palette.pageBackground ? d.palette.pageBackground.hex.value : '#ffffff';
   const stackOf = fam => { const f = fams.find(x => x.family === fam), list = [fam, ...(f && f.fallbacks || [])]; if (!list.some(x => /^(system-ui|ui-[a-z-]+|-apple-system|sans-serif|serif|monospace|cursive|fantasy)$/i.test(x))) list.push('system-ui', 'sans-serif'); return list.map(x => /\s/.test(x) ? `"${x}"` : x).join(', '); };
@@ -2871,7 +2876,10 @@ function renderDesign() {
   const pick = pickColours(d);
   const uses = c => Object.entries(c.uses || {}).map(([k, v]) => `${k} ${v}`).join(', ');
   const cch = c => `<div class="cch"><span class="sq" style="background:linear-gradient(${esc(c.hex.value)},${esc(c.hex.value)}),${esc(bg)}"></span><div><span class="hx">${esc(c.hex.value)}</span><br><span class="muted">${esc(c.role)}${c.backgroundShare && c.backgroundShare.value ? ', ' + pct(c.backgroundShare.value, 0) + ' of the page' : ''}</span></div></div>`;
-  const cc = d.contrast || {}, allPairs = cc.pairs || [];
+  const cc = d.contrast || {}, rawPairs = cc.pairs || [];
+  // a pair under 1.05 : 1 is one colour read twice: what lies under that text was not seen, so it is not graded here (not shown as a fail)
+  const allPairs = rawPairs.filter(p => p.ratio.value >= 1.05), unseenPairs = rawPairs.filter(p => p.ratio.value < 1.05);
+  const failPairs = allPairs.filter(p => /fail/i.test(p.grade)), failEls = failPairs.reduce((a, p) => a + (p.count || 0), 0);
   const pairsTop = allPairs.slice().sort((a, b) => b.count - a.count).slice(0, 5);
   const pairHTML = pairsTop.map(p => {
     const fail = /fail/i.test(p.grade);
@@ -2880,13 +2888,13 @@ function renderDesign() {
   const roleOrder = ['background', 'surface', 'text', 'border', 'accent', 'graphic'];
   const cols = d.palette.colours || [], byRole = {}; cols.forEach(c => (byRole[c.role] = byRole[c.role] || []).push(c));
   const roleHTML = roleOrder.filter(r => byRole[r]).map(r => `<div class="crole">${cap1(r === 'graphic' ? 'graphics and icons' : r === 'border' ? 'borders' : r)}</div><div class="cgrid sm">${byRole[r].map(c => `<div class="cch"><span class="sq" style="background:linear-gradient(${esc(c.hex.value)},${esc(c.hex.value)}),${esc(bg)}"></span><div><span class="hx">${esc(c.hex.value)}</span><br><span class="muted">${esc(c.hex.label)}${c.alpha < 1 ? ', ' + pct(c.alpha, 0) + ' opaque' : ''} · ${esc(uses(c))}</span></div></div>`).join('')}</div>`).join('');
-  const notg = [['over an image or gradient', cc.overImage], ['over media', cc.overMedia], ['overlapped by another box', cc.overlapped], ['hidden', cc.hidden], ['with no background colour', cc.noBackground]].filter(x => x[1]);
-  const colourFold = fold(`${cols.length === 1 ? 'The one colour' : `All ${cols.length} colours`}${d.palette.more ? ` (${d.palette.more} more are not listed)` : ''} and ${allPairs.length === 1 ? 'the one contrast pair' : 'all ' + allPairs.length + ' contrast pairs'}`,
+  const notg = [['over an image or gradient', cc.overImage], ['over an image, video or canvas', cc.overMedia], ['overlapped by another box', cc.overlapped], [cc.faded == null ? 'hidden or faded out (opacity 0) when the page was read' : 'hidden', cc.hidden], ['with no background colour', cc.noBackground]].filter(x => x[1]);
+  const colourFold = fold(`${cols.length === 1 ? 'The one colour' : `All ${cols.length} colours`}${d.palette.more ? ` (${d.palette.more} more are not listed)` : ''} and ${allPairs.length === 1 ? 'the one contrast pair' : allPairs.length ? 'all ' + allPairs.length + ' contrast pairs' : 'no graded contrast pair'}`,
     `${roleHTML}<h4 class="gname" style="margin:20px 0 6px">Every text on background pair</h4><div class="scroll"><table class="tbl"><thead><tr><th>Text</th><th>Background</th><th class="r">Ratio</th><th>Grade</th><th class="r">Elements</th><th class="r">Smallest</th></tr></thead><tbody>${allPairs.map(p => `<tr><td class="v"><span class="sw-mini" style="background:${esc(p.text)}"></span>${esc(p.text)}</td><td class="v"><span class="sw-mini" style="background:${esc(p.background)}"></span>${esc(p.background)}</td><td class="r v">${p.ratio.value.toFixed(2)}</td><td>${/fail/i.test(p.grade) ? '<span class="fail">fails AA</span>' : esc(p.grade)}</td><td class="r v">${p.count}</td><td class="r v">${px(p.smallestSize)}</td></tr>`).join('')}</tbody></table></div>${notg.length ? `<p class="muted small" style="margin-top:8px">Not graded: ${notg.map(x => `${x[1]} ${x[0]}`).join(', ')}.</p>` : ''}`);
   const colourSec = sec('design-colour', 'Colour', `<p class="lead">${pick.length === 1 ? 'One colour does' : pick.length + ' colours do'} most of the work, by role (derived from how the page uses them).</p>
     <div class="cgrid">${pick.map(cch).join('')}</div>
     <p class="crole" style="margin-top:22px">Text on background, the pairs used most</p>
-    <p class="muted small">${cc.failingPairs ? `<span class="fail">${cc.failingPairs} of the ${allPairs.length} listed pairs fail AA</span> (${plu(cc.failingElements, 'element')}).` : 'No pair fails AA.'}</p>
+    <p class="muted small">${failPairs.length ? `<span class="fail">${failPairs.length} of the ${allPairs.length} listed pairs fail AA</span> (${plu(failEls, 'element')}).` : allPairs.length ? 'No pair fails AA.' : `No text could be graded${notg.length ? `: ${notg.map(x => `${x[1]} ${x[0]}`).join(', ')}` : ''}. A page read again by this version grades text faded out for a reveal.`}${cc.faded ? ` ${plu(cc.faded, 'text was', 'texts were')} faded out for a reveal when the page was read; ${cc.faded === 1 ? 'it is' : 'they are'} graded in the colours ${cc.faded === 1 ? 'it shows' : 'they show'} once revealed.` : ''}${unseenPairs.length ? ` Not graded: ${plu(unseenPairs.length, 'pair')} where the text and the background read as one colour, so what lies under the text was not seen.` : ''}</p>
     <div class="pairs">${pairHTML}</div>${colourFold}`);
 
   /* ---- spacing ---- */
@@ -2904,7 +2912,7 @@ function renderDesign() {
   const radTxt = r => r.corners ? 'four corners differ' : (r.unit === 'px' && r.value >= 999 ? 'pill' : `${nf(r.value)}${r.unit || ''}`);
   const shCss = s => s.layers.map(l => `${l.inset ? 'inset ' : ''}${l.x}px ${l.y}px ${l.blur}px ${l.spread}px ${l.color}`).join(', ');
   const shapes = `<div class="shapes"><div><h4 class="gname">Radii</h4><div class="rad">${rv.map(r => `<div class="r"><div class="tile" style="border-radius:${esc(r.corners ? Object.values(r.corners).join(' ') : r.value + (r.unit || ''))}"></div><span class="v" style="color:var(--ink)">${esc(radTxt(r))}</span><span>${r.count} ×</span></div>`).join('')}</div></div>
-    <div><h4 class="gname">Shadows</h4><div class="shd" style="background:${esc(bg)}">${sh.map(s => `<div class="s"><div class="tile" style="background:${esc(surf)};box-shadow:${esc(shCss(s))}"></div><span class="muted">${s.count} ×${s.layers.length === 1 && s.layers[0].inset ? ', inset' : ''}</span></div>`).join('')}</div></div></div>
+    <div><h4 class="gname">Shadows</h4><div class="shd" style="background:${esc(bg)}">${sh.map(s => `<div class="s"><div class="tile" style="background:${esc(surf)};box-shadow:${esc(shCss(s))}"></div><span style="color:${/^#[0-9a-f]{6}/i.test(bg) && lum(bg) < .179 ? '#ffffff' : '#111113'}">${s.count} ×${s.layers.length === 1 && s.layers[0].inset ? ', inset' : ''}</span></div>`).join('')}</div></div></div>
     ${fold(`All ${rvAll.length} radii and ${shAll.length} shadows`, `<div class="scroll"><table class="tbl"><thead><tr><th>Radius</th><th class="r">Elements</th><th>Label</th></tr></thead><tbody>${rvAll.map(r => `<tr><td class="v">${esc(r.corners ? Object.values(r.corners).join(' ') : nf(r.value) + (r.unit || ''))}</td><td class="r v">${r.count}</td><td class="muted">${esc(r.label || '')}</td></tr>`).join('')}</tbody></table></div><div class="scroll" style="margin-top:14px"><table class="tbl"><thead><tr><th>Shadow</th><th class="r">Elements</th></tr></thead><tbody>${shAll.map(s => `<tr><td class="v">${esc(shCss(s))}</td><td class="r v">${s.count}</td></tr>`).join('')}</tbody></table></div>`)}`;
   const spaceSec = sec('design-spacing', 'Spacing', spaceHTML);
   const shapeSec = sec('design-shapes', 'Radii and shadows', shapes);
@@ -2970,6 +2978,11 @@ function renderDesign() {
   el.innerHTML = `${hd('h1', 'h-design', 'Design', 'ptitle')}<p class="lead">What the page is made of, read at ${d.viewport.width} px wide${scheme ? ' in its ' + esc(scheme) + ' scheme' : ''}. Each part shows what matters; the full lists open under it.</p>
   <nav class="dnav" aria-label="Design parts">${nav.map(([id, t]) => `<a href="#design/${id}">${esc(t)}</a>`).join('')}</nav>
   <div class="dbody">${typeSec}${colourSec}<div class="two">${spaceSec}${shapeSec}</div>${layoutSec}${stateSec}${tokSec}</div>`;
+  // a sample fades at its edge only when a word really is wider than its column; measured when the sample is shown and when it resizes
+  if (typeof ResizeObserver === 'function') {
+    const ro = new ResizeObserver(es => { for (const e of es) { const t = e.target; if (t.clientWidth) t.classList.toggle('ovf', t.scrollWidth > t.clientWidth + 1); } });
+    el.querySelectorAll('.tyrow .smp').forEach(x => ro.observe(x));
+  }
 }
 
 /* ---------- render all ---------- */
@@ -2989,7 +3002,10 @@ function load() {
     if (sc.page) root.setProperty('--g-page', `url(${sc.page.data})`);
     (sc.mid || []).forEach((x, k) => root.setProperty('--g-m' + k, `url(${x.data})`)); }
   { const si = $('#site'); if (si) si.innerHTML = esc(`${titleOf(L)}, ${L.action.do === 'load' ? 'page load' : L.action.do}`).replace(/\//g, '/<wbr>'); }
-  renderOverview(); renderMotion(); renderTimeline(); renderDesign(); renderLibraries(); renderRecording();
+  // a scan card with moves draws a tab when it is first opened (6 Nov review: every tab rendered at open, ~1,800 nodes): its
+  // Overview is the stage, Motion / Timeline / Libraries / Recording are not shown, and Design waits for its tab
+  if (DATA && DATA.moves) DESIGN_STALE = true;
+  else { renderOverview(); renderMotion(); renderTimeline(); renderDesign(); renderLibraries(); renderRecording(); }
   $$('.mb').forEach(b => b.classList.toggle('sel', +b.dataset.i === S.sel));
   setT(REDUCED || !$('#play') ? AX : 0);
   FIND.index = null;
@@ -3001,9 +3017,14 @@ function load() {
    The pages not on screen are hidden="until-found": the browser's own find still reaches them, and a match opens its
    page (beforematch). Older in-page anchors (#design-type, #motion-2, #recording-others ...) still land on their page. */
 // a scan card with moves has one more page, which holds the screens of page/moves.html; a look card never does
-const VIEWS = ['overview', 'motion', 'timeline', 'design', 'libraries', 'recording', ...(DATA && DATA.moves ? ['moves'] : [])];
+const VIEWS = DATA && DATA.moves ? ['overview', 'design', 'moves'] : ['overview', 'motion', 'timeline', 'design', 'libraries', 'recording'];
+// the look card's pages a scan card with moves does not show stay out of reach: not in the bar, not by hash, not by the browser's find
+if (DATA && DATA.moves) for (const id of ['motion', 'timeline', 'libraries', 'recording']) { const sec = document.getElementById(id); if (sec) sec.hidden = true; }
 const VIEWNAME = { overview: 'Overview', motion: 'Motion', timeline: 'Timeline', design: 'Design', libraries: 'Libraries', recording: 'Recording', moves: 'Moves' };
 const CUR = { view: null, sub: null };
+/** Design is drawn when its tab opens, and again when the page it reads changed while it was away. */
+var DESIGN_STALE;   // no initial value: load() may set it before this line runs
+window.__designStale = () => { if (CUR.view === 'design') { DESIGN_STALE = false; renderDesign(); } else DESIGN_STALE = true; };
 function parseHash(h) {
   let s = String(h || '').replace(/^#/, '');
   try { s = decodeURIComponent(s); } catch (e) {}
@@ -3016,7 +3037,7 @@ function parseHash(h) {
   else if (/^timeline-/.test(v)) v = 'timeline';
   else if (/^recording-/.test(v)) v = 'recording';
   else if (/^lib-/.test(v)) v = 'libraries';
-  if (!VIEWS.includes(v)) { v = 'overview'; sub = null; }
+  if (!VIEWS.includes(v)) { v = DATA && DATA.moves ? 'moves' : 'overview'; sub = null; }
   return { v, sub };
 }
 function go(h) {
@@ -3036,6 +3057,7 @@ function show(v, sub, opts = {}) {
     if (CUR.view === 'overview') pvStop();
   }
   CUR.view = v; CUR.sub = sub;
+  if (v === 'design' && DESIGN_STALE) { DESIGN_STALE = false; renderDesign(); }
   // the page list shows the current page (and, on Design, the current part)
   const nav = $('#secnav');
   if (nav) {
@@ -3062,7 +3084,8 @@ function show(v, sub, opts = {}) {
   if (opts.find) return;
   if (v === 'design' && sub) {
     const t = document.getElementById('design-' + sub);
-    if (t) requestAnimationFrame(() => t.scrollIntoView({ block: 'start', behavior: changed || REDUCED ? 'auto' : 'smooth' }));
+    // the scan card glides there with its own smooth wheel (page/moves.html), under its sticky bar
+    if (t) requestAnimationFrame(() => { if (window.__smoothInto && !changed && !REDUCED) window.__smoothInto(t); else t.scrollIntoView({ block: 'start', behavior: changed || REDUCED ? 'auto' : 'smooth' }); });
   } else if (changed || (v === 'motion' && n !== prevSel)) {
     if (!first || location.hash) scrollTo(0, 0);
   }
