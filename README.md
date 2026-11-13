@@ -37,10 +37,8 @@
     <img alt="From the REVA launch film: a scan command is typed, REVA records the page frame by frame, and the pieces of its motion card arrive: the move, its timing and its curve. Then three words: Speed. Timing. Bounce." src=".github/assets/film-loop.gif" width="100%">
   </a>
   <br>
-  <sub>Ten seconds of the launch film. The whole film, 44 seconds with sound, plays below and on <a href="https://reva-cli.pages.dev/">the site</a>.</sub>
+  <sub>Ten seconds of the launch film. <a href="https://reva-cli.pages.dev/">Watch all 44 seconds, with sound</a>.</sub>
 </p>
-
-https://github.com/user-attachments/assets/4ecf3423-12db-4341-a7a4-9cde8afc652e
 
 DevTools shows you the motion a page declares in CSS. It can't show motion that a script drives frame by frame, and
 that is how most springs, GSAP timelines and smooth scrolling work. REVA measures that motion on its own clock, so you
